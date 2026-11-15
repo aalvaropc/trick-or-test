@@ -1,0 +1,25 @@
+# dependencies and builds
+node_modules/
+dist/
+*.tsbuildinfo
+
+# test and mutation working files
+coverage/
+.stryker-tmp/
+.trickortest/
+examples/**/reports/
+packages/**/reports/
+
+# environment and editor noise
+.env
+.env.*
+!.env.example
+*.log
+.DS_Store
+.idea/
+.vscode/
+
+# /.kiro MUST stay tracked: specs, hooks, steering and agents are part of the project.
+# Never add ".kiro" above. These two lines guard against a broader rule.
+!.kiro/
+!.kiro/**

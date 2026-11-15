@@ -1,0 +1,7 @@
+# Files agents must never read
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+secrets/
