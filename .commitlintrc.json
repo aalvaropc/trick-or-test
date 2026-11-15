@@ -1,0 +1,12 @@
+{
+  "extends": ["@commitlint/config-conventional"],
+  "rules": {
+    "scope-enum": [
+      1,
+      "always",
+      ["engine", "viewer", "pricing", "kiro", "power", "repo", "ci", "deps", "docs", "guard"]
+    ],
+    "body-max-line-length": [0],
+    "footer-max-line-length": [0]
+  }
+}

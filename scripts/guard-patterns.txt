@@ -1,0 +1,13 @@
+# Public patterns checked by scripts/guard.ts.
+# One JavaScript regular expression per line, case-insensitive.
+# Prefix a line with "case:" to make it case-sensitive.
+# Maintainers can add a private list (see CONTRIBUTING.md).
+
+# Absolute paths from a developer machine.
+(^|[\s"'`(=:])/home/[a-z0-9._-]+/
+(^|[\s"'`(=:])/Users/[A-Za-z0-9._-]+/
+[A-Za-z]:\\Users\\
+
+# AI attribution trailers and footers. The "(Kiro)" author suffix is the only attribution.
+^co-authored-by:.*\bnoreply@
+generated with \[[^\]]+\]\(https?://

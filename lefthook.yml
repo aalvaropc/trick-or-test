@@ -1,0 +1,31 @@
+# Git hooks, installed by `npm ci` (prepare script). Never bypass them with --no-verify:
+# CI runs the same checks and will reject the pull request anyway.
+
+pre-commit:
+  parallel: true
+  jobs:
+    - name: biome
+      glob: "*.{js,mjs,cjs,ts,tsx,json,jsonc,css}"
+      run: npx biome check --write --no-errors-on-unmatched --files-ignore-unknown=true {staged_files}
+      stage_fixed: true
+    - name: guard
+      run: node scripts/guard.ts staged
+    - name: gitleaks
+      run: |
+        if command -v gitleaks >/dev/null 2>&1; then
+          gitleaks git --pre-commit --staged --redact --no-banner
+        else
+          echo "gitleaks is not installed: skipped locally, CI still scans for secrets."
+        fi
+
+commit-msg:
+  jobs:
+    - name: commitlint
+      run: npx commitlint --edit {1}
+    - name: guard
+      run: node scripts/guard.ts message {1}
+
+pre-push:
+  jobs:
+    - name: typecheck and test
+      run: npm run typecheck && npm test
