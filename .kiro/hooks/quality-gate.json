@@ -1,0 +1,15 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "Quality gate",
+      "description": "Runs lint, type-check and tests when the agent finishes a turn, so failures come back to the agent before it reports success.",
+      "trigger": "Stop",
+      "action": {
+        "type": "command",
+        "command": "npm run check --silent"
+      },
+      "timeout": 300
+    }
+  ]
+}
