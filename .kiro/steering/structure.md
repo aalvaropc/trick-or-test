@@ -22,11 +22,11 @@ scripts/            repository tooling (commit guard), with its own tests
 
 | Spec                          | Owns               |
 | ----------------------------- | ------------------ |
-| `.kiro/specs/pricing-rules`   | `examples/pricing` |
+| `.kiro/specs/cart-pricing`    | `examples/pricing` |
 | `.kiro/specs/mutant-engine`   | `packages/engine`  |
 | `.kiro/specs/bestiary-viewer` | `apps/viewer`      |
 
-Change the spec first, then the code.
+Change the spec first, then the code. Paths inside `.kiro/specs/cart-pricing` are relative to `examples/pricing`.
 
 ## Where things go
 
@@ -55,5 +55,6 @@ Tests live in each workspace's `test/` folder and mirror `src/`.
 - `apps/viewer` imports only `trick-or-test/report` from the engine (types and schemas). That subpath has no `node:` imports.
 - `packages/engine` never imports from `apps/` or `examples/`.
 - `examples/pricing` does not depend on the engine. It is an ordinary project that the engine attacks from outside.
+- `examples/pricing/src/` and `examples/pricing/test/` are a fixture: keep them byte-identical. Spec mutants quote source lines character for character, so reformatting breaks them. Biome skips that folder for this reason.
 - `reports/` and `apps/viewer/public/demo/` hold generated files. Regenerate them; never edit them by hand.
 - Working files of a run go to `.trickortest/` in the target project, which is git-ignored.

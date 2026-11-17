@@ -47,32 +47,35 @@ One mutant per file: `mutants/<spec-name>/<mutant-id>.json` inside the target pr
 }
 ```
 
-| Field              | Rule                                                                                                                      |
-| ------------------ | ------------------------------------------------------------------------------------------------------------------------- |
-| `id`               | `oath-<criterion>-<slug>`. Unique                                                                                         |
-| `requirement`      | The id of exactly one acceptance criterion that exists in `requirements.md`                                               |
-| `file`             | The one source file to change, relative to the project root                                                               |
-| `original`         | Text that appears **exactly once** in `file`. Copy it character for character, with enough context to be unique           |
-| `mutated`          | The replacement. The result must type-check                                                                               |
-| `why`              | One sentence: what the mutant does wrong, in the words of the criterion                                                   |
-| `witness.from`     | Module that exports the function to call. Defaults to `file`                                                              |
-| `witness.export`   | Name of an exported pure function                                                                                         |
-| `witness.args`     | JSON arguments for that function                                                                                          |
-| `witness.expected` | The value the **criterion** demands for those arguments. For rejected input, use `"expectedError": "<ErrorName>"` instead |
+The example shows the shape only. Use the real types, field names and module paths of the target project.
+
+| Field                   | Rule                                                                                                                  |
+| ----------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| `id`                    | `oath-<criterion>-<slug>`. Unique                                                                                     |
+| `requirement`           | The id of exactly one acceptance criterion that exists in `requirements.md`                                           |
+| `file`                  | The one source file to change, relative to the project root                                                           |
+| `original`              | Text that appears **exactly once** in `file`. Copy it character for character, with enough context to be unique       |
+| `mutated`               | The replacement. The result must type-check                                                                           |
+| `why`                   | One sentence: what the mutant does wrong, in the words of the criterion                                               |
+| `witness.from`          | Module that exports the function to call, relative to the project root. Defaults to `file`                            |
+| `witness.export`        | Name of an exported function                                                                                          |
+| `witness.args`          | JSON arguments for that function                                                                                      |
+| `witness.expected`      | The value the **criterion** demands for those arguments                                                               |
+| `witness.expectedError` | Use instead of `expected` when the criterion demands that the input is rejected: the class name of the error it throws |
 
 ## How to choose the change
 
 1. Read the criterion. State in one sentence what would be false if it were broken.
-2. Prefer a change a mechanical tool would not make: the wrong variable, the wrong order of two steps, a missing step, the wrong unit, a rule applied to the wrong scope. Swap a single operator only when that is the only way to break the criterion.
+2. Choose the change most likely to slip past a test suite written from these requirements: the exact boundary (at least versus more than), the wrong variable, two steps in the wrong order, a missing step, a guard or clamp removed, a rule applied to the wrong scope, rounding in the wrong direction, a validation range off by one.
 3. Change one span in one file. Never change a signature, a type or an export.
-4. Write the witness last. Work out `expected` by hand from the criterion, not by running the code.
+4. Write the witness last. Work out `expected` by hand from the criterion, not by running the code. Pick an input on which the original and the mutant must disagree.
 
 ## What makes a mutant invalid
 
 - `original` appears zero times or more than once.
 - The mutated code does not type-check.
-- The original code does not return `expected`. Either you misread the criterion or the code already violates it. Never edit `expected` to match the code; report it.
-- The mutated code returns the same value as the original for the witness input. That is a ghost: it proves nothing and is not counted.
+- The original code does not produce `expected` (or does not throw `expectedError`). Either you misread the criterion or the code already violates it. Never edit `expected` to match the code; report it.
+- The mutated code produces the same outcome as the original for the witness input. That is a ghost: it proves nothing and is not counted.
 
 ## Never
 
