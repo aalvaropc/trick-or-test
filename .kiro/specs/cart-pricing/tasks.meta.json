@@ -1,0 +1,346 @@
+{
+  "pbtResults": {
+    "4.3 Write property test for subtotal in `test/price.test.ts`": {
+      "status": "passed",
+      "lastRunTimestamp": 1794920623223
+    },
+    "3.2 Write property test for single invalid field in `test/validation.test.ts`": {
+      "status": "passed",
+      "lastRunTimestamp": 1794920642236
+    },
+    "1.4 Write property test for `percentOf` in `test/percent.test.ts`": {
+      "status": "passed",
+      "lastRunTimestamp": 1794920643589
+    },
+    "3.3 Write property test for multiple invalid fields in `test/validation.test.ts`": {
+      "status": "passed",
+      "lastRunTimestamp": 1794920840520
+    },
+    "4.4 Write property test for empty carts in `test/price.test.ts`": {
+      "status": "passed",
+      "lastRunTimestamp": 1794920852767
+    },
+    "4.6 Write property test for shipping in `test/price.test.ts`": {
+      "status": "passed",
+      "lastRunTimestamp": 1794921208818
+    },
+    "4.7 Write property test for tax in `test/price.test.ts`": {
+      "status": "passed",
+      "lastRunTimestamp": 1794921309699
+    },
+    "4.8 Write property test for Breakdown invariants in `test/price.test.ts`": {
+      "status": "passed",
+      "lastRunTimestamp": 1794921539699
+    }
+  },
+  "executionHistory": {
+    "1.1 Create `src/types.ts` and `src/errors.ts`": [
+      {
+        "executionId": "12704142-247d-4392-8e0e-a7ed14a6a239",
+        "chatSessionId": "sess_cd64edb5-4b07-4542-b137-26a9e2bbbc25",
+        "timestamp": 1794920027425
+      },
+      {
+        "executionId": "12704142-247d-4392-8e0e-a7ed14a6a239",
+        "chatSessionId": "sess_cd64edb5-4b07-4542-b137-26a9e2bbbc25",
+        "timestamp": 1794920035192
+      },
+      {
+        "executionId": "12704142-247d-4392-8e0e-a7ed14a6a239",
+        "chatSessionId": "sess_cd64edb5-4b07-4542-b137-26a9e2bbbc25",
+        "timestamp": 1794920106572
+      }
+    ],
+    "1.2 Implement `percentOf` in `src/percent.ts`": [
+      {
+        "executionId": "12704142-247d-4392-8e0e-a7ed14a6a239",
+        "chatSessionId": "sess_cd64edb5-4b07-4542-b137-26a9e2bbbc25",
+        "timestamp": 1794920027542
+      },
+      {
+        "executionId": "12704142-247d-4392-8e0e-a7ed14a6a239",
+        "chatSessionId": "sess_cd64edb5-4b07-4542-b137-26a9e2bbbc25",
+        "timestamp": 1794920108936
+      },
+      {
+        "executionId": "12704142-247d-4392-8e0e-a7ed14a6a239",
+        "chatSessionId": "sess_cd64edb5-4b07-4542-b137-26a9e2bbbc25",
+        "timestamp": 1794920214643
+      }
+    ],
+    "2. Checkpoint - Ensure all tests pass": [
+      {
+        "executionId": "12704142-247d-4392-8e0e-a7ed14a6a239",
+        "chatSessionId": "sess_cd64edb5-4b07-4542-b137-26a9e2bbbc25",
+        "timestamp": 1794920027612
+      },
+      {
+        "executionId": "12704142-247d-4392-8e0e-a7ed14a6a239",
+        "chatSessionId": "sess_cd64edb5-4b07-4542-b137-26a9e2bbbc25",
+        "timestamp": 1794920402543
+      },
+      {
+        "executionId": "12704142-247d-4392-8e0e-a7ed14a6a239",
+        "chatSessionId": "sess_cd64edb5-4b07-4542-b137-26a9e2bbbc25",
+        "timestamp": 1794920420918
+      }
+    ],
+    "3.1 Implement `validateCart` in `src/validate.ts`": [
+      {
+        "executionId": "12704142-247d-4392-8e0e-a7ed14a6a239",
+        "chatSessionId": "sess_cd64edb5-4b07-4542-b137-26a9e2bbbc25",
+        "timestamp": 1794920027684
+      },
+      {
+        "executionId": "12704142-247d-4392-8e0e-a7ed14a6a239",
+        "chatSessionId": "sess_cd64edb5-4b07-4542-b137-26a9e2bbbc25",
+        "timestamp": 1794920111577
+      },
+      {
+        "executionId": "12704142-247d-4392-8e0e-a7ed14a6a239",
+        "chatSessionId": "sess_cd64edb5-4b07-4542-b137-26a9e2bbbc25",
+        "timestamp": 1794920214971
+      }
+    ],
+    "4.1 Implement `priceCart` in `src/price.ts`": [
+      {
+        "executionId": "12704142-247d-4392-8e0e-a7ed14a6a239",
+        "chatSessionId": "sess_cd64edb5-4b07-4542-b137-26a9e2bbbc25",
+        "timestamp": 1794920027769
+      },
+      {
+        "executionId": "12704142-247d-4392-8e0e-a7ed14a6a239",
+        "chatSessionId": "sess_cd64edb5-4b07-4542-b137-26a9e2bbbc25",
+        "timestamp": 1794920220289
+      },
+      {
+        "executionId": "12704142-247d-4392-8e0e-a7ed14a6a239",
+        "chatSessionId": "sess_cd64edb5-4b07-4542-b137-26a9e2bbbc25",
+        "timestamp": 1794920316790
+      }
+    ],
+    "4.2 Create `src/index.ts`": [
+      {
+        "executionId": "12704142-247d-4392-8e0e-a7ed14a6a239",
+        "chatSessionId": "sess_cd64edb5-4b07-4542-b137-26a9e2bbbc25",
+        "timestamp": 1794920027846
+      },
+      {
+        "executionId": "12704142-247d-4392-8e0e-a7ed14a6a239",
+        "chatSessionId": "sess_cd64edb5-4b07-4542-b137-26a9e2bbbc25",
+        "timestamp": 1794920319370
+      },
+      {
+        "executionId": "12704142-247d-4392-8e0e-a7ed14a6a239",
+        "chatSessionId": "sess_cd64edb5-4b07-4542-b137-26a9e2bbbc25",
+        "timestamp": 1794920400040
+      }
+    ],
+    "5. Final checkpoint - Ensure all tests pass": [
+      {
+        "executionId": "12704142-247d-4392-8e0e-a7ed14a6a239",
+        "chatSessionId": "sess_cd64edb5-4b07-4542-b137-26a9e2bbbc25",
+        "timestamp": 1794920027930
+      },
+      {
+        "executionId": "12704142-247d-4392-8e0e-a7ed14a6a239",
+        "chatSessionId": "sess_cd64edb5-4b07-4542-b137-26a9e2bbbc25",
+        "timestamp": 1794921609408
+      },
+      {
+        "executionId": "12704142-247d-4392-8e0e-a7ed14a6a239",
+        "chatSessionId": "sess_cd64edb5-4b07-4542-b137-26a9e2bbbc25",
+        "timestamp": 1794921661214
+      }
+    ],
+    "1. Set up types, errors, and the percentage primitive": [
+      {
+        "executionId": "12704142-247d-4392-8e0e-a7ed14a6a239",
+        "chatSessionId": "sess_cd64edb5-4b07-4542-b137-26a9e2bbbc25",
+        "timestamp": 1794920214751
+      }
+    ],
+    "3. Implement validation": [
+      {
+        "executionId": "12704142-247d-4392-8e0e-a7ed14a6a239",
+        "chatSessionId": "sess_cd64edb5-4b07-4542-b137-26a9e2bbbc25",
+        "timestamp": 1794920215068
+      }
+    ],
+    "4. Implement pricing and public API": [
+      {
+        "executionId": "12704142-247d-4392-8e0e-a7ed14a6a239",
+        "chatSessionId": "sess_cd64edb5-4b07-4542-b137-26a9e2bbbc25",
+        "timestamp": 1794920400128
+      }
+    ],
+    "1.3 Create `test/helpers/arbitraries.ts`": [
+      {
+        "executionId": "12704142-247d-4392-8e0e-a7ed14a6a239",
+        "chatSessionId": "sess_cd64edb5-4b07-4542-b137-26a9e2bbbc25",
+        "timestamp": 1794920431383
+      },
+      {
+        "executionId": "12704142-247d-4392-8e0e-a7ed14a6a239",
+        "chatSessionId": "sess_cd64edb5-4b07-4542-b137-26a9e2bbbc25",
+        "timestamp": 1794920498736
+      }
+    ],
+    "1.4 Write property test for `percentOf` in `test/percent.test.ts`": [
+      {
+        "executionId": "12704142-247d-4392-8e0e-a7ed14a6a239",
+        "chatSessionId": "sess_cd64edb5-4b07-4542-b137-26a9e2bbbc25",
+        "timestamp": 1794920507006
+      },
+      {
+        "executionId": "12704142-247d-4392-8e0e-a7ed14a6a239",
+        "chatSessionId": "sess_cd64edb5-4b07-4542-b137-26a9e2bbbc25",
+        "timestamp": 1794920658916
+      }
+    ],
+    "3.2 Write property test for single invalid field in `test/validation.test.ts`": [
+      {
+        "executionId": "12704142-247d-4392-8e0e-a7ed14a6a239",
+        "chatSessionId": "sess_cd64edb5-4b07-4542-b137-26a9e2bbbc25",
+        "timestamp": 1794920507196
+      },
+      {
+        "executionId": "12704142-247d-4392-8e0e-a7ed14a6a239",
+        "chatSessionId": "sess_cd64edb5-4b07-4542-b137-26a9e2bbbc25",
+        "timestamp": 1794920658395
+      }
+    ],
+    "4.3 Write property test for subtotal in `test/price.test.ts`": [
+      {
+        "executionId": "12704142-247d-4392-8e0e-a7ed14a6a239",
+        "chatSessionId": "sess_cd64edb5-4b07-4542-b137-26a9e2bbbc25",
+        "timestamp": 1794920507314
+      },
+      {
+        "executionId": "12704142-247d-4392-8e0e-a7ed14a6a239",
+        "chatSessionId": "sess_cd64edb5-4b07-4542-b137-26a9e2bbbc25",
+        "timestamp": 1794920658214
+      }
+    ],
+    "4.10 Write public API smoke test in `test/api.test.ts`": [
+      {
+        "executionId": "12704142-247d-4392-8e0e-a7ed14a6a239",
+        "chatSessionId": "sess_cd64edb5-4b07-4542-b137-26a9e2bbbc25",
+        "timestamp": 1794920507454
+      },
+      {
+        "executionId": "12704142-247d-4392-8e0e-a7ed14a6a239",
+        "chatSessionId": "sess_cd64edb5-4b07-4542-b137-26a9e2bbbc25",
+        "timestamp": 1794920658479
+      }
+    ],
+    "1.5 Write unit tests for `percentOf` in `test/percent.test.ts`": [
+      {
+        "executionId": "12704142-247d-4392-8e0e-a7ed14a6a239",
+        "chatSessionId": "sess_cd64edb5-4b07-4542-b137-26a9e2bbbc25",
+        "timestamp": 1794920661458
+      },
+      {
+        "executionId": "12704142-247d-4392-8e0e-a7ed14a6a239",
+        "chatSessionId": "sess_cd64edb5-4b07-4542-b137-26a9e2bbbc25",
+        "timestamp": 1794920861047
+      }
+    ],
+    "3.3 Write property test for multiple invalid fields in `test/validation.test.ts`": [
+      {
+        "executionId": "12704142-247d-4392-8e0e-a7ed14a6a239",
+        "chatSessionId": "sess_cd64edb5-4b07-4542-b137-26a9e2bbbc25",
+        "timestamp": 1794920662333
+      },
+      {
+        "executionId": "12704142-247d-4392-8e0e-a7ed14a6a239",
+        "chatSessionId": "sess_cd64edb5-4b07-4542-b137-26a9e2bbbc25",
+        "timestamp": 1794920860764
+      }
+    ],
+    "4.4 Write property test for empty carts in `test/price.test.ts`": [
+      {
+        "executionId": "12704142-247d-4392-8e0e-a7ed14a6a239",
+        "chatSessionId": "sess_cd64edb5-4b07-4542-b137-26a9e2bbbc25",
+        "timestamp": 1794920663116
+      },
+      {
+        "executionId": "12704142-247d-4392-8e0e-a7ed14a6a239",
+        "chatSessionId": "sess_cd64edb5-4b07-4542-b137-26a9e2bbbc25",
+        "timestamp": 1794920860905
+      }
+    ],
+    "3.4 Write unit tests for validation in `test/validation.test.ts`": [
+      {
+        "executionId": "12704142-247d-4392-8e0e-a7ed14a6a239",
+        "chatSessionId": "sess_cd64edb5-4b07-4542-b137-26a9e2bbbc25",
+        "timestamp": 1794920877820
+      },
+      {
+        "executionId": "12704142-247d-4392-8e0e-a7ed14a6a239",
+        "chatSessionId": "sess_cd64edb5-4b07-4542-b137-26a9e2bbbc25",
+        "timestamp": 1794920971867
+      }
+    ],
+    "4.5 Write property test for coupon discount in `test/price.test.ts`": [
+      {
+        "executionId": "12704142-247d-4392-8e0e-a7ed14a6a239",
+        "chatSessionId": "sess_cd64edb5-4b07-4542-b137-26a9e2bbbc25",
+        "timestamp": 1794920877947
+      },
+      {
+        "executionId": "12704142-247d-4392-8e0e-a7ed14a6a239",
+        "chatSessionId": "sess_cd64edb5-4b07-4542-b137-26a9e2bbbc25",
+        "timestamp": 1794920971655
+      }
+    ],
+    "4.6 Write property test for shipping in `test/price.test.ts`": [
+      {
+        "executionId": "12704142-247d-4392-8e0e-a7ed14a6a239",
+        "chatSessionId": "sess_cd64edb5-4b07-4542-b137-26a9e2bbbc25",
+        "timestamp": 1794920972010
+      },
+      {
+        "executionId": "12704142-247d-4392-8e0e-a7ed14a6a239",
+        "chatSessionId": "sess_cd64edb5-4b07-4542-b137-26a9e2bbbc25",
+        "timestamp": 1794921214301
+      }
+    ],
+    "4.7 Write property test for tax in `test/price.test.ts`": [
+      {
+        "executionId": "12704142-247d-4392-8e0e-a7ed14a6a239",
+        "chatSessionId": "sess_cd64edb5-4b07-4542-b137-26a9e2bbbc25",
+        "timestamp": 1794921216589
+      },
+      {
+        "executionId": "12704142-247d-4392-8e0e-a7ed14a6a239",
+        "chatSessionId": "sess_cd64edb5-4b07-4542-b137-26a9e2bbbc25",
+        "timestamp": 1794921315872
+      }
+    ],
+    "4.8 Write property test for Breakdown invariants in `test/price.test.ts`": [
+      {
+        "executionId": "12704142-247d-4392-8e0e-a7ed14a6a239",
+        "chatSessionId": "sess_cd64edb5-4b07-4542-b137-26a9e2bbbc25",
+        "timestamp": 1794921320995
+      },
+      {
+        "executionId": "12704142-247d-4392-8e0e-a7ed14a6a239",
+        "chatSessionId": "sess_cd64edb5-4b07-4542-b137-26a9e2bbbc25",
+        "timestamp": 1794921546919
+      }
+    ],
+    "4.9 Write unit tests for `priceCart` in `test/price.test.ts`": [
+      {
+        "executionId": "12704142-247d-4392-8e0e-a7ed14a6a239",
+        "chatSessionId": "sess_cd64edb5-4b07-4542-b137-26a9e2bbbc25",
+        "timestamp": 1794921549409
+      },
+      {
+        "executionId": "12704142-247d-4392-8e0e-a7ed14a6a239",
+        "chatSessionId": "sess_cd64edb5-4b07-4542-b137-26a9e2bbbc25",
+        "timestamp": 1794921606619
+      }
+    ]
+  }
+}
