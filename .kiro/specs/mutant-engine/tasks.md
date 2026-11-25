@@ -76,7 +76,7 @@ Conventions used in every task:
     - _Requirements: 3.11, 3.12, 3.13, 8.14_
     - _Validation: npx vitest run --project engine packages/engine/test/core/species.test.ts passes_
 
-  - [ ] 3.6 Write Property 9: Species is total
+  - [x] 3.6 Write Property 9: Species is total
     - Write `test/core/species.property.test.ts` with **Property 9: Species is total**. The generator includes the operator pairs `<`/`<=` and `>`/`>=` as replacement samples.
     - **Validates: Requirements 3.11, 3.12, 3.13, 8.14**
     - _Requirements: 3.11, 3.12, 3.13, 8.14_
