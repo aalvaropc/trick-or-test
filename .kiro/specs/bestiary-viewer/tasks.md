@@ -357,7 +357,7 @@ Conventions for every task:
     - _Requirements: 2.1, 2.3, 2.4, 2.9, 3.1, 3.2, 3.3, 3.4, 3.6, 10.3_
     - _Validation: `npm test -w trick-or-test-viewer -- test/screens/Landing.test.tsx` passes_
 
-  - [ ] 9.3 Implement the Verdict headline
+  - [x] 9.3 Implement the Verdict headline
     - Create `src/screens/verdict/Headline.tsx`: the four counts (surviving Spec_Mutants, killed Spec_Mutants, guarded Criteria, unguarded Criteria) as non-negative integers from `computeHeadlineCounts`, in IM Fell English. Without a Verdict_File, show the counts available from the report.
     - Example tests in `test/screens/verdict/Headline.test.tsx`: four integers match the fixture (6.1), zero values render as `0`.
     - _Requirements: 6.1_
