@@ -250,7 +250,7 @@ Conventions used in every task:
     - _Requirements: 8.7, 4.5, 8.13_
     - _Validation: npx vitest run --project engine packages/engine/test/core/mutant-id.property.test.ts passes_
 
-  - [ ] 3.34 Fix the report-order clause of Property 6
+  - [x] 3.34 Fix the report-order clause of Property 6
     - In `test/core/mutant-id.property.test.ts` replace the comparison against a sorted stand-in: shuffle the input list of `buildMutationReport` itself and check that the two outputs are equal.
     - **Validates: Requirements 8.13**
     - _Requirements: 8.13_

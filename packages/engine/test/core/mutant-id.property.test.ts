@@ -1,9 +1,14 @@
 // Property 6: Deterministic ids. Validates: Requirements 4.5, 8.7, 8.13
-// buildMutationReport (core/report.ts, task 3.24) does not exist yet, so report order is modelled as ordering by id on plain data.
 import fc from "fast-check";
 import { describe, expect, it } from "vitest";
 import { assignOccurrenceIndexes, computeMutantId } from "../../src/core/mutant-id.js";
-import type { MutantId } from "../../src/core/types.js";
+import {
+  buildMutationReport,
+  type ReportInput,
+  type ReportMutantInput,
+  type SpecReportMutantInput,
+} from "../../src/core/report.js";
+import type { CriterionId, MutantId } from "../../src/core/types.js";
 
 type Mechanical = { kind: "mechanical"; file: string; original: string; replacement: string };
 type Spec = { kind: "spec"; id: string; file: string; original: string; replacement: string };
@@ -35,16 +40,15 @@ const idOf = (entry: Entry): string =>
     ? entry.id
     : computeMutantId(entry.file, entry.original, entry.replacement, 0);
 
-const reportOrder = (entries: Entry[]): string[] => entries.map(idOf).sort();
-
-const withPermutation = (entries: fc.Arbitrary<Entry[]>) =>
+// A list together with a permutation of the same elements.
+const withPermutation = <T>(entries: fc.Arbitrary<T[]>) =>
   entries.chain((list) =>
     fc
       .shuffledSubarray(
         list.map((_, i) => i),
         { minLength: list.length, maxLength: list.length },
       )
-      .map((order) => ({ list, shuffled: order.map((i) => list[i] as Entry) })),
+      .map((order) => ({ list, shuffled: order.map((i) => list[i] as T) })),
   );
 
 type Located = {
@@ -89,6 +93,44 @@ const idsOf = (list: Located[]): string[] => {
     computeMutantId(m.file, m.original, m.replacement, indexes[i] as number),
   );
 };
+
+// Report inputs over two files with a small span space, so mutants share start positions and
+// some Mechanical_Mutants make the same change as a Spec_Mutant. Ids are unique per run, as the
+// engine guarantees.
+const reportFiles: ReportInput["files"] = {
+  "src/a.ts": { language: "typescript", source: "a + b" },
+  "src/b.ts": { language: "typescript", source: "c < d" },
+};
+const reportBase = fc.record({
+  file: fc.constantFrom("src/a.ts", "src/b.ts"),
+  location: fc.record({
+    start: fc.record({
+      line: fc.integer({ min: 1, max: 3 }),
+      column: fc.integer({ min: 1, max: 3 }),
+    }),
+    end: fc.record({ line: fc.constant(4), column: fc.integer({ min: 1, max: 2 }) }),
+  }),
+  replacement: fc.constantFrom("-", ">"),
+  status: fc.constantFrom(
+    "Killed" as const,
+    "Survived" as const,
+    "Timeout" as const,
+    "Ghost" as const,
+    "CompileError" as const,
+  ),
+});
+const reportMechanical: fc.Arbitrary<ReportMutantInput[]> = fc
+  .array(reportBase, { maxLength: 10 })
+  .map((list) => list.map((m, i) => ({ ...m, id: `mech-${i}` as MutantId })));
+const reportSpec: fc.Arbitrary<SpecReportMutantInput[]> = fc
+  .array(reportBase, { maxLength: 6 })
+  .map((list) =>
+    list.map((m, i) => ({
+      ...m,
+      id: `oath-1.${i + 1}-spec` as MutantId,
+      requirement: `1.${i + 1}` as CriterionId,
+    })),
+  );
 
 describe("Property 6: Deterministic ids", () => {
   it("8.7 mutants sharing file, original and replacement at different locations get different ids", () => {
@@ -148,16 +190,34 @@ describe("Property 6: Deterministic ids", () => {
     );
   });
 
-  it("8.7 shuffling the list changes no id and not the report order", () => {
+  it("8.7 shuffling the list changes no id", () => {
     fc.assert(
       fc.property(
         withPermutation(fc.array(fc.oneof(mechanical, spec), { maxLength: 12 })),
         ({ list, shuffled }) => {
           const byEntry = new Map<Entry, MutantId>(list.map((e) => [e, idOf(e) as MutantId]));
           for (const entry of shuffled) expect(idOf(entry)).toBe(byEntry.get(entry));
-          expect(reportOrder(shuffled)).toEqual(reportOrder(list));
         },
       ),
+    );
+  });
+
+  it("8.13 shuffling the input lists of buildMutationReport gives an equal report", () => {
+    fc.assert(
+      fc.property(withPermutation(reportMechanical), withPermutation(reportSpec), (mech, specs) => {
+        const original = buildMutationReport({
+          files: reportFiles,
+          mechanical: mech.list,
+          spec: specs.list,
+        });
+        const shuffled = buildMutationReport({
+          files: reportFiles,
+          mechanical: mech.shuffled,
+          spec: specs.shuffled,
+        });
+        expect(shuffled).toEqual(original);
+        expect(JSON.stringify(shuffled)).toBe(JSON.stringify(original));
+      }),
     );
   });
 });
