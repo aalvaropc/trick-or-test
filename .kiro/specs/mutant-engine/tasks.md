@@ -656,7 +656,7 @@ Conventions used in every task:
     - _Requirements: 5.6, 8.5, 8.10, 8.12_
     - _Validation: npx vitest run --project engine packages/engine/test/core/verdict.property.test.ts passes_
 
-  - [ ] 12.24 Carry both outcomes from the pipeline to the Verdict
+  - [x] 12.24 Carry both outcomes from the pipeline to the Verdict
     - In `cli/orchestrate.ts` make the InvalidWitness result carry the expectation and the outcome of the original code into the report input.
     - Add examples to `test/cli/orchestrate-spec-mutants.test.ts`: an InvalidWitness result holds `expected` and `originalOutcome` for a value, an error class and a timeout.
     - _Requirements: 5.6_

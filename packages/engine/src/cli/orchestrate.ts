@@ -58,6 +58,7 @@ import type {
 import {
   compareOutcomes,
   matchesExpectation,
+  type WitnessExpectation,
   type WitnessOutcome,
 } from "../core/witness-compare.js";
 import type { CliOptions } from "./args.js";
@@ -626,6 +627,11 @@ async function originalOutcomes(
   }
 }
 
+const expectationOf = (witness: SpecMutant["witness"]): WitnessExpectation =>
+  "expectedError" in witness
+    ? { expectedError: witness.expectedError }
+    : { expected: witness.expected };
+
 async function runOneSpecMutant(
   mutant: SpecMutant,
   root: string,
@@ -670,7 +676,15 @@ async function runOneSpecMutant(
   }
   // A timeout on the original code never matches the expectation.
   if (!matchesExpectation(mutant.witness, original.value)) {
-    return done("InvalidWitness", { originalOutcome: original.value });
+    const invalid = done("InvalidWitness", { originalOutcome: original.value });
+    if (invalid.ok) {
+      // 5.6: the Verdict_File gets the expectation and what the original code produced.
+      invalid.value.result.invalidWitness = {
+        expected: expectationOf(mutant.witness),
+        originalOutcome: original.value,
+      };
+    }
+    return invalid;
   }
 
   // 5.7: the mutated code must change the outcome.
