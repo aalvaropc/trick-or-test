@@ -842,7 +842,7 @@ Conventions used in every task:
     - _Requirements: 10.10, 10.11_
     - _Validation: npm run test:e2e --workspace trick-or-test passes_
 
-  - [ ] 12.55 Regenerate `reports/` with `npm run measure`
+  - [x] 12.55 Regenerate `reports/` with `npm run measure`
     - Note: task 9.2 committed `reports/` before these fixes. Mutant locations, Occurrence_Index ids and relative paths changed, so the committed files are stale. Delete the generated files in `reports/`, run `npm run measure` from the repository root, check that `reports/history.jsonl` has exactly one line and that no string in the three files holds an absolute path, and commit the three files. Nobody edits them by hand.
     - _Requirements: 8.17, 9.13, 9.14_
     - _Validation: npm run measure && test -f reports/mutation-report.json && test -f reports/verdict.json && test -f reports/history.jsonl passes_
