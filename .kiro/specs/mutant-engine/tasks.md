@@ -516,7 +516,7 @@ Conventions used in every task:
   - Completed tasks keep their status and text. Where an earlier task contradicts a rule below, it carries a short note that points to the fix task.
   - Tests that parse StrykerJS output or a Vitest JSON result use output captured from a real run (StrykerJS 10.1.1, the Vitest of the repository), stored under `packages/engine/test/fixtures/`. Run the real tool with the shell, then write the captured text with the file tools. Do not write invented output.
 
-  - [ ] 12.1 Count file-level failures as Failing_Tests in `core/suite-result.ts`
+  - [x] 12.1 Count file-level failures as Failing_Tests in `core/suite-result.ts`
     - Create `core/suite-result.ts` with `extractFailingTests(vitestJson): FailingTest[]` as in `design.md`: every test with status `failed` is a Failing_Test; a test file with status `failed` and no assertion results (an error at import or collection) is one Failing_Test whose name and `filePath` are the file path; a failed file that also has failed assertions yields only those assertions.
     - Write `test/core/suite-result.test.ts`: a failed assertion, a file that throws at import, a file that fails at collection, a failed file with failed assertions (only the assertions), a passing run (empty list), several failed files in file order.
     - _Requirements: 3.15, 5.9, 5.10_
