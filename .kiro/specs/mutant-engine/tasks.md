@@ -281,7 +281,7 @@ Conventions used in every task:
     - _Requirements: 5.8, 5.9, 5.10, 5.11, 6.2_
     - _Validation: npx vitest run --project engine packages/engine/test/adapters/vitest-suite-runner.test.ts passes_
 
-  - [ ] 5.8 Implement `vitest-witness-runner.ts` with tests
+  - [x] 5.8 Implement `vitest-witness-runner.ts` with tests
     - Implement `WitnessRunner.run(sandboxRoot, witnesses)`: generate `.trickortest/witnesses/<mutant id>.witness.test.ts` that imports the `export` from `witness.from`, calls it with `args` and writes `{ kind: 'value', value }` or `{ kind: 'error', className }` to `<mutant id>.outcome.json`. Generate `.trickortest/witnesses/vitest.config.ts` that extends the target config and includes only the witness files. Read outcomes from the files, never from console output, and parse them with a zod schema.
     - Write `test/adapters/vitest-witness-runner.test.ts` on a small fixture project under `packages/engine/test/fixtures/` (for example `witness-runner/`) with extensionless TypeScript imports: a returned value, a thrown error class, a witness that fails to import, and a check that the target's own suite run ignores the generated files.
     - _Requirements: 5.4, 5.5, 5.6, 5.7_
