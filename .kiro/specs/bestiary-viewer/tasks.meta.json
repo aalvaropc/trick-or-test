@@ -415,6 +415,30 @@
         "chatSessionId": "sess_dc62a625-49b3-4792-818a-1f5a39433e39",
         "timestamp": 1795634367795
       }
+    ],
+    "4.13 Add state styling to `bestiary/creature.ts`": [
+      {
+        "executionId": "373269ac-4373-4a11-9c70-b5ff82f1262a",
+        "chatSessionId": "sess_1a8de482-a0c1-483b-acc7-a66193c11233",
+        "timestamp": 1795634525259
+      },
+      {
+        "executionId": "083167ec-4ab3-4608-839b-f404faf030a4",
+        "chatSessionId": "sess_1a8de482-a0c1-483b-acc7-a66193c11233",
+        "timestamp": 1795634697646
+      },
+      {
+        "executionId": "083167ec-4ab3-4608-839b-f404faf030a4",
+        "chatSessionId": "sess_1a8de482-a0c1-483b-acc7-a66193c11233",
+        "timestamp": 1795634740468
+      }
+    ],
+    "4.14 Draw the glyph inside the body in `bestiary/creature.ts`": [
+      {
+        "executionId": "3e41e77b-c08a-4060-bb4c-dac859b63f5f",
+        "chatSessionId": "sess_fe2b885f-4a7d-4230-a909-d7b45ea0d1b7",
+        "timestamp": 1795634776983
+      }
     ]
   }
 }

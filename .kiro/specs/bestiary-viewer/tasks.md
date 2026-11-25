@@ -229,7 +229,7 @@ Conventions for every task:
     - _Requirements: 5.11, 5.14, 5.15_
     - _Validation: `npm test -w trick-or-test-viewer -- test/bestiary/creature.glyph.test.ts` passes_
 
-  - [ ] 4.15 Write property test for deterministic creatures
+  - [x] 4.15 Write property test for deterministic creatures
     - **Property V1: Deterministic creatures**
     - File: `test/bestiary/creature.determinism.property.test.ts`. For any species, seed and state, two calls with the same arguments return byte-identical strings.
     - _Requirements: 5.2, 5.18_
