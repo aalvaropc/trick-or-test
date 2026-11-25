@@ -67,7 +67,7 @@ Conventions for every task:
     - _Requirements: 12.1, 12.4, 12.15, 12.16_
     - _Validation: `npm test -w trick-or-test-viewer -- test/package.test.ts` passes_
 
-  - [ ] 1.5 Add the viewer rows to the commands table in tech.md
+  - [x] 1.5 Add the viewer rows to the commands table in tech.md
     - In `.kiro/steering/tech.md`, add one row each for `npm run dev -w trick-or-test-viewer`, `npm run build -w trick-or-test-viewer` and `npm run preview -w trick-or-test-viewer`. Each row states that the command builds the engine first. Add no row for the viewer `test` script, because `tech.md` has no per-workspace test row and the root `npm test` row stays unchanged.
     - Land these rows in the same commit as the scripts from 1.4.
     - _Requirements: 12.12, 12.15_

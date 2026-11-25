@@ -32,6 +32,9 @@ Decisions behind this stack are recorded in `docs/decisions/`. Do not change a c
 | `npm run test:coverage`           | Runs all tests with coverage                                        |
 | `npm run build`                   | Builds every workspace                                              |
 | `npm run test:e2e -w trick-or-test` | Runs the engine end-to-end test (slow, about two minutes) |
+| `npm run dev -w trick-or-test-viewer` | Builds the engine first, then starts the viewer dev server |
+| `npm run build -w trick-or-test-viewer` | Builds the engine first, then type-checks and builds the viewer |
+| `npm run preview -w trick-or-test-viewer` | Builds the engine first, then serves the built viewer locally |
 
 Workspaces add their own scripts (for example `attack`, `measure`, `dev`) when their spec creates them; add the matching row here in the same commit.
 
