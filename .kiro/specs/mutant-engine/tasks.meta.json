@@ -1012,6 +1012,20 @@
         "chatSessionId": "sess_8637f48d-9d3e-46d6-ad40-e84e6ebb6dd3",
         "timestamp": 1795633118162
       }
+    ],
+    "10. Final checkpoint - Whole engine": [
+      {
+        "executionId": "ae7f785b-0457-4f2d-befa-5edd563cb7e8",
+        "chatSessionId": "sess_ea2507bf-8ba6-4e27-a11c-a82e95d622fc",
+        "timestamp": 1795633568696
+      }
+    ],
+    "11. Give Property 13 an explicit timeout": [
+      {
+        "executionId": "3f47d2e1-ceba-4289-b2de-709ec19323b5",
+        "chatSessionId": "sess_d1b6aecd-22e7-47be-807d-b83666cde04d",
+        "timestamp": 1795633920310
+      }
     ]
   }
 }
