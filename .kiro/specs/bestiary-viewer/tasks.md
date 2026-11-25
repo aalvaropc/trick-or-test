@@ -192,7 +192,7 @@ Conventions for every task:
     - _Requirements: 6.3, 6.4_
     - _Validation: `npm test -w trick-or-test-viewer -- test/bestiary/coverage.no-false-seal.property.test.ts` passes_
 
-  - [ ] 4.9 Implement `bestiary/escape-xml.ts`
+  - [x] 4.9 Implement `bestiary/escape-xml.ts`
     - Implement the single `escapeXml(s)`: `&` to `&amp;`, `<` to `&lt;`, `>` to `&gt;`, `"` to `&quot;`, `'` to `&#39;`. No other escaping function exists in `src/`.
     - Example tests in `test/bestiary/escape-xml.test.ts`: each of the five characters, ampersand escaped first with no double escaping, empty string.
     - _Requirements: 5.14_

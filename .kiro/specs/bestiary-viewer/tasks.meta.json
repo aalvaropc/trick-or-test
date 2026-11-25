@@ -372,6 +372,18 @@
         "chatSessionId": "sess_66e07b68-65c5-4790-b3de-5cc9d7d9dcf7",
         "timestamp": 1795631055884
       }
+    ],
+    "4.9 Implement `bestiary/escape-xml.ts`": [
+      {
+        "executionId": "ede1e0c6-d13e-4676-a2a5-bbabc9d55d64",
+        "chatSessionId": "sess_f2adfafa-4d99-4862-8465-7fd96a8fe027",
+        "timestamp": 1795631087257
+      },
+      {
+        "executionId": "ede1e0c6-d13e-4676-a2a5-bbabc9d55d64",
+        "chatSessionId": "sess_f2adfafa-4d99-4862-8465-7fd96a8fe027",
+        "timestamp": 1795631142729
+      }
     ]
   }
 }
