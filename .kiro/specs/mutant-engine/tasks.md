@@ -796,7 +796,7 @@ Conventions used in every task:
     - _Requirements: 9.5, 9.16, 9.9_
     - _Validation: npx vitest run --project engine packages/engine/test/core/select-spec.test.ts packages/engine/test/cli/orchestrate-select-spec.test.ts passes_
 
-  - [ ] 12.47 Track and kill child process groups in the process runner
+  - [x] 12.47 Track and kill child process groups in the process runner
     - In `adapters/process-runner.ts` (create it if the spawn code is elsewhere and route the Vitest, StrykerJS, type-check and git adapters through it) spawn each child in its own process group, keep a registry of live children and add `killAll(signal)` that stops every group.
     - Write `test/adapters/process-runner.test.ts` with real short-lived Node child processes: a child that spawns a grandchild is stopped together with it, `killAll` with no child does nothing, a finished child leaves the registry.
     - _Requirements: 9.15_

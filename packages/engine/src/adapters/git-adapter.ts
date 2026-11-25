@@ -1,28 +1,20 @@
-import { execFile } from "node:child_process";
 import type { ChangedRange } from "../core/changed-ranges.js";
 import { err, ok, type Result } from "../core/result.js";
+import { ProcessRunner } from "./process-runner.js";
 
 export type { ChangedRange };
 
 export const formatChangedRange = (range: ChangedRange): string =>
   `${range.file}:${range.start}-${range.end}`;
 
-const runGit = (args: readonly string[], cwd: string): Promise<Result<string, string>> =>
-  new Promise((resolve) => {
-    execFile(
-      "git",
-      [...args],
-      { cwd, encoding: "utf8", maxBuffer: 256 * 1024 * 1024 },
-      (error, stdout, stderr) => {
-        if (error) {
-          const detail = String(stderr).trim() || error.message;
-          resolve(err(`git ${args[0]} failed: ${detail}`));
-          return;
-        }
-        resolve(ok(stdout));
-      },
-    );
-  });
+const runGit = async (args: readonly string[], cwd: string): Promise<Result<string, string>> => {
+  const result = await ProcessRunner.run("git", args, { cwd, maxOutputBytes: 256 * 1024 * 1024 });
+  if (result.spawnError !== undefined || result.exitCode !== 0) {
+    const detail = result.stderr.trim() || result.spawnError || `exit code ${result.exitCode}`;
+    return err(`git ${args[0]} failed: ${detail}`);
+  }
+  return ok(result.stdout);
+};
 
 export const Git = {
   /**

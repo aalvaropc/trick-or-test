@@ -1,10 +1,10 @@
 #!/usr/bin/env node
-import { execFile } from "node:child_process";
 import { readdir, readFile, realpath } from "node:fs/promises";
 import { dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createFileSystem } from "../adapters/file-system-adapter.js";
 import { Git } from "../adapters/git-adapter.js";
+import { ProcessRunner } from "../adapters/process-runner.js";
 import { removeLeftoverSandboxes, Sandbox } from "../adapters/sandbox.js";
 import { MechanicalRunner } from "../adapters/stryker-adapter.js";
 import { Typecheck } from "../adapters/typecheck-adapter.js";
@@ -191,12 +191,12 @@ const installedVersion = async (name: string, from: string): Promise<string> => 
   }
 };
 
-const gitCommit = (cwd: string): Promise<string> =>
-  new Promise((done) => {
-    execFile("git", ["rev-parse", "HEAD"], { cwd, encoding: "utf8" }, (error, stdout) => {
-      done(error ? "unknown" : String(stdout).trim());
-    });
-  });
+const gitCommit = async (cwd: string): Promise<string> => {
+  const result = await ProcessRunner.run("git", ["rev-parse", "HEAD"], { cwd });
+  return result.spawnError !== undefined || result.exitCode !== 0
+    ? "unknown"
+    : result.stdout.trim();
+};
 
 const defaultMetadata = async (projectRoot: string): Promise<RunMetadata> => ({
   gitCommit: await gitCommit(projectRoot),

@@ -1,4 +1,3 @@
-import { spawn } from "node:child_process";
 import { existsSync } from "node:fs";
 import { mkdtemp, readFile, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
@@ -6,6 +5,7 @@ import { dirname, join, relative, resolve } from "node:path";
 import { z } from "zod";
 import { err, ok, type Result } from "../core/result.js";
 import { extractFailingTests } from "../core/suite-result.js";
+import { ProcessRunner } from "./process-runner.js";
 
 export type SuiteTestStatus = "passed" | "failed" | "skipped";
 
@@ -82,42 +82,24 @@ type Outcome = {
   readonly spawnError?: string;
 };
 
-const runProcess = (
+const runProcess = async (
   vitest: string,
   args: readonly string[],
   cwd: string,
   limitMs: number,
-): Promise<Outcome> =>
-  new Promise((done) => {
-    const child = spawn(process.execPath, [vitest, ...args], {
-      cwd,
-      detached: true,
-      stdio: ["ignore", "ignore", "pipe"],
-    });
-    let stderr = "";
-    let timedOut = false;
-    child.stderr.setEncoding("utf8");
-    child.stderr.on("data", (chunk: string) => {
-      if (stderr.length < 64 * 1024) stderr += chunk;
-    });
-    const timer = setTimeout(() => {
-      timedOut = true;
-      // Vitest runs tests in worker processes: kill the whole process group.
-      try {
-        if (child.pid !== undefined) process.kill(-child.pid, "SIGKILL");
-      } catch {
-        child.kill("SIGKILL");
-      }
-    }, limitMs);
-    child.on("error", (error) => {
-      clearTimeout(timer);
-      done({ timedOut, stderr, spawnError: error.message });
-    });
-    child.on("close", () => {
-      clearTimeout(timer);
-      done({ timedOut, stderr });
-    });
+): Promise<Outcome> => {
+  // Vitest runs tests in worker processes: the runner kills the whole process group.
+  const result = await ProcessRunner.run(process.execPath, [vitest, ...args], {
+    cwd,
+    timeoutMs: limitMs,
+    maxOutputBytes: 64 * 1024,
   });
+  return {
+    timedOut: result.timedOut,
+    stderr: result.stderr,
+    ...(result.spawnError !== undefined ? { spawnError: result.spawnError } : {}),
+  };
+};
 
 export const SuiteRunner = {
   /**

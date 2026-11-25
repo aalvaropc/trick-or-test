@@ -1,4 +1,3 @@
-import { spawn } from "node:child_process";
 import { existsSync } from "node:fs";
 import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
@@ -12,6 +11,7 @@ import {
   shouldRetryWithIgnoreStatic,
 } from "../core/stryker-output.js";
 import { type ChangedRange, formatChangedRange } from "./git-adapter.js";
+import { ProcessRunner } from "./process-runner.js";
 
 export const VITEST_RUNNER_PLUGIN = "@stryker-mutator/vitest-runner";
 export const TRICKORTEST_DIR = ".trickortest";
@@ -338,20 +338,12 @@ const nodeStrykerHost: StrykerHost = {
     await mkdir(dirname(file), { recursive: true });
     await writeFile(file, text, "utf8");
   },
-  exec(command, args, cwd) {
-    return new Promise((done) => {
-      const child = spawn(command, [...args], { cwd, stdio: ["ignore", "pipe", "pipe"] });
-      let output = "";
-      const collect = (chunk: string): void => {
-        if (output.length < 256 * 1024) output += chunk;
-      };
-      child.stdout.setEncoding("utf8").on("data", collect);
-      child.stderr.setEncoding("utf8").on("data", collect);
-      child.on("error", (error) => done({ ok: false, output: error.message }));
-      child.on("close", (code) =>
-        done(code === 0 ? { ok: true } : { ok: false, output, exitCode: code ?? 1 }),
-      );
-    });
+  async exec(command, args, cwd) {
+    const result = await ProcessRunner.run(command, args, { cwd });
+    if (result.spawnError !== undefined) return { ok: false, output: result.spawnError };
+    return result.exitCode === 0
+      ? { ok: true }
+      : { ok: false, output: result.output, exitCode: result.exitCode ?? 1 };
   },
 };
 

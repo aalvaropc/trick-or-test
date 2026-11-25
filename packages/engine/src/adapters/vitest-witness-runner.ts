@@ -1,4 +1,3 @@
-import { spawn } from "node:child_process";
 import { existsSync } from "node:fs";
 import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { dirname, join, resolve, sep } from "node:path";
@@ -6,6 +5,7 @@ import { z } from "zod";
 import { err, ok, type Result } from "../core/result.js";
 import type { MutantId, Witness } from "../core/types.js";
 import type { WitnessOutcome } from "../core/witness-compare.js";
+import { ProcessRunner } from "./process-runner.js";
 
 export type WitnessInput = {
   readonly id: MutantId;
@@ -133,36 +133,22 @@ const findVitest = (start: string): string | undefined => {
 
 type ProcessOutcome = { readonly timedOut: boolean; readonly spawnError?: string };
 
-const runProcess = (
+const runProcess = async (
   vitest: string,
   args: readonly string[],
   cwd: string,
   limitMs: number,
-): Promise<ProcessOutcome> =>
-  new Promise((done) => {
-    const child = spawn(process.execPath, [vitest, ...args], {
-      cwd,
-      detached: true,
-      stdio: "ignore",
-    });
-    let timedOut = false;
-    const timer = setTimeout(() => {
-      timedOut = true;
-      try {
-        if (child.pid !== undefined) process.kill(-child.pid, "SIGKILL");
-      } catch {
-        child.kill("SIGKILL");
-      }
-    }, limitMs);
-    child.on("error", (error) => {
-      clearTimeout(timer);
-      done({ timedOut, spawnError: error.message });
-    });
-    child.on("close", () => {
-      clearTimeout(timer);
-      done({ timedOut });
-    });
+): Promise<ProcessOutcome> => {
+  const result = await ProcessRunner.run(process.execPath, [vitest, ...args], {
+    cwd,
+    timeoutMs: limitMs,
+    maxOutputBytes: 1024,
   });
+  return {
+    timedOut: result.timedOut,
+    ...(result.spawnError !== undefined ? { spawnError: result.spawnError } : {}),
+  };
+};
 
 const firstLine = (text: string): string =>
   text

@@ -1,7 +1,7 @@
-import { execFile } from "node:child_process";
 import { existsSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { err, ok, type Result } from "../core/result.js";
+import { ProcessRunner } from "./process-runner.js";
 
 export type CompileError = {
   readonly kind: "CompileError";
@@ -46,20 +46,13 @@ export const Typecheck = {
         }),
       );
     }
-    return new Promise((done) => {
-      execFile(
-        process.execPath,
-        [tsc, "--noEmit", "--pretty", "false"],
-        { cwd: sandboxRoot, encoding: "utf8", maxBuffer: 64 * 1024 * 1024 },
-        (error, stdout, stderr) => {
-          if (!error) {
-            done(ok(undefined));
-            return;
-          }
-          const output = `${String(stdout)}\n${String(stderr)}`;
-          done(err({ kind: "CompileError", firstError: firstErrorLine(output) }));
-        },
-      );
+    return ProcessRunner.run(process.execPath, [tsc, "--noEmit", "--pretty", "false"], {
+      cwd: sandboxRoot,
+      maxOutputBytes: 64 * 1024 * 1024,
+    }).then((result) => {
+      if (result.spawnError === undefined && result.exitCode === 0) return ok(undefined);
+      const output = result.spawnError ?? `${result.stdout}\n${result.stderr}`;
+      return err({ kind: "CompileError" as const, firstError: firstErrorLine(output) });
     });
   },
 };
