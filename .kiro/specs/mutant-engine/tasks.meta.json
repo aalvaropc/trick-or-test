@@ -7,6 +7,10 @@
     "3.6 Write Property 9: Species is total": {
       "status": "passed",
       "lastRunTimestamp": 1795619109451
+    },
+    "3.8 Write Property 1: Replacement round trip": {
+      "status": "passed",
+      "lastRunTimestamp": 1795619363780
     }
   },
   "executionHistory": {
@@ -145,6 +149,18 @@
         "executionId": "7c0b3cb4-779a-44f1-90a9-ee254764beef",
         "chatSessionId": "sess_737e2931-10d0-4c46-a5bd-de5f8b838acf",
         "timestamp": 1795619315244
+      }
+    ],
+    "3.8 Write Property 1: Replacement round trip": [
+      {
+        "executionId": "fa6c33d6-847f-40c3-b731-88a56e6d8023",
+        "chatSessionId": "sess_e4e25228-3a09-4074-8182-5e3f522c4b25",
+        "timestamp": 1795619336799
+      },
+      {
+        "executionId": "fa6c33d6-847f-40c3-b731-88a56e6d8023",
+        "chatSessionId": "sess_e4e25228-3a09-4074-8182-5e3f522c4b25",
+        "timestamp": 1795619370302
       }
     ]
   }

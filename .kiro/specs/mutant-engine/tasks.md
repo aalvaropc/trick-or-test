@@ -88,7 +88,7 @@ Conventions used in every task:
     - _Requirements: 5.2_
     - _Validation: npx vitest run --project engine packages/engine/test/core/mutation.test.ts passes_
 
-  - [ ] 3.8 Write Property 1: Replacement round trip
+  - [x] 3.8 Write Property 1: Replacement round trip
     - Write `test/core/mutation.round-trip.property.test.ts` with **Property 1: Replacement round trip**. Check that revert after apply gives the original text and that no character outside the span changes.
     - **Validates: Requirements 5.2**
     - _Requirements: 5.2_
