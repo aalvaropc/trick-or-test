@@ -314,7 +314,7 @@ Conventions for every task:
     - _Requirements: 12.9_
     - _Validation: `npm test -w trick-or-test-viewer -- test/bestiary/Creature.test.tsx test/static/boundaries.test.ts` passes_
 
-  - [ ] 8.5 Implement the activatable creature with a state label
+  - [x] 8.5 Implement the activatable creature with a state label
     - Create `src/bestiary/CreatureLink.tsx`: a focusable element that wraps `<Creature>`, shows a visible text label with the state name and a distinct shape per state (not colour alone), and opens `#/mutant/<id>` on click, tap, Enter or Space. It is reachable by Tab in DOM order.
     - Example tests in `test/bestiary/CreatureLink.test.tsx`: click, Enter and Space each change the hash to the mutant route (6.13), visible state label for each of the four states (10.5), tab reaches it (10.6).
     - _Requirements: 6.13, 10.5, 10.6_
