@@ -269,7 +269,7 @@ Conventions used in every task:
     - _Requirements: 6.2, 6.4_
     - _Validation: npx vitest run --project engine packages/engine/test/adapters/test-body-extractor.test.ts passes_
 
-  - [ ] 5.6 Implement `typecheck-adapter.ts` with tests
+  - [x] 5.6 Implement `typecheck-adapter.ts` with tests
     - Implement `Typecheck.run(sandboxRoot)` that runs the TypeScript compiler from the target project with `--noEmit` and returns a `CompileError` result with the first error line.
     - Write `test/adapters/typecheck-adapter.test.ts` on two small fixture projects under `packages/engine/test/fixtures/` (for example `typecheck-ok/` and `typecheck-error/`): one that type-checks and one with a type error on purpose.
     - _Requirements: 5.3_
