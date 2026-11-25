@@ -285,7 +285,7 @@ Conventions for every task:
     - _Requirements: 2.7, 11.3, 11.4, 11.7_
     - _Validation: `npm test -w trick-or-test-viewer -- test/router/routes.test.ts` passes_
 
-- [ ] 7. Checkpoint - pure modules
+- [x] 7. Checkpoint - pure modules
   - Ensure all tests pass, ask the user if questions arise.
   - _Validation: `npm run check` passes_
 
