@@ -207,6 +207,25 @@
         "chatSessionId": "sess_fca390d1-45bf-4af0-8110-6da885caab4d",
         "timestamp": 1795629297847
       }
+    ],
+    "3.9 Implement `loader/fetch-demo-run.ts`": [
+      {
+        "executionId": "5a03bafb-4894-4d5f-ad60-313f5625ae10",
+        "chatSessionId": "sess_1f8b6cdf-22a6-43de-a3a7-7d48f7e0fe28",
+        "timestamp": 1795629330971
+      },
+      {
+        "executionId": "5a03bafb-4894-4d5f-ad60-313f5625ae10",
+        "chatSessionId": "sess_1f8b6cdf-22a6-43de-a3a7-7d48f7e0fe28",
+        "timestamp": 1795629438076
+      }
+    ],
+    "3. Loader: recognise, parse, join, timeline, file reading, demo fetch": [
+      {
+        "executionId": "5a03bafb-4894-4d5f-ad60-313f5625ae10",
+        "chatSessionId": "sess_1f8b6cdf-22a6-43de-a3a7-7d48f7e0fe28",
+        "timestamp": 1795629438231
+      }
     ]
   }
 }
