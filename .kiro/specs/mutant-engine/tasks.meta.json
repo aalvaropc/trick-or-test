@@ -820,6 +820,18 @@
         "chatSessionId": "sess_364d21b1-decd-4415-bba0-372c80f786db",
         "timestamp": 1795629161663
       }
+    ],
+    "3.44 Add a span-end example for the same-change check": [
+      {
+        "executionId": "dbb501d8-f57e-4e8f-9223-3a5fad4233ef",
+        "chatSessionId": "sess_b715d9d8-b9ad-4e8b-a9a7-3f1ac899be22",
+        "timestamp": 1795629205683
+      },
+      {
+        "executionId": "dbb501d8-f57e-4e8f-9223-3a5fad4233ef",
+        "chatSessionId": "sess_b715d9d8-b9ad-4e8b-a9a7-3f1ac899be22",
+        "timestamp": 1795629249745
+      }
     ]
   }
 }

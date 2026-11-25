@@ -310,7 +310,7 @@ Conventions used in every task:
     - _Requirements: 1.3, 1.5_
     - _Validation: npx vitest run --project engine packages/engine/test/core/config.test.ts passes_
 
-  - [ ] 3.44 Add a span-end example for the same-change check
+  - [x] 3.44 Add a span-end example for the same-change check
     - In `test/core/report.test.ts` add an example where a Spec_Mutant and a Mechanical_Mutant have the same file, span start and replacement and differ only in the span end. Both mutants stay in the report. Add the mirror example with an identical span, where only the Spec_Mutant stays.
     - _Requirements: 8.15_
     - _Validation: npx vitest run --project engine packages/engine/test/core/report.test.ts passes_

@@ -126,6 +126,28 @@ describe("buildMutationReport", () => {
     expect(r).toHaveLength(2);
   });
 
+  it("8.15 keeps both mutants when only the span end differs", () => {
+    const sameStart = { start: { line: 1, column: 1 }, end: { line: 1, column: 9 } };
+    const r = all(
+      build(
+        [mech("m1", "Survived", { location: sameStart })],
+        [spec("oath-2.1-s", "Killed", { location: loc(1) })],
+      ),
+    );
+    expect(r.map((m) => m.id).sort()).toEqual(["m1", "oath-2.1-s"]);
+  });
+
+  it("8.15 keeps only the Spec_Mutant when the span is identical", () => {
+    const span = { start: { line: 2, column: 3 }, end: { line: 2, column: 8 } };
+    const r = all(
+      build(
+        [mech("m1", "Survived", { location: span })],
+        [spec("oath-2.1-s", "Killed", { location: span })],
+      ),
+    );
+    expect(r.map((m) => m.id)).toEqual(["oath-2.1-s"]);
+  });
+
   it("8.15 keeps both mutants when the file differs", () => {
     const r = all(
       build([mech("m1", "Survived", { file: "src/b.ts" })], [spec("oath-2.1-s", "Killed")]),
