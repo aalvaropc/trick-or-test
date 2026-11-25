@@ -351,7 +351,7 @@ Conventions for every task:
     - _Requirements: 1.1, 1.2, 1.7, 1.8, 1.9, 1.10, 3.4, 3.5, 12.14_
     - _Validation: `npm test -w trick-or-test-viewer -- test/screens/landing/DropZone.test.tsx` passes_
 
-  - [ ] 9.2 Implement the Landing screen
+  - [x] 9.2 Implement the Landing screen
     - Create `src/screens/Landing.tsx`: the pitch sentence, exactly two demo links with visible text labels ("before the hunt", "after the hunt") that open `#/demo/before` and `#/demo/after`, the statement "files never leave the browser" visible without interaction, the drop zone, and the `FontLicences` block. Load the before Demo_Run once through `fetchDemoRun` and compute the survivor and unguarded-Criteria numbers from it with `computeHeadlineCounts`. With a failed, invalid or slower-than-5-seconds Demo_Run, show the pitch without numbers (never `0`) and keep the drop zone usable. Show demo load errors with `LoadErrorView` and keep both links active.
     - Example tests in `test/screens/Landing.test.tsx` (mocked `fetch` with fixtures): two numbers shown and equal to the fixture's counts (3.1), failure, invalid content and 5-second timeout (fake timers) show no number and no `0` (3.2), statement and drop zone present (3.3, 3.4), exactly two demo links with labels (2.1), fetch error names the file and links stay active (2.3, 2.4, 2.9), licences shown (10.3), source file contains no digit literal in the pitch (3.6).
     - _Requirements: 2.1, 2.3, 2.4, 2.9, 3.1, 3.2, 3.3, 3.4, 3.6, 10.3_
