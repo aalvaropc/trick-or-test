@@ -825,7 +825,7 @@ Conventions used in every task:
     - _Requirements: 10.13_
     - _Validation: npx vitest run --project engine packages/engine/test/adapters/vitest-suite-runner.test.ts passes_
 
-  - [ ] 12.52 Read the written Verdict in the InvalidWitness test
+  - [x] 12.52 Read the written Verdict in the InvalidWitness test
     - Create `test/cli/orchestrate-invalid-witness.test.ts`: run the pipeline with fake adapters that give an InvalidWitness result, take the content that the Reporter writes to the fake file system, parse `verdict.json` with the zod schema and check status, `expected` and `originalOutcome` in the parsed file. Remove the same assertion on an in-memory value from `test/cli/orchestrate-spec-mutants.test.ts` only if it is a duplicate; do not weaken the other assertions.
     - _Requirements: 10.13, 5.6_
     - _Validation: npx vitest run --project engine packages/engine/test/cli/orchestrate-invalid-witness.test.ts passes_

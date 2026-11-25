@@ -1423,6 +1423,13 @@
         "chatSessionId": "sess_681d2923-77a6-410f-8830-5e4ab4684d35",
         "timestamp": 1795647128355
       }
+    ],
+    "12.51 Make the narrow-include suite runner test able to fail": [
+      {
+        "executionId": "83a960db-d75e-4d8d-aae5-e28037cdcb1a",
+        "chatSessionId": "sess_9741d330-2540-4684-baa8-b342c1a61993",
+        "timestamp": 1795647304242
+      }
     ]
   }
 }
