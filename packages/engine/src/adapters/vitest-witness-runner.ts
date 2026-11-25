@@ -1,7 +1,7 @@
 import { spawn } from "node:child_process";
 import { existsSync } from "node:fs";
 import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
-import { dirname, join, resolve } from "node:path";
+import { dirname, join, resolve, sep } from "node:path";
 import { z } from "zod";
 import { err, ok, type Result } from "../core/result.js";
 import type { MutantId, Witness } from "../core/types.js";
@@ -15,6 +15,8 @@ export type WitnessInput = {
 export type WitnessRunOptions = {
   /** Process timeout for the witness run. Defaults to 120 seconds. */
   readonly timeLimitMs?: number;
+  /** Time limit for each witness call. Defaults to 10 seconds. */
+  readonly witnessTimeLimitMs?: number;
 };
 
 /** A witness that produced no outcome file (for example, its import failed). */
@@ -41,6 +43,7 @@ const CONFIG_CANDIDATES = [
 const outcomeSchema = z.discriminatedUnion("kind", [
   z.object({ kind: z.literal("value"), value: z.unknown() }),
   z.object({ kind: z.literal("error"), className: z.string() }),
+  z.object({ kind: z.literal("timeout"), message: z.string() }),
 ]);
 
 const reportSchema = z.object({
@@ -50,7 +53,12 @@ const reportSchema = z.object({
 const lit = (value: unknown): string => JSON.stringify(value) ?? "null";
 
 /** Source of one witness test file. It reports through the outcome file only. */
-const witnessSource = (entry: WitnessInput, importPath: string, outcomePath: string): string =>
+const witnessSource = (
+  entry: WitnessInput,
+  importPath: string,
+  outcomePath: string,
+  witnessLimitMs: number,
+): string =>
   [
     `import { writeFileSync } from "node:fs";`,
     `import { it } from "vitest";`,
@@ -61,17 +69,31 @@ const witnessSource = (entry: WitnessInput, importPath: string, outcomePath: str
     `  if (typeof fn !== "function") {`,
     `    throw new Error(${lit(`export ${entry.witness.export} is not a function`)});`,
     `  }`,
+    `  const limitMs = ${witnessLimitMs};`,
+    `  const timedOut = Symbol("timeout");`,
+    `  let timer: ReturnType<typeof setTimeout> | undefined;`,
+    `  const deadline = new Promise<typeof timedOut>((resolve) => {`,
+    `    timer = setTimeout(() => resolve(timedOut), limitMs);`,
+    `  });`,
     `  let outcome: unknown;`,
     `  try {`,
-    `    const value = await fn(...(${lit(entry.witness.args)} as unknown[]));`,
-    `    outcome = { kind: "value", value: value === undefined ? null : value };`,
+    `    const value = await Promise.race([`,
+    `      Promise.resolve(fn(...(${lit(entry.witness.args)} as unknown[]))),`,
+    `      deadline,`,
+    `    ]);`,
+    `    outcome =`,
+    `      value === timedOut`,
+    `        ? { kind: "timeout", message: "witness did not finish within " + limitMs + " ms" }`,
+    `        : { kind: "value", value: value === undefined ? null : value };`,
     `  } catch (error) {`,
     `    const className =`,
     `      error !== null && typeof error === "object" ? error.constructor.name : typeof error;`,
     `    outcome = { kind: "error", className };`,
+    `  } finally {`,
+    `    clearTimeout(timer);`,
     `  }`,
     `  writeFileSync(${lit(outcomePath)}, JSON.stringify(outcome));`,
-    `});`,
+    `}, ${witnessLimitMs + 10_000});`,
     ``,
   ].join("\n");
 
@@ -184,12 +206,19 @@ const readOutcome = async (
   if (!parsed.success) {
     return err({ kind: "NoOutcome", message: "outcome file does not match the expected shape" });
   }
-  return ok(
-    parsed.data.kind === "value"
-      ? { kind: "value", value: parsed.data.value ?? null }
-      : { kind: "error", className: parsed.data.className },
-  );
+  switch (parsed.data.kind) {
+    case "value":
+      return ok({ kind: "value", value: parsed.data.value ?? null });
+    case "error":
+      return ok({ kind: "error", className: parsed.data.className });
+    case "timeout":
+      return ok({ kind: "timeout", message: parsed.data.message });
+  }
 };
+
+/** Makes a message project-relative: the sandbox root is removed from every path. */
+const relativize = (text: string, root: string): string =>
+  text.split(`${root}${sep}`).join("").split(root).join(".");
 
 export const WitnessRunner = {
   /**
@@ -203,6 +232,7 @@ export const WitnessRunner = {
     options: WitnessRunOptions = {},
   ): Promise<Result<WitnessRunResult, WitnessRunError>> {
     const limitMs = options.timeLimitMs ?? 120_000;
+    const witnessLimitMs = options.witnessTimeLimitMs ?? 10_000;
     const vitest = findVitest(sandboxRoot);
     if (vitest === undefined) {
       return err({
@@ -230,7 +260,7 @@ export const WitnessRunner = {
       const importPath = resolve(sandboxRoot, entry.witness.from);
       await writeFile(
         join(dir, `${entry.id}.witness.test.ts`),
-        witnessSource(entry, importPath, join(dir, `${entry.id}.outcome.json`)),
+        witnessSource(entry, importPath, join(dir, `${entry.id}.outcome.json`), witnessLimitMs),
       );
     }
 
@@ -254,8 +284,10 @@ export const WitnessRunner = {
     const messages = await readFailureMessages(reportFile);
     const results: WitnessRunResult = {};
     for (const entry of witnesses) {
-      const fallback =
-        messages.get(join(dir, `${entry.id}.witness.test.ts`)) ?? "witness produced no outcome";
+      const fallback = relativize(
+        messages.get(join(dir, `${entry.id}.witness.test.ts`)) ?? "witness produced no outcome",
+        sandboxRoot,
+      );
       results[entry.id] = await readOutcome(join(dir, `${entry.id}.outcome.json`), fallback);
     }
     return ok(results);

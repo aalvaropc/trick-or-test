@@ -552,13 +552,13 @@ Conventions used in every task:
     - _Requirements: 5.6, 5.7, 5.12, 5.16_
     - _Validation: npx vitest run --project engine packages/engine/test/core/witness-compare.test.ts passes_
 
-  - [ ] 12.7 Write Property 22: A witness timeout is a difference, not a kill
+  - [x] 12.7 Write Property 22: A witness timeout is a difference, not a kill
     - Write `test/core/witness-compare.property.test.ts` with **Property 22: A witness timeout is a difference, not a kill**. Check `compareOutcomes`, `matchesExpectation` for `timeout` and `no-outcome`, and that no function of the witness stage returns the Mutant_Status Timeout or Killed.
     - **Validates: Requirements 5.6, 5.7, 5.8, 5.11, 5.12, 5.16**
     - _Requirements: 5.6, 5.7, 5.8, 5.11, 5.12, 5.16_
     - _Validation: npx vitest run --project engine packages/engine/test/core/witness-compare.property.test.ts passes_
 
-  - [ ] 12.8 Report witness timeout and missing outcome from the witness runner
+  - [x] 12.8 Report witness timeout and missing outcome from the witness runner
     - In `adapters/vitest-witness-runner.ts` give each witness a time limit and return the outcome `timeout` when it is exceeded and `no-outcome` with a message when the outcome file is missing or unreadable (the file is still the only source of the outcome). Parse every outcome with the zod schema.
     - Add a hanging function to the `witness-runner/` fixture and add examples to `test/adapters/vitest-witness-runner.test.ts`: a witness that hangs gives `timeout`, a witness whose import fails gives `no-outcome` with a message, and the other witnesses of the same run still give their outcomes.
     - _Requirements: 5.4, 5.5, 5.16_

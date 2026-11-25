@@ -51,6 +51,10 @@
     "3.30 Write Property 14: History is append-only": {
       "status": "passed",
       "lastRunTimestamp": 1795622112924
+    },
+    "12.7 Write Property 22: A witness timeout is a difference, not a kill": {
+      "status": "passed",
+      "lastRunTimestamp": 1795638347847
     }
   },
   "executionHistory": {
@@ -1060,6 +1064,25 @@
         "executionId": "6a91e7d1-06ee-4c1f-96fb-19f5f3422fec",
         "chatSessionId": "sess_24a58386-c2de-4870-9577-47893ac0d86c",
         "timestamp": 1795638061273
+      }
+    ],
+    "12.6 Add witness outcomes `timeout` and `no-outcome` to `core/witness-compare.ts`": [
+      {
+        "executionId": "4cede2c1-cde3-4764-9d86-03768947e70e",
+        "chatSessionId": "sess_d10f4285-243b-4f3a-895d-809b1dfd7209",
+        "timestamp": 1795638185539
+      }
+    ],
+    "12.7 Write Property 22: A witness timeout is a difference, not a kill": [
+      {
+        "executionId": "a361147a-92a5-48ae-9512-25728fb6f241",
+        "chatSessionId": "sess_5b58de7a-9c3d-483c-88ac-444346d90202",
+        "timestamp": 1795638308975
+      },
+      {
+        "executionId": "a361147a-92a5-48ae-9512-25728fb6f241",
+        "chatSessionId": "sess_5b58de7a-9c3d-483c-88ac-444346d90202",
+        "timestamp": 1795638388549
       }
     ]
   }
