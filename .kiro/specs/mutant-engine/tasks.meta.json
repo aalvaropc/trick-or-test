@@ -1307,6 +1307,13 @@
         "chatSessionId": "sess_42225387-8b5f-4470-8d50-b210473ac2fc",
         "timestamp": 1795644411014
       }
+    ],
+    "12.35 Run the StrykerJS binary from `node_modules/.bin`": [
+      {
+        "executionId": "1ab1db12-4d45-4b58-89aa-814c785d845f",
+        "chatSessionId": "sess_acf35a2f-678d-4af7-bb97-c4694b8a3724",
+        "timestamp": 1795644568975
+      }
     ]
   }
 }

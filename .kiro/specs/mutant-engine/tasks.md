@@ -728,7 +728,7 @@ Conventions used in every task:
     - _Requirements: 3.18_
     - _Validation: npx vitest run --project engine packages/engine/test/adapters/stryker-adapter.test.ts packages/engine/test/cli/no-npx.test.ts passes_
 
-  - [ ] 12.36 Exclude the output directory by its project-relative path
+  - [x] 12.36 Exclude the output directory by its project-relative path
     - In `core/sandbox-plan.ts` make `planSandboxCopy` skip only the entry whose project-relative path equals `outputDirRelative`.
     - Add examples to `test/core/sandbox-plan.test.ts`: `reports` is skipped when it is the output directory, `src/reports` is copied, an output directory nested like `out/reports` is skipped only at that path.
     - _Requirements: 5.19_

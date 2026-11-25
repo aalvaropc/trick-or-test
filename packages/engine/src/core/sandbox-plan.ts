@@ -86,15 +86,20 @@ const normalizeInside = (p: string): string | undefined => {
 
 /**
  * Decides, for each project entry, whether the Sandbox copies it, skips it or recreates it as a
- * relative link (Requirement 5.18). The output directory rule is added separately.
+ * relative link (Requirement 5.18). The output directory is skipped by its project-relative path
+ * only, with its children (Requirement 5.19); a same-named directory elsewhere is copied.
  */
 export const planSandboxCopy = (
   entries: readonly ProjectEntry[],
-  _outputDirRelative: string,
-): CopyPlan =>
-  entries.map((entry): PlanItem => {
+  outputDirRelative: string,
+): CopyPlan => {
+  const outputDir = normalizeInside(outputDirRelative);
+  return entries.map((entry): PlanItem => {
     const { path } = entry;
     if (path.split("/").some((segment) => FIXED_SKIPS.has(segment))) {
+      return { path, action: "skip" };
+    }
+    if (outputDir !== undefined && (path === outputDir || path.startsWith(`${outputDir}/`))) {
       return { path, action: "skip" };
     }
     if (entry.kind === "symlink") {
@@ -106,3 +111,4 @@ export const planSandboxCopy = (
     }
     return { path, action: "copy" };
   });
+};
