@@ -556,6 +556,13 @@
         "chatSessionId": "sess_a7b3fc67-3449-4b3c-9486-7973182a3a3e",
         "timestamp": 1795649985342
       }
+    ],
+    "8.7 Add the run context and the hash-route hook": [
+      {
+        "executionId": "0e28ae92-df9d-457b-96fa-0f5a53269e11",
+        "chatSessionId": "sess_1dd7970b-1795-448e-8cd1-1b61cd69eea0",
+        "timestamp": 1795650172447
+      }
     ]
   }
 }

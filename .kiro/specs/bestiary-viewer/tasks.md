@@ -332,7 +332,7 @@ Conventions for every task:
     - _Requirements: 1.7, 11.3, 11.8, 11.9_
     - _Validation: `npm test -w trick-or-test-viewer -- test/app/run-context.test.tsx` passes_
 
-  - [ ] 8.8 Implement the screen frame
+  - [x] 8.8 Implement the screen frame
     - Create `src/app/ScreenFrame.tsx`: one `<h1>` per screen, a `document.title` that contains the screen name, and a visible link to `#/plain` on every screen (including the Plain_View itself, which links to the Verdict_Screen when a Run is open). Keep the document title in sync on route changes.
     - Example tests in `test/app/ScreenFrame.test.tsx`: exactly one `h1` (10.11), title contains the screen name for each of the five screens (10.11), the Plain_View link is present (9.1).
     - _Requirements: 9.1, 10.11_
