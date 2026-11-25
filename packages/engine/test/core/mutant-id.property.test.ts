@@ -31,7 +31,9 @@ const spec: fc.Arbitrary<Spec> = fc.record({
 });
 
 const idOf = (entry: Entry): string =>
-  entry.kind === "spec" ? entry.id : computeMutantId(entry.file, entry.original, entry.replacement);
+  entry.kind === "spec"
+    ? entry.id
+    : computeMutantId(entry.file, entry.original, entry.replacement, 0);
 
 const reportOrder = (entries: Entry[]): string[] => entries.map(idOf).sort();
 
@@ -51,10 +53,10 @@ describe("Property 6: Deterministic ids", () => {
       fc.property(mechanical, mechanical, (a, b) => {
         const same =
           a.file === b.file && a.original === b.original && a.replacement === b.replacement;
-        const idA = computeMutantId(a.file, a.original, a.replacement);
-        const idB = computeMutantId(b.file, b.original, b.replacement);
+        const idA = computeMutantId(a.file, a.original, a.replacement, 0);
+        const idB = computeMutantId(b.file, b.original, b.replacement, 0);
         expect(idA === idB).toBe(same);
-        expect(computeMutantId(a.file, a.original, a.replacement)).toBe(idA);
+        expect(computeMutantId(a.file, a.original, a.replacement, 0)).toBe(idA);
       }),
     );
   });
@@ -66,7 +68,7 @@ describe("Property 6: Deterministic ids", () => {
           if (entry.kind === "spec") expect(idOf(entry)).toBe(entry.id);
           else
             expect(idOf(entry)).toBe(
-              computeMutantId(entry.file, entry.original, entry.replacement),
+              computeMutantId(entry.file, entry.original, entry.replacement, 0),
             );
         }
       }),

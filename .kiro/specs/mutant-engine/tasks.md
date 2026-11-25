@@ -237,7 +237,7 @@ Conventions used in every task:
     - _Requirements: 10.1, 10.4_
     - _Validation: npx vitest run --project engine packages/engine/test/report/no-node-imports.test.ts passes_
 
-  - [ ] 3.32 Add the Occurrence_Index to `computeMutantId`
+  - [x] 3.32 Add the Occurrence_Index to `computeMutantId`
     - In `core/mutant-id.ts` change the signature to `computeMutantId(file, original, replacement, occurrenceIndex)` and hash all four values (no timestamp, no line number).
     - Add the pure helper `assignOccurrenceIndexes(mutants)` that groups Mechanical_Mutants by (file, original, replacement), sorts each group by line then column, and returns each mutant's 0-based position in its group. The CLI (task 7.3) calls it.
     - Update `test/core/mutant-id.test.ts`: two identical changes on different lines get different ids, the same change keeps its id when unrelated lines above it move, index 0 versus index 1, and `assignOccurrenceIndexes` on a group of three with unordered input.
