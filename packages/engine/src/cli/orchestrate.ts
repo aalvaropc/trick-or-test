@@ -1,5 +1,4 @@
 import { isAbsolute, relative } from "node:path";
-import type { ChangedRange } from "../adapters/git-adapter.js";
 import type {
   MechanicalMutant,
   MechanicalRunOptions,
@@ -14,6 +13,7 @@ import type {
   WitnessRunOptions,
   WitnessRunResult,
 } from "../adapters/vitest-witness-runner.js";
+import { type ChangedRange, parseChangedRanges } from "../core/changed-ranges.js";
 import { CONFIG_FILE_NAME, resolveConfigPaths, validateConfig } from "../core/config.js";
 import { computeCoverage } from "../core/coverage.js";
 import { computeKillClass } from "../core/kill-classification.js";
@@ -278,11 +278,8 @@ export interface MechanicalAdapters {
     run(options: MechanicalRunOptions): Promise<Result<MechanicalRunResult, string>>;
   };
   readonly git: {
-    changedRanges(
-      ref: string,
-      cwd: string,
-      sourceGlobs: string[],
-    ): Promise<Result<ChangedRange[], string>>;
+    /** Diff text against `ref`, limited to the Target_Project, with project-relative paths. */
+    diff(ref: string, cwd: string): Promise<Result<string, string>>;
   };
 }
 
@@ -377,13 +374,16 @@ export async function runBaselineAndMechanical(
 
   let changedRanges: ChangedRange[] | undefined;
   if (options.since !== undefined) {
-    const ranges = await adapters.git.changedRanges(
-      options.since,
-      options.project,
+    const diff = await adapters.git.diff(options.since, options.project);
+    if (!diff.ok) return err({ kind: "git-error", message: diff.error });
+    changedRanges = parseChangedRanges(
+      diff.value,
       config.sourceGlobs.map((glob) => relativeToRoot(options.project, glob)),
     );
-    if (!ranges.ok) return err({ kind: "git-error", message: ranges.error });
-    changedRanges = ranges.value;
+    // 3.10: no changed line in a source file gives zero mutants and no StrykerJS run.
+    if (changedRanges.length === 0) {
+      return ok({ baselineMs: baseline.value.durationMs, mutants: [], ignoreStaticRetried: false });
+    }
   }
 
   const run = await adapters.mechanical.run({

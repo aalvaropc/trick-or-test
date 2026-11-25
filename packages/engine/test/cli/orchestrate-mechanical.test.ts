@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import type { ChangedRange } from "../../src/adapters/git-adapter.js";
 import {
+  buildStrykerOptions,
   type MechanicalMutant,
   MechanicalRunner,
   type MechanicalRunOptions,
@@ -70,7 +70,7 @@ const fakes = (
   opts: {
     suite?: Result<SuiteResult, { kind: "RunError"; message: string }>;
     mechanical?: Result<MechanicalRunResult, string>;
-    ranges?: ChangedRange[];
+    diff?: string;
   } = {},
 ): Fakes => {
   const calls: Fakes["calls"] = { suite: 0, mechanical: [], since: [] };
@@ -95,15 +95,18 @@ const fakes = (
       },
     },
     git: {
-      async changedRanges(ref) {
+      async diff(ref) {
         calls.since.push(ref);
-        return ok(opts.ranges ?? []);
+        return ok(opts.diff ?? "");
       },
     },
   };
 };
 
 const input = { typescriptVersion: "6.0.2" };
+
+const diffOf = (file: string, ...hunks: string[]): string =>
+  [`diff --git a/${file} b/${file}`, `--- a/${file}`, `+++ b/${file}`, ...hunks].join("\n");
 
 describe("baseline and mechanical stage", () => {
   it("3.15 a failing baseline returns the failing tests and never starts StrykerJS", async () => {
@@ -167,7 +170,7 @@ describe("baseline and mechanical stage", () => {
   it("3.6 --since with no changes starts no mechanical run and yields zero mutants", async () => {
     let started = 0;
     const adapters: MechanicalAdapters = {
-      ...fakes({ ranges: [] }),
+      ...fakes({ diff: "" }),
       mechanical: {
         run: (options) =>
           MechanicalRunner.run(options, {
@@ -194,12 +197,60 @@ describe("baseline and mechanical stage", () => {
   });
 
   it("9.3 --since passes the ranges from git to the mechanical runner", async () => {
-    const ranges = [{ file: "src/price.ts", start: 3, end: 9 }];
-    const adapters = fakes({ ranges });
+    const adapters = fakes({ diff: diffOf("src/price.ts", "@@ -3,2 +3,7 @@") });
 
     await runBaselineAndMechanical({ project: ROOT, since: "HEAD~1" }, project, input, adapters);
 
-    expect(adapters.calls.mechanical[0]?.changedRanges).toEqual(ranges);
+    expect(adapters.calls.mechanical[0]?.changedRanges).toEqual([
+      { file: "src/price.ts", start: 3, end: 9 },
+    ]);
+  });
+
+  it("3.9 the mutate patterns are project-relative, sorted and limited to the changed lines", async () => {
+    const diff = [
+      diffOf("src/b.ts", "@@ -1,0 +5,2 @@"),
+      diffOf("src/a/c.ts", "@@ -7 +7 @@", "@@ -20,3 +21,0 @@"),
+    ].join("\n");
+    const adapters = fakes({ diff });
+
+    await runBaselineAndMechanical({ project: ROOT, since: "main" }, project, input, adapters);
+
+    const options = buildStrykerOptions(adapters.calls.mechanical[0] as MechanicalRunOptions);
+    expect(options.mutate).toEqual(["src/a/c.ts:7-7", "src/b.ts:5-6"]);
+    expect(adapters.calls.since).toEqual(["main"]);
+  });
+
+  it("3.9 a changed file outside the source globs is dropped", async () => {
+    const diff = [
+      diffOf("README.md", "@@ -1 +1 @@"),
+      diffOf("test/price.test.ts", "@@ -4 +4 @@"),
+      diffOf("src/price.ts", "@@ -2 +2 @@"),
+    ].join("\n");
+    const adapters = fakes({ diff });
+
+    await runBaselineAndMechanical({ project: ROOT, since: "main" }, project, input, adapters);
+
+    expect(adapters.calls.mechanical[0]?.changedRanges).toEqual([
+      { file: "src/price.ts", start: 2, end: 2 },
+    ]);
+  });
+
+  it("3.10 no changed line in a source file never calls the mechanical runner", async () => {
+    const diff = [
+      diffOf("README.md", "@@ -1 +1 @@"),
+      diffOf("src/price.ts", "@@ -5,2 +4,0 @@"),
+    ].join("\n");
+    const adapters = fakes({ diff });
+
+    const result = await runBaselineAndMechanical(
+      { project: ROOT, since: "main" },
+      project,
+      input,
+      adapters,
+    );
+
+    expect(adapters.calls.mechanical).toHaveLength(0);
+    expect(result.ok && result.value.mutants).toEqual([]);
   });
 
   it("6.9 a killed mutant whose killing tests are unknown is unattributed", async () => {

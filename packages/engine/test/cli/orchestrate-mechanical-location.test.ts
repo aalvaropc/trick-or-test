@@ -58,7 +58,7 @@ const run = (mutants: MechanicalMutant[]) => {
         }),
     },
     mechanical: { run: async () => ok(result) },
-    git: { changedRanges: async () => ok([]) },
+    git: { diff: async () => ok("") },
   };
   return runBaselineAndMechanical(
     { project: ROOT },

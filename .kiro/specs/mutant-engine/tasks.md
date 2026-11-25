@@ -638,7 +638,7 @@ Conventions used in every task:
     - _Requirements: 3.9, 3.10_
     - _Validation: npx vitest run --project engine packages/engine/test/adapters/git-adapter.test.ts passes_
 
-  - [ ] 12.21 Use `parseChangedRanges` for `--since` in the mechanical stage
+  - [x] 12.21 Use `parseChangedRanges` for `--since` in the mechanical stage
     - In `cli/orchestrate.ts` read the diff through the git adapter, call `parseChangedRanges` with the source globs and build the mutate patterns from the result. No changed line in a source file gives zero Mechanical_Mutants and StrykerJS is not started.
     - Add examples to `test/cli/orchestrate-mechanical.test.ts` with a fake git adapter: patterns are project-relative, a changed file outside the source globs is dropped, no changed line never calls the runner.
     - _Requirements: 3.9, 3.10, 9.3_
