@@ -770,7 +770,7 @@ Conventions used in every task:
     - _Requirements: 3.7, 3.8_
     - _Validation: npx vitest run --project engine packages/engine/test/cli/orchestrate-mechanical.test.ts passes_
 
-  - [ ] 12.43 Remove the StrykerJS temporary directory after every run
+  - [x] 12.43 Remove the StrykerJS temporary directory after every run
     - In `adapters/stryker-adapter.ts` remove the directory `.trickortest/stryker-tmp` in a `finally`, on success and on failure, and also after the retry.
     - Add examples to `test/adapters/stryker-adapter.test.ts` with a fake file system: removed after a clean run, after a failed run, after a retry, and after a thrown error.
     - _Requirements: 3.19_

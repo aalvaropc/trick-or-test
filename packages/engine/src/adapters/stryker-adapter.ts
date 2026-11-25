@@ -1,6 +1,6 @@
 import { spawn } from "node:child_process";
 import { existsSync } from "node:fs";
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { err, ok, type Result } from "../core/result.js";
 import type { StrykerExclusions } from "../core/stryker-exclusions.js";
@@ -210,17 +210,35 @@ export const parseStrykerReport = (
   return ok({ mutants, testFiles });
 };
 
+/** File system boundary used to remove the StrykerJS temporary directory (3.19). */
+export interface StrykerTempFs {
+  removeDir(path: string): Promise<void>;
+}
+
+const nodeStrykerTempFs: StrykerTempFs = {
+  removeDir: (path) => rm(path, { recursive: true, force: true }),
+};
+
 const runOnce = async (
   process: StrykerProcess,
   options: MechanicalRunOptions,
   ignoreStatic: boolean,
+  tempFs: StrykerTempFs,
 ): Promise<Result<Omit<MechanicalRunResult, "ignoreStaticRetried">, string> | ProcessFailure> => {
   const strykerOptions = buildStrykerOptions({ ...options, ignoreStatic });
-  const outcome = await process.run(strykerOptions, options.cwd);
-  if (!outcome.ok) return outcome;
-  const report = await process.readReport(options.cwd, strykerOptions.jsonReporter.fileName);
-  if (!report.ok) return err(report.error);
-  return parseStrykerReport(report.value);
+  try {
+    const outcome = await process.run(strykerOptions, options.cwd);
+    if (!outcome.ok) return outcome;
+    const report = await process.readReport(options.cwd, strykerOptions.jsonReporter.fileName);
+    if (!report.ok) return err(report.error);
+    return parseStrykerReport(report.value);
+  } finally {
+    try {
+      await tempFs.removeDir(join(options.cwd, STRYKER_TEMP_DIR));
+    } catch {
+      // A leftover temporary directory must not hide the result of the run.
+    }
+  }
 };
 
 const isProcessFailure = (value: Awaited<ReturnType<typeof runOnce>>): value is ProcessFailure =>
@@ -350,18 +368,19 @@ export const MechanicalRunner = {
   async run(
     options: MechanicalRunOptions,
     process: StrykerProcess = nodeStrykerProcess,
+    tempFs: StrykerTempFs = nodeStrykerTempFs,
   ): Promise<Result<MechanicalRunResult, string>> {
     if (options.since === true && (options.changedRanges ?? []).length === 0) {
       return ok({ mutants: [], testFiles: {}, ignoreStaticRetried: false });
     }
-    let first = await runOnce(process, options, false);
+    let first = await runOnce(process, options, false, tempFs);
     let retried = false;
     if (
       isProcessFailure(first) &&
       shouldRetryWithIgnoreStatic({ exitCode: first.exitCode ?? 1, output: first.output })
     ) {
       retried = true;
-      first = await runOnce(process, options, true);
+      first = await runOnce(process, options, true, tempFs);
     }
     if (isProcessFailure(first)) return err(extractStrykerError(first.output));
     if (!first.ok) return err(first.error);
