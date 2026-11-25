@@ -296,7 +296,7 @@ Conventions for every task:
     - _Requirements: 10.1, 10.2, 10.4, 10.6, 10.9, 10.12_
     - _Validation: `npm test -w trick-or-test-viewer -- test/styles/tokens.test.ts` passes_
 
-  - [ ] 8.2 Bundle the fonts and show the licences
+  - [x] 8.2 Bundle the fonts and show the licences
     - Create `src/fonts/fonts.ts` with side-effect imports of `@fontsource/im-fell-english/latin-400.css`, `@fontsource/jetbrains-mono/latin-400.css` and `@fontsource/jetbrains-mono/latin-700.css`. Create `src/fonts/licences.ts` importing both `LICENSE` files with `?raw`. Create `src/app/FontLicences.tsx` rendering both texts in a `<details>` with one heading per font. Import `fonts.ts` from `main.tsx`. Add no `<link>` or `@import` to a remote origin and no file under `public/fonts/`.
     - Example tests in `test/fonts/font-licences.test.tsx`: both texts render and contain "SIL Open Font License" (10.3), no `http://` or `https://` font URL in `index.html` or any CSS under `src/` (10.3), no `public/fonts/` directory (12.16).
     - _Requirements: 10.3, 10.12, 12.16_
