@@ -48,7 +48,7 @@ Conventions used in every task:
     - _Requirements: 10.1, 10.3_
     - _Validation: npx vitest run --project engine packages/engine/test/core/result.test.ts passes_
 
-  - [-] 3.2 Implement `config.ts` (Config_Loader validation) with example tests
+  - [x] 3.2 Implement `config.ts` (Config_Loader validation) with example tests
     - Implement `validateConfig(raw)` with a strict zod schema (unknown keys are errors) and defaults, and `resolveConfigPaths(config, projectRoot)` as pure string joins.
     - Return errors as structured `{ filePath, field? }` values that name `trickortest.config.json` and the field.
     - Leave `timeoutMs` unset when absent.
