@@ -235,7 +235,7 @@ Conventions for every task:
     - _Requirements: 5.2, 5.18_
     - _Validation: `npm test -w trick-or-test-viewer -- test/bestiary/creature.determinism.property.test.ts` passes_
 
-  - [ ] 4.16 Write property test for well-formed creatures
+  - [x] 4.16 Write property test for well-formed creatures
     - **Property V2: Well-formed creatures**
     - File: `test/bestiary/creature.well-formed.property.test.ts`. For any species, seed, state and any missing file, line or glyph, `creature()` never throws. The output parses as XML (use jsdom `DOMParser`) with exactly one root `<svg>`, the fixed `viewBox`, a `<title>` child, and finite numeric coordinates inside the viewBox bounds allowing the 8% jitter. For two seeds of the same species and state, the element-kind sequence is identical.
     - _Requirements: 5.4, 5.5, 5.6, 5.15, 5.16, 5.17_
