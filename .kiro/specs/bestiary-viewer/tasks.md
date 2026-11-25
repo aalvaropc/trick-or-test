@@ -180,7 +180,7 @@ Conventions for every task:
     - _Requirements: 4.11, 6.1, 6.8, 6.10, 6.11, 6.12, 6.14, 6.15_
     - _Validation: `npm test -w trick-or-test-viewer -- test/bestiary/counts.test.ts` passes_
 
-  - [ ] 4.7 Implement `bestiary/coverage.ts`
+  - [x] 4.7 Implement `bestiary/coverage.ts`
     - Implement `computeCoverageView(runModel)`: one entry per coverage list entry, with status guarded, unguarded, unattacked or skipped (with skip reason), and an `unrecognised` entry for any other status. An unguarded entry holds its surviving Spec_Mutants. A Criterion with a surviving Spec_Mutant is never guarded. Never throws.
     - Example tests in `test/bestiary/coverage.test.ts`: one test per criterion 6.2 to 6.7, and seal count equals coverage list length (6.16).
     - _Requirements: 6.2, 6.3, 6.4, 6.5, 6.6, 6.7, 6.16_

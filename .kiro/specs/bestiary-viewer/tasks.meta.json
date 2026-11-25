@@ -338,6 +338,18 @@
         "chatSessionId": "sess_53ea0037-77c3-4457-b55a-a97bfe0a53ae",
         "timestamp": 1795630777316
       }
+    ],
+    "4.7 Implement `bestiary/coverage.ts`": [
+      {
+        "executionId": "2e95ed70-49eb-4c99-8e17-98c1a657052c",
+        "chatSessionId": "sess_99bff64c-b428-4226-9085-e75a92afcb5d",
+        "timestamp": 1795630817733
+      },
+      {
+        "executionId": "2e95ed70-49eb-4c99-8e17-98c1a657052c",
+        "chatSessionId": "sess_99bff64c-b428-4226-9085-e75a92afcb5d",
+        "timestamp": 1795630875127
+      }
     ]
   }
 }
