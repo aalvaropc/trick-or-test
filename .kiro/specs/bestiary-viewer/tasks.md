@@ -150,7 +150,7 @@ Conventions for every task:
     - _Requirements: 4.1, 4.2, 4.3_
     - _Validation: `npm test -w trick-or-test-viewer -- test/bestiary/species.test.ts` passes_
 
-  - [ ] 4.2 Write property test for species being total
+  - [x] 4.2 Write property test for species being total
     - **Property V4: Species is total**
     - File: `test/bestiary/species.property.test.ts`. For any string, `speciesOf` returns one of the seven Species and never throws. Every mutator name in the `bestiary.md` table returns its row's species. When `isSpecMutant` is true the result is Oathbreaker.
     - _Requirements: 4.1, 4.2, 4.3_

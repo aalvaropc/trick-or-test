@@ -238,6 +238,18 @@
         "chatSessionId": "sess_49b7e9e7-9fbc-4a9c-89a0-a27816718a22",
         "timestamp": 1795629555482
       }
+    ],
+    "4.2 Write property test for species being total": [
+      {
+        "executionId": "a49224af-b617-46a0-bc4b-3b21ba56f617",
+        "chatSessionId": "sess_a93adfd6-1cef-4c0b-ad91-7d5bbdc2843a",
+        "timestamp": 1795629601859
+      },
+      {
+        "executionId": "a49224af-b617-46a0-bc4b-3b21ba56f617",
+        "chatSessionId": "sess_a93adfd6-1cef-4c0b-ad91-7d5bbdc2843a",
+        "timestamp": 1795629646946
+      }
     ]
   }
 }
