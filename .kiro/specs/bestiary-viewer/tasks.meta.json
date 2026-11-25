@@ -226,6 +226,18 @@
         "chatSessionId": "sess_1f8b6cdf-22a6-43de-a3a7-7d48f7e0fe28",
         "timestamp": 1795629438231
       }
+    ],
+    "4.1 Implement `bestiary/species.ts`": [
+      {
+        "executionId": "7f3f1360-0a6f-4e4e-bb83-1bf901bc97dd",
+        "chatSessionId": "sess_49b7e9e7-9fbc-4a9c-89a0-a27816718a22",
+        "timestamp": 1795629469533
+      },
+      {
+        "executionId": "7f3f1360-0a6f-4e4e-bb83-1bf901bc97dd",
+        "chatSessionId": "sess_49b7e9e7-9fbc-4a9c-89a0-a27816718a22",
+        "timestamp": 1795629555482
+      }
     ]
   }
 }

@@ -144,7 +144,7 @@ Conventions for every task:
     - _Validation: `npm test -w trick-or-test-viewer -- test/loader/fetch-demo-run.test.ts` passes_
 
 - [ ] 4. Bestiary: species, state, run model, counts, coverage, creature generator
-  - [ ] 4.1 Implement `bestiary/species.ts`
+  - [x] 4.1 Implement `bestiary/species.ts`
     - Implement `speciesOf(mutatorName, isSpecMutant)` with one mapping table that has the same mutator-name entries as the table in `.kiro/steering/bestiary.md`. A Spec_Mutant is always Oathbreaker. An unknown name is Unclassified and never throws.
     - Example tests in `test/bestiary/species.test.ts`: the table parsed from `bestiary.md` matches the code table row for row (4.1), Spec_Mutant gives Oathbreaker (4.2), unknown name gives Unclassified (4.3).
     - _Requirements: 4.1, 4.2, 4.3_
