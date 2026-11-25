@@ -411,13 +411,13 @@ Conventions used in every task:
     - _Requirements: 9.3, 9.4, 9.5, 9.8, 9.10_
     - _Validation: npx vitest run --project engine packages/engine/test/cli/args.test.ts passes_
 
-  - [-] 7.2 Implement the load and validate stage of the orchestration with tests
+  - [ ] 7.2 Implement the load and validate stage of the orchestration with tests
     - In `orchestrate.ts` implement the first stage: read and validate the config, find the spec directories that have a `requirements.md` (or the one given by `--spec`), parse the requirements, load the mutants and the Skip_File, and run the cross-file rules. Any error returns before the baseline and before StrykerJS. Adapters come in through interfaces.
     - Write `test/cli/orchestrate-load.test.ts` with fake adapters: a valid project, an invalid config, a parse error, a malformed mutant file (the other files still load and the run ends before the baseline), and a spec directory without `requirements.md` that is skipped.
     - _Requirements: 4.4, 9.1, 9.5, 10.2, 10.3_
     - _Validation: npx vitest run --project engine packages/engine/test/cli/orchestrate-load.test.ts passes_
 
-  - [ ] 7.3 Implement the baseline and mechanical stage of the orchestration with tests
+  - [x] 7.3 Implement the baseline and mechanical stage of the orchestration with tests
     - In `orchestrate.ts` add the baseline run (record its duration) and the mechanical run through `MechanicalRunner`, with `--since` ranges from `Git`. A failing baseline returns the failing tests and a StrykerJS error returns its first error line. Neither writes a Verdict_File. Compute the id of each mechanical mutant here with `assignOccurrenceIndexes` and `computeMutantId(file, original, replacement, occurrenceIndex)` from task 3.32. Classify the species and the kill class of each mechanical mutant from `killedBy`, the extracted test bodies and the property-test globs.
     - Write `test/cli/orchestrate-mechanical.test.ts` with fake adapters: baseline failure, StrykerJS error, a normal run with killed and survived mutants, `--since` with no changes (zero mechanical mutants), a killed mutant whose killing tests are unknown (`unattributed`), and the same mechanical mutant getting the same hash id on two runs.
     - _Requirements: 3.6, 3.15, 6.1, 6.9, 9.1, 9.3_

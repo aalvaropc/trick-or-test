@@ -1,4 +1,14 @@
+import type { ChangedRange } from "../adapters/git-adapter.js";
+import type {
+  MechanicalMutant,
+  MechanicalRunOptions,
+  MechanicalRunResult,
+} from "../adapters/stryker-adapter.js";
+import { extractTestBody } from "../adapters/test-body-extractor.js";
+import type { SuiteError, SuiteResult, SuiteRunOptions } from "../adapters/vitest-suite-runner.js";
 import { CONFIG_FILE_NAME, resolveConfigPaths, validateConfig } from "../core/config.js";
+import { computeKillClass } from "../core/kill-classification.js";
+import { assignOccurrenceIndexes, computeMutantId } from "../core/mutant-id.js";
 import { parseRequirements } from "../core/requirements.js";
 import { err, ok, type Result } from "../core/result.js";
 import {
@@ -8,7 +18,9 @@ import {
   loadSpecMutants,
   validateSkipFile,
 } from "../core/spec-mutants.js";
-import type { Criterion, EngineConfig } from "../core/types.js";
+import { classifySpecies } from "../core/species.js";
+import { classifyTest, type TestKind } from "../core/test-classification.js";
+import type { Criterion, EngineConfig, MutantResult, MutantStatus, TestId } from "../core/types.js";
 import type { CliOptions } from "./args.js";
 
 /** The slice of the file system adapter the load stage needs. */
@@ -197,4 +209,211 @@ async function loadSpec(
     mutants: loadedMutants.mutants,
     skipEntries,
   });
+}
+
+/** The slice of the adapters the baseline and mechanical stage needs. */
+export interface MechanicalAdapters {
+  readonly fs: Pick<LoadFileSystem, "readFile">;
+  readonly suite: {
+    run(root: string, options: SuiteRunOptions): Promise<Result<SuiteResult, SuiteError>>;
+  };
+  readonly mechanical: {
+    run(options: MechanicalRunOptions): Promise<Result<MechanicalRunResult, string>>;
+  };
+  readonly git: {
+    changedRanges(ref: string, cwd: string): Promise<Result<ChangedRange[], string>>;
+  };
+}
+
+/** Facts about the target project that the CLI gathers before this stage. */
+export interface MechanicalStageInput {
+  /** Resolved TypeScript version of the Target_Project. */
+  readonly typescriptVersion: string;
+  readonly nonBuildDirs?: readonly string[];
+}
+
+/** Why the stage stopped. None of these writes a Verdict_File (Requirements 3.6, 3.15). */
+export type MechanicalStageError =
+  | { readonly kind: "baseline-failed"; readonly failingTests: readonly string[] }
+  | { readonly kind: "baseline-error"; readonly message: string }
+  | { readonly kind: "git-error"; readonly message: string }
+  | { readonly kind: "stryker-error"; readonly message: string };
+
+/** A Mechanical_Mutant with its engine result and the data the report needs. */
+export interface MechanicalOutcome {
+  readonly result: MutantResult;
+  readonly file: string;
+  readonly mutatorName: string;
+  readonly original: string;
+  readonly replacement: string;
+  readonly startLine: number;
+  readonly endLine: number;
+}
+
+export interface MechanicalStageResult {
+  readonly baselineMs: number;
+  readonly mutants: readonly MechanicalOutcome[];
+  readonly ignoreStaticRetried: boolean;
+}
+
+/** Upper bound for the baseline run, which has no baseline duration to derive a limit from. */
+export const BASELINE_TIME_LIMIT_MS = 10 * 60 * 1000;
+
+const testIdOf = (file: string, name: string): TestId => `${file}::${name}` as TestId;
+
+/** StrykerJS status to engine status. Ignored and pending mutants never ran and are dropped. */
+const toEngineStatus = (status: string): MutantStatus | undefined => {
+  switch (status) {
+    case "Killed":
+    case "RuntimeError":
+      return "Killed";
+    case "Survived":
+    case "NoCoverage":
+      return "Survived";
+    case "Timeout":
+      return "Timeout";
+    case "CompileError":
+      return "CompileError";
+    default:
+      return undefined;
+  }
+};
+
+/**
+ * Second stage of the orchestration: the baseline run, then the mechanical run through
+ * StrykerJS. A failing baseline or a StrykerJS error returns before anything is written
+ * (Requirements 3.6, 3.15). Mechanical ids are content hashes with an Occurrence_Index
+ * (Requirement 8.7); the species and kill class come from StrykerJS data (Requirements
+ * 3.11, 6.1-6.9).
+ */
+export async function runBaselineAndMechanical(
+  options: Pick<CliOptions, "project" | "since">,
+  project: LoadedProject,
+  input: MechanicalStageInput,
+  adapters: MechanicalAdapters,
+): Promise<Result<MechanicalStageResult, MechanicalStageError>> {
+  const { config } = project;
+
+  const baseline = await adapters.suite.run(options.project, {
+    timeLimitMs: config.timeoutMs ?? BASELINE_TIME_LIMIT_MS,
+  });
+  if (!baseline.ok) {
+    const message =
+      baseline.error.kind === "Timeout"
+        ? `baseline run exceeded ${baseline.error.limitMs} ms`
+        : baseline.error.message;
+    return err({ kind: "baseline-error", message });
+  }
+  const failingTests = baseline.value.files.flatMap((file) =>
+    file.tests.filter((t) => t.status === "failed").map((t) => testIdOf(file.path, t.name)),
+  );
+  if (failingTests.length > 0) return err({ kind: "baseline-failed", failingTests });
+
+  let changedRanges: ChangedRange[] | undefined;
+  if (options.since !== undefined) {
+    const ranges = await adapters.git.changedRanges(options.since, options.project);
+    if (!ranges.ok) return err({ kind: "git-error", message: ranges.error });
+    changedRanges = ranges.value;
+  }
+
+  const run = await adapters.mechanical.run({
+    typescriptVersion: input.typescriptVersion,
+    cwd: options.project,
+    ...(input.nonBuildDirs === undefined ? {} : { nonBuildDirs: input.nonBuildDirs }),
+    ...(changedRanges === undefined ? {} : { changedRanges, since: true }),
+  });
+  if (!run.ok) return err({ kind: "stryker-error", message: run.error });
+
+  const mutants = await toOutcomes(run.value, options.project, config, adapters.fs);
+  return ok({
+    baselineMs: baseline.value.durationMs,
+    mutants,
+    ignoreStaticRetried: run.value.ignoreStaticRetried,
+  });
+}
+
+const toOutcome = (mutant: MechanicalMutant, result: MutantResult): MechanicalOutcome => ({
+  result,
+  file: mutant.file,
+  mutatorName: mutant.mutatorName,
+  original: mutant.original,
+  replacement: mutant.replacement,
+  startLine: mutant.startLine,
+  endLine: mutant.endLine,
+});
+
+async function toOutcomes(
+  run: MechanicalRunResult,
+  projectRoot: string,
+  config: EngineConfig,
+  fs: Pick<LoadFileSystem, "readFile">,
+): Promise<MechanicalOutcome[]> {
+  const ran = run.mutants.flatMap((mutant) => {
+    const status = toEngineStatus(mutant.status);
+    return status === undefined ? [] : [{ mutant, status }];
+  });
+  const indexes = assignOccurrenceIndexes(
+    ran.map(({ mutant }) => ({
+      file: mutant.file,
+      original: mutant.original,
+      replacement: mutant.replacement,
+      line: mutant.startLine,
+      column: 0,
+    })),
+  );
+
+  // StrykerJS test id -> its file, name and start line.
+  const tests = new Map<string, { file: string; name: string; startLine?: number }>();
+  for (const [file, list] of Object.entries(run.testFiles)) {
+    for (const t of list) {
+      tests.set(t.id, {
+        file,
+        name: t.name,
+        ...(t.startLine === undefined ? {} : { startLine: t.startLine }),
+      });
+    }
+  }
+  const fileTexts = new Map<string, string>();
+  const textOf = async (file: string): Promise<string> => {
+    const cached = fileTexts.get(file);
+    if (cached !== undefined) return cached;
+    const read = await fs.readFile(joinPath(projectRoot, file));
+    const text = read.ok ? read.value : "";
+    fileTexts.set(file, text);
+    return text;
+  };
+
+  const outcomes: MechanicalOutcome[] = [];
+  for (const [i, { mutant, status }] of ran.entries()) {
+    const id = computeMutantId(
+      mutant.file,
+      mutant.original,
+      mutant.replacement,
+      indexes[i] as number,
+    );
+    const result: MutantResult = {
+      id,
+      species: classifySpecies(mutant.mutatorName, mutant.replacement),
+      status,
+      killingTests: [],
+    };
+    if (status === "Killed") {
+      const kinds: { kind: TestKind }[] = [];
+      for (const killer of mutant.killedBy) {
+        const test = tests.get(killer);
+        if (test === undefined) continue;
+        result.killingTests.push(testIdOf(test.file, test.name));
+        const body =
+          test.startLine === undefined
+            ? ""
+            : extractTestBody(await textOf(test.file), test.startLine);
+        kinds.push({
+          kind: classifyTest({ filePath: test.file, bodySource: body }, config.propertyTestGlobs),
+        });
+      }
+      result.killClass = computeKillClass(kinds);
+    }
+    outcomes.push(toOutcome(mutant, result));
+  }
+  return outcomes;
 }
