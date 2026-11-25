@@ -1388,6 +1388,20 @@
         "chatSessionId": "sess_2c1d0251-67de-4344-b2ae-55595121bd1d",
         "timestamp": 1795646124064
       }
+    ],
+    "12.46 Select the one spec to attack in `core/select-spec.ts` and wire the load stage and the CLI": [
+      {
+        "executionId": "5699e9a0-b235-4bec-b085-aacd0a55da98",
+        "chatSessionId": "sess_787f3182-7831-4968-8402-a9d2f0199ea0",
+        "timestamp": 1795646274034
+      }
+    ],
+    "12.47 Track and kill child process groups in the process runner": [
+      {
+        "executionId": "bc2c30ac-fefe-4661-a4a9-dad66c8a6d23",
+        "chatSessionId": "sess_eac9c614-c2c2-47c9-89e5-914fd4d3fae4",
+        "timestamp": 1795646528645
+      }
     ]
   }
 }

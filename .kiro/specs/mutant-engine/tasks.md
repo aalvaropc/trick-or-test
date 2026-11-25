@@ -802,7 +802,7 @@ Conventions used in every task:
     - _Requirements: 9.15_
     - _Validation: npx vitest run --project engine packages/engine/test/adapters/process-runner.test.ts passes_
 
-  - [ ] 12.48 Add the shutdown coordinator in `cli/shutdown.ts`
+  - [x] 12.48 Add the shutdown coordinator in `cli/shutdown.ts`
     - Create `cli/shutdown.ts` with `installShutdown({ process, runner, removeLeftoverSandboxes, projectRoot })`: on SIGINT or SIGTERM call `runner.killAll`, remove the Sandboxes, then exit with code 130 or 143. A second signal during cleanup does not start a second cleanup. The process object is injected.
     - Write `test/cli/shutdown.test.ts` with fakes: SIGINT gives 130, SIGTERM gives 143, the order is kill children, remove Sandboxes, exit, a second signal is ignored, a cleanup error still exits with the signal code.
     - _Requirements: 9.15_
