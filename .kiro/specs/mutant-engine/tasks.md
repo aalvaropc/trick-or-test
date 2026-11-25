@@ -626,7 +626,7 @@ Conventions used in every task:
     - _Requirements: 3.9, 3.10_
     - _Validation: npx vitest run --project engine packages/engine/test/core/changed-ranges.test.ts passes_
 
-  - [ ] 12.19 Write Property 25: Changed ranges are relative and match the source globs
+  - [x] 12.19 Write Property 25: Changed ranges are relative and match the source globs
     - Write `test/core/changed-ranges.property.test.ts` with **Property 25: Changed ranges are relative and match the source globs**. Generators produce diffs with files outside the source globs and files outside the project directory.
     - **Validates: Requirements 3.9, 3.10**
     - _Requirements: 3.9, 3.10_
