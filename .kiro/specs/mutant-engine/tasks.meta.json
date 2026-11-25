@@ -615,6 +615,25 @@
         "chatSessionId": "sess_44279dd9-35be-4eee-b459-477c11a77359",
         "timestamp": 1795625777954
       }
+    ],
+    "5.10 Implement the Stryker run, retry and result parsing in `stryker-adapter.ts` with tests": [
+      {
+        "executionId": "a6b14e11-0080-46b8-be69-038c1be2966d",
+        "chatSessionId": "sess_e03366cb-e77c-4336-ade1-2c7460fae163",
+        "timestamp": 1795625812289
+      },
+      {
+        "executionId": "d3bae7cf-d7a5-4ecf-a999-b8d0ccc8f344",
+        "chatSessionId": "sess_e03366cb-e77c-4336-ade1-2c7460fae163",
+        "timestamp": 1795626187202
+      }
+    ],
+    "5. Implement the adapters (`packages/engine/src/adapters/`)": [
+      {
+        "executionId": "d3bae7cf-d7a5-4ecf-a999-b8d0ccc8f344",
+        "chatSessionId": "sess_e03366cb-e77c-4336-ade1-2c7460fae163",
+        "timestamp": 1795626187303
+      }
     ]
   }
 }

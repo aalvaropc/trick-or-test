@@ -238,7 +238,7 @@ Conventions used in every task:
   - Run `npm run check` from the repository root. Ensure all tests pass, ask the user if questions arise.
   - _Validation: npm run check passes_
 
-- [ ] 5. Implement the adapters (`packages/engine/src/adapters/`)
+- [x] 5. Implement the adapters (`packages/engine/src/adapters/`)
   - [x] 5.1 Implement `file-system-adapter.ts` with tests
     - Define the `FileSystem` interface (`readFile`, `writeFile`, `copyDir`, `removeDir`, `exists`) and implement it over `node:fs/promises`. Writes return a `Result` error that names the path when the path cannot be written.
     - Write `test/adapters/file-system-adapter.test.ts` on a temp directory: read, write, copy with an exclude list, remove, exists, and a write into a read-only directory that returns the error with the path.
@@ -293,7 +293,7 @@ Conventions used in every task:
     - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.7, 3.8, 3.9, 3.14_
     - _Validation: npx vitest run --project engine packages/engine/test/adapters/stryker-options.test.ts passes_
 
-  - [ ] 5.10 Implement the Stryker run, retry and result parsing in `stryker-adapter.ts` with tests
+  - [x] 5.10 Implement the Stryker run, retry and result parsing in `stryker-adapter.ts` with tests
     - Implement `MechanicalRunner.run(options)`: return zero mutants without starting StrykerJS when `--since` finds no changed line; run StrykerJS; retry exactly once with `ignoreStatic` when the initial test run fails because of static mutants and flag the retry; return the first error line as a `Result` error for any other StrykerJS failure; parse the JSON report with a zod schema into mutants with `killedBy` and `testFiles`.
     - Write `test/adapters/stryker-adapter.test.ts` with a fake process runner: a clean run, the static-mutant failure followed by a successful retry, a retry that fails again (no second retry), another error returning the first error line, and no changed lines (the runner is never called).
     - _Requirements: 3.5, 3.6, 3.10, 6.1_
