@@ -680,7 +680,7 @@ Conventions used in every task:
     - _Requirements: 8.17_
     - _Validation: npx vitest run --project engine packages/engine/test/core/report.paths.property.test.ts passes_
 
-  - [ ] 12.28 Scrub run-time paths in the orchestration and extend the path test
+  - [x] 12.28 Scrub run-time paths in the orchestration and extend the path test
     - In `cli/orchestrate.ts` pass `projectRoot` to every builder and make the NotApplicable read errors and the NoOutcome messages enter the report input as they are (the core scrubs them).
     - Extend `test/cli/orchestrate-report-paths.test.ts`: add one NotApplicable mutant (a read error that holds an absolute path) and one NoOutcome mutant (a message that holds an absolute path) to the existing no-absolute-path run, and check that no string in the written report, verdict and history line contains an absolute path.
     - _Requirements: 8.17_
