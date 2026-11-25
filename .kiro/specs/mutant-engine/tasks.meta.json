@@ -1150,6 +1150,23 @@
         "chatSessionId": "sess_906024c4-860f-4f27-aae9-c79ec541bf91",
         "timestamp": 1795640316576
       }
+    ],
+    "12.16 Write Property 23: StrykerJS error selection": [
+      {
+        "executionId": "4e32576e-32be-4a17-87c7-75f452b27b3c",
+        "chatSessionId": "sess_eb06081a-dee6-4af3-9fd6-b2d9736d50cf",
+        "timestamp": 1795640709000
+      },
+      {
+        "executionId": "4e32576e-32be-4a17-87c7-75f452b27b3c",
+        "chatSessionId": "sess_eb06081a-dee6-4af3-9fd6-b2d9736d50cf",
+        "timestamp": 1795640826956
+      },
+      {
+        "executionId": "56fb632b-cc3a-42d6-842a-2b1750886e11",
+        "chatSessionId": "sess_eb06081a-dee6-4af3-9fd6-b2d9736d50cf",
+        "timestamp": 1795640955555
+      }
     ]
   }
 }

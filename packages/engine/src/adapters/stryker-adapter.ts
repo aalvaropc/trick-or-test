@@ -3,9 +3,11 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { err, ok, type Result } from "../core/result.js";
 import {
+  extractStrykerError,
   type Location,
   type Position,
   parseStrykerReport as parseStrykerOutput,
+  shouldRetryWithIgnoreStatic,
 } from "../core/stryker-output.js";
 import { type ChangedRange, formatChangedRange } from "./git-adapter.js";
 
@@ -128,7 +130,12 @@ export type MechanicalRunOptions = Omit<StrykerOptionsInput, "ignoreStatic"> & {
   readonly since?: boolean;
 };
 
-type ProcessFailure = { readonly ok: false; readonly output: string };
+type ProcessFailure = {
+  readonly ok: false;
+  readonly output: string;
+  /** Exit code of the failed process. A failure without a code counts as exit code 1. */
+  readonly exitCode?: number;
+};
 export type StrykerProcessResult = { readonly ok: true } | ProcessFailure;
 
 /** Process boundary: starting StrykerJS and reading its JSON report. */
@@ -185,14 +192,6 @@ export const parseStrykerReport = (
   return ok({ mutants, testFiles });
 };
 
-const STATIC_FAILURE = /static mutant/i;
-
-const firstErrorLine = (output: string): string =>
-  output
-    .split("\n")
-    .map((line) => line.trim())
-    .find((line) => line !== "") ?? "StrykerJS failed";
-
 const runOnce = async (
   process: StrykerProcess,
   options: MechanicalRunOptions,
@@ -230,7 +229,9 @@ export const nodeStrykerProcess: StrykerProcess = {
       child.stdout.setEncoding("utf8").on("data", collect);
       child.stderr.setEncoding("utf8").on("data", collect);
       child.on("error", (error) => done({ ok: false, output: error.message }));
-      child.on("close", (code) => done(code === 0 ? { ok: true } : { ok: false, output }));
+      child.on("close", (code) =>
+        done(code === 0 ? { ok: true } : { ok: false, output, exitCode: code ?? 1 }),
+      );
     });
   },
   async readReport(cwd, reportFile) {
@@ -245,8 +246,8 @@ export const nodeStrykerProcess: StrykerProcess = {
 export const MechanicalRunner = {
   /**
    * Runs StrykerJS. Starts nothing when `--since` selects no changed line. When the
-   * initial test run fails because of static mutants, runs once more with `ignoreStatic`.
-   * Any other failure, including a failing retry, returns the first error line.
+   * initial test run (dry run) fails, runs once more with `ignoreStatic`. Any other
+   * failure, including a failing retry, returns the first ERROR-level line.
    */
   async run(
     options: MechanicalRunOptions,
@@ -257,11 +258,14 @@ export const MechanicalRunner = {
     }
     let first = await runOnce(process, options, false);
     let retried = false;
-    if (isProcessFailure(first) && STATIC_FAILURE.test(first.output)) {
+    if (
+      isProcessFailure(first) &&
+      shouldRetryWithIgnoreStatic({ exitCode: first.exitCode ?? 1, output: first.output })
+    ) {
       retried = true;
       first = await runOnce(process, options, true);
     }
-    if (isProcessFailure(first)) return err(firstErrorLine(first.output));
+    if (isProcessFailure(first)) return err(extractStrykerError(first.output));
     if (!first.ok) return err(first.error);
     return ok({ ...first.value, ignoreStaticRetried: retried });
   },

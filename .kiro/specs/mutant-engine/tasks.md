@@ -614,7 +614,7 @@ Conventions used in every task:
     - _Requirements: 3.5, 3.6, 3.17_
     - _Validation: npx vitest run --project engine packages/engine/test/core/stryker-output.property.test.ts passes_
 
-  - [ ] 12.17 Use the error line and the retry rule in `MechanicalRunner`
+  - [x] 12.17 Use the error line and the retry rule in `MechanicalRunner`
     - In `adapters/stryker-adapter.ts` return `extractStrykerError` output for a failed run, retry exactly once with `ignoreStatic` only when `shouldRetryWithIgnoreStatic` is true, never retry after a successful dry run, and set the retry flag only when a retry happened.
     - Add examples to `test/adapters/stryker-adapter.test.ts` with the captured outputs as the fake process output: each failed dry run capture is retried once and flagged, a second failure is not retried, a failure after a successful dry run is not retried and not flagged, and the error line is the first ERROR-level line.
     - _Requirements: 3.5, 3.6, 3.17, 10.12_
