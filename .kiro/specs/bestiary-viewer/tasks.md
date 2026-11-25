@@ -186,7 +186,7 @@ Conventions for every task:
     - _Requirements: 6.2, 6.3, 6.4, 6.5, 6.6, 6.7, 6.16_
     - _Validation: `npm test -w trick-or-test-viewer -- test/bestiary/coverage.test.ts` passes_
 
-  - [ ] 4.8 Write property test for no false seal
+  - [x] 4.8 Write property test for no false seal
     - **Property V7: No false seal**
     - File: `test/bestiary/coverage.no-false-seal.property.test.ts`. For any Verdict_File whose coverage list has a Criterion with at least one `Survived` Spec_Mutant, `computeCoverageView` never reports that Criterion as `guarded`.
     - _Requirements: 6.3, 6.4_
