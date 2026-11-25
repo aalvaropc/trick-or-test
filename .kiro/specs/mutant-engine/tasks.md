@@ -257,7 +257,7 @@ Conventions used in every task:
     - _Requirements: 3.14, 5.1, 5.13, 10.10_
     - _Validation: npx vitest run --project engine packages/engine/test/adapters/sandbox.property.test.ts passes_
 
-  - [ ] 5.4 Implement `git-adapter.ts` with tests
+  - [x] 5.4 Implement `git-adapter.ts` with tests
     - Implement `Git.changedRanges(ref)` that runs `git diff --unified=0 <ref>` and parses hunks into `file:start-end` ranges, plus a `Git.currentCommit()` for the run metadata. Parse the output with a zod-validated structure.
     - Write `test/adapters/git-adapter.test.ts` on a temp git repository: one changed range, several ranges in one file, a deleted-only hunk, no change, an unknown ref (returns an error).
     - _Requirements: 3.9, 3.10_
