@@ -814,7 +814,7 @@ Conventions used in every task:
     - _Requirements: 9.15_
     - _Validation: npx vitest run --project engine packages/engine/test/cli/main.test.ts passes_
 
-  - [ ] 12.50 Exclude `.trickortest/**` from every suite run
+  - [x] 12.50 Exclude `.trickortest/**` from every suite run
     - In `adapters/vitest-suite-runner.ts` pass an exclusion of `.trickortest/**` (and the generated Witness files) to every run of the suite, so the Baseline_Run and the Sandbox runs never run the tests inside a StrykerJS sandbox or a Witness file.
     - Add examples to `test/adapters/vitest-suite-runner.test.ts` with a fixture that holds a failing test file under `.trickortest/stryker-tmp/`: the run passes and does not list that file.
     - _Requirements: 3.20, 5.21_

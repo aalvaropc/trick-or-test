@@ -55,6 +55,8 @@ const reportSchema = z.object({
   ),
 });
 
+const SUITE_EXCLUDES: readonly string[] = [".trickortest/**", "**/*.witness.test.ts"];
+
 const toStatus = (raw: string): SuiteTestStatus =>
   raw === "passed" ? "passed" : raw === "failed" ? "failed" : "skipped";
 
@@ -120,6 +122,9 @@ export const SuiteRunner = {
         "--reporter=json",
         `--outputFile=${outFile}`,
         "--includeTaskLocation",
+        // Never run a StrykerJS sandbox, a copied Sandbox or a generated Witness file
+        // (Requirements 3.20, 5.21). Added to the config's own excludes.
+        ...SUITE_EXCLUDES.flatMap((pattern) => ["--exclude", pattern]),
         ...(options.testFiles ?? []),
       ];
       const started = performance.now();

@@ -1,8 +1,25 @@
+import { mkdir, rm, writeFile } from "node:fs/promises";
 import { join } from "node:path";
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
 import { SuiteRunner } from "../../src/adapters/vitest-suite-runner.js";
 
 const root = join(import.meta.dirname, "..", "fixtures", "suite-runner");
+const excludesRoot = join(import.meta.dirname, "..", "fixtures", "suite-runner-excludes");
+// The folder is git-ignored, so the failing files are written by the tests and removed after.
+const scratch = join(excludesRoot, ".trickortest");
+
+const failingSource = `import { expect, it } from "vitest";\nit("fails on purpose", () => {\n  expect(1).toBe(2);\n});\n`;
+
+const writeFailing = async (relative: string): Promise<void> => {
+  const file = join(excludesRoot, relative);
+  await mkdir(join(file, ".."), { recursive: true });
+  await writeFile(file, failingSource);
+};
+
+afterEach(async () => {
+  await rm(scratch, { recursive: true, force: true });
+  await rm(join(excludesRoot, "generated.witness.test.ts"), { force: true });
+});
 
 describe("SuiteRunner.run", () => {
   it("5.8 runs the target suite and reports a duration and per-file tests", async () => {
@@ -46,5 +63,32 @@ describe("SuiteRunner.run", () => {
     const result = await SuiteRunner.run("/", { timeLimitMs: 1000 });
     expect(result.ok).toBe(false);
     if (!result.ok) expect(result.error.kind).toBe("RunError");
+  });
+
+  it("3.20 does not run a failing test file inside a StrykerJS sandbox under .trickortest", async () => {
+    await writeFailing(".trickortest/stryker-tmp/sandbox-abc/broken.test.ts");
+    const result = await SuiteRunner.run(excludesRoot, { timeLimitMs: 60_000 });
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.value.files.map((f) => f.path)).toEqual(["pass.test.ts"]);
+    expect(result.value.files.flatMap((f) => f.tests).every((t) => t.status === "passed")).toBe(
+      true,
+    );
+  });
+
+  it("5.21 does not run a generated Witness file under .trickortest", async () => {
+    await writeFailing(".trickortest/witnesses/oath-1.1-x.witness.test.ts");
+    const result = await SuiteRunner.run(excludesRoot, { timeLimitMs: 60_000 });
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.value.files.map((f) => f.path)).toEqual(["pass.test.ts"]);
+  });
+
+  it("5.21 does not run a generated Witness file outside .trickortest", async () => {
+    await writeFailing("generated.witness.test.ts");
+    const result = await SuiteRunner.run(excludesRoot, { timeLimitMs: 60_000 });
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.value.files.map((f) => f.path)).toEqual(["pass.test.ts"]);
   });
 });

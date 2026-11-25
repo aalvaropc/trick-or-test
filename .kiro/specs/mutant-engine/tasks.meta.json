@@ -1409,6 +1409,13 @@
         "chatSessionId": "sess_b86edd1e-81ed-4f51-8100-c551dbee1696",
         "timestamp": 1795646863223
       }
+    ],
+    "12.49 Install the shutdown handlers in the CLI entry point": [
+      {
+        "executionId": "3af23aa3-7bc5-47a3-8760-20d0c14f07dd",
+        "chatSessionId": "sess_1a46324b-2e41-4c43-ac03-712a3865003b",
+        "timestamp": 1795646994388
+      }
     ]
   }
 }
