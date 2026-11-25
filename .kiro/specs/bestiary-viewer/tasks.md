@@ -223,7 +223,7 @@ Conventions for every task:
     - _Requirements: 5.7, 5.8, 5.9, 5.10, 5.12, 5.13_
     - _Validation: `npm test -w trick-or-test-viewer -- test/bestiary/creature.states.test.ts` passes_
 
-  - [ ] 4.14 Draw the glyph inside the body in `bestiary/creature.ts`
+  - [x] 4.14 Draw the glyph inside the body in `bestiary/creature.ts`
     - Call `glyphFor` and draw the escaped glyph inside the body bounds for every species and state. Use `"?"` when the glyph is unavailable.
     - Example tests in `test/bestiary/creature.glyph.test.ts`: the glyph text appears in the SVG for each species (5.11), glyph with `<` and `&` is escaped (5.14), missing change gives `?` (5.15).
     - _Requirements: 5.11, 5.14, 5.15_

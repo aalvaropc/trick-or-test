@@ -8,6 +8,7 @@ import {
   VIEW_BOX,
 } from "./creature.config.js";
 import { escapeXml } from "./escape-xml.js";
+import { glyphFor } from "./glyph.js";
 import { fnv1a32, mulberry32 } from "./prng.js";
 import type { CreatureState } from "./state.js";
 
@@ -15,6 +16,9 @@ import type { CreatureState } from "./state.js";
 export type CreatureMutant = {
   file?: string | undefined;
   location?: { start: { line: number } } | undefined;
+  /** Code before and after the change. For Oathbreaker the replacement is the criterion id. */
+  original?: string | undefined;
+  replacement?: string | undefined;
 };
 
 const MAX_JITTER = VIEW_BOX.width * 0.08;
@@ -157,9 +161,13 @@ export function creature(
   const body = (CREATURE_CONFIG[species] ?? CREATURE_CONFIG.Unclassified)
     .map((d) => element(d, jitter, `data-kind="${d.kind}"`, style, shadeId))
     .join("");
+  const glyphText = glyphFor(species, mutant.original, mutant.replacement) || "?";
+  // The in-the-dark body is filled bone, so its glyph is ink to stay readable.
+  const glyphFill = style.fill === COLOR_TOKENS.bone ? COLOR_TOKENS.ink : COLOR_TOKENS.bone;
+  const glyph = `<text data-glyph="true" x="100" y="100" text-anchor="middle" dominant-baseline="central" font-family="JetBrains Mono, monospace" font-size="14" fill="${glyphFill}" stroke="none">${escapeXml(glyphText)}</text>`;
   const defs = style.shade
     ? `<defs><pattern id="${shadeId}" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="6" stroke="${COLOR_TOKENS.bone}" stroke-width="1"/></pattern></defs>`
     : "";
   const opacityAttr = style.opacity === null ? "" : ` opacity="${style.opacity}"`;
-  return `<svg xmlns="http://www.w3.org/2000/svg" role="img" viewBox="${minX} ${minY} ${width} ${height}"${opacityAttr}><title>${escapeXml(titleOf(species, state, mutant))}</title>${defs}${body}</svg>`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" role="img" viewBox="${minX} ${minY} ${width} ${height}"${opacityAttr}><title>${escapeXml(titleOf(species, state, mutant))}</title>${defs}${body}${glyph}</svg>`;
 }
