@@ -674,7 +674,7 @@ Conventions used in every task:
     - _Requirements: 8.17_
     - _Validation: npx vitest run --project engine packages/engine/test/core/report.test.ts packages/engine/test/core/verdict.test.ts packages/engine/test/core/history.test.ts passes_
 
-  - [ ] 12.27 Write Property 20: No absolute path in any report field
+  - [x] 12.27 Write Property 20: No absolute path in any report field
     - Write `test/core/report.paths.property.test.ts` with **Property 20: No absolute path in any report field**. Generate run inputs with absolute paths under and outside the root in every string field, check every string in the three outputs, and check `join(root, relativizePath(root, p)) === p` for paths under the root.
     - **Validates: Requirements 8.17**
     - _Requirements: 8.17_

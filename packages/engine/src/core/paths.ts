@@ -15,8 +15,10 @@ const STOP = String.raw`\s"'\`<>|*?:,;()\[\]{}`;
 const UNC = String.raw`\\\\[^${STOP}\\/]+(?:\\[^${STOP}\\]*)+`;
 // Windows drive: C:\... or C:/...
 const DRIVE = String.raw`(?<![\w])[A-Za-z]:[\\/][^${STOP}]*`;
-// POSIX: a `/` that does not follow a word character, `:`, `/`, `.`, `\` or `>` (so URLs and relative paths are skipped).
-const POSIX = String.raw`(?<![\w:/.\\>])/(?!/)[^${STOP}]+`;
+// POSIX: a `/` starts an absolute path only at the start of the text or after whitespace, a quote,
+// a parenthesis, a bracket, `=`, `,` or `;`. Any other preceding character (a word character, `-`,
+// `+`, `~`, `@`, `%`, `.`, `:` and so on) means the `/` is inside a relative path or a URL.
+const POSIX = String.raw`(?<=^|[\s"'\`()\[\]=,;])/(?!/)[^${STOP}]+`;
 
 const ABSOLUTE_PATH_SOURCE = `${UNC}|${DRIVE}|${POSIX}`;
 

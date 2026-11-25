@@ -55,6 +55,10 @@
     "12.7 Write Property 22: A witness timeout is a difference, not a kill": {
       "status": "passed",
       "lastRunTimestamp": 1795638347847
+    },
+    "12.27 Write Property 20: No absolute path in any report field": {
+      "status": "passed",
+      "lastRunTimestamp": 1795643390702
     }
   },
   "executionHistory": {
@@ -1229,6 +1233,25 @@
         "executionId": "c9c96f31-70b7-4044-b253-8679cbaf504f",
         "chatSessionId": "sess_beda6860-ddb0-4c04-ba69-71a01dafd4c8",
         "timestamp": 1795642571832
+      }
+    ],
+    "12.26 Relativize every path in the report builders": [
+      {
+        "executionId": "c223fc8e-94cc-4cf2-be52-1091bef3b95b",
+        "chatSessionId": "sess_0a8407f1-46a5-49bc-976b-8d91afc6e1fe",
+        "timestamp": 1795642729729
+      },
+      {
+        "executionId": "ffa495a2-5db7-4544-befa-b94d4b18fb11",
+        "chatSessionId": "sess_0a8407f1-46a5-49bc-976b-8d91afc6e1fe",
+        "timestamp": 1795643070909
+      }
+    ],
+    "12.27 Write Property 20: No absolute path in any report field": [
+      {
+        "executionId": "72ac7c36-b8f1-4140-9ff8-76972e3694d9",
+        "chatSessionId": "sess_403e46a6-6848-48c9-bec0-2b5b60b61a70",
+        "timestamp": 1795643206383
       }
     ]
   }
