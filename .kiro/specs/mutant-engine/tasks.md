@@ -692,13 +692,13 @@ Conventions used in every task:
     - _Requirements: 4.3, 4.11, 4.12_
     - _Validation: npx vitest run --project engine packages/engine/test/core/spec-mutants.test.ts passes_
 
-  - [ ] 12.30 Write Property 18: Spec mutant path safety
+  - [x] 12.30 Write Property 18: Spec mutant path safety
     - Write `test/core/spec-mutants.property.test.ts` with **Property 18: Spec mutant path safety**. Generators mix safe values with absolute paths, `..` at the start, middle and end, separators in ids, and ids with spaces and Unicode.
     - **Validates: Requirements 4.3, 4.11, 4.12**
     - _Requirements: 4.3, 4.11, 4.12_
     - _Validation: npx vitest run --project engine packages/engine/test/core/spec-mutants.property.test.ts passes_
 
-  - [ ] 12.31 Add `resolveInside` in `core/sandbox-plan.ts`
+  - [x] 12.31 Add `resolveInside` in `core/sandbox-plan.ts`
     - Create `core/sandbox-plan.ts` with `resolveInside(root, relative): Result<string, PathEscapeError>`: join, normalize and fail when the result is not inside `root`. Define the `ProjectEntry` type (`path`, `kind`, `target?`).
     - Write `test/core/sandbox-plan.test.ts`: a nested path, `..` that stays inside, `..` that escapes, an absolute path, the root itself, a sibling directory with the root as name prefix (`/a/b` against `/a/bc`).
     - _Requirements: 5.17_
