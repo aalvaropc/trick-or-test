@@ -174,7 +174,7 @@ Conventions for every task:
     - _Requirements: 1.5, 4.8, 4.9, 4.10, 4.11_
     - _Validation: `npm test -w trick-or-test-viewer -- test/loader/run-model.test.ts` passes_
 
-  - [ ] 4.6 Implement `bestiary/counts.ts`
+  - [x] 4.6 Implement `bestiary/counts.ts`
     - Implement `computeHeadlineCounts` (surviving and killed Spec_Mutants, guarded and unguarded Criteria, with the report-only variant when there is no Verdict_File), `computeKillClassCounts` (four groups, 0 for empty), `computeSpeciesLegend` (omit species with 0 Mutants) and `selectStrays` (Strays ordered by status, then file, then line, first 60 plus the remaining count). Not-counted Mutants are excluded from every count.
     - Example tests in `test/bestiary/counts.test.ts`: headline numbers (6.1), headline without verdict (6.14), kill-class groups include 0 and sum to killed Mutants that have a class (6.8, 6.15), legend omits empty species (6.12), strays limit 60 and remaining count (6.10, 6.11), not-counted excluded (4.11).
     - _Requirements: 4.11, 6.1, 6.8, 6.10, 6.11, 6.12, 6.14, 6.15_
