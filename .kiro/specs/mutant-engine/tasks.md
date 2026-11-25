@@ -35,12 +35,12 @@ Conventions used in every task:
     - _Requirements: 10.6, 10.7_
     - _Validation: npx vitest run --project engine packages/engine/test/setup.test.ts passes_
 
-- [ ] 2. Checkpoint - Setup phase
+- [x] 2. Checkpoint - Setup phase
   - Run `npm run check` from the repository root. Ensure all tests pass, ask the user if questions arise.
   - _Validation: npm run check passes_
 
 - [ ] 3. Implement the pure core (`packages/engine/src/core/`)
-  - [ ] 3.1 Implement `result.ts` and shared types
+  - [x] 3.1 Implement `result.ts` and shared types
     - Create `result.ts` with the `Result<T, E>` union and `ok` and `err` helpers.
     - Create `types.ts` with the branded ids (`MutantId`, `CriterionId`, `TestId`), `Criterion`, `Species`, `MutantStatus`, `KillClass`, `CoverageStatus`, `Witness`, `SpecMutant`, `SkipEntry`, `MutantResult`, `EngineConfig`, `CriterionCoverage`, `RunMetadata`, `Verdict` and `HistoryRecord` from `design.md`.
     - Add `test/core/result.test.ts` for `ok` and `err`.
@@ -48,7 +48,7 @@ Conventions used in every task:
     - _Requirements: 10.1, 10.3_
     - _Validation: npx vitest run --project engine packages/engine/test/core/result.test.ts passes_
 
-  - [ ] 3.2 Implement `config.ts` (Config_Loader validation) with example tests
+  - [-] 3.2 Implement `config.ts` (Config_Loader validation) with example tests
     - Implement `validateConfig(raw)` with a strict zod schema (unknown keys are errors) and defaults, and `resolveConfigPaths(config, projectRoot)` as pure string joins.
     - Return errors as structured `{ filePath, field? }` values that name `trickortest.config.json` and the field.
     - Leave `timeoutMs` unset when absent.
