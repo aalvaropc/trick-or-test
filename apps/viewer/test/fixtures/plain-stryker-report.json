@@ -1,0 +1,26 @@
+{
+  "schemaVersion": "2",
+  "thresholds": { "high": 80, "low": 60 },
+  "files": {
+    "src/cart.ts": {
+      "language": "typescript",
+      "source": "export const n = (a: number): number => a + 1;\n",
+      "mutants": [
+        {
+          "id": "p1",
+          "mutatorName": "ArithmeticOperator",
+          "location": { "start": { "line": 1, "column": 43 }, "end": { "line": 1, "column": 48 } },
+          "status": "Killed",
+          "replacement": "a - 1"
+        },
+        {
+          "id": "p2",
+          "mutatorName": "UpdateOperator",
+          "location": { "start": { "line": 1, "column": 43 }, "end": { "line": 1, "column": 48 } },
+          "status": "Survived",
+          "replacement": "a + 0"
+        }
+      ]
+    }
+  }
+}

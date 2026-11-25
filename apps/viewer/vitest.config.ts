@@ -8,6 +8,7 @@ export default defineConfig({
     environment: "jsdom",
     setupFiles: ["test/setup.ts"],
     include: ["test/**/*.test.{ts,tsx}"],
-    exclude: ["test/fixtures/**", "node_modules/**"],
+    // Fixture data is not test code; test/fixtures/fixtures.test.ts must still run.
+    exclude: ["test/fixtures/**/*.{json,jsonl,txt}", "node_modules/**"],
   },
 });

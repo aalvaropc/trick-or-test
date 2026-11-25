@@ -82,12 +82,12 @@ Conventions for every task:
     - _Requirements: 12.2, 12.8, 12.9_
     - _Validation: `npm test -w trick-or-test-viewer -- test/static/boundaries.test.ts` passes_
 
-- [ ] 2. Checkpoint - workspace setup
+- [x] 2. Checkpoint - workspace setup
   - Ensure all tests pass, ask the user if questions arise.
   - _Validation: `npm run check` passes_
 
 - [ ] 3. Loader: recognise, parse, join, timeline, file reading, demo fetch
-  - [ ] 3.1 Write the fixture runs
+  - [x] 3.1 Write the fixture runs
     - Create under `apps/viewer/test/fixtures/` small hand-written files: a Trick or Test `report.json` (with `species` and `requirement` fields, mutants Survived, Killed, Timeout, NoCoverage and one Ignored with `statusReason` naming Ghost), a `verdict.json` with coverage entries for guarded, unguarded, unattacked and skipped (and one entry with an id the report lacks), a Plain_Stryker_Report, and a `history.jsonl` of several records (including two with equal `time`).
     - Add variants: a history file with a blank line, a CRLF history file, a history file with a bad line 3 after a blank line, an empty file, a whitespace-only file, a history file with a trailing newline, and a single-line JSON report that is not history.
     - Add `apps/viewer/test/fixtures/fixtures.test.ts` asserting that each valid fixture passes its schema from `trick-or-test/report` and each broken variant fails as intended.

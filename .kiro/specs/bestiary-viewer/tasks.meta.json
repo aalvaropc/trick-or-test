@@ -79,6 +79,40 @@
         "chatSessionId": "sess_27f96653-6715-4aec-aa3b-195e451f0159",
         "timestamp": 1795627813215
       }
+    ],
+    "2. Checkpoint - workspace setup": [
+      {
+        "executionId": "89cdbe41-ebca-4707-93fd-abf80114cfd7",
+        "chatSessionId": "sess_f6b09acc-916b-4397-a49d-f5aed4a0b59a",
+        "timestamp": 1795627856520
+      },
+      {
+        "executionId": "89cdbe41-ebca-4707-93fd-abf80114cfd7",
+        "chatSessionId": "sess_f6b09acc-916b-4397-a49d-f5aed4a0b59a",
+        "timestamp": 1795627882578
+      }
+    ],
+    "3.1 Write the fixture runs": [
+      {
+        "executionId": "71189c8f-4659-4b2d-98df-83471ac94b3f",
+        "chatSessionId": "sess_13f58e5c-673a-42a4-b0ac-45738852bc54",
+        "timestamp": 1795627934860
+      },
+      {
+        "executionId": "71189c8f-4659-4b2d-98df-83471ac94b3f",
+        "chatSessionId": "sess_13f58e5c-673a-42a4-b0ac-45738852bc54",
+        "timestamp": 1795628070877
+      },
+      {
+        "executionId": "08da62bc-06ba-4852-aea1-db9b0c317b64",
+        "chatSessionId": "sess_13f58e5c-673a-42a4-b0ac-45738852bc54",
+        "timestamp": 1795628100613
+      },
+      {
+        "executionId": "08da62bc-06ba-4852-aea1-db9b0c317b64",
+        "chatSessionId": "sess_13f58e5c-673a-42a4-b0ac-45738852bc54",
+        "timestamp": 1795628207361
+      }
     ]
   }
 }
