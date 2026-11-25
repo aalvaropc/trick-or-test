@@ -14,9 +14,20 @@ import type {
   WitnessRunResult,
 } from "../adapters/vitest-witness-runner.js";
 import { CONFIG_FILE_NAME, resolveConfigPaths, validateConfig } from "../core/config.js";
+import { computeCoverage } from "../core/coverage.js";
 import { computeKillClass } from "../core/kill-classification.js";
 import { assignOccurrenceIndexes, computeMutantId } from "../core/mutant-id.js";
 import { applyMutation } from "../core/mutation.js";
+import {
+  buildHistoryRecord,
+  buildMutationReport,
+  buildVerdict,
+  parseHistoryLines,
+  type ReportMutantInput,
+  type SpecReportMutantInput,
+  serializeHistoryRecord,
+  serializeVerdict,
+} from "../core/report.js";
 import { parseRequirements } from "../core/requirements.js";
 import { err, ok, type Result } from "../core/result.js";
 import {
@@ -32,11 +43,14 @@ import { classifyTest, type TestKind } from "../core/test-classification.js";
 import type {
   Criterion,
   EngineConfig,
+  HistoryRecord,
   MutantId,
   MutantResult,
   MutantStatus,
+  RunMetadata,
   SpecMutant,
   TestId,
+  Witness,
 } from "../core/types.js";
 import { compareWitnessOutcome, type WitnessOutcome } from "../core/witness-compare.js";
 import type { CliOptions } from "./args.js";
@@ -684,4 +698,184 @@ async function runOneSpecMutant(
     failing.map((t) => testIdOf(t.file, t.name)),
     computeKillClass(kinds),
   );
+}
+
+/** The slice of the file system the reporting stage needs. */
+export interface ReportAdapters {
+  readonly fs: Pick<LoadFileSystem, "readFile" | "exists"> & {
+    writeFile(path: string, content: string): Promise<Result<void, string>>;
+  };
+}
+
+export interface ReportStageInput {
+  readonly mechanical: readonly MechanicalOutcome[];
+  readonly specMutants: readonly SpecMutantOutcome[];
+  readonly ignoreStaticRetried: boolean;
+  readonly metadata: RunMetadata;
+}
+
+export const REPORT_FILE_NAME = "mutation-report.json";
+export const VERDICT_FILE_NAME = "verdict.json";
+export const HISTORY_FILE_NAME = "history.jsonl";
+
+/** Why the stage failed. `path` is the file at fault; `line` is 1-based for history errors. */
+export interface ReportStageError {
+  readonly kind: "history-error" | "write-error" | "build-error";
+  readonly path?: string;
+  readonly line?: number;
+  readonly message: string;
+}
+
+export interface ReportStageResult {
+  readonly reportPath: string;
+  readonly verdictPath: string;
+  readonly historyPath: string;
+  readonly coverage: ReturnType<typeof computeCoverage>;
+}
+
+const positionIn = (source: string, offset: number): { line: number; column: number } => {
+  const before = source.slice(0, Math.max(0, offset));
+  const line = before.split("\n").length;
+  return { line, column: offset - (before.lastIndexOf("\n") + 1) + 1 };
+};
+
+/**
+ * Final stage of the orchestration: coverage, Mutation_Report, Verdict and history record,
+ * then the three outputs. `history.jsonl` gets exactly one new line; earlier lines are kept
+ * byte for byte (Requirements 8.1, 8.5, 8.8, 8.9, 8.13, 8.16). Nothing is written when the
+ * existing history does not parse. Ids are passed to `report.ts` as data (Requirement 8.7).
+ */
+export async function writeReports(
+  options: Pick<CliOptions, "project">,
+  project: LoadedProject,
+  input: ReportStageInput,
+  adapters: ReportAdapters,
+): Promise<Result<ReportStageResult, ReportStageError>> {
+  const { fs } = adapters;
+  const { config } = project;
+  const criteria = project.specs.flatMap((s) => s.criteria);
+  const skipEntries = project.specs.flatMap((s) => s.skipEntries.map((e) => e.entry));
+  const results: MutantResult[] = [
+    ...input.mechanical.map((m) => m.result),
+    ...input.specMutants.map((m) => m.result),
+  ];
+  const coverage = computeCoverage(criteria, results, skipEntries);
+
+  const witnesses: Record<MutantId, Witness> = {};
+  for (const m of input.specMutants) witnesses[m.mutant.id] = m.mutant.witness;
+
+  const verdict = buildVerdict({
+    coverage: coverage.coverage,
+    mutants: results,
+    witnesses,
+    ignoreStaticRetried: input.ignoreStaticRetried,
+    metadata: input.metadata,
+  });
+  if (!verdict.ok) return err({ kind: "build-error", message: verdict.error });
+
+  // Sources of every file the report mentions.
+  const paths = [
+    ...new Set([
+      ...input.mechanical.map((m) => m.file),
+      ...input.specMutants.map((m) => m.mutant.file),
+    ]),
+  ].sort();
+  const sources = new Map<string, string>();
+  for (const path of paths) {
+    const read = await fs.readFile(joinPath(options.project, path));
+    sources.set(path, read.ok ? read.value : "");
+  }
+
+  const mechanical: ReportMutantInput[] = input.mechanical.map((m) => ({
+    id: m.result.id,
+    file: m.file,
+    location: {
+      start: { line: Math.max(1, m.startLine), column: 1 },
+      end: { line: Math.max(1, m.endLine), column: 1 },
+    },
+    replacement: m.replacement,
+    status: m.result.status,
+    mutatorName: m.mutatorName,
+    killedBy: [...m.result.killingTests],
+  }));
+  const spec: SpecReportMutantInput[] = input.specMutants.map(({ mutant, result, message }) => {
+    const source = sources.get(mutant.file) ?? "";
+    const at = Math.max(0, source.indexOf(mutant.original));
+    return {
+      id: mutant.id,
+      file: mutant.file,
+      location: {
+        start: positionIn(source, at),
+        end: positionIn(source, at + mutant.original.length),
+      },
+      replacement: mutant.mutated,
+      status: result.status,
+      requirement: mutant.requirement,
+      description: message === undefined ? mutant.why : `${mutant.why} (${message})`,
+      killedBy: [...result.killingTests],
+    };
+  });
+  const report = buildMutationReport({
+    files: Object.fromEntries(
+      paths.map((p) => [p, { language: "typescript", source: sources.get(p) ?? "" }]),
+    ),
+    mechanical,
+    spec,
+    ignoreStaticRetried: input.ignoreStaticRetried,
+  });
+
+  // History: read first, so a corrupt file stops the run before any write.
+  const historyPath = joinPath(config.outputDir, HISTORY_FILE_NAME);
+  let existing = "";
+  let previousRecord: HistoryRecord | undefined;
+  if (await fs.exists(historyPath)) {
+    const read = await fs.readFile(historyPath);
+    if (!read.ok) {
+      return err({
+        kind: "history-error",
+        path: historyPath,
+        message: `${historyPath} cannot be read: ${read.error}`,
+      });
+    }
+    existing = read.value;
+    const parsed = parseHistoryLines(existing);
+    if (!parsed.ok) {
+      return err({
+        kind: "history-error",
+        path: historyPath,
+        line: parsed.error.line,
+        message: `${historyPath}, line ${parsed.error.line}: ${parsed.error.message}`,
+      });
+    }
+    previousRecord = parsed.value.at(-1);
+  }
+  const record = buildHistoryRecord(verdict.value, previousRecord, config);
+  if (!record.ok) return err({ kind: "build-error", message: record.error });
+  let line: string;
+  try {
+    line = serializeHistoryRecord(record.value);
+  } catch (error) {
+    return err({ kind: "build-error", message: messageOf(error) });
+  }
+  const separator = existing === "" || existing.endsWith("\n") ? "" : "\n";
+  const history = `${existing}${separator}${line}\n`;
+
+  const reportPath = joinPath(config.outputDir, REPORT_FILE_NAME);
+  const verdictPath = joinPath(config.outputDir, VERDICT_FILE_NAME);
+  const outputs: [string, string][] = [
+    [reportPath, `${JSON.stringify(report, null, 2)}\n`],
+    [verdictPath, serializeVerdict(verdict.value)],
+    [historyPath, history],
+  ];
+  for (const [path, content] of outputs) {
+    const written = await fs.writeFile(path, content);
+    if (!written.ok) {
+      return err({
+        kind: "write-error",
+        path,
+        message: `${path} cannot be written: ${written.error}`,
+      });
+    }
+  }
+  return ok({ reportPath, verdictPath, historyPath, coverage });
 }

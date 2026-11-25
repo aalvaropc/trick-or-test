@@ -429,7 +429,7 @@ Conventions used in every task:
     - _Requirements: 5.1, 5.2, 5.3, 5.6, 5.7, 5.8, 5.9, 5.10, 5.11, 5.13, 5.14, 5.15, 6.2_
     - _Validation: npx vitest run --project engine packages/engine/test/cli/orchestrate-spec-mutants.test.ts passes_
 
-  - [ ] 7.5 Implement the reporting stage of the orchestration with tests
+  - [x] 7.5 Implement the reporting stage of the orchestration with tests
     - In `orchestrate.ts` add the final stage: compute coverage, build the mutation report, the verdict and the history record, then write the report and the verdict to the output directory. Write `history.jsonl` as JSON Lines: read the existing file through the `FileSystem`, parse it with `parseHistoryLines` (task 3.46) to get the previous record, and append exactly one line made by `serializeHistoryRecord` (ending in `\n`), leaving every earlier line byte-identical. Never write the history as a JSON array. A history file that does not parse returns an error that names the path and the line. Pass the mutant ids to `report.ts` as data (file ids for Spec_Mutants, `computeMutantId` hashes from task 7.3 for Mechanical_Mutants). A write failure returns an error that names the path.
     - Write `test/cli/orchestrate-report.test.ts` with a fake file system: the three outputs are written, `history.jsonl` is a first line for a first run and gains exactly one line per later run with earlier lines byte-identical, every line is one JSON object, a corrupt history line is an error, a write failure names the path, two runs with the same inputs write identical report and verdict content except `metadata.timestamp`.
     - _Requirements: 8.1, 8.5, 8.8, 8.9, 8.11, 8.13, 8.16, 9.1_
