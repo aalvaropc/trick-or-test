@@ -601,12 +601,12 @@ Conventions used in every task:
     - _Requirements: 3.16, 8.7_
     - _Validation: npx vitest run --project engine packages/engine/test/cli/orchestrate-mechanical.test.ts passes_
 
-  - [ ] 12.15 Select the StrykerJS error line and the retry condition from real output
-    - In `core/stryker-output.ts` add `extractStrykerError(output)` (first ERROR-level line, otherwise the last non-empty line, a fixed message that names the missing output for an empty string, total on any string) and `shouldRetryWithIgnoreStatic(attempt)` (true only when the dry run failed and the output shows static mutants). Copy the log markers from captured output.
-    - Capture real StrykerJS 10.1.1 output for: a successful run, a failed dry run with static mutants, a failed dry run without static mutants, and a failure after a successful dry run. Store them under `test/fixtures/stryker/`.
-    - Add examples to `test/core/stryker-output.test.ts`, one per captured output, plus an empty output and an output with only blank lines.
+  - [x] 12.15 Select the StrykerJS error line and the retry condition from real output
+    - In `core/stryker-output.ts` add `extractStrykerError(output)` (first ERROR-level line, otherwise the last non-empty line, a fixed message that names the missing output for an empty string, total on any string) and `shouldRetryWithIgnoreStatic(attempt)` (true only when the process exited with an error and the output contains the real failed-dry-run line of StrykerJS 10.1.1; StrykerJS prints no "static mutants" text when the dry run fails, so the failed dry run itself is the retry marker). Define `StrykerAttempt` as `{ exitCode, output }`. Copy the log marker from captured output and strip the ANSI colour codes that StrykerJS prints even when piped.
+    - Capture real StrykerJS 10.1.1 output for: a successful run, a failed dry run with a module-level constant, a failed dry run without one (both are retried), and a failure after a successful dry run. Store them under `test/fixtures/stryker/`.
+    - Add examples to the new file `test/core/stryker-failure.test.ts` (`test/core/stryker-output.test.ts` is sealed), one per captured output, plus an empty output and an output with only blank lines.
     - _Requirements: 3.5, 3.6, 3.17, 10.12_
-    - _Validation: npx vitest run --project engine packages/engine/test/core/stryker-output.test.ts passes_
+    - _Validation: npx vitest run --project engine packages/engine/test/core/stryker-output.test.ts packages/engine/test/core/stryker-failure.test.ts passes_
 
   - [ ] 12.16 Write Property 23: StrykerJS error selection
     - Write `test/core/stryker-output.property.test.ts` with **Property 23: StrykerJS error selection**. Generate outputs with and without ERROR-level lines, with blank lines and arbitrary text, and attempts that failed before and after a successful dry run.
@@ -616,7 +616,7 @@ Conventions used in every task:
 
   - [ ] 12.17 Use the error line and the retry rule in `MechanicalRunner`
     - In `adapters/stryker-adapter.ts` return `extractStrykerError` output for a failed run, retry exactly once with `ignoreStatic` only when `shouldRetryWithIgnoreStatic` is true, never retry after a successful dry run, and set the retry flag only when a retry happened.
-    - Add examples to `test/adapters/stryker-adapter.test.ts` with the captured outputs as the fake process output: the failed dry run with static mutants is retried once and flagged, a second failure is not retried, a failure after a successful dry run is not retried and not flagged, and the error line is the first ERROR-level line.
+    - Add examples to `test/adapters/stryker-adapter.test.ts` with the captured outputs as the fake process output: each failed dry run capture is retried once and flagged, a second failure is not retried, a failure after a successful dry run is not retried and not flagged, and the error line is the first ERROR-level line.
     - _Requirements: 3.5, 3.6, 3.17, 10.12_
     - _Validation: npx vitest run --project engine packages/engine/test/adapters/stryker-adapter.test.ts passes_
 

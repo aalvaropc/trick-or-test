@@ -1,0 +1,7 @@
+^[[32m16:00:56 (549613) INFO ProjectReader^[[39m Found 1 of 4 file(s) to be mutated.
+^[[32m16:00:56 (549613) INFO Instrumenter^[[39m Instrumented 1 source file(s) with 15 mutant(s)
+^[[32m16:00:56 (549613) INFO ConcurrencyTokenProvider^[[39m Creating 19 test runner process(es).
+^[[32m16:00:57 (549613) INFO DryRunExecutor^[[39m Starting initial test run (vitest test runner with "perTest" coverage analysis). This may take a while.
+^[[32m16:00:57 (549613) INFO DryRunExecutor^[[39m Initial test run succeeded. Ran 3 tests in 0 seconds (net 5.671878000000106 ms, overhead 328.3281219999999 ms).
+^[[32m16:00:58 (549613) INFO JsonReporter^[[39m Your report can be found at: file:///project/packages/engine/.trickortest/stryker-capture/reports/mutation.json
+^[[32m16:00:58 (549613) INFO MutationTestExecutor^[[39m Done in 2 seconds.

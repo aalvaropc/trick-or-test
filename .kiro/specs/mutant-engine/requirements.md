@@ -82,8 +82,8 @@ The engine makes no LLM calls (ADR 0004). The MCP server and the Kiro hook entry
 2. THE Stryker_Adapter SHALL list the Vitest runner in the Stryker `plugins` option.
 3. WHEN the Target_Project resolves TypeScript 7 or newer, THE Stryker_Adapter SHALL set the Stryker `tsconfigFile` option to a path that does not exist.
 4. WHEN the Target_Project resolves a TypeScript version older than 7, THE Stryker_Adapter SHALL leave the Stryker `tsconfigFile` option at the Target_Project value.
-5. IF the initial dry run of StrykerJS fails and static mutants were present, THEN THE Stryker_Adapter SHALL run StrykerJS exactly one more time with `ignoreStatic` enabled and record in the Mutation_Report and the Verdict_File that the retry happened.
-6. IF StrykerJS exits with an error, THEN THE Engine SHALL report the first ERROR-level line of the StrykerJS output, or the last non-empty line of the output WHEN the output has no ERROR-level line, and write no Verdict_File.
+5. WHEN StrykerJS exits with an error and its captured output shows that the initial test run (the dry run) failed, THE Stryker_Adapter SHALL recognise the failure by a real dry-run-failure line copied from captured StrykerJS output, run StrykerJS exactly one more time with `ignoreStatic` enabled, and record in the Mutation_Report and the Verdict_File that the retry happened.
+6. IF StrykerJS exits with an error and no retry applies, or the retry of criterion 5 fails too, THEN THE Engine SHALL report the first ERROR-level line of the output of the last StrykerJS run, or the last non-empty line of that output WHEN it has no ERROR-level line, and write no Verdict_File.
 7. THE Stryker_Adapter SHALL detect every folder that is not part of the Target_Project build and every directory reached through a symbolic link, and SHALL pass the detected directories to the Stryker sandbox exclusion option.
 8. THE Stryker_Adapter SHALL exclude every file under `.stryker-tmp` from the tests that are run and from the tests that are counted.
 9. WHERE the user supplies a git ref, THE Stryker_Adapter SHALL restrict the git diff to the Target_Project directory, keep only the changed files that match the source globs, and restrict mutation to the Changed_Ranges since that ref, expressed as `file:start-end` mutate patterns with paths relative to the Target_Project root, including WHEN the Target_Project is a subdirectory of a larger git repository.
@@ -94,7 +94,7 @@ The engine makes no LLM calls (ADR 0004). The MCP server and the Kiro hook entry
 14. THE Stryker_Adapter SHALL leave the Target_Project working tree unmodified, except for files in the output directory and in `.trickortest/`.
 15. IF any Failing_Test occurs in the Baseline_Run, THEN THE Engine SHALL abort the run, report the Failing_Tests and write no Verdict_File.
 16. THE Stryker_Adapter SHALL keep in the Mutation_Report the start line, start column, end line and end column that StrykerJS reports for each Mechanical_Mutant.
-17. IF StrykerJS fails after a successful dry run, THEN THE Stryker_Adapter SHALL NOT run StrykerJS again and SHALL NOT record that the `ignoreStatic` retry happened.
+17. IF StrykerJS fails and its output does not show a failed initial test run (a failure after a successful dry run), THEN THE Stryker_Adapter SHALL NOT run StrykerJS again and SHALL NOT record that the `ignoreStatic` retry happened.
 18. THE Stryker_Adapter SHALL run the StrykerJS binary from the `node_modules/.bin` directory of the Target_Project, or with the `--no-install` option, so that the Engine never lets `npx` download a package.
 19. WHEN a StrykerJS run ends, THE Stryker_Adapter SHALL remove the temporary directory of StrykerJS, including WHEN the run fails.
 20. THE Engine SHALL exclude `.trickortest/**` from the Baseline_Run and SHALL NOT run a StrykerJS sandbox in the Baseline_Run.

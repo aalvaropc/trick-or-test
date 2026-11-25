@@ -1,0 +1,20 @@
+^[[32m16:00:39 (547004) INFO ProjectReader^[[39m Found 1 of 4 file(s) to be mutated.
+^[[32m16:00:39 (547004) INFO Instrumenter^[[39m Instrumented 1 source file(s) with 6 mutant(s)
+^[[32m16:00:39 (547004) INFO ConcurrencyTokenProvider^[[39m Creating 19 test runner process(es).
+^[[32m16:00:40 (547004) INFO DryRunExecutor^[[39m Starting initial test run (vitest test runner with "perTest" coverage analysis). This may take a while.
+^[[91m16:00:41 (547004) ERROR DryRunExecutor^[[39m One or more tests failed in the initial test run:
+	charges shipping below the threshold
+		expected 500 to be +0 // Object.is equality
+^[[91m16:00:41 (547004) ERROR Stryker^[[39m There were failed tests in the initial test run.
+file:///project/node_modules/@stryker-mutator/core/dist/src/process/3-dry-run-executor.js:65
+                    throw new ConfigError('There were failed tests in the initial test run.');
+                          ^
+ConfigError: There were failed tests in the initial test run.
+    at DryRunExecutor.validateResultCompleted (file:///project/node_modules/@stryker-mutator/core/dist/src/process/3-dry-run-executor.js:65:27)
+    at DryRunExecutor.executeDryRun (file:///project/node_modules/@stryker-mutator/core/dist/src/process/3-dry-run-executor.js:100:14)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async WorkItem.execute (file:///project/node_modules/@stryker-mutator/core/dist/src/concurrent/pool.js:34:28)
+    at async file:///project/node_modules/@stryker-mutator/core/dist/src/concurrent/pool.js:71:13 {
+  innerError: undefined
+}
+Node.js v26.13.1

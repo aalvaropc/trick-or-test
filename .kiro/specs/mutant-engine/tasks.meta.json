@@ -1138,6 +1138,18 @@
         "chatSessionId": "sess_03fb8bda-e9d6-4b0d-bc42-cd8b94fe8f56",
         "timestamp": 1795639846901
       }
+    ],
+    "12.15 Select the StrykerJS error line and the retry condition from real output": [
+      {
+        "executionId": "d7688d85-ca99-4d9f-8e17-64274918c992",
+        "chatSessionId": "sess_906024c4-860f-4f27-aae9-c79ec541bf91",
+        "timestamp": 1795640007159
+      },
+      {
+        "executionId": "c080b9b9-0d00-4aa8-9008-2935f1928c2e",
+        "chatSessionId": "sess_906024c4-860f-4f27-aae9-c79ec541bf91",
+        "timestamp": 1795640316576
+      }
     ]
   }
 }

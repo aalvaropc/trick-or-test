@@ -76,6 +76,47 @@ const reportSchema = z.object({
     .optional(),
 });
 
+/** The outcome of one StrykerJS process: its exit code and its stdout and stderr, merged. */
+export type StrykerAttempt = { readonly exitCode: number; readonly output: string };
+
+export const NO_STRYKER_OUTPUT_MESSAGE = "StrykerJS failed and printed no output";
+
+// StrykerJS 10.1.1 colours its log lines with ANSI codes even when its output is piped.
+const ANSI_COLOUR = new RegExp(`${String.fromCharCode(27)}\\[[0-9;]*m`, "g");
+
+// A StrykerJS log line is `HH:MM:SS (pid) LEVEL Category message`.
+const ERROR_LEVEL_LINE = /^\S+ \(\d+\) ERROR\s/;
+
+// Copied from captured StrykerJS 10.1.1 output of a failed initial test run (dry run).
+const DRY_RUN_FAILED_LINE =
+  /^\S+ \(\d+\) ERROR (?:DryRunExecutor One or more tests failed in the initial test run|Stryker There were failed tests in the initial test run\.)/;
+
+const logLines = (output: string): string[] =>
+  output
+    .replace(ANSI_COLOUR, "")
+    .split(/\r?\n/)
+    .map((line) => line.trimEnd());
+
+/**
+ * Picks the line to show when StrykerJS fails: the first ERROR-level line, otherwise the last
+ * non-empty line, otherwise a fixed message (Requirement 3.6). Colour codes are removed.
+ */
+export const extractStrykerError = (output: string): string => {
+  const lines = logLines(output);
+  const errorLine = lines.find((line) => ERROR_LEVEL_LINE.test(line));
+  if (errorLine !== undefined) return errorLine;
+  const lastLine = lines.findLast((line) => line.trim() !== "");
+  return lastLine ?? NO_STRYKER_OUTPUT_MESSAGE;
+};
+
+/**
+ * True only when StrykerJS exited with an error and its output shows that the initial test run
+ * (the dry run) failed (Requirement 3.5). A failure after a successful dry run is never retried
+ * (Requirement 3.17).
+ */
+export const shouldRetryWithIgnoreStatic = (attempt: StrykerAttempt): boolean =>
+  attempt.exitCode !== 0 && logLines(attempt.output).some((line) => DRY_RUN_FAILED_LINE.test(line));
+
 const DEFAULT_FILE = "StrykerJS report";
 
 /**
