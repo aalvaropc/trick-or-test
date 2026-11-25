@@ -262,7 +262,7 @@ Conventions used in every task:
     - _Requirements: 3.5_
     - _Validation: npx vitest run --project engine packages/engine/test/core/report.test.ts passes_
 
-  - [ ] 3.36 Extend Property 7 with the retry flag
+  - [x] 3.36 Extend Property 7 with the retry flag
     - In `test/core/report.validity.property.test.ts` generate the retry flag, check that every generated report validates against `mutation-testing-report-schema` with it, and that the report's `config` records the flag.
     - **Validates: Requirements 3.5, 8.1**
     - _Requirements: 3.5, 8.1_

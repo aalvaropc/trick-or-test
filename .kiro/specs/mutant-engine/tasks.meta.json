@@ -704,6 +704,18 @@
         "chatSessionId": "sess_41e3ec49-e6c7-45df-b23b-3662ccca5d34",
         "timestamp": 1795627990029
       }
+    ],
+    "3.36 Extend Property 7 with the retry flag": [
+      {
+        "executionId": "420df93f-567a-40a8-86db-3851ecf694c7",
+        "chatSessionId": "sess_531b7328-57b9-4175-a8c2-41c1c6f0080d",
+        "timestamp": 1795628030352
+      },
+      {
+        "executionId": "420df93f-567a-40a8-86db-3851ecf694c7",
+        "chatSessionId": "sess_531b7328-57b9-4175-a8c2-41c1c6f0080d",
+        "timestamp": 1795628102842
+      }
     ]
   }
 }
