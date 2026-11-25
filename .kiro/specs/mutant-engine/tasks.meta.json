@@ -1110,6 +1110,13 @@
         "chatSessionId": "sess_e3f1b205-c757-4b6e-87f3-1ff13a3155e9",
         "timestamp": 1795639007112
       }
+    ],
+    "12.11 Return the location from `MechanicalRunner`": [
+      {
+        "executionId": "7f0946a2-c14f-4acc-ba91-c2da4dd7d309",
+        "chatSessionId": "sess_ad898d21-34b5-487a-a68b-e571952ff979",
+        "timestamp": 1795639372267
+      }
     ]
   }
 }

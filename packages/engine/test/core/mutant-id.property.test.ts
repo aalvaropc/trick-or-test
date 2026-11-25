@@ -1,7 +1,8 @@
 // Property 6: Deterministic ids. Validates: Requirements 4.5, 8.7, 8.13
 import fc from "fast-check";
 import { describe, expect, it } from "vitest";
-import { assignOccurrenceIndexes, computeMutantId } from "../../src/core/mutant-id.js";
+import { computeMutantId } from "../../src/core/mutant-id.js";
+import { assignOccurrenceIndexes } from "../../src/core/occurrence.js";
 import {
   buildMutationReport,
   type ReportInput,

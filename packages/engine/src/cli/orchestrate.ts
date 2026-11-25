@@ -17,8 +17,9 @@ import type {
 import { CONFIG_FILE_NAME, resolveConfigPaths, validateConfig } from "../core/config.js";
 import { computeCoverage } from "../core/coverage.js";
 import { computeKillClass } from "../core/kill-classification.js";
-import { assignOccurrenceIndexes, computeMutantId } from "../core/mutant-id.js";
+import { computeMutantId } from "../core/mutant-id.js";
 import { applyMutation } from "../core/mutation.js";
+import { assignOccurrenceIndexes } from "../core/occurrence.js";
 import {
   buildHistoryRecord,
   buildMutationReport,

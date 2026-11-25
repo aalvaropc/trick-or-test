@@ -583,7 +583,7 @@ Conventions used in every task:
     - _Requirements: 3.16, 10.12_
     - _Validation: npx vitest run --project engine packages/engine/test/adapters/stryker-adapter.test.ts passes_
 
-  - [ ] 12.12 Order the Occurrence_Index by the real location
+  - [x] 12.12 Order the Occurrence_Index by the real location
     - Put `assignOccurrenceIndexes` in `core/occurrence.ts` as in `design.md` (no `node:` import; if task 3.32 left it in `core/mutant-id.ts`, move it and its tests and update the imports). Group by file, original and replacement, sort each group by start line and then start column from the StrykerJS location, and return each position.
     - Add `test/core/occurrence.test.ts`: three mutants in one group given in shuffled order, two groups, two mutants on the same line ordered by column, and a mutant whose id does not change when unrelated lines above it move.
     - _Requirements: 8.7, 3.16_
