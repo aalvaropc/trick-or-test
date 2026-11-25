@@ -100,7 +100,7 @@ Conventions used in every task:
     - _Requirements: 4.4, 5.2_
     - _Validation: npx vitest run --project engine packages/engine/test/core/mutation.uniqueness.property.test.ts passes_
 
-  - [ ] 3.10 Implement `spec-mutants.ts` (Spec_Mutant_Loader validation) with example tests
+  - [x] 3.10 Implement `spec-mutants.ts` (Spec_Mutant_Loader validation) with example tests
     - Implement `validateSpecMutant(raw, filePath)` (zod schema, exactly one of `expected` and `expectedError`, `from` defaulting to `file`), `validateSkipFile(raw, filePath)` and `checkCrossFileRules(mutants, skipEntries, criteria)` (duplicate id naming both files, unknown requirement, empty reason, skip entry for an unknown criterion or a criterion that has a mutant).
     - Return mutants ordered by id. A bad file yields an error and the other files still load.
     - Write `test/core/spec-mutants.test.ts` with one example per rule above, including a witness with both `expected` and `expectedError` and a witness with neither.

@@ -178,6 +178,18 @@
         "chatSessionId": "sess_fb5a6c2e-cde1-4c67-be05-54ef26df4079",
         "timestamp": 1795619438149
       }
+    ],
+    "3.10 Implement `spec-mutants.ts` (Spec_Mutant_Loader validation) with example tests": [
+      {
+        "executionId": "d1a314aa-e0a7-4a71-84fe-7172c75d0071",
+        "chatSessionId": "sess_f0b728ab-ba9e-4237-b2b5-d825e4653412",
+        "timestamp": 1795619465468
+      },
+      {
+        "executionId": "d1a314aa-e0a7-4a71-84fe-7172c75d0071",
+        "chatSessionId": "sess_f0b728ab-ba9e-4237-b2b5-d825e4653412",
+        "timestamp": 1795619560325
+      }
     ]
   }
 }
