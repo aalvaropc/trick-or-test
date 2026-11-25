@@ -808,7 +808,7 @@ Conventions used in every task:
     - _Requirements: 9.15_
     - _Validation: npx vitest run --project engine packages/engine/test/cli/shutdown.test.ts passes_
 
-  - [ ] 12.49 Install the shutdown handlers in the CLI entry point
+  - [x] 12.49 Install the shutdown handlers in the CLI entry point
     - In `cli/main.ts` install the handlers at the start of `run` and `measure`, before any child is spawned.
     - Add examples to `test/cli/main.test.ts`: the handlers are installed before the first adapter call, and a signal during a fake long run ends with 130 or 143 and calls the cleanup.
     - _Requirements: 9.15_

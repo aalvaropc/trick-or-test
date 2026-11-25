@@ -27,6 +27,7 @@ import {
   type SpecMutantStageError,
   writeReports,
 } from "./orchestrate.js";
+import { installShutdown, type ShutdownOptions } from "./shutdown.js";
 
 /** Everything the CLI touches outside the pure core, so tests can replace it. */
 export interface CliDeps {
@@ -47,6 +48,8 @@ export interface CliDeps {
   metadata(projectRoot: string): Promise<RunMetadata>;
   /** Removes leftover Sandboxes at startup (5.20). Absent in tests that need no cleanup. */
   removeLeftovers?(projectRoot: string): Promise<number>;
+  /** Process and child runner for the SIGINT and SIGTERM handlers (9.15). Absent in tests that need none. */
+  readonly shutdown?: Pick<ShutdownOptions, "process" | "runner">;
 }
 
 const formatLoadError = (error: LoadStageError): string => {
@@ -94,6 +97,17 @@ export async function runCli(argv: readonly string[], deps: CliDeps): Promise<nu
 
   try {
     const options = { ...parsed.value, project: resolve(deps.cwd, parsed.value.project) };
+
+    // Before any adapter runs, so no child can start without the handlers in place (9.15).
+    if (deps.shutdown !== undefined) {
+      const removeLeftovers = deps.removeLeftovers;
+      installShutdown({
+        process: deps.shutdown.process,
+        runner: deps.shutdown.runner,
+        removeLeftoverSandboxes: async (root) => removeLeftovers?.(root),
+        projectRoot: options.project,
+      });
+    }
 
     const loaded = await loadProject(options, {
       fs: deps.fs,
@@ -245,6 +259,7 @@ export const createDefaultDeps = (): CliDeps => {
     }),
     metadata: defaultMetadata,
     removeLeftovers: (projectRoot) => removeLeftoverSandboxes(projectRoot),
+    shutdown: { process, runner: ProcessRunner },
   };
 };
 
