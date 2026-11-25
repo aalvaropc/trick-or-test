@@ -1381,6 +1381,13 @@
         "chatSessionId": "sess_19fd2a9f-12af-4dad-82f3-2c4489ee1145",
         "timestamp": 1795645999730
       }
+    ],
+    "12.45 Call the leftover cleanup at startup": [
+      {
+        "executionId": "d0c651f2-bc15-43a7-8f36-7d6cb48d1746",
+        "chatSessionId": "sess_2c1d0251-67de-4344-b2ae-55595121bd1d",
+        "timestamp": 1795646124064
+      }
     ]
   }
 }

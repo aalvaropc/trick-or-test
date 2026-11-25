@@ -33,6 +33,7 @@ import {
 import { parseRequirements } from "../core/requirements.js";
 import { err, ok, type Result } from "../core/result.js";
 import type { ProjectEntry } from "../core/sandbox-plan.js";
+import { selectSpec } from "../core/select-spec.js";
 import {
   checkCrossFileRules,
   type LoadedSkipEntry,
@@ -177,14 +178,6 @@ async function findSpecNames(
   only: string | undefined,
   fs: LoadFileSystem,
 ): Promise<Result<string[], LoadStageError[]>> {
-  if (only !== undefined) {
-    const path = joinPath(specDir, only, REQUIREMENTS_FILE_NAME);
-    if (!(await fs.exists(path))) {
-      return failures([{ filePath: path, message: "does not exist" }]);
-    }
-    return ok([only]);
-  }
-
   const listing = await fs.listDir(specDir);
   if (!listing.ok) {
     return failures([{ filePath: specDir, message: `cannot be listed: ${listing.error}` }]);
@@ -194,12 +187,16 @@ async function findSpecNames(
     // A directory without requirements.md is not a spec and is skipped.
     if (await fs.exists(joinPath(specDir, name, REQUIREMENTS_FILE_NAME))) names.push(name);
   }
-  if (names.length === 0) {
-    return failures([
-      { filePath: specDir, message: `has no spec with a ${REQUIREMENTS_FILE_NAME}` },
-    ]);
+  // 9.5, 9.16: one run attacks exactly one spec.
+  const selected = selectSpec(names, only);
+  if (!selected.ok) {
+    const filePath =
+      only !== undefined && names.length > 0
+        ? joinPath(specDir, only, REQUIREMENTS_FILE_NAME)
+        : specDir;
+    return failures([{ filePath, message: selected.error.message }]);
   }
-  return ok(names);
+  return ok([selected.value]);
 }
 
 async function loadSpec(
