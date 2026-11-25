@@ -241,7 +241,7 @@ Conventions for every task:
     - _Requirements: 5.4, 5.5, 5.6, 5.15, 5.16, 5.17_
     - _Validation: `npm test -w trick-or-test-viewer -- test/bestiary/creature.well-formed.property.test.ts` passes_
 
-  - [ ] 4.17 Write property test for the glyph being present
+  - [x] 4.17 Write property test for the glyph being present
     - **Property V3: The glyph is present**
     - File: `test/bestiary/creature.glyph.property.test.ts`. For any mutant with a defined, non-empty `original` or `replacement`, the SVG contains the escaped text that `glyphFor(species, original, replacement)` returns.
     - _Requirements: 5.11, 5.14_
