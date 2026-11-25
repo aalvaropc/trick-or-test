@@ -70,7 +70,7 @@ Conventions used in every task:
     - _Requirements: 2.8, 10.6, 10.7_
     - _Validation: npx vitest run --project engine packages/engine/test/core/requirements.property.test.ts passes_
 
-  - [ ] 3.5 Implement `species.ts` (Species_Classifier) with example tests
+  - [x] 3.5 Implement `species.ts` (Species_Classifier) with example tests
     - Implement `classifySpecies(mutatorName, replacementText)` as a total function over a data constant that copies the table in `.kiro/steering/bestiary.md`. Unknown names return `Unclassified`.
     - Write `test/core/species.test.ts`: one example per table row, an unknown `mutatorName`, the `<`/`<=` and `>`/`>=` boundary replacements, and a test that reads `.kiro/steering/bestiary.md` and checks that the constant matches the table.
     - _Requirements: 3.11, 3.12, 3.13, 8.14_
