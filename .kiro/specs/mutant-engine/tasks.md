@@ -404,14 +404,14 @@ Conventions used in every task:
   - Run `npm run check` from the repository root. Ensure all tests pass, ask the user if questions arise.
   - _Validation: npm run check passes_
 
-- [ ] 7. Implement the CLI (`packages/engine/src/cli/`)
+- [x] 7. Implement the CLI (`packages/engine/src/cli/`)
   - [x] 7.1 Implement the argument parser with tests
     - Implement a dependency-free parser for the commands `run` and `measure` and the options `--since <ref>`, `--project <path>`, `--spec <name>` and the option `--output <dir>` of `measure`. An unknown command or option returns a usage error. No option changes the exit code by survivor count.
     - Write `test/cli/args.test.ts`: each command and option, defaults (cwd as project), a missing option value, an unknown command, an unknown option.
     - _Requirements: 9.3, 9.4, 9.5, 9.8, 9.10_
     - _Validation: npx vitest run --project engine packages/engine/test/cli/args.test.ts passes_
 
-  - [ ] 7.2 Implement the load and validate stage of the orchestration with tests
+  - [x] 7.2 Implement the load and validate stage of the orchestration with tests
     - In `orchestrate.ts` implement the first stage: read and validate the config, find the spec directories that have a `requirements.md` (or the one given by `--spec`), parse the requirements, load the mutants and the Skip_File, and run the cross-file rules. Any error returns before the baseline and before StrykerJS. Adapters come in through interfaces.
     - Write `test/cli/orchestrate-load.test.ts` with fake adapters: a valid project, an invalid config, a parse error, a malformed mutant file (the other files still load and the run ends before the baseline), and a spec directory without `requirements.md` that is skipped.
     - _Requirements: 4.4, 9.1, 9.5, 10.2, 10.3_
@@ -465,7 +465,7 @@ Conventions used in every task:
   - Run `npm run check` from the repository root. Ensure all tests pass, ask the user if questions arise.
   - _Validation: npm run check passes_
 
-- [ ] 9. Write the end-to-end test
+- [x] 9. Write the end-to-end test
   - [x] 9.1 Write the end-to-end test for `examples/pricing`
     - Create `test/e2e/pricing.test.ts` that runs the built CLI (`trick-or-test measure --project examples/pricing --spec cart-pricing`, output into a temp directory) with the real StrykerJS and Vitest, and checks that the mutation report validates against `mutation-testing-report-schema`, that `verdict.json` and the history file exist and match their zod schemas, that the exit code is 0, and that a second run appends exactly one history record.
     - Hash `examples/pricing/src/` and `examples/pricing/test/` before and after the run and check that they are byte-identical, and check that `.trickortest/sandboxes/` is empty afterwards.
@@ -484,7 +484,7 @@ Conventions used in every task:
     - _Requirements: 8.2, 8.17, 9.2, 9.13, 9.14_
     - _Validation: npm run measure && test -f reports/mutation-report.json && test -f reports/verdict.json && test -f reports/history.jsonl passes_
 
-- [ ] 10. Final checkpoint - Whole engine
+- [x] 10. Final checkpoint - Whole engine
   - Run `npm run check` from the repository root, then run the end-to-end test. Ensure all tests pass, ask the user if questions arise.
   - _Validation: npm run check passes_
 
