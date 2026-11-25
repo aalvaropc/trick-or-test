@@ -345,7 +345,7 @@ Conventions for every task:
     - _Validation: `npm test -w trick-or-test-viewer -- test/app/LoadErrorView.test.tsx` passes_
 
 - [ ] 9. Screens
-  - [ ] 9.1 Implement the drop zone
+  - [x] 9.1 Implement the drop zone
     - Create `src/screens/landing/DropZone.tsx`: a drop target and a file picker control that is reachable by Tab and opens the picker on Enter or Space. It reads files through `readFiles`, runs `recognise`, `parseFile`, `joinRun` and `buildRunModel`, and shows errors with `LoadErrorView`. On success it sets the Run in the context and opens `#/verdict`. On any error it keeps the previous Run unchanged. A thrown error shows an error and keeps the app running.
     - Example tests in `test/screens/landing/DropZone.test.tsx` with the fixtures: drop of a valid report opens the Verdict route (1.2), report plus verdict plus history together (1.3), plain report (1.5), invalid file after a valid one keeps the earlier Run (1.7, 1.8, 1.9), ignored-entry note (1.10), keyboard opens the picker (3.5), no network call (1.1).
     - _Requirements: 1.1, 1.2, 1.7, 1.8, 1.9, 1.10, 3.4, 3.5, 12.14_
