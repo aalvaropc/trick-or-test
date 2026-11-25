@@ -110,6 +110,41 @@ const globToRegExp = (glob: string): RegExp => {
   return new RegExp(`^${re}$`);
 };
 
+/**
+ * Expand the first top-level `{a,b}` group (recursively, so nested and
+ * repeated groups work). A `{` without a matching `}` or without a comma at
+ * its own depth is literal.
+ */
+const expandBraces = (glob: string): string[] => {
+  for (let start = glob.indexOf("{"); start !== -1; start = glob.indexOf("{", start + 1)) {
+    let depth = 0;
+    const commas: number[] = [];
+    let end = -1;
+    for (let i = start; i < glob.length; i++) {
+      const c = glob.charAt(i);
+      if (c === "{") depth++;
+      else if (c === "}") {
+        depth--;
+        if (depth === 0) {
+          end = i;
+          break;
+        }
+      } else if (c === "," && depth === 1) commas.push(i);
+    }
+    if (end === -1 || commas.length === 0) continue;
+    const prefix = glob.slice(0, start);
+    const suffix = glob.slice(end + 1);
+    const bounds = [start, ...commas, end];
+    const results: string[] = [];
+    for (let k = 0; k < bounds.length - 1; k++) {
+      const alt = glob.slice((bounds[k] ?? 0) + 1, bounds[k + 1]);
+      results.push(...expandBraces(prefix + alt + suffix));
+    }
+    return results;
+  }
+  return [glob];
+};
+
 const normalizePath = (p: string): string => p.replace(/\\/g, "/").replace(/^\.\//, "");
 
 /** A call to `fc.assert`, `fc.check` or `test.prop`, optionally with type arguments. */
@@ -121,7 +156,11 @@ export const classifyTest = (
   propertyTestGlobs: string[],
 ): TestKind => {
   const path = normalizePath(test.filePath);
-  if (propertyTestGlobs.some((glob) => globToRegExp(normalizePath(glob)).test(path))) {
+  if (
+    propertyTestGlobs.some((glob) =>
+      expandBraces(normalizePath(glob)).some((g) => globToRegExp(g).test(path)),
+    )
+  ) {
     return "property";
   }
   return PROPERTY_CALL.test(blankCommentsAndLiterals(test.bodySource)) ? "property" : "example";

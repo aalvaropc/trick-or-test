@@ -268,7 +268,7 @@ Conventions used in every task:
     - _Requirements: 3.5, 8.1_
     - _Validation: npx vitest run --project engine packages/engine/test/core/report.validity.property.test.ts passes_
 
-  - [ ] 3.37 Expand braces in the property-test glob matcher
+  - [x] 3.37 Expand braces in the property-test glob matcher
     - In `core/test-classification.ts` expand brace groups before matching, so `test/**/*.{property,prop}.test.ts` matches `test/a.property.test.ts` and `test/a.prop.test.ts`.
     - Add examples to `test/core/test-classification.test.ts`: each expansion of a brace group matches, a name outside the group does not, and a glob without braces still works.
     - _Requirements: 6.3_

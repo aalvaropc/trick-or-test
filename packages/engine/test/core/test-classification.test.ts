@@ -10,6 +10,24 @@ describe("classifyTest", () => {
     expect(classifyTest(at("test/core/a.property.test.ts", body), GLOBS)).toBe("property");
   });
 
+  it("6.3 every expansion of a brace group in a glob matches", () => {
+    const globs = ["test/**/*.{property,prop}.test.ts"];
+    const body = "it('x', () => {});";
+    expect(classifyTest(at("test/a.property.test.ts", body), globs)).toBe("property");
+    expect(classifyTest(at("test/a.prop.test.ts", body), globs)).toBe("property");
+  });
+
+  it("6.3 a name outside the brace group does not match", () => {
+    const globs = ["test/**/*.{property,prop}.test.ts"];
+    expect(classifyTest(at("test/a.other.test.ts", "it('x', () => {});"), globs)).toBe("example");
+  });
+
+  it("6.3 a glob without braces still works", () => {
+    const body = "it('x', () => {});";
+    expect(classifyTest(at("test/a.property.test.ts", body), GLOBS)).toBe("property");
+    expect(classifyTest(at("test/a.prop.test.ts", body), GLOBS)).toBe("example");
+  });
+
   it("6.4 a body calling fc.assert is a property test", () => {
     const body = "it('x', () => { fc.assert(fc.property(fc.integer(), (n) => n === n)); });";
     expect(classifyTest(at("test/a.test.ts", body), GLOBS)).toBe("property");
