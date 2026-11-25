@@ -125,7 +125,7 @@ Conventions for every task:
     - _Requirements: 8.1, 8.2, 8.3, 8.11, 8.12_
     - _Validation: `npm test -w trick-or-test-viewer -- test/hunt/timeline.test.ts` passes_
 
-  - [ ] 3.7 Write property test for the hunt order
+  - [x] 3.7 Write property test for the hunt order
     - **Property V9: Hunt is ordered**
     - File: `test/hunt/hunt.order.property.test.ts`. Generate non-empty arrays of `HistoryRecord` (including equal `time`), serialise as JSON Lines with arbitrary blank lines and either line ending, then load through `recognise`, `parseFile` and `joinRun`. Assert the records survive unchanged, the timeline from `buildTimeline` is sorted by `time` with equal-`time` records in file order, and each survivor count equals `statusCounts.Survived`.
     - _Requirements: 1.4, 1.12, 8.1, 8.3_

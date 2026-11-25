@@ -173,6 +173,28 @@
         "chatSessionId": "sess_c75ce0b3-1f62-4c64-b5e7-5438065effc3",
         "timestamp": 1795628803649
       }
+    ],
+    "3.7 Write property test for the hunt order": [
+      {
+        "executionId": "9735f118-2228-4e68-a085-859fa7183c6d",
+        "chatSessionId": "sess_ebdd8f31-d1a8-4159-ad6a-fbac84e86ca7",
+        "timestamp": 1795628837887
+      },
+      {
+        "executionId": "9735f118-2228-4e68-a085-859fa7183c6d",
+        "chatSessionId": "sess_ebdd8f31-d1a8-4159-ad6a-fbac84e86ca7",
+        "timestamp": 1795628927727
+      },
+      {
+        "executionId": "17561b6e-b3c1-453e-8074-bf894d5e6524",
+        "chatSessionId": "sess_ebdd8f31-d1a8-4159-ad6a-fbac84e86ca7",
+        "timestamp": 1795628997513
+      },
+      {
+        "executionId": "937d9fef-d964-4b17-8d18-81d8cb378276",
+        "chatSessionId": "sess_ebdd8f31-d1a8-4159-ad6a-fbac84e86ca7",
+        "timestamp": 1795629215048
+      }
     ]
   }
 }
