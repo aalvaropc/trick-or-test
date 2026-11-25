@@ -1279,6 +1279,13 @@
         "chatSessionId": "sess_cf0c6f5c-5870-400b-8484-075391eb00fc",
         "timestamp": 1795643857654
       }
+    ],
+    "12.31 Add `resolveInside` in `core/sandbox-plan.ts`": [
+      {
+        "executionId": "de47fddb-ee08-4785-b450-c7770ba5040f",
+        "chatSessionId": "sess_36d3a4ab-71ac-4ce2-a683-119db138a7ad",
+        "timestamp": 1795643902611
+      }
     ]
   }
 }

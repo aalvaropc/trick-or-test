@@ -704,7 +704,7 @@ Conventions used in every task:
     - _Requirements: 5.17_
     - _Validation: npx vitest run --project engine packages/engine/test/core/sandbox-plan.test.ts passes_
 
-  - [ ] 12.32 Plan symlinks and fixed exclusions in `planSandboxCopy`
+  - [x] 12.32 Plan symlinks and fixed exclusions in `planSandboxCopy`
     - In `core/sandbox-plan.ts` add `planSandboxCopy(entries, outputDirRelative)` returning `copy`, `skip` or `link` for each entry: always skip `node_modules`, `.git`, `.trickortest` and `.stryker-tmp`; a symlink whose resolved target is outside the project is `skip`; one inside is `link` with a relative target inside the Sandbox. The output directory rule comes in task 12.36.
     - Add examples to `test/core/sandbox-plan.test.ts`: link inside, link outside, link to a file and to a directory, the four fixed skips, a nested `node_modules` skip.
     - _Requirements: 5.18_
