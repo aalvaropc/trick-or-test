@@ -17,7 +17,7 @@ export interface UsageError {
 export const USAGE_TEXT = `Usage: trick-or-test <command> [options]
 
 Commands:
-  run                 Attack the specs and write the report, verdict and history
+  run                 Attack one spec and write the report, verdict and history
   measure             Same as run, writing the results into --output
 
 Options:
