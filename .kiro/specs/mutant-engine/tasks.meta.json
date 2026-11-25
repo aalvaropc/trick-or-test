@@ -762,6 +762,18 @@
         "chatSessionId": "sess_4e5018fd-3a00-46f3-9aa2-362f8f075d80",
         "timestamp": 1795628681000
       }
+    ],
+    "3.40 Ignore fenced code blocks in the requirements parser": [
+      {
+        "executionId": "1040f72e-4a51-41e5-a352-f2a87df2814b",
+        "chatSessionId": "sess_0d4523b8-7395-40ba-9bf9-0703c2837741",
+        "timestamp": 1795628727436
+      },
+      {
+        "executionId": "1040f72e-4a51-41e5-a352-f2a87df2814b",
+        "chatSessionId": "sess_0d4523b8-7395-40ba-9bf9-0703c2837741",
+        "timestamp": 1795628769373
+      }
     ]
   }
 }

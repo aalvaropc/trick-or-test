@@ -286,7 +286,7 @@ Conventions used in every task:
     - _Requirements: 6.4_
     - _Validation: npx vitest run --project engine packages/engine/test/adapters/test-body-extractor.test.ts passes_
 
-  - [ ] 3.40 Ignore fenced code blocks in the requirements parser
+  - [x] 3.40 Ignore fenced code blocks in the requirements parser
     - In `core/requirements.ts` treat lines inside a fence (opened by ``` or ~~~, closed by a fence of the same character) as neither headings nor criteria.
     - Add examples to `test/core/requirements.test.ts`: a `#` line inside a fence does not end the criteria section, a numbered line inside a fence is not a criterion, a `~~~` fence, a ``` fence containing `~~~`, and an unclosed fence.
     - _Requirements: 2.1_

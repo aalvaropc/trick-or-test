@@ -81,6 +81,37 @@ describe("parseRequirements", () => {
     expect(!result.ok && result.error.message).toContain(FILE);
   });
 
+  const HEAD = "### Requirement 1: A\n#### Acceptance Criteria\n1. a";
+
+  it("2.1 a # line inside a fence does not end the criteria section", () => {
+    const text = `${HEAD}\n\`\`\`sh\n# comment\n\`\`\`\n2. b`;
+    expect(ids(text)).toEqual(["1.1", "1.2"]);
+  });
+
+  it("2.1 a numbered line inside a fence is not a criterion", () => {
+    const text = `${HEAD}\n\`\`\`\n2. in fence\n\`\`\`\n2. b`;
+    const result = parseRequirements(text, FILE);
+    expect(result.ok && result.value.map((c) => [c.id, c.text])).toEqual([
+      ["1.1", "a"],
+      ["1.2", "b"],
+    ]);
+  });
+
+  it("2.1 a ~~~ fence hides headings and numbered lines", () => {
+    const text = `${HEAD}\n~~~\n### Requirement 9: X\n2. hidden\n~~~\n2. b`;
+    expect(ids(text)).toEqual(["1.1", "1.2"]);
+  });
+
+  it("2.1 a ``` fence containing ~~~ is not closed by it", () => {
+    const text = `${HEAD}\n\`\`\`\n~~~\n2. hidden\n\`\`\`\n2. b`;
+    expect(ids(text)).toEqual(["1.1", "1.2"]);
+  });
+
+  it("2.1 an unclosed fence hides the rest of the document", () => {
+    const text = `${HEAD}\n\`\`\`\n2. hidden\n# heading`;
+    expect(ids(text)).toEqual(["1.1"]);
+  });
+
   it("2.1 parses the cart-pricing fixture: 8 requirements and 36 criteria", () => {
     const path = new URL("../../../../.kiro/specs/cart-pricing/requirements.md", import.meta.url);
     const result = parseRequirements(readFileSync(path, "utf8"), "cart-pricing/requirements.md");

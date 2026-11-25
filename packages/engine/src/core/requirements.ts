@@ -9,6 +9,7 @@ export type ParseError =
 const REQUIREMENT_HEADING = /^###\s+Requirement\s+(\d+)\s*:/;
 const CRITERIA_HEADING = /^####\s+Acceptance Criteria\s*$/;
 const ANY_HEADING = /^#{1,6}\s/;
+const FENCE = /^ {0,3}(`{3,}|~{3,})(.*)$/;
 const NUMBERED_ITEM = /^(\d+)\.\s+(.*\S)\s*$/;
 
 /**
@@ -20,11 +21,32 @@ export function parseRequirements(text: string, filePath: string): Result<Criter
   const lineOfId = new Map<string, number>();
   let requirement: number | undefined;
   let inCriteria = false;
+  let fence: { char: string; length: number } | undefined;
 
   const lines = text.split(/\r?\n/);
   for (let index = 0; index < lines.length; index++) {
     const raw = lines[index] ?? "";
     const line = index + 1;
+
+    const fenceMatch = FENCE.exec(raw);
+    if (fence !== undefined) {
+      const run = fenceMatch?.[1] ?? "";
+      const closes =
+        fenceMatch !== null &&
+        run.startsWith(fence.char) &&
+        run.length >= fence.length &&
+        (fenceMatch[2] ?? "").trim() === "";
+      if (closes) fence = undefined;
+      continue;
+    }
+    if (fenceMatch !== null) {
+      const run = fenceMatch[1] ?? "";
+      // A backtick fence's info string cannot contain backticks (CommonMark).
+      if (!(run.startsWith("`") && (fenceMatch[2] ?? "").includes("`"))) {
+        fence = { char: run.charAt(0), length: run.length };
+        continue;
+      }
+    }
 
     if (ANY_HEADING.test(raw)) {
       const heading = REQUIREMENT_HEADING.exec(raw);
