@@ -27,6 +27,10 @@
     "3.19 Write Property 6: Deterministic ids": {
       "status": "passed",
       "lastRunTimestamp": 1795620412764
+    },
+    "3.21 Write Property 3: No invalid mutant is counted": {
+      "status": "passed",
+      "lastRunTimestamp": 1795620621272
     }
   },
   "executionHistory": {
@@ -321,6 +325,18 @@
         "executionId": "e6e42ea9-5bb5-486e-8c90-650b6ab96583",
         "chatSessionId": "sess_0c1ba6b1-ca9a-40ec-a0fe-16fc32c7e0c8",
         "timestamp": 1795620557967
+      }
+    ],
+    "3.21 Write Property 3: No invalid mutant is counted": [
+      {
+        "executionId": "202ec912-17f9-4aac-9d22-968fc7721300",
+        "chatSessionId": "sess_cd1f1304-8800-43d0-a544-4b27a4c47e5c",
+        "timestamp": 1795620585913
+      },
+      {
+        "executionId": "202ec912-17f9-4aac-9d22-968fc7721300",
+        "chatSessionId": "sess_cd1f1304-8800-43d0-a544-4b27a4c47e5c",
+        "timestamp": 1795620627739
       }
     ]
   }

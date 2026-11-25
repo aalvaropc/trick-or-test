@@ -168,7 +168,7 @@ Conventions used in every task:
     - _Requirements: 7.1, 7.2, 7.3, 7.4, 7.5, 7.6, 7.7, 7.8, 7.9, 7.10_
     - _Validation: npx vitest run --project engine packages/engine/test/core/coverage.test.ts passes_
 
-  - [ ] 3.21 Write Property 3: No invalid mutant is counted
+  - [x] 3.21 Write Property 3: No invalid mutant is counted
     - Write `test/core/coverage.invalid.property.test.ts` with **Property 3: No invalid mutant is counted**.
     - **Validates: Requirements 7.6, 7.7**
     - _Requirements: 7.6, 7.7_
