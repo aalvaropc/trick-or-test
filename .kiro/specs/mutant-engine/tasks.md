@@ -546,7 +546,7 @@ Conventions used in every task:
     - _Requirements: 5.9, 5.10, 6.2_
     - _Validation: npx vitest run --project engine packages/engine/test/cli/orchestrate-spec-mutants.test.ts passes_
 
-  - [ ] 12.6 Add witness outcomes `timeout` and `no-outcome` to `core/witness-compare.ts`
+  - [x] 12.6 Add witness outcomes `timeout` and `no-outcome` to `core/witness-compare.ts`
     - Implement `matchesExpectation(expected, actual)` and `compareOutcomes(original, mutated): "same" | "different"` over a `WitnessOutcome` of kind `value`, `error`, `timeout` or `no-outcome` (with a message). Export the `WitnessOutcome` type from this module. A `timeout` or `no-outcome` never matches an expectation. A `timeout` of the mutated code against an original outcome that is not itself a `timeout` is `different`. Values keep the JSON-form comparison of task 3.42. Keep `compareWitnessOutcome` only if other code still calls it, and delegate it to the new functions.
     - Add examples to `test/core/witness-compare.test.ts`: timeout on the mutated code, timeout on both, timeout on the original only, `no-outcome` against a value, equal and unequal values, `-0` against `0`.
     - _Requirements: 5.6, 5.7, 5.12, 5.16_

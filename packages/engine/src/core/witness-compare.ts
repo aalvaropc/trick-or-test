@@ -2,7 +2,9 @@ export type WitnessExpectation = { expected: unknown } | { expectedError: string
 
 export type WitnessOutcome =
   | { kind: "value"; value: unknown }
-  | { kind: "error"; className: string };
+  | { kind: "error"; className: string }
+  | { kind: "timeout"; message: string }
+  | { kind: "no-outcome"; message: string };
 
 function deepEqual(a: unknown, b: unknown): boolean {
   if (Object.is(a, b)) return true;
@@ -39,17 +41,41 @@ function toJsonForm(value: unknown): unknown {
  * Values use deep structural equality (object key order ignored, array order significant).
  * Errors match on class name only.
  */
+export function matchesExpectation(expected: WitnessExpectation, actual: WitnessOutcome): boolean {
+  if ("expectedError" in expected) {
+    return actual.kind === "error" && actual.className === expected.expectedError;
+  }
+  return (
+    actual.kind === "value" && deepEqual(toJsonForm(expected.expected), toJsonForm(actual.value))
+  );
+}
+
+/** Compares the outcome on the original code with the outcome on the mutated code. */
+export function compareOutcomes(
+  original: WitnessOutcome,
+  mutated: WitnessOutcome,
+): "same" | "different" {
+  if (original.kind !== mutated.kind) return "different";
+  switch (original.kind) {
+    case "value":
+      return deepEqual(
+        toJsonForm(original.value),
+        toJsonForm((mutated as { kind: "value"; value: unknown }).value),
+      )
+        ? "same"
+        : "different";
+    case "error":
+      return original.className === (mutated as { kind: "error"; className: string }).className
+        ? "same"
+        : "different";
+    default:
+      return "same";
+  }
+}
+
 export function compareWitnessOutcome(
   expected: WitnessExpectation,
   actual: WitnessOutcome,
 ): "match" | "mismatch" {
-  if ("expectedError" in expected) {
-    return actual.kind === "error" && actual.className === expected.expectedError
-      ? "match"
-      : "mismatch";
-  }
-  return actual.kind === "value" &&
-    deepEqual(toJsonForm(expected.expected), toJsonForm(actual.value))
-    ? "match"
-    : "mismatch";
+  return matchesExpectation(expected, actual) ? "match" : "mismatch";
 }

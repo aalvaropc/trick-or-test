@@ -1047,6 +1047,20 @@
         "chatSessionId": "sess_75625fbc-b8cc-4a22-b784-683987029007",
         "timestamp": 1795637740834
       }
+    ],
+    "12.4 Abort the run on a file-level failure in the Baseline_Run": [
+      {
+        "executionId": "d52afb3a-22a6-4dac-94e5-f529d8134070",
+        "chatSessionId": "sess_55c6e161-935b-4f5f-9a6d-3d5c0355e64b",
+        "timestamp": 1795637906357
+      }
+    ],
+    "12.5 Kill a Spec_Mutant on a file-level failure": [
+      {
+        "executionId": "6a91e7d1-06ee-4c1f-96fb-19f5f3422fec",
+        "chatSessionId": "sess_24a58386-c2de-4870-9577-47893ac0d86c",
+        "timestamp": 1795638061273
+      }
     ]
   }
 }
