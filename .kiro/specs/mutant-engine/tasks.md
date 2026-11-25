@@ -716,7 +716,7 @@ Conventions used in every task:
     - _Requirements: 5.18, 3.7_
     - _Validation: npx vitest run --project engine packages/engine/test/adapters/file-system-adapter.test.ts passes_
 
-  - [ ] 12.34 Make the Sandbox copy follow the plan and check every write
+  - [x] 12.34 Make the Sandbox copy follow the plan and check every write
     - In `adapters/sandbox.ts` build the copy from `listEntries` and `planSandboxCopy`, call `resolveInside` before every write, recreate inside links as relative links, skip outside links and log a warning. A path that escapes the Sandbox returns an error, destroys the Sandbox and ends the run with exit code 1.
     - Add examples to `test/adapters/sandbox.test.ts` on a temp project: a link to a directory outside the project is not in the Sandbox and nothing outside is written through it, a link inside works inside the Sandbox, an escaping path returns an error and leaves no Sandbox.
     - _Requirements: 5.17, 5.18_

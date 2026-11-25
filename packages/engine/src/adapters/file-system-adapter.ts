@@ -25,6 +25,12 @@ export interface FileSystem {
    * targets are project-relative; a target outside the project starts with `..`. Links are not followed.
    */
   listEntries(root: string): Promise<ProjectEntry[]>;
+  /** Copies one file, creating missing parent directories. */
+  copyFile(src: string, dest: string): Promise<Result<void, string>>;
+  /** Creates a directory and its missing parents. */
+  makeDir(path: string): Promise<Result<void, string>>;
+  /** Creates a symlink at `path` whose content is `target` (used verbatim). */
+  makeLink(target: string, path: string): Promise<Result<void, string>>;
 }
 
 const messageOf = (error: unknown): string =>
@@ -115,6 +121,35 @@ export const createFileSystem = (): FileSystem => ({
     const out: ProjectEntry[] = [];
     await walkEntries(realRoot, realRoot, out);
     return out;
+  },
+
+  async copyFile(src, dest) {
+    try {
+      await mkdir(dirname(dest), { recursive: true });
+      await copyFile(src, dest);
+      return ok(undefined);
+    } catch (error) {
+      return err(`Cannot copy ${src} to ${dest}: ${messageOf(error)}`);
+    }
+  },
+
+  async makeDir(path) {
+    try {
+      await mkdir(path, { recursive: true });
+      return ok(undefined);
+    } catch (error) {
+      return err(`Cannot create ${path}: ${messageOf(error)}`);
+    }
+  },
+
+  async makeLink(target, path) {
+    try {
+      await mkdir(dirname(path), { recursive: true });
+      await symlink(target, path);
+      return ok(undefined);
+    } catch (error) {
+      return err(`Cannot link ${path}: ${messageOf(error)}`);
+    }
   },
 
   async readFile(path) {
