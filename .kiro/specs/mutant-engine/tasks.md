@@ -162,7 +162,7 @@ Conventions used in every task:
     - _Requirements: 4.5, 8.7_
     - _Validation: npx vitest run --project engine packages/engine/test/core/mutant-id.property.test.ts passes_
 
-  - [ ] 3.20 Implement `coverage.ts` with example tests
+  - [x] 3.20 Implement `coverage.ts` with example tests
     - Implement `computeCoverage(criteria, mutantResults, skipEntries)` assigning one Coverage_Status per criterion (Timeout counts as killed, only Killed, Survived and Timeout are valid), carrying the skip reason, and computing the headline count of surviving Spec_Mutants and the separate count of strays.
     - Write `test/core/coverage.test.ts`: guarded, unguarded, unattacked, skipped, all-Timeout criterion, a criterion whose only mutants are Ghost or InvalidWitness (unattacked), mixed Killed and Survived, strays kept apart from the headline.
     - _Requirements: 7.1, 7.2, 7.3, 7.4, 7.5, 7.6, 7.7, 7.8, 7.9, 7.10_

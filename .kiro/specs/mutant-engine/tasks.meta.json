@@ -310,6 +310,18 @@
         "chatSessionId": "sess_92aaf2d0-2f2f-4c2a-bacc-5014ed449188",
         "timestamp": 1795620418964
       }
+    ],
+    "3.20 Implement `coverage.ts` with example tests": [
+      {
+        "executionId": "e6e42ea9-5bb5-486e-8c90-650b6ab96583",
+        "chatSessionId": "sess_0c1ba6b1-ca9a-40ec-a0fe-16fc32c7e0c8",
+        "timestamp": 1795620445462
+      },
+      {
+        "executionId": "e6e42ea9-5bb5-486e-8c90-650b6ab96583",
+        "chatSessionId": "sess_0c1ba6b1-ca9a-40ec-a0fe-16fc32c7e0c8",
+        "timestamp": 1795620557967
+      }
     ]
   }
 }
