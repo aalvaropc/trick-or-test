@@ -441,7 +441,7 @@ Conventions used in every task:
     - _Requirements: 9.1, 9.2, 9.6, 9.7, 9.9, 9.10_
     - _Validation: npx vitest run --project engine packages/engine/test/cli/main.test.ts passes_
 
-  - [ ] 7.7 Add the no-LLM, no-network test
+  - [x] 7.7 Add the no-LLM, no-network test
     - Write `test/cli/no-network.test.ts` that scans the files under `src/` and `package.json` for imports or dependencies of HTTP clients and LLM SDKs, for `fetch(`, `node:http`, `node:https` and `node:net`, and for any reference to an API key variable. The test fails with the file name.
     - _Requirements: 9.11_
     - _Validation: npx vitest run --project engine packages/engine/test/cli/no-network.test.ts passes_

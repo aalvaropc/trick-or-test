@@ -955,6 +955,18 @@
         "chatSessionId": "sess_13724b6c-3e62-480b-876d-6fddd8f36310",
         "timestamp": 1795631294991
       }
+    ],
+    "7.7 Add the no-LLM, no-network test": [
+      {
+        "executionId": "38d79803-a891-469d-9654-ba47b9682672",
+        "chatSessionId": "sess_66f1ee5a-a8ad-4017-980e-a085576290e8",
+        "timestamp": 1795631818288
+      },
+      {
+        "executionId": "efc0dbcc-2149-4af2-b379-cd228a8498d8",
+        "chatSessionId": "sess_66f1ee5a-a8ad-4017-980e-a085576290e8",
+        "timestamp": 1795631998005
+      }
     ]
   }
 }
