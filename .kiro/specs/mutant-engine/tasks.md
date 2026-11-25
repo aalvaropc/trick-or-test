@@ -107,7 +107,7 @@ Conventions used in every task:
     - _Requirements: 4.1, 4.2, 4.3, 4.4, 4.5, 4.6, 4.7, 4.8, 4.9, 4.10_
     - _Validation: npx vitest run --project engine packages/engine/test/core/spec-mutants.test.ts passes_
 
-  - [ ] 3.11 Implement `suite-time-limit.ts` with boundary example tests
+  - [x] 3.11 Implement `suite-time-limit.ts` with boundary example tests
     - Implement `computeSuiteTimeLimit(baselineMs, timeoutMs?)`: `timeoutMs` when set, otherwise `baselineMs * 1.5 + 5000`.
     - Write `test/core/suite-time-limit.test.ts` with boundary examples: baseline 0, a typical baseline, `timeoutMs` set to 0, `timeoutMs` set and smaller than the formula, `timeoutMs` set and larger than the formula.
     - _Requirements: 1.1, 1.7, 5.15_
