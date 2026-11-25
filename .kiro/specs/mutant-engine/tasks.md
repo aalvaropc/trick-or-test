@@ -222,7 +222,7 @@ Conventions used in every task:
     - _Requirements: 8.8, 8.9, 8.10_
     - _Validation: npx vitest run --project engine packages/engine/test/core/history.test.ts passes_
 
-  - [ ] 3.30 Write Property 14: History is append-only
+  - [x] 3.30 Write Property 14: History is append-only
     - Write `test/core/history.property.test.ts` with **Property 14: History is append-only**.
     - **Validates: Requirements 8.8, 8.9**
     - _Requirements: 8.8, 8.9_

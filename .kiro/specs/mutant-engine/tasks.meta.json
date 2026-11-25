@@ -47,6 +47,10 @@
     "3.28 Write Property 16: Verdict round trip": {
       "status": "passed",
       "lastRunTimestamp": 1795621848294
+    },
+    "3.30 Write Property 14: History is append-only": {
+      "status": "passed",
+      "lastRunTimestamp": 1795622112924
     }
   },
   "executionHistory": {
@@ -459,6 +463,18 @@
         "executionId": "254c8e11-fdfc-469b-aeef-e56fb269e35b",
         "chatSessionId": "sess_d5d740a2-560f-4ae6-8a33-a1fe2ac25ebc",
         "timestamp": 1795622051906
+      }
+    ],
+    "3.30 Write Property 14: History is append-only": [
+      {
+        "executionId": "dd20401b-3f9c-499c-9ab2-01b8bcad21a5",
+        "chatSessionId": "sess_bd82912d-b30a-423e-9e55-8ee0612aee81",
+        "timestamp": 1795622084900
+      },
+      {
+        "executionId": "dd20401b-3f9c-499c-9ab2-01b8bcad21a5",
+        "chatSessionId": "sess_bd82912d-b30a-423e-9e55-8ee0612aee81",
+        "timestamp": 1795622119171
       }
     ]
   }
