@@ -338,7 +338,7 @@ Conventions for every task:
     - _Requirements: 9.1, 10.11_
     - _Validation: `npm test -w trick-or-test-viewer -- test/app/ScreenFrame.test.tsx` passes_
 
-  - [ ] 8.9 Implement the load error display
+  - [x] 8.9 Implement the load error display
     - Create `src/app/LoadErrorView.tsx` rendering a `LoadError`: the file name, the message, the 1-based line for history errors, up to 10 field paths and the count of further failures, plus the "N verdict entries ignored" note. Write the text in the field-notes voice: sentences of 20 words or fewer, no exclamation marks.
     - Example tests in `test/app/LoadErrorView.test.tsx`: schema error with 12 failures shows 10 paths and "2 more" (1.8), history error shows the file name and line (1.13), empty file message (1.14), 50 MB message names the file and the limit (1.11), ignored-entry count note (1.10), demo fetch error names the file (2.3), invalid demo content names the file (2.4), no `!` and no sentence over 20 words (12.14).
     - _Requirements: 1.7, 1.8, 1.10, 1.11, 1.13, 1.14, 2.3, 2.4, 12.14_
