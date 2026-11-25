@@ -192,7 +192,7 @@ Conventions used in every task:
     - _Requirements: 8.1, 8.2, 8.3, 8.4, 8.14, 8.15_
     - _Validation: npx vitest run --project engine packages/engine/test/core/report.test.ts passes_
 
-  - [ ] 3.25 Write Property 7: Report validity
+  - [x] 3.25 Write Property 7: Report validity
     - Write `test/core/report.validity.property.test.ts` with **Property 7: Report validity**. Validate every generated report with `mutation-testing-report-schema`, check the status mapping and check the parse-back equality.
     - **Validates: Requirements 8.1, 8.2, 8.3, 8.4**
     - _Requirements: 8.1, 8.2, 8.3, 8.4_

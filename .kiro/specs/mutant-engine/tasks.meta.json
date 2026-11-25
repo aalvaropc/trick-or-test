@@ -35,6 +35,10 @@
     "3.22 Write Property 4: Coverage partition": {
       "status": "passed",
       "lastRunTimestamp": 1795620690242
+    },
+    "3.25 Write Property 7: Report validity": {
+      "status": "passed",
+      "lastRunTimestamp": 1795621360402
     }
   },
   "executionHistory": {
@@ -387,6 +391,18 @@
         "executionId": "249a9bc0-d6cd-475c-a1b0-fc07bcc5d3b4",
         "chatSessionId": "sess_d4a338d0-7e10-4c51-9db3-e109d75b4155",
         "timestamp": 1795621243227
+      }
+    ],
+    "3.25 Write Property 7: Report validity": [
+      {
+        "executionId": "54f94679-80a1-4ad8-bc98-d499b7b9a775",
+        "chatSessionId": "sess_383e4c81-a8de-495d-9c4e-ea02645a7251",
+        "timestamp": 1795621278062
+      },
+      {
+        "executionId": "54f94679-80a1-4ad8-bc98-d499b7b9a775",
+        "chatSessionId": "sess_383e4c81-a8de-495d-9c4e-ea02645a7251",
+        "timestamp": 1795621382702
       }
     ]
   }
