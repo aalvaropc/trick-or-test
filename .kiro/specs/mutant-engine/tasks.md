@@ -461,12 +461,12 @@ Conventions used in every task:
     - _Requirements: 9.2, 9.12, 9.14_
     - _Validation: npx vitest run --project engine packages/engine/test/cli/measure-script.test.ts passes_
 
-- [ ] 8. Checkpoint - CLI phase
+- [x] 8. Checkpoint - CLI phase
   - Run `npm run check` from the repository root. Ensure all tests pass, ask the user if questions arise.
   - _Validation: npm run check passes_
 
 - [ ] 9. Write the end-to-end test
-  - [ ] 9.1 Write the end-to-end test for `examples/pricing`
+  - [x] 9.1 Write the end-to-end test for `examples/pricing`
     - Create `test/e2e/pricing.test.ts` that runs the built CLI (`trick-or-test measure --project examples/pricing --spec cart-pricing`, output into a temp directory) with the real StrykerJS and Vitest, and checks that the mutation report validates against `mutation-testing-report-schema`, that `verdict.json` and the history file exist and match their zod schemas, that the exit code is 0, and that a second run appends exactly one history record.
     - Hash `examples/pricing/src/` and `examples/pricing/test/` before and after the run and check that they are byte-identical, and check that `.trickortest/sandboxes/` is empty afterwards.
     - Precondition supplied by the user: before this task starts, the user adds `examples/pricing/mutants/cart-pricing/` with the 24 spec mutants bred by a Kiro agent from the cart-pricing spec. This task does not invent or add any mutant. Against the current tests, 23 are killed and `oath-7.4` survives.
