@@ -752,7 +752,7 @@ Conventions used in every task:
     - _Requirements: 3.7, 3.8_
     - _Validation: npx vitest run --project engine packages/engine/test/core/stryker-exclusions.test.ts passes_
 
-  - [ ] 12.40 Write Property 24: Stryker exclusion list
+  - [x] 12.40 Write Property 24: Stryker exclusion list
     - Write `test/core/stryker-exclusions.property.test.ts` with **Property 24: Stryker exclusion list**.
     - **Validates: Requirements 3.7, 3.8**
     - _Requirements: 3.7, 3.8_
