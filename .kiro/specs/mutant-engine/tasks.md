@@ -82,7 +82,7 @@ Conventions used in every task:
     - _Requirements: 3.11, 3.12, 3.13, 8.14_
     - _Validation: npx vitest run --project engine packages/engine/test/core/species.property.test.ts passes_
 
-  - [ ] 3.7 Implement `mutation.ts` with example tests
+  - [x] 3.7 Implement `mutation.ts` with example tests
     - Implement `applyMutation(source, mutant)` (requires exactly one occurrence of `original`, returns the mutated text and span) and `revertMutation(mutated, mutant, span)`.
     - Write `test/core/mutation.test.ts`: exactly one occurrence, zero occurrences, two occurrences (NotApplicable), occurrence at the start and at the end of the source.
     - _Requirements: 5.2_
