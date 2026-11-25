@@ -149,7 +149,7 @@ Conventions used in every task:
     - _Requirements: 6.1, 6.2_
     - _Validation: npx vitest run --project engine packages/engine/test/core/kill-classification.single-run.property.test.ts passes_
 
-  - [ ] 3.18 Implement `mutant-id.ts` with example tests
+  - [x] 3.18 Implement `mutant-id.ts` with example tests
     - Implement `computeMutantId(file, original, replacement)` for Mechanical_Mutants only, as a hex-truncated hash from `createHash('sha256')` of `node:crypto`. Do not hand-write a sha256. This is the only core module that imports from `node:`. Keep it out of the `trick-or-test/report` import graph.
     - Spec_Mutants do not pass through this function: a Spec_Mutant keeps the id from its file (`oath-<criterion>-<slug>`), unique per Requirement 4.5.
     - Write `test/core/mutant-id.test.ts`: a fixed known hash, a different file, a different original, a different replacement, and the empty string.
