@@ -162,7 +162,7 @@ Conventions for every task:
     - _Requirements: 4.4, 4.5, 4.6, 4.7, 4.8, 4.9, 4.10, 4.12_
     - _Validation: `npm test -w trick-or-test-viewer -- test/bestiary/state.test.ts` passes_
 
-  - [ ] 4.4 Write property test for state being total
+  - [x] 4.4 Write property test for state being total
     - **Property V5: State is total**
     - File: `test/bestiary/state.property.test.ts`. For any `ReportStatus`, any `statusReason` (or none) and any presence of a Verdict_File entry, `deriveState` returns exactly one of the four states or `"not-counted"`, never throws.
     - _Requirements: 4.4, 4.5, 4.6, 4.7, 4.8, 4.9, 4.10, 4.12_
