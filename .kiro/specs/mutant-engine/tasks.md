@@ -292,7 +292,7 @@ Conventions used in every task:
     - _Requirements: 2.1_
     - _Validation: npx vitest run --project engine packages/engine/test/core/requirements.test.ts passes_
 
-  - [ ] 3.41 Extend the Property 8 generator with fenced blocks
+  - [x] 3.41 Extend the Property 8 generator with fenced blocks
     - In `test/helpers/requirements-generator.ts` insert fenced blocks whose lines look like requirement headings, criteria headings or numbered items. `test/core/requirements.property.test.ts` still expects exactly the ids `n.k`.
     - **Validates: Requirements 2.1, 2.2, 2.8**
     - _Requirements: 2.1, 2.8_
