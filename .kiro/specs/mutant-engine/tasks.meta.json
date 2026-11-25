@@ -808,6 +808,18 @@
         "chatSessionId": "sess_e37b46a9-d56e-47f0-9421-5b1bb0d48bdd",
         "timestamp": 1795629091708
       }
+    ],
+    "3.43 Make `validateConfig(null)` an error": [
+      {
+        "executionId": "aae179e6-9072-4de4-8889-f8f37930345f",
+        "chatSessionId": "sess_364d21b1-decd-4415-bba0-372c80f786db",
+        "timestamp": 1795629127402
+      },
+      {
+        "executionId": "aae179e6-9072-4de4-8889-f8f37930345f",
+        "chatSessionId": "sess_364d21b1-decd-4415-bba0-372c80f786db",
+        "timestamp": 1795629161663
+      }
     ]
   }
 }

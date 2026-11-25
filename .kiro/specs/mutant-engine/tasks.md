@@ -304,7 +304,7 @@ Conventions used in every task:
     - _Requirements: 5.12_
     - _Validation: npx vitest run --project engine packages/engine/test/core/witness-compare.test.ts passes_
 
-  - [ ] 3.43 Make `validateConfig(null)` an error
+  - [x] 3.43 Make `validateConfig(null)` an error
     - In `core/config.ts` return an error that names `trickortest.config.json` for `null` and for every other non-object value (array, string, number). Only a missing file gives defaults, and the caller decides that without calling `validateConfig`.
     - Add examples to `test/core/config.test.ts`: `null`, an array, a string, a number, and `{}` (still all defaults).
     - _Requirements: 1.3, 1.5_

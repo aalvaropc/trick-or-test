@@ -44,13 +44,16 @@ const fail = (message: string, field?: string): Result<never, ConfigError> =>
  * `timeoutMs` stays unset when absent (Requirement 1.7).
  */
 export function validateConfig(raw: unknown): Result<EngineConfig, ConfigError> {
-  let value: unknown = raw ?? {};
+  let value: unknown = raw === undefined ? {} : raw;
   if (typeof raw === "string") {
     try {
       value = JSON.parse(raw);
     } catch {
       return fail("is not valid JSON");
     }
+  }
+  if (value === null || typeof value !== "object" || Array.isArray(value)) {
+    return fail("must contain a JSON object");
   }
 
   const parsed = configSchema.safeParse(value);
