@@ -411,7 +411,7 @@ Conventions used in every task:
     - _Requirements: 9.3, 9.4, 9.5, 9.8, 9.10_
     - _Validation: npx vitest run --project engine packages/engine/test/cli/args.test.ts passes_
 
-  - [ ] 7.2 Implement the load and validate stage of the orchestration with tests
+  - [-] 7.2 Implement the load and validate stage of the orchestration with tests
     - In `orchestrate.ts` implement the first stage: read and validate the config, find the spec directories that have a `requirements.md` (or the one given by `--spec`), parse the requirements, load the mutants and the Skip_File, and run the cross-file rules. Any error returns before the baseline and before StrykerJS. Adapters come in through interfaces.
     - Write `test/cli/orchestrate-load.test.ts` with fake adapters: a valid project, an invalid config, a parse error, a malformed mutant file (the other files still load and the run ends before the baseline), and a spec directory without `requirements.md` that is skipped.
     - _Requirements: 4.4, 9.1, 9.5, 10.2, 10.3_
