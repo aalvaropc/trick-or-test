@@ -113,7 +113,7 @@ Conventions used in every task:
     - _Requirements: 1.1, 1.7, 5.15_
     - _Validation: npx vitest run --project engine packages/engine/test/core/suite-time-limit.test.ts passes_
 
-  - [ ] 3.12 Implement `witness-compare.ts` with example tests
+  - [x] 3.12 Implement `witness-compare.ts` with example tests
     - Implement `compareWitnessOutcome(expected, actual)` using deep structural equality over JSON values and error class name equality.
     - Write `test/core/witness-compare.test.ts`: equal values, unequal values, key order in objects, nested arrays, `expectedError` match and mismatch, value versus error.
     - _Requirements: 5.6, 5.12_
