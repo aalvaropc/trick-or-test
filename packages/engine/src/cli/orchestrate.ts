@@ -356,7 +356,10 @@ export async function runBaselineAndMechanical(
     return err({ kind: "baseline-error", message });
   }
   const failingTests = baseline.value.files.flatMap((file) =>
-    file.tests.filter((t) => t.status === "failed").map((t) => testIdOf(file.path, t.name)),
+    file.tests
+      .filter((t) => t.status === "failed")
+      // A file-level failure is named after its file: report the path once (3.15).
+      .map((t) => (t.name === file.path ? file.path : testIdOf(file.path, t.name))),
   );
   if (failingTests.length > 0) return err({ kind: "baseline-failed", failingTests });
 

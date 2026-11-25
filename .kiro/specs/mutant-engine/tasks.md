@@ -534,7 +534,7 @@ Conventions used in every task:
     - _Requirements: 3.15, 5.9_
     - _Validation: npx vitest run --project engine packages/engine/test/adapters/vitest-suite-runner.test.ts passes_
 
-  - [ ] 12.4 Abort the run on a file-level failure in the Baseline_Run
+  - [x] 12.4 Abort the run on a file-level failure in the Baseline_Run
     - In `cli/orchestrate.ts` make the baseline stage abort when the suite runner returns any Failing_Test, including a file-level failure, report the failing tests (the file path for a file-level failure) and write no Verdict_File.
     - Add examples to `test/cli/orchestrate-mechanical.test.ts`: a baseline whose only failure is a file that fails to load aborts the run, names the file and writes nothing.
     - _Requirements: 3.15_

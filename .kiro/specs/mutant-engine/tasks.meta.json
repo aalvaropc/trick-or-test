@@ -1040,6 +1040,13 @@
         "chatSessionId": "sess_561e2e90-ef31-4f3e-ac09-82af6dd87843",
         "timestamp": 1795637612904
       }
+    ],
+    "12.3 Use `extractFailingTests` in the suite runner": [
+      {
+        "executionId": "fca25ef8-4c46-4fe8-b3e4-763a7d21b68d",
+        "chatSessionId": "sess_75625fbc-b8cc-4a22-b784-683987029007",
+        "timestamp": 1795637740834
+      }
     ]
   }
 }

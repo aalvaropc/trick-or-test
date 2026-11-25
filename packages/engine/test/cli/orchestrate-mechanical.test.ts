@@ -250,3 +250,31 @@ describe("baseline and mechanical stage", () => {
     ]);
   });
 });
+
+describe("baseline file-level failure", () => {
+  const loadFailure: SuiteFile = {
+    path: "test/broken.test.ts",
+    tests: [{ name: "test/broken.test.ts", status: "failed", startLine: 0 }],
+  };
+
+  it("3.15 a baseline whose only failure is a file that fails to load aborts and names the file", async () => {
+    const adapters = fakes({
+      suite: ok({ durationMs: 10, files: [passingSuite().files[0] as SuiteFile, loadFailure] }),
+    });
+
+    const result = await runBaselineAndMechanical({ project: ROOT }, project, input, adapters);
+
+    expect(result).toEqual({
+      ok: false,
+      error: { kind: "baseline-failed", failingTests: ["test/broken.test.ts"] },
+    });
+  });
+
+  it("3.15 a file-level baseline failure never starts StrykerJS", async () => {
+    const adapters = fakes({ suite: ok({ durationMs: 10, files: [loadFailure] }) });
+
+    await runBaselineAndMechanical({ project: ROOT }, project, input, adapters);
+
+    expect(adapters.calls.mechanical).toHaveLength(0);
+  });
+});
