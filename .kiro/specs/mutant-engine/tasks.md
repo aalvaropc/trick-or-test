@@ -131,7 +131,7 @@ Conventions used in every task:
     - _Requirements: 6.3, 6.4, 6.5_
     - _Validation: npx vitest run --project engine packages/engine/test/core/test-classification.property.test.ts passes_
 
-  - [ ] 3.15 Implement `kill-classification.ts` with example tests
+  - [x] 3.15 Implement `kill-classification.ts` with example tests
     - Implement `computeKillClass(killingTests)` returning `examples-only`, `properties-only`, `both` or `unattributed` (empty list).
     - Write `test/core/kill-classification.test.ts`: one example per class, and a single-test list for each kind.
     - _Requirements: 6.6, 6.7, 6.8, 6.9_

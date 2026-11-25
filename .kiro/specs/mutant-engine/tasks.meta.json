@@ -238,6 +238,18 @@
         "chatSessionId": "sess_9618eef6-c46f-444e-aca8-fec85f678565",
         "timestamp": 1795619996955
       }
+    ],
+    "3.15 Implement `kill-classification.ts` with example tests": [
+      {
+        "executionId": "b7e1a129-63d5-4863-8c31-6f6834ccb2ef",
+        "chatSessionId": "sess_9ebd3c79-f216-4ff5-8402-c813025685f8",
+        "timestamp": 1795620026006
+      },
+      {
+        "executionId": "b7e1a129-63d5-4863-8c31-6f6834ccb2ef",
+        "chatSessionId": "sess_9ebd3c79-f216-4ff5-8402-c813025685f8",
+        "timestamp": 1795620074928
+      }
     ]
   }
 }
