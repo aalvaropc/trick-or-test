@@ -63,7 +63,7 @@ Conventions used in every task:
     - _Requirements: 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7_
     - _Validation: npx vitest run --project engine packages/engine/test/core/requirements.test.ts passes_
 
-  - [ ] 3.4 Write the requirements document generator and Property 8: Parser
+  - [x] 3.4 Write the requirements document generator and Property 8: Parser
     - Create `test/helpers/requirements-generator.ts` that generates documents with N requirements of K criteria each, plus documents with no acceptance criteria.
     - Write `test/core/requirements.property.test.ts` with **Property 8: Parser**.
     - **Validates: Requirements 2.1, 2.2, 2.3, 2.4, 2.7, 2.8**
