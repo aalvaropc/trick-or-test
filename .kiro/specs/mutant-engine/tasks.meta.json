@@ -1314,6 +1314,13 @@
         "chatSessionId": "sess_acf35a2f-678d-4af7-bb97-c4694b8a3724",
         "timestamp": 1795644568975
       }
+    ],
+    "12.36 Exclude the output directory by its project-relative path": [
+      {
+        "executionId": "4155e374-5516-408a-b051-f4efa47f0b47",
+        "chatSessionId": "sess_79fa1ec2-9d7f-4adf-93b7-61b40d52746d",
+        "timestamp": 1795644758820
+      }
     ]
   }
 }

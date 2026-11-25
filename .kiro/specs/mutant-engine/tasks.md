@@ -734,7 +734,7 @@ Conventions used in every task:
     - _Requirements: 5.19_
     - _Validation: npx vitest run --project engine packages/engine/test/core/sandbox-plan.test.ts passes_
 
-  - [ ] 12.37 Write Property 19: Sandbox path containment
+  - [x] 12.37 Write Property 19: Sandbox path containment
     - Write `test/core/sandbox-plan.property.test.ts` with **Property 19: Sandbox path containment**. Generate project listings with links inside and outside the project, `..` segments and an output directory, and check every statement of the property.
     - **Validates: Requirements 5.17, 5.18, 5.19**
     - _Requirements: 5.17, 5.18, 5.19_
