@@ -1253,6 +1253,13 @@
         "chatSessionId": "sess_403e46a6-6848-48c9-bec0-2b5b60b61a70",
         "timestamp": 1795643206383
       }
+    ],
+    "12.28 Scrub run-time paths in the orchestration and extend the path test": [
+      {
+        "executionId": "b6b5715c-2ec3-4517-a4a1-d4fab69c01e8",
+        "chatSessionId": "sess_329bf9a1-f790-44ba-b0c5-201e740db4de",
+        "timestamp": 1795643483328
+      }
     ]
   }
 }

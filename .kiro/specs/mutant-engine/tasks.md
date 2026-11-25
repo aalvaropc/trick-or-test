@@ -686,7 +686,7 @@ Conventions used in every task:
     - _Requirements: 8.17_
     - _Validation: npx vitest run --project engine packages/engine/test/cli/orchestrate-report-paths.test.ts passes_
 
-  - [ ] 12.29 Validate Spec_Mutant paths and ids in the loader
+  - [x] 12.29 Validate Spec_Mutant paths and ids in the loader
     - In `core/spec-mutants.ts` add `isSafeRelativePath` and `isSafeMutantId` and make `validateSpecMutant` reject a `file` or `witness.from` (after the default of 4.3) that is empty, absolute (`/`, drive letter, UNC, leading `~`), has a `..` segment, a backslash or a NUL, and an `id` outside `^[A-Za-z0-9._-]+$` or with `..`. Each error names the mutant file and the field.
     - Add examples to `test/core/spec-mutants.test.ts`: one example per rejected form for `file`, `witness.from` and `id`, an accepted nested relative path, and a mutant without `from` whose `file` is unsafe.
     - _Requirements: 4.3, 4.11, 4.12_
