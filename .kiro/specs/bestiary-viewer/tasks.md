@@ -260,7 +260,7 @@ Conventions for every task:
     - _Requirements: 4.8, 4.11, 9.2, 9.6_
     - _Validation: `npm test -w trick-or-test-viewer -- test/plain-view/columns.test.ts` passes_
 
-  - [ ] 5.2 Implement `plain-view/sort.ts`
+  - [x] 5.2 Implement `plain-view/sort.ts`
     - Implement `sortRows(rows, column, direction)`: a stable sort by the column, with mutant id ascending as the tie-breaker in both directions. Return a new array.
     - Example tests in `test/plain-view/sort.test.ts`: ascending on a column (9.3), toggling the same column reverses it (9.4), tie-breaker by id for both directions (9.5).
     - _Requirements: 9.3, 9.4, 9.5_

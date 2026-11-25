@@ -467,6 +467,13 @@
         "chatSessionId": "sess_302ed2f0-1c7d-40da-82b1-5197627fd9b0",
         "timestamp": 1795635276955
       }
+    ],
+    "5.1 Implement `plain-view/columns.ts` and the row builder": [
+      {
+        "executionId": "74ff4d8b-490c-4044-a3a6-79fec98006de",
+        "chatSessionId": "sess_15bbe4de-98fe-4968-a3f4-e7457f32f6ef",
+        "timestamp": 1795635403345
+      }
     ]
   }
 }
