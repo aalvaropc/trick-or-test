@@ -137,6 +137,18 @@
         "chatSessionId": "sess_fa6fdedc-cc2c-479c-971b-90e99e69becb",
         "timestamp": 1795628480881
       }
+    ],
+    "3.4 Write property test for loading never crashing": [
+      {
+        "executionId": "d8c47e50-6876-451f-9773-98afaa607d61",
+        "chatSessionId": "sess_a1b39812-ab01-4ea0-890f-c6c8e1d78675",
+        "timestamp": 1795628513097
+      },
+      {
+        "executionId": "d8c47e50-6876-451f-9773-98afaa607d61",
+        "chatSessionId": "sess_a1b39812-ab01-4ea0-890f-c6c8e1d78675",
+        "timestamp": 1795628566652
+      }
     ]
   }
 }

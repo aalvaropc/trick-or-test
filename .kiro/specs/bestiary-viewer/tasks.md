@@ -107,7 +107,7 @@ Conventions for every task:
     - _Requirements: 1.7, 1.8, 1.13, 12.14_
     - _Validation: `npm test -w trick-or-test-viewer -- test/loader/parse.test.ts` passes_
 
-  - [ ] 3.4 Write property test for loading never crashing
+  - [x] 3.4 Write property test for loading never crashing
     - **Property V8: Loading never crashes**
     - File: `test/loader/loader.never-throws.property.test.ts`. Generate arbitrary text (valid JSON of any shape, JSON Lines with blank or malformed lines, empty or whitespace strings, arbitrary characters) and any file name. Assert `recognise` then `parseFile` returns a `Result` and never throws, and a History_File `LoadError` has the file name and a 1-based line number that points at a non-empty line.
     - _Requirements: 1.6, 1.7, 1.8, 1.9, 1.12, 1.13, 1.14_
