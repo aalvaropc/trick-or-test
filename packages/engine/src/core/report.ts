@@ -1,0 +1,300 @@
+import { z } from "zod";
+import type {
+  CriterionCoverage,
+  CriterionId,
+  EngineConfig,
+  HistoryRecord,
+  MutantId,
+  MutantResult,
+  MutantStatus,
+  Species,
+  TestId,
+  Verdict,
+  Witness,
+} from "./types.js";
+
+// ---------------------------------------------------------------------------
+// Zod schemas (Requirement 8.10 validates the Verdict and history records with these).
+// ---------------------------------------------------------------------------
+
+const mutantIdSchema = z.custom<MutantId>((v) => typeof v === "string");
+const criterionIdSchema = z.custom<CriterionId>((v) => typeof v === "string");
+const testIdSchema = z.custom<TestId>((v) => typeof v === "string");
+
+export const mutantStatusSchema = z.enum([
+  "Killed",
+  "Survived",
+  "Timeout",
+  "Ghost",
+  "InvalidWitness",
+  "CompileError",
+  "NotApplicable",
+]);
+export const speciesSchema = z.enum([
+  "Borderling",
+  "Miscount",
+  "Two-Face",
+  "Hollow",
+  "Impostor",
+  "Oathbreaker",
+  "Unclassified",
+]);
+export const killClassSchema = z.enum(["examples-only", "properties-only", "both", "unattributed"]);
+export const coverageStatusSchema = z.enum(["guarded", "unguarded", "unattacked", "skipped"]);
+
+const witnessBase = {
+  from: z.string(),
+  export: z.string(),
+  args: z.array(z.unknown()),
+};
+export const witnessSchema: z.ZodType<Witness> = z.union([
+  z.strictObject({ ...witnessBase, expected: z.unknown() }),
+  z.strictObject({ ...witnessBase, expectedError: z.string() }),
+]) as unknown as z.ZodType<Witness>;
+
+export const criterionCoverageSchema: z.ZodType<CriterionCoverage> = z.strictObject({
+  criterion: criterionIdSchema,
+  status: coverageStatusSchema,
+  reason: z.string().optional(),
+}) as unknown as z.ZodType<CriterionCoverage>;
+
+export const mutantResultSchema: z.ZodType<MutantResult> = z.strictObject({
+  id: mutantIdSchema,
+  species: speciesSchema,
+  status: mutantStatusSchema,
+  requirement: criterionIdSchema.optional(),
+  killingTests: z.array(testIdSchema),
+  killClass: killClassSchema.optional(),
+}) as unknown as z.ZodType<MutantResult>;
+
+export const runMetadataSchema = z.strictObject({
+  gitCommit: z.string(),
+  seed: z.number().int(),
+  engineVersion: z.string(),
+  nodeVersion: z.string(),
+  strykerVersion: z.string(),
+  vitestVersion: z.string(),
+  typescriptVersion: z.string(),
+  timestamp: z.string(),
+});
+
+export const verdictSchema: z.ZodType<Verdict> = z.strictObject({
+  coverage: z.array(criterionCoverageSchema),
+  mutants: z.array(mutantResultSchema),
+  witnesses: z.record(z.string(), witnessSchema),
+  ignoreStaticRetried: z.boolean(),
+  metadata: runMetadataSchema,
+}) as unknown as z.ZodType<Verdict>;
+
+const engineConfigSchema: z.ZodType<EngineConfig> = z.strictObject({
+  specDir: z.string(),
+  sourceGlobs: z.array(z.string()),
+  testGlobs: z.array(z.string()),
+  propertyTestGlobs: z.array(z.string()),
+  mutantsDir: z.string(),
+  outputDir: z.string(),
+  timeoutMs: z.number().optional(),
+}) as unknown as z.ZodType<EngineConfig>;
+
+const statusCountsSchema = z.strictObject({
+  Killed: z.number().int().nonnegative(),
+  Survived: z.number().int().nonnegative(),
+  Timeout: z.number().int().nonnegative(),
+  Ghost: z.number().int().nonnegative(),
+  InvalidWitness: z.number().int().nonnegative(),
+  CompileError: z.number().int().nonnegative(),
+  NotApplicable: z.number().int().nonnegative(),
+});
+const coverageCountsSchema = z.strictObject({
+  guarded: z.number().int().nonnegative(),
+  unguarded: z.number().int().nonnegative(),
+  unattacked: z.number().int().nonnegative(),
+  skipped: z.number().int().nonnegative(),
+});
+
+export const historyRecordSchema: z.ZodType<HistoryRecord> = z.strictObject({
+  time: z.string(),
+  gitCommit: z.string(),
+  seed: z.number().int(),
+  config: engineConfigSchema,
+  mutants: z.array(z.strictObject({ id: mutantIdSchema, status: mutantStatusSchema })),
+  statusCounts: statusCountsSchema,
+  coverageCounts: coverageCountsSchema,
+  newlyKilledIds: z.array(mutantIdSchema),
+}) as unknown as z.ZodType<HistoryRecord>;
+
+// Mutation report (subset of mutation-testing-report-schema 3.x plus two extension fields).
+const positionSchema = z.strictObject({
+  line: z.number().int().min(1),
+  column: z.number().int().min(1),
+});
+const locationSchema = z.strictObject({ start: positionSchema, end: positionSchema });
+
+export const reportStatusSchema = z.enum([
+  "Killed",
+  "Survived",
+  "NoCoverage",
+  "CompileError",
+  "RuntimeError",
+  "Timeout",
+  "Ignored",
+  "Pending",
+]);
+
+export const reportMutantSchema = z.strictObject({
+  id: z.string(),
+  mutatorName: z.string(),
+  location: locationSchema,
+  status: reportStatusSchema,
+  replacement: z.string().optional(),
+  description: z.string().optional(),
+  statusReason: z.string().optional(),
+  killedBy: z.array(z.string()).optional(),
+  coveredBy: z.array(z.string()).optional(),
+  duration: z.number().optional(),
+  /** Extension: species of the mutant (Requirement 8.14). Present on Spec_Mutants. */
+  species: speciesSchema.optional(),
+  /** Extension: the Criterion a Spec_Mutant is tied to (Requirement 8.15). */
+  requirement: criterionIdSchema.optional(),
+});
+
+export const reportFileSchema = z.strictObject({
+  language: z.string(),
+  source: z.string(),
+  mutants: z.array(reportMutantSchema),
+});
+
+export const mutationReportSchema = z.strictObject({
+  schemaVersion: z.string(),
+  thresholds: z.strictObject({ high: z.number(), low: z.number() }),
+  files: z.record(z.string(), reportFileSchema),
+});
+
+export type ReportStatus = z.infer<typeof reportStatusSchema>;
+export type ReportLocation = z.infer<typeof locationSchema>;
+export type ReportMutant = z.infer<typeof reportMutantSchema>;
+export type ReportFile = z.infer<typeof reportFileSchema>;
+export type MutationTestingReport = z.infer<typeof mutationReportSchema>;
+
+// ---------------------------------------------------------------------------
+// buildMutationReport
+// ---------------------------------------------------------------------------
+
+/** A mutant as the CLI hands it to the report builder. Ids are data; this module never computes them. */
+export type ReportMutantInput = {
+  id: MutantId;
+  file: string;
+  location: ReportLocation;
+  replacement: string;
+  status: MutantStatus;
+  mutatorName?: string;
+  description?: string;
+  killedBy?: TestId[];
+  coveredBy?: TestId[];
+  durationMs?: number;
+};
+
+export type SpecReportMutantInput = ReportMutantInput & { requirement: CriterionId };
+
+export type ReportInput = {
+  files: Record<string, { language: string; source: string }>;
+  mechanical: ReportMutantInput[];
+  spec: SpecReportMutantInput[];
+  thresholds?: { high: number; low: number };
+};
+
+export const REPORT_SCHEMA_VERSION = "2";
+export const DEFAULT_THRESHOLDS = { high: 80, low: 60 } as const;
+
+const OATHBREAKER: Species = "Oathbreaker";
+
+const mapStatus = (status: MutantStatus): { status: ReportStatus; statusReason?: string } => {
+  switch (status) {
+    case "Killed":
+      return { status: "Killed" };
+    case "Survived":
+      return { status: "Survived" };
+    case "Timeout":
+      return { status: "Timeout" };
+    case "CompileError":
+      return { status: "CompileError" };
+    case "Ghost":
+    case "InvalidWitness":
+    case "NotApplicable":
+      return { status: "Ignored", statusReason: `Engine status: ${status}` };
+  }
+};
+
+const changeKey = (m: ReportMutantInput): string =>
+  JSON.stringify([
+    m.file,
+    m.location.start.line,
+    m.location.start.column,
+    m.location.end.line,
+    m.location.end.column,
+    m.replacement,
+  ]);
+
+const toReportMutant = (
+  m: ReportMutantInput,
+  extra: { species?: Species; requirement?: CriterionId },
+): ReportMutant => {
+  const mapped = mapStatus(m.status);
+  return {
+    id: m.id,
+    mutatorName: m.mutatorName ?? extra.species ?? "Mechanical",
+    location: m.location,
+    status: mapped.status,
+    replacement: m.replacement,
+    ...(m.description === undefined ? {} : { description: m.description }),
+    ...(mapped.statusReason === undefined ? {} : { statusReason: mapped.statusReason }),
+    ...(m.killedBy === undefined ? {} : { killedBy: [...m.killedBy] }),
+    ...(m.coveredBy === undefined ? {} : { coveredBy: [...m.coveredBy] }),
+    ...(m.durationMs === undefined ? {} : { duration: m.durationMs }),
+    ...(extra.species === undefined ? {} : { species: extra.species }),
+    ...(extra.requirement === undefined ? {} : { requirement: extra.requirement }),
+  };
+};
+
+const compareMutants = (a: ReportMutant, b: ReportMutant): number =>
+  a.location.start.line - b.location.start.line ||
+  a.location.start.column - b.location.start.column ||
+  (a.id < b.id ? -1 : a.id > b.id ? 1 : 0);
+
+/**
+ * Builds the Mutation_Report. Includes Mechanical_Mutants and Spec_Mutants (8.2), maps engine
+ * statuses (8.3, 8.4), assigns Oathbreaker to every Spec_Mutant (8.14) and keeps only the
+ * Spec_Mutant when a Mechanical_Mutant makes the same change, compared by file, span and
+ * replacement and not by id (8.15). Output order is deterministic. Pure.
+ */
+export const buildMutationReport = (input: ReportInput): MutationTestingReport => {
+  const specKeys = new Set(input.spec.map(changeKey));
+  const perFile = new Map<string, ReportMutant[]>();
+  const push = (file: string, m: ReportMutant): void => {
+    const list = perFile.get(file);
+    if (list === undefined) perFile.set(file, [m]);
+    else list.push(m);
+  };
+  for (const m of input.mechanical) {
+    if (specKeys.has(changeKey(m))) continue;
+    push(m.file, toReportMutant(m, {}));
+  }
+  for (const m of input.spec) {
+    push(m.file, toReportMutant(m, { species: OATHBREAKER, requirement: m.requirement }));
+  }
+  const paths = [...new Set([...Object.keys(input.files), ...perFile.keys()])].sort();
+  const files: Record<string, ReportFile> = {};
+  for (const path of paths) {
+    const meta = input.files[path] ?? { language: "typescript", source: "" };
+    files[path] = {
+      language: meta.language,
+      source: meta.source,
+      mutants: (perFile.get(path) ?? []).sort(compareMutants),
+    };
+  }
+  return {
+    schemaVersion: REPORT_SCHEMA_VERSION,
+    thresholds: { ...(input.thresholds ?? DEFAULT_THRESHOLDS) },
+    files,
+  };
+};

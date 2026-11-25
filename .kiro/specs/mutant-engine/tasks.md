@@ -186,7 +186,7 @@ Conventions used in every task:
     - _Requirements: 4.8, 4.9, 7.3, 7.4, 7.5_
     - _Validation: npx vitest run --project engine packages/engine/test/core/coverage.skip.property.test.ts passes_
 
-  - [ ] 3.24 Implement the report schemas and `buildMutationReport` with example tests
+  - [x] 3.24 Implement the report schemas and `buildMutationReport` with example tests
     - In `report.ts` define the zod schemas for the Verdict, the History record and the mutation report types, and implement `buildMutationReport(input)`: include Mechanical_Mutants and Spec_Mutants, map Ghost, InvalidWitness and NotApplicable to `Ignored` with a `statusReason` naming the engine status, CompileError to CompileError, Timeout to Timeout, assign Oathbreaker to every Spec_Mutant, and keep one mutant (the Spec_Mutant, tied to its criterion) when both kinds make the same change. The mutant ids arrive as input data (Spec_Mutants keep their file ids, Mechanical_Mutants carry the hash computed by the CLI). `report.ts` does not import `mutant-id.ts` and never computes ids. Detect the same change by comparing file, span and replacement, not ids.
     - Write `test/core/report.test.ts`: each status mapping, `statusReason` text, duplicate change with different ids, a validation of one built report against `mutation-testing-report-schema`.
     - _Requirements: 8.1, 8.2, 8.3, 8.4, 8.14, 8.15_
