@@ -23,7 +23,7 @@ Commands:
 Options:
   --since <ref>       Restrict mechanical mutants to ranges changed since a git ref
   --project <path>    Target project root (default: current directory)
-  --spec <name>       Attack only this spec (default: every spec with requirements.md)
+  --spec <name>       The spec to attack (required when the project has more than one)
   --output <dir>      Output directory (measure only, default: reports)
 `;
 
