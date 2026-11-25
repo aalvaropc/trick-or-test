@@ -475,7 +475,7 @@ Conventions used in every task:
     - _Requirements: 10.8, 10.9, 10.10_
     - _Validation: npm run test:e2e --workspace trick-or-test passes_
 
-  - [-] 9.2 Run `npm run measure` once and commit `reports/`
+  - [x] 9.2 Run `npm run measure` once and commit `reports/`
     - Run `npm run measure` from the repository root. The command writes the mutation report (`reports/mutation-report.json`), `reports/verdict.json` and `reports/history.jsonl` through the CLI. Nobody edits these files by hand. If the output is wrong, fix the engine and run the script again.
     - Check that `reports/history.jsonl` has exactly one line for this first run, and that the line parses as one JSON object.
     - Commit the three files in `reports/` with `git add reports` and a Conventional Commits message (for example `chore(reports): add first measure run`).

@@ -1,0 +1,3161 @@
+{
+  "schemaVersion": "2",
+  "thresholds": {
+    "high": 80,
+    "low": 60
+  },
+  "config": {
+    "ignoreStaticRetried": false
+  },
+  "files": {
+    "src/errors.ts": {
+      "language": "typescript",
+      "source": "export class ValidationError extends Error {\n  readonly field: string;\n  constructor(field: string, message?: string) {\n    super(message ?? `Invalid value for ${field}`);\n    this.name = 'ValidationError';\n    this.field = field;\n  }\n}\n",
+      "mutants": [
+        {
+          "id": "e907281bf3c1f199cd43d41e935649b2",
+          "mutatorName": "BlockStatement",
+          "location": {
+            "start": {
+              "line": 3,
+              "column": 1
+            },
+            "end": {
+              "line": 7,
+              "column": 1
+            }
+          },
+          "status": "Killed",
+          "replacement": "{}",
+          "killedBy": [
+            "test/validation.test.ts::validation properties > reports a single invalid field by name",
+            "test/validation.test.ts::validation properties: multiple invalid fields > throws a ValidationError naming one of the invalid fields",
+            "test/validation.test.ts::validation unit tests > names lines[0].quantity",
+            "test/validation.test.ts::validation unit tests > names lines[2].unitPriceCents",
+            "test/validation.test.ts::validation unit tests > names taxBps",
+            "test/validation.test.ts::validation unit tests > quantity 0 valid=false",
+            "test/validation.test.ts::validation unit tests > quantity 1000 valid=false",
+            "test/validation.test.ts::validation unit tests > unit price 1000001 valid=false",
+            "test/validation.test.ts::validation unit tests > taxBps -1 valid=false",
+            "test/validation.test.ts::validation unit tests > taxBps 10001 valid=false",
+            "test/validation.test.ts::validation unit tests > reports one of several invalid fields",
+            "test/api.test.ts::public API > throws ValidationError carrying the field name"
+          ]
+        },
+        {
+          "id": "b502fd7e513517e1b92d8e3e7db7b9d0",
+          "mutatorName": "StringLiteral",
+          "location": {
+            "start": {
+              "line": 4,
+              "column": 1
+            },
+            "end": {
+              "line": 4,
+              "column": 1
+            }
+          },
+          "status": "Survived",
+          "replacement": "``",
+          "killedBy": []
+        },
+        {
+          "id": "b75278bc124ab8332d79e95f5a00432e",
+          "mutatorName": "LogicalOperator",
+          "location": {
+            "start": {
+              "line": 4,
+              "column": 1
+            },
+            "end": {
+              "line": 4,
+              "column": 1
+            }
+          },
+          "status": "Survived",
+          "replacement": "message && `Invalid value for ${field}`",
+          "killedBy": []
+        },
+        {
+          "id": "9f61466de54c9cda9b3b2ebf7f761fb2",
+          "mutatorName": "StringLiteral",
+          "location": {
+            "start": {
+              "line": 5,
+              "column": 1
+            },
+            "end": {
+              "line": 5,
+              "column": 1
+            }
+          },
+          "status": "Survived",
+          "replacement": "\"\"",
+          "killedBy": []
+        }
+      ]
+    },
+    "src/percent.ts": {
+      "language": "typescript",
+      "source": "const BPS_DENOMINATOR = 10000;\nconst HALF = 5000;\n\n/**\n * Computes `amount * bps / 10000`, rounded to the nearest integer with exact\n * halves rounded up (Round_Half_Up).\n *\n * Contract: `amount` and `bps` are non-negative integers and\n * `amount * bps + 5000 <= Number.MAX_SAFE_INTEGER`. Within that range the\n * result is exact. Outside it the result is unspecified. The function performs\n * no validation and never throws.\n */\nexport function percentOf(amount: number, bps: number): number {\n  return Math.floor((amount * bps + HALF) / BPS_DENOMINATOR);\n}\n",
+      "mutants": [
+        {
+          "id": "oath-2.1-half-rounds-down",
+          "mutatorName": "Oathbreaker",
+          "location": {
+            "start": {
+              "line": 2,
+              "column": 1
+            },
+            "end": {
+              "line": 2,
+              "column": 19
+            }
+          },
+          "status": "Killed",
+          "replacement": "const HALF = 4999;",
+          "description": "Exact halves round down instead of up, so Round_Half_Up is no longer honoured.",
+          "killedBy": [
+            "test/percent.test.ts::percentOf examples percentOf(1, 5000) = 1",
+            "test/percent.test.ts::percentOf examples percentOf(5, 1000) = 1",
+            "test/percent.test.ts::percentOf examples percentOf(15, 1000) = 2",
+            "test/price.test.ts::priceCart properties subtotalCents is the sum of line totals with bulk discount",
+            "test/price.test.ts::priceCart unit tests bulk discount boundary exact-half bulk discount: quantity 11 at unit price 5 gives 49"
+          ],
+          "species": "Oathbreaker",
+          "requirement": "2.1"
+        },
+        {
+          "id": "b94cad02b31beef1c78710e670de8f33",
+          "mutatorName": "BlockStatement",
+          "location": {
+            "start": {
+              "line": 13,
+              "column": 1
+            },
+            "end": {
+              "line": 15,
+              "column": 1
+            }
+          },
+          "status": "Killed",
+          "replacement": "{}",
+          "killedBy": [
+            "test/price.test.ts::priceCart properties > subtotalCents is the sum of line totals with bulk discount",
+            "test/price.test.ts::priceCart properties > empty carts price to all zeros",
+            "test/price.test.ts::priceCart coupon discount > discountCents follows the coupon rules and is clamped to the subtotal",
+            "test/price.test.ts::priceCart breakdown invariants > fields are non-negative integers, discount <= subtotal, and total identity holds",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > quantity 10 at unit price 5 has line total 45",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > quantity 10 at unit price 1 has line total 9",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > exact-half bulk discount: quantity 11 at unit price 5 gives 49",
+            "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > applies when minSubtotalCents equals the subtotal",
+            "test/price.test.ts::priceCart unit tests > empty cart > yields all zeros with coupon, express shipping, and nonzero taxBps",
+            "test/percent.test.ts::percentOf > matches the BigInt Round_Half_Up reference for safe non-negative integers",
+            "test/percent.test.ts::percentOf examples > percentOf(1, 5000) = 1",
+            "test/percent.test.ts::percentOf examples > percentOf(5, 1000) = 1",
+            "test/percent.test.ts::percentOf examples > percentOf(15, 1000) = 2",
+            "test/percent.test.ts::percentOf examples > percentOf(14, 1000) = 1",
+            "test/percent.test.ts::percentOf examples > percentOf(0, 10000) = 0",
+            "test/percent.test.ts::percentOf examples > percentOf(1, 4999) = 0",
+            "test/api.test.ts::public API > accepts typed carts and returns a typed Breakdown"
+          ]
+        },
+        {
+          "id": "792eb7e1bbd413dbc1440cc314d243c5",
+          "mutatorName": "ArithmeticOperator",
+          "location": {
+            "start": {
+              "line": 14,
+              "column": 1
+            },
+            "end": {
+              "line": 14,
+              "column": 1
+            }
+          },
+          "status": "Killed",
+          "replacement": "amount * bps - HALF",
+          "killedBy": [
+            "test/price.test.ts::priceCart properties > subtotalCents is the sum of line totals with bulk discount",
+            "test/price.test.ts::priceCart properties > empty carts price to all zeros",
+            "test/price.test.ts::priceCart breakdown invariants > fields are non-negative integers, discount <= subtotal, and total identity holds",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > quantity 10 at unit price 5 has line total 45",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > quantity 10 at unit price 1 has line total 9",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > exact-half bulk discount: quantity 11 at unit price 5 gives 49",
+            "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > applies when minSubtotalCents equals the subtotal",
+            "test/price.test.ts::priceCart unit tests > empty cart > yields all zeros with coupon, express shipping, and nonzero taxBps",
+            "test/percent.test.ts::percentOf > matches the BigInt Round_Half_Up reference for safe non-negative integers",
+            "test/percent.test.ts::percentOf examples > percentOf(1, 5000) = 1",
+            "test/percent.test.ts::percentOf examples > percentOf(5, 1000) = 1",
+            "test/percent.test.ts::percentOf examples > percentOf(15, 1000) = 2",
+            "test/percent.test.ts::percentOf examples > percentOf(14, 1000) = 1",
+            "test/percent.test.ts::percentOf examples > percentOf(0, 10000) = 0",
+            "test/percent.test.ts::percentOf examples > percentOf(1, 4999) = 0",
+            "test/api.test.ts::public API > accepts typed carts and returns a typed Breakdown"
+          ]
+        },
+        {
+          "id": "a2d7e320049b1ad5e380b2f6b61b2faf",
+          "mutatorName": "ArithmeticOperator",
+          "location": {
+            "start": {
+              "line": 14,
+              "column": 1
+            },
+            "end": {
+              "line": 14,
+              "column": 1
+            }
+          },
+          "status": "Killed",
+          "replacement": "(amount * bps + HALF) * BPS_DENOMINATOR",
+          "killedBy": [
+            "test/price.test.ts::priceCart properties > subtotalCents is the sum of line totals with bulk discount",
+            "test/price.test.ts::priceCart properties > empty carts price to all zeros",
+            "test/price.test.ts::priceCart breakdown invariants > fields are non-negative integers, discount <= subtotal, and total identity holds",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > quantity 10 at unit price 5 has line total 45",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > quantity 10 at unit price 1 has line total 9",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > exact-half bulk discount: quantity 11 at unit price 5 gives 49",
+            "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > applies when minSubtotalCents equals the subtotal",
+            "test/price.test.ts::priceCart unit tests > empty cart > yields all zeros with coupon, express shipping, and nonzero taxBps",
+            "test/percent.test.ts::percentOf > matches the BigInt Round_Half_Up reference for safe non-negative integers",
+            "test/percent.test.ts::percentOf examples > percentOf(1, 5000) = 1",
+            "test/percent.test.ts::percentOf examples > percentOf(5, 1000) = 1",
+            "test/percent.test.ts::percentOf examples > percentOf(15, 1000) = 2",
+            "test/percent.test.ts::percentOf examples > percentOf(14, 1000) = 1",
+            "test/percent.test.ts::percentOf examples > percentOf(0, 10000) = 0",
+            "test/percent.test.ts::percentOf examples > percentOf(1, 4999) = 0",
+            "test/api.test.ts::public API > accepts typed carts and returns a typed Breakdown"
+          ]
+        },
+        {
+          "id": "c41c4afe74a412a7b37bdc9094dccc0d",
+          "mutatorName": "ArithmeticOperator",
+          "location": {
+            "start": {
+              "line": 14,
+              "column": 1
+            },
+            "end": {
+              "line": 14,
+              "column": 1
+            }
+          },
+          "status": "Killed",
+          "replacement": "amount / bps",
+          "killedBy": [
+            "test/api.test.ts::public API > accepts typed carts and returns a typed Breakdown",
+            "test/price.test.ts::priceCart properties > subtotalCents is the sum of line totals with bulk discount",
+            "test/price.test.ts::priceCart properties > empty carts price to all zeros",
+            "test/price.test.ts::priceCart breakdown invariants > fields are non-negative integers, discount <= subtotal, and total identity holds",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > quantity 10 at unit price 5 has line total 45",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > quantity 10 at unit price 1 has line total 9",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > exact-half bulk discount: quantity 11 at unit price 5 gives 49",
+            "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > applies when minSubtotalCents equals the subtotal",
+            "test/percent.test.ts::percentOf > matches the BigInt Round_Half_Up reference for safe non-negative integers",
+            "test/percent.test.ts::percentOf examples > percentOf(1, 5000) = 1",
+            "test/percent.test.ts::percentOf examples > percentOf(5, 1000) = 1",
+            "test/percent.test.ts::percentOf examples > percentOf(15, 1000) = 2",
+            "test/percent.test.ts::percentOf examples > percentOf(14, 1000) = 1"
+          ]
+        },
+        {
+          "id": "oath-2.3-percent-validates-bps",
+          "mutatorName": "Oathbreaker",
+          "location": {
+            "start": {
+              "line": 14,
+              "column": 3
+            },
+            "end": {
+              "line": 14,
+              "column": 62
+            }
+          },
+          "status": "Killed",
+          "replacement": "if (bps > BPS_DENOMINATOR) throw new Error('bps out of range');\n  return Math.floor((amount * bps + HALF) / BPS_DENOMINATOR);",
+          "description": "percentOf validates its input and throws on bps above 10000 instead of accepting it without validation.",
+          "killedBy": [
+            "test/percent.test.ts::percentOf matches the BigInt Round_Half_Up reference for safe non-negative integers",
+            "test/percent.test.ts::percentOf examples does not throw for bps above 10000"
+          ],
+          "species": "Oathbreaker",
+          "requirement": "2.3"
+        }
+      ]
+    },
+    "src/price.ts": {
+      "language": "typescript",
+      "source": "import { percentOf } from './percent';\nimport { validateCart } from './validate';\nimport type { Breakdown, Cart, Coupon, Line } from './types';\n\nconst BULK_THRESHOLD = 10;\nconst BULK_DISCOUNT_BPS = 1000; // 10%\nconst FREE_SHIPPING_THRESHOLD = 10000;\nconst STANDARD_SHIPPING = 799;\nconst EXPRESS_SHIPPING = 1499;\n\nfunction lineTotal(line: Line): number {\n  const raw = line.quantity * line.unitPriceCents;\n  return line.quantity >= BULK_THRESHOLD\n    ? raw - percentOf(raw, BULK_DISCOUNT_BPS)\n    : raw;\n}\n\nfunction couponDiscount(coupon: Coupon | undefined, subtotal: number): number {\n  if (coupon === undefined || subtotal < coupon.minSubtotalCents) return 0;\n  const raw =\n    coupon.kind === 'percent'\n      ? Math.min(percentOf(subtotal, coupon.bps), coupon.maxDiscountCents)\n      : coupon.amountCents;\n  return Math.max(0, Math.min(raw, subtotal));\n}\n\nfunction shippingFor(\n  method: Cart['shipping'],\n  lineCount: number,\n  discounted: number,\n): number {\n  if (lineCount === 0) return 0;\n  if (method === 'express') return EXPRESS_SHIPPING;\n  return discounted >= FREE_SHIPPING_THRESHOLD ? 0 : STANDARD_SHIPPING;\n}\n\n/**\n * Prices a cart in integer cents. Validates first and throws\n * `ValidationError` on invalid lines or `taxBps`.\n *\n * Supported size: the tax numerator (discounted subtotal * taxBps) must stay\n * within the safe integer range. With per-line maximums (999 * 1,000,000)\n * that allows roughly 900 maximum-value lines; larger carts are out of scope.\n */\nexport function priceCart(cart: Cart): Breakdown {\n  validateCart(cart);\n  let subtotalCents = 0;\n  for (const line of cart.lines) subtotalCents += lineTotal(line);\n  const discountCents = couponDiscount(cart.coupon, subtotalCents);\n  const discounted = subtotalCents - discountCents;\n  const shippingCents = shippingFor(cart.shipping, cart.lines.length, discounted);\n  const taxCents = percentOf(discounted, cart.taxBps);\n  const totalCents = discounted + shippingCents + taxCents;\n  return { subtotalCents, discountCents, shippingCents, taxCents, totalCents };\n}\n",
+      "mutants": [
+        {
+          "id": "oath-6.2-free-shipping-threshold-lowered",
+          "mutatorName": "Oathbreaker",
+          "location": {
+            "start": {
+              "line": 7,
+              "column": 1
+            },
+            "end": {
+              "line": 7,
+              "column": 39
+            }
+          },
+          "status": "Killed",
+          "replacement": "const FREE_SHIPPING_THRESHOLD = 9999;",
+          "description": "Standard shipping is free at a Discounted_Subtotal of 9999 instead of being 799 below 10000.",
+          "killedBy": [
+            "test/price.test.ts::priceCart unit tests shipping thresholds standard shipping is 799 when discounted subtotal is 9999",
+            "test/price.test.ts::priceCart unit tests shipping thresholds uses the discounted subtotal for the free-shipping threshold"
+          ],
+          "species": "Oathbreaker",
+          "requirement": "6.2"
+        },
+        {
+          "id": "bef11417f5e97aaa273c4875d721a3bd",
+          "mutatorName": "BlockStatement",
+          "location": {
+            "start": {
+              "line": 11,
+              "column": 1
+            },
+            "end": {
+              "line": 16,
+              "column": 1
+            }
+          },
+          "status": "Killed",
+          "replacement": "{}",
+          "killedBy": [
+            "test/price.test.ts::priceCart properties > subtotalCents is the sum of line totals with bulk discount",
+            "test/price.test.ts::priceCart coupon discount > discountCents follows the coupon rules and is clamped to the subtotal",
+            "test/price.test.ts::priceCart breakdown invariants > fields are non-negative integers, discount <= subtotal, and total identity holds",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > standard shipping is free when discounted subtotal is 10000",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > uses the discounted subtotal for the free-shipping threshold",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > quantity 9 at unit price 5 has line total 45",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > quantity 10 at unit price 5 has line total 45",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > quantity 10 at unit price 1 has line total 9",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > exact-half bulk discount: quantity 11 at unit price 5 gives 49",
+            "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > gives discount 0 when subtotal is below minSubtotalCents",
+            "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > applies when minSubtotalCents equals the subtotal",
+            "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > fixed coupon below minimum gives 0 and at minimum applies",
+            "test/api.test.ts::public API > accepts typed carts and returns a typed Breakdown"
+          ]
+        },
+        {
+          "id": "cf06dc4768aafd295c1f27d024d22ed4",
+          "mutatorName": "ArithmeticOperator",
+          "location": {
+            "start": {
+              "line": 12,
+              "column": 1
+            },
+            "end": {
+              "line": 12,
+              "column": 1
+            }
+          },
+          "status": "Killed",
+          "replacement": "line.quantity / line.unitPriceCents",
+          "killedBy": [
+            "test/price.test.ts::priceCart properties > subtotalCents is the sum of line totals with bulk discount",
+            "test/price.test.ts::priceCart coupon discount > discountCents follows the coupon rules and is clamped to the subtotal",
+            "test/price.test.ts::priceCart breakdown invariants > fields are non-negative integers, discount <= subtotal, and total identity holds",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > standard shipping is free when discounted subtotal is 10000",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > uses the discounted subtotal for the free-shipping threshold",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > quantity 9 at unit price 5 has line total 45",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > quantity 10 at unit price 5 has line total 45",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > exact-half bulk discount: quantity 11 at unit price 5 gives 49",
+            "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > applies when minSubtotalCents equals the subtotal",
+            "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > fixed coupon below minimum gives 0 and at minimum applies",
+            "test/api.test.ts::public API > accepts typed carts and returns a typed Breakdown"
+          ]
+        },
+        {
+          "id": "0e29da086811abe97718a7ca4b45fcc2",
+          "mutatorName": "ConditionalExpression",
+          "location": {
+            "start": {
+              "line": 13,
+              "column": 1
+            },
+            "end": {
+              "line": 13,
+              "column": 1
+            }
+          },
+          "status": "Killed",
+          "replacement": "true",
+          "killedBy": [
+            "test/price.test.ts::priceCart properties > subtotalCents is the sum of line totals with bulk discount",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > standard shipping is free when discounted subtotal is 10000",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > quantity 9 at unit price 5 has line total 45",
+            "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > applies when minSubtotalCents equals the subtotal",
+            "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > fixed coupon below minimum gives 0 and at minimum applies",
+            "test/api.test.ts::public API > accepts typed carts and returns a typed Breakdown"
+          ]
+        },
+        {
+          "id": "65d97f7e7f10f6b464124dc266148c50",
+          "mutatorName": "EqualityOperator",
+          "location": {
+            "start": {
+              "line": 13,
+              "column": 1
+            },
+            "end": {
+              "line": 13,
+              "column": 1
+            }
+          },
+          "status": "Killed",
+          "replacement": "line.quantity > BULK_THRESHOLD",
+          "killedBy": [
+            "test/price.test.ts::priceCart properties > subtotalCents is the sum of line totals with bulk discount",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > quantity 10 at unit price 5 has line total 45",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > quantity 10 at unit price 1 has line total 9"
+          ]
+        },
+        {
+          "id": "b22d35b66f45a76e5b7765e7e94c81f0",
+          "mutatorName": "EqualityOperator",
+          "location": {
+            "start": {
+              "line": 13,
+              "column": 1
+            },
+            "end": {
+              "line": 13,
+              "column": 1
+            }
+          },
+          "status": "Killed",
+          "replacement": "line.quantity < BULK_THRESHOLD",
+          "killedBy": [
+            "test/price.test.ts::priceCart properties > subtotalCents is the sum of line totals with bulk discount",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > standard shipping is free when discounted subtotal is 10000",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > quantity 9 at unit price 5 has line total 45",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > quantity 10 at unit price 5 has line total 45",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > quantity 10 at unit price 1 has line total 9",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > exact-half bulk discount: quantity 11 at unit price 5 gives 49",
+            "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > applies when minSubtotalCents equals the subtotal",
+            "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > fixed coupon below minimum gives 0 and at minimum applies",
+            "test/api.test.ts::public API > accepts typed carts and returns a typed Breakdown"
+          ]
+        },
+        {
+          "id": "fd5be6d1c66fb28b2fd2e0a825a7d448",
+          "mutatorName": "ConditionalExpression",
+          "location": {
+            "start": {
+              "line": 13,
+              "column": 1
+            },
+            "end": {
+              "line": 13,
+              "column": 1
+            }
+          },
+          "status": "Killed",
+          "replacement": "false",
+          "killedBy": [
+            "test/price.test.ts::priceCart properties > subtotalCents is the sum of line totals with bulk discount",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > quantity 10 at unit price 5 has line total 45",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > quantity 10 at unit price 1 has line total 9",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > exact-half bulk discount: quantity 11 at unit price 5 gives 49"
+          ]
+        },
+        {
+          "id": "oath-4.2-bulk-threshold-nine",
+          "mutatorName": "Oathbreaker",
+          "location": {
+            "start": {
+              "line": 13,
+              "column": 10
+            },
+            "end": {
+              "line": 13,
+              "column": 41
+            }
+          },
+          "status": "Killed",
+          "replacement": "line.quantity >= BULK_THRESHOLD - 1",
+          "description": "Applies the bulk discount to a quantity of 9, which is below 10.",
+          "killedBy": [
+            "test/price.test.ts::priceCart properties subtotalCents is the sum of line totals with bulk discount",
+            "test/price.test.ts::priceCart unit tests bulk discount boundary quantity 9 at unit price 5 has line total 45"
+          ],
+          "species": "Oathbreaker",
+          "requirement": "4.2"
+        },
+        {
+          "id": "2ea6179af4dab6c72b200a86ff1b6cc9",
+          "mutatorName": "ArithmeticOperator",
+          "location": {
+            "start": {
+              "line": 14,
+              "column": 1
+            },
+            "end": {
+              "line": 14,
+              "column": 1
+            }
+          },
+          "status": "Killed",
+          "replacement": "raw + percentOf(raw, BULK_DISCOUNT_BPS)",
+          "killedBy": [
+            "test/price.test.ts::priceCart properties > subtotalCents is the sum of line totals with bulk discount",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > quantity 10 at unit price 5 has line total 45",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > quantity 10 at unit price 1 has line total 9",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > exact-half bulk discount: quantity 11 at unit price 5 gives 49"
+          ]
+        },
+        {
+          "id": "oath-4.1-bulk-discount-rounds-up",
+          "mutatorName": "Oathbreaker",
+          "location": {
+            "start": {
+              "line": 14,
+              "column": 7
+            },
+            "end": {
+              "line": 14,
+              "column": 46
+            }
+          },
+          "status": "Killed",
+          "replacement": "percentOf(raw, 10000 - BULK_DISCOUNT_BPS)",
+          "description": "Rounds the discounted line total instead of the discount amount, so the bulk discount of 5.5 becomes 5 instead of 6.",
+          "killedBy": [
+            "test/price.test.ts::priceCart properties subtotalCents is the sum of line totals with bulk discount",
+            "test/price.test.ts::priceCart unit tests bulk discount boundary exact-half bulk discount: quantity 11 at unit price 5 gives 49"
+          ],
+          "species": "Oathbreaker",
+          "requirement": "4.1"
+        },
+        {
+          "id": "7d7ea913a9b878ea4be6dd19f0d1f7cb",
+          "mutatorName": "BlockStatement",
+          "location": {
+            "start": {
+              "line": 18,
+              "column": 1
+            },
+            "end": {
+              "line": 25,
+              "column": 1
+            }
+          },
+          "status": "Killed",
+          "replacement": "{}",
+          "killedBy": [
+            "test/price.test.ts::priceCart properties > empty carts price to all zeros",
+            "test/price.test.ts::priceCart coupon discount > discountCents follows the coupon rules and is clamped to the subtotal",
+            "test/price.test.ts::priceCart breakdown invariants > fields are non-negative integers, discount <= subtotal, and total identity holds",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > standard shipping is free when discounted subtotal is 10000",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > uses the discounted subtotal for the free-shipping threshold",
+            "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > gives discount 0 when subtotal is below minSubtotalCents",
+            "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > applies when minSubtotalCents equals the subtotal",
+            "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > fixed coupon below minimum gives 0 and at minimum applies",
+            "test/price.test.ts::priceCart unit tests > empty cart > yields all zeros with coupon, express shipping, and nonzero taxBps",
+            "test/api.test.ts::public API > accepts typed carts and returns a typed Breakdown"
+          ]
+        },
+        {
+          "id": "3bd90402ade0b9b6539bed156e9ffa00",
+          "mutatorName": "ConditionalExpression",
+          "location": {
+            "start": {
+              "line": 19,
+              "column": 1
+            },
+            "end": {
+              "line": 19,
+              "column": 1
+            }
+          },
+          "status": "Killed",
+          "replacement": "false",
+          "killedBy": [
+            "test/price.test.ts::priceCart properties > subtotalCents is the sum of line totals with bulk discount",
+            "test/price.test.ts::priceCart properties > empty carts price to all zeros",
+            "test/price.test.ts::priceCart coupon discount > discountCents follows the coupon rules and is clamped to the subtotal",
+            "test/price.test.ts::priceCart shipping > shippingCents follows method and the discounted subtotal threshold",
+            "test/price.test.ts::priceCart tax > taxCents is percentOf the discounted subtotal and ignores shipping method",
+            "test/price.test.ts::priceCart breakdown invariants > fields are non-negative integers, discount <= subtotal, and total identity holds",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > standard shipping is 799 when discounted subtotal is 9999",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > standard shipping is free when discounted subtotal is 10000",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > express shipping is 1499 at discounted subtotal 10000",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > quantity 9 at unit price 5 has line total 45",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > quantity 10 at unit price 5 has line total 45",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > quantity 10 at unit price 1 has line total 9",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > exact-half bulk discount: quantity 11 at unit price 5 gives 49"
+          ]
+        },
+        {
+          "id": "3d98e8105912f96b02672156e85da8d9",
+          "mutatorName": "ConditionalExpression",
+          "location": {
+            "start": {
+              "line": 19,
+              "column": 1
+            },
+            "end": {
+              "line": 19,
+              "column": 1
+            }
+          },
+          "status": "Killed",
+          "replacement": "true",
+          "killedBy": [
+            "test/price.test.ts::priceCart coupon discount > discountCents follows the coupon rules and is clamped to the subtotal",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > uses the discounted subtotal for the free-shipping threshold",
+            "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > applies when minSubtotalCents equals the subtotal",
+            "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > fixed coupon below minimum gives 0 and at minimum applies",
+            "test/api.test.ts::public API > accepts typed carts and returns a typed Breakdown"
+          ]
+        },
+        {
+          "id": "48f0ab784006181349b5251ffad49605",
+          "mutatorName": "LogicalOperator",
+          "location": {
+            "start": {
+              "line": 19,
+              "column": 1
+            },
+            "end": {
+              "line": 19,
+              "column": 1
+            }
+          },
+          "status": "Killed",
+          "replacement": "coupon === undefined && subtotal < coupon.minSubtotalCents",
+          "killedBy": [
+            "test/price.test.ts::priceCart properties > subtotalCents is the sum of line totals with bulk discount",
+            "test/price.test.ts::priceCart properties > empty carts price to all zeros",
+            "test/price.test.ts::priceCart coupon discount > discountCents follows the coupon rules and is clamped to the subtotal",
+            "test/price.test.ts::priceCart shipping > shippingCents follows method and the discounted subtotal threshold",
+            "test/price.test.ts::priceCart tax > taxCents is percentOf the discounted subtotal and ignores shipping method",
+            "test/price.test.ts::priceCart breakdown invariants > fields are non-negative integers, discount <= subtotal, and total identity holds",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > standard shipping is 799 when discounted subtotal is 9999",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > standard shipping is free when discounted subtotal is 10000",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > express shipping is 1499 at discounted subtotal 10000",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > quantity 9 at unit price 5 has line total 45",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > quantity 10 at unit price 5 has line total 45",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > quantity 10 at unit price 1 has line total 9",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > exact-half bulk discount: quantity 11 at unit price 5 gives 49",
+            "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > gives discount 0 when subtotal is below minSubtotalCents",
+            "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > fixed coupon below minimum gives 0 and at minimum applies"
+          ]
+        },
+        {
+          "id": "bf82148f8c759f3aa7da89eee561df1b",
+          "mutatorName": "EqualityOperator",
+          "location": {
+            "start": {
+              "line": 19,
+              "column": 1
+            },
+            "end": {
+              "line": 19,
+              "column": 1
+            }
+          },
+          "status": "Killed",
+          "replacement": "coupon !== undefined",
+          "killedBy": [
+            "test/price.test.ts::priceCart properties > subtotalCents is the sum of line totals with bulk discount",
+            "test/price.test.ts::priceCart properties > empty carts price to all zeros",
+            "test/price.test.ts::priceCart coupon discount > discountCents follows the coupon rules and is clamped to the subtotal",
+            "test/price.test.ts::priceCart shipping > shippingCents follows method and the discounted subtotal threshold",
+            "test/price.test.ts::priceCart tax > taxCents is percentOf the discounted subtotal and ignores shipping method",
+            "test/price.test.ts::priceCart breakdown invariants > fields are non-negative integers, discount <= subtotal, and total identity holds",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > standard shipping is 799 when discounted subtotal is 9999",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > standard shipping is free when discounted subtotal is 10000",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > express shipping is 1499 at discounted subtotal 10000",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > uses the discounted subtotal for the free-shipping threshold",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > quantity 9 at unit price 5 has line total 45",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > quantity 10 at unit price 5 has line total 45",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > quantity 10 at unit price 1 has line total 9",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > exact-half bulk discount: quantity 11 at unit price 5 gives 49",
+            "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > applies when minSubtotalCents equals the subtotal",
+            "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > fixed coupon below minimum gives 0 and at minimum applies",
+            "test/api.test.ts::public API > accepts typed carts and returns a typed Breakdown"
+          ]
+        },
+        {
+          "id": "d9cc0df06509c464030a3153363fe16a",
+          "mutatorName": "ConditionalExpression",
+          "location": {
+            "start": {
+              "line": 19,
+              "column": 1
+            },
+            "end": {
+              "line": 19,
+              "column": 1
+            }
+          },
+          "status": "Killed",
+          "replacement": "false",
+          "killedBy": [
+            "test/price.test.ts::priceCart coupon discount > discountCents follows the coupon rules and is clamped to the subtotal",
+            "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > gives discount 0 when subtotal is below minSubtotalCents",
+            "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > fixed coupon below minimum gives 0 and at minimum applies"
+          ]
+        },
+        {
+          "id": "e429427c68eb7983b2715914b1e1162a",
+          "mutatorName": "EqualityOperator",
+          "location": {
+            "start": {
+              "line": 19,
+              "column": 1
+            },
+            "end": {
+              "line": 19,
+              "column": 1
+            }
+          },
+          "status": "Killed",
+          "replacement": "subtotal >= coupon.minSubtotalCents",
+          "killedBy": [
+            "test/price.test.ts::priceCart coupon discount > discountCents follows the coupon rules and is clamped to the subtotal",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > uses the discounted subtotal for the free-shipping threshold",
+            "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > gives discount 0 when subtotal is below minSubtotalCents",
+            "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > applies when minSubtotalCents equals the subtotal",
+            "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > fixed coupon below minimum gives 0 and at minimum applies",
+            "test/api.test.ts::public API > accepts typed carts and returns a typed Breakdown"
+          ]
+        },
+        {
+          "id": "e436181957d1ed7b97132bb419db43dc",
+          "mutatorName": "EqualityOperator",
+          "location": {
+            "start": {
+              "line": 19,
+              "column": 1
+            },
+            "end": {
+              "line": 19,
+              "column": 1
+            }
+          },
+          "status": "Killed",
+          "replacement": "subtotal <= coupon.minSubtotalCents",
+          "killedBy": [
+            "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > applies when minSubtotalCents equals the subtotal",
+            "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > fixed coupon below minimum gives 0 and at minimum applies"
+          ]
+        },
+        {
+          "id": "ecd91920bd3bcc930917b3f33fb9e263",
+          "mutatorName": "ConditionalExpression",
+          "location": {
+            "start": {
+              "line": 19,
+              "column": 1
+            },
+            "end": {
+              "line": 19,
+              "column": 1
+            }
+          },
+          "status": "Killed",
+          "replacement": "false",
+          "killedBy": [
+            "test/price.test.ts::priceCart properties > subtotalCents is the sum of line totals with bulk discount",
+            "test/price.test.ts::priceCart properties > empty carts price to all zeros",
+            "test/price.test.ts::priceCart coupon discount > discountCents follows the coupon rules and is clamped to the subtotal",
+            "test/price.test.ts::priceCart shipping > shippingCents follows method and the discounted subtotal threshold",
+            "test/price.test.ts::priceCart tax > taxCents is percentOf the discounted subtotal and ignores shipping method",
+            "test/price.test.ts::priceCart breakdown invariants > fields are non-negative integers, discount <= subtotal, and total identity holds",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > standard shipping is 799 when discounted subtotal is 9999",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > standard shipping is free when discounted subtotal is 10000",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > express shipping is 1499 at discounted subtotal 10000",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > quantity 9 at unit price 5 has line total 45",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > quantity 10 at unit price 5 has line total 45",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > quantity 10 at unit price 1 has line total 9",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > exact-half bulk discount: quantity 11 at unit price 5 gives 49",
+            "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > gives discount 0 when subtotal is below minSubtotalCents",
+            "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > fixed coupon below minimum gives 0 and at minimum applies"
+          ]
+        },
+        {
+          "id": "oath-5.2-coupon-min-ignored",
+          "mutatorName": "Oathbreaker",
+          "location": {
+            "start": {
+              "line": 19,
+              "column": 3
+            },
+            "end": {
+              "line": 19,
+              "column": 76
+            }
+          },
+          "status": "Killed",
+          "replacement": "if (coupon === undefined) return 0;",
+          "description": "The coupon discount is applied even when the Subtotal is less than minSubtotalCents.",
+          "killedBy": [
+            "test/price.test.ts::priceCart coupon discount discountCents follows the coupon rules and is clamped to the subtotal",
+            "test/price.test.ts::priceCart unit tests coupon minimum subtotal gives discount 0 when subtotal is below minSubtotalCents",
+            "test/price.test.ts::priceCart unit tests coupon minimum subtotal fixed coupon below minimum gives 0 and at minimum applies"
+          ],
+          "species": "Oathbreaker",
+          "requirement": "5.2"
+        },
+        {
+          "id": "oath-5.6-no-coupon-nonzero-discount",
+          "mutatorName": "Oathbreaker",
+          "location": {
+            "start": {
+              "line": 19,
+              "column": 3
+            },
+            "end": {
+              "line": 19,
+              "column": 76
+            }
+          },
+          "status": "Killed",
+          "replacement": "if (coupon === undefined) return Math.min(1, subtotal);\n  if (subtotal < coupon.minSubtotalCents) return 0;",
+          "description": "A cart without a coupon gets a discount of 1 cent instead of 0.",
+          "killedBy": [
+            "test/price.test.ts::priceCart coupon discount discountCents follows the coupon rules and is clamped to the subtotal",
+            "test/price.test.ts::priceCart unit tests shipping thresholds standard shipping is free when discounted subtotal is 10000"
+          ],
+          "species": "Oathbreaker",
+          "requirement": "5.6"
+        },
+        {
+          "id": "oath-5.1-coupon-min-exclusive",
+          "mutatorName": "Oathbreaker",
+          "location": {
+            "start": {
+              "line": 19,
+              "column": 31
+            },
+            "end": {
+              "line": 19,
+              "column": 65
+            }
+          },
+          "status": "Killed",
+          "replacement": "subtotal <= coupon.minSubtotalCents",
+          "description": "The coupon is not applied when the Subtotal is exactly equal to minSubtotalCents.",
+          "killedBy": [
+            "test/price.test.ts::priceCart unit tests coupon minimum subtotal applies when minSubtotalCents equals the subtotal",
+            "test/price.test.ts::priceCart unit tests coupon minimum subtotal fixed coupon below minimum gives 0 and at minimum applies"
+          ],
+          "species": "Oathbreaker",
+          "requirement": "5.1"
+        },
+        {
+          "id": "394b42ec1f20aacc39bb70ce1f15a4ab",
+          "mutatorName": "StringLiteral",
+          "location": {
+            "start": {
+              "line": 21,
+              "column": 1
+            },
+            "end": {
+              "line": 21,
+              "column": 1
+            }
+          },
+          "status": "Killed",
+          "replacement": "\"\"",
+          "killedBy": [
+            "test/price.test.ts::priceCart properties > empty carts price to all zeros",
+            "test/price.test.ts::priceCart coupon discount > discountCents follows the coupon rules and is clamped to the subtotal",
+            "test/price.test.ts::priceCart breakdown invariants > fields are non-negative integers, discount <= subtotal, and total identity holds",
+            "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > applies when minSubtotalCents equals the subtotal"
+          ]
+        },
+        {
+          "id": "460024e14fc428c10a7c6a386d084141",
+          "mutatorName": "ConditionalExpression",
+          "location": {
+            "start": {
+              "line": 21,
+              "column": 1
+            },
+            "end": {
+              "line": 21,
+              "column": 1
+            }
+          },
+          "status": "Killed",
+          "replacement": "false",
+          "killedBy": [
+            "test/price.test.ts::priceCart properties > empty carts price to all zeros",
+            "test/price.test.ts::priceCart coupon discount > discountCents follows the coupon rules and is clamped to the subtotal",
+            "test/price.test.ts::priceCart breakdown invariants > fields are non-negative integers, discount <= subtotal, and total identity holds",
+            "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > applies when minSubtotalCents equals the subtotal"
+          ]
+        },
+        {
+          "id": "5a0514351041aad795399232f2cd222a",
+          "mutatorName": "ConditionalExpression",
+          "location": {
+            "start": {
+              "line": 21,
+              "column": 1
+            },
+            "end": {
+              "line": 21,
+              "column": 1
+            }
+          },
+          "status": "Killed",
+          "replacement": "true",
+          "killedBy": [
+            "test/price.test.ts::priceCart coupon discount > discountCents follows the coupon rules and is clamped to the subtotal",
+            "test/price.test.ts::priceCart breakdown invariants > fields are non-negative integers, discount <= subtotal, and total identity holds",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > uses the discounted subtotal for the free-shipping threshold",
+            "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > fixed coupon below minimum gives 0 and at minimum applies",
+            "test/price.test.ts::priceCart unit tests > empty cart > yields all zeros with coupon, express shipping, and nonzero taxBps",
+            "test/api.test.ts::public API > accepts typed carts and returns a typed Breakdown"
+          ]
+        },
+        {
+          "id": "e287024eb0d0c48c8c743ce3f52dda75",
+          "mutatorName": "EqualityOperator",
+          "location": {
+            "start": {
+              "line": 21,
+              "column": 1
+            },
+            "end": {
+              "line": 21,
+              "column": 1
+            }
+          },
+          "status": "Killed",
+          "replacement": "coupon.kind !== 'percent'",
+          "killedBy": [
+            "test/price.test.ts::priceCart properties > empty carts price to all zeros",
+            "test/price.test.ts::priceCart coupon discount > discountCents follows the coupon rules and is clamped to the subtotal",
+            "test/price.test.ts::priceCart breakdown invariants > fields are non-negative integers, discount <= subtotal, and total identity holds",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > uses the discounted subtotal for the free-shipping threshold",
+            "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > applies when minSubtotalCents equals the subtotal",
+            "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > fixed coupon below minimum gives 0 and at minimum applies",
+            "test/price.test.ts::priceCart unit tests > empty cart > yields all zeros with coupon, express shipping, and nonzero taxBps",
+            "test/api.test.ts::public API > accepts typed carts and returns a typed Breakdown"
+          ]
+        },
+        {
+          "id": "315995ff2c0d87f025d4ce5f4d72217d",
+          "mutatorName": "MethodExpression",
+          "location": {
+            "start": {
+              "line": 22,
+              "column": 1
+            },
+            "end": {
+              "line": 22,
+              "column": 1
+            }
+          },
+          "status": "Killed",
+          "replacement": "Math.max(percentOf(subtotal, coupon.bps), coupon.maxDiscountCents)",
+          "killedBy": [
+            "test/price.test.ts::priceCart coupon discount > discountCents follows the coupon rules and is clamped to the subtotal",
+            "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > applies when minSubtotalCents equals the subtotal"
+          ]
+        },
+        {
+          "id": "oath-5.3-percent-coupon-uncapped",
+          "mutatorName": "Oathbreaker",
+          "location": {
+            "start": {
+              "line": 22,
+              "column": 9
+            },
+            "end": {
+              "line": 22,
+              "column": 75
+            }
+          },
+          "status": "Killed",
+          "replacement": "percentOf(subtotal, coupon.bps)",
+          "description": "The percent coupon discount is not limited to maxDiscountCents.",
+          "killedBy": [
+            "test/price.test.ts::priceCart coupon discount discountCents follows the coupon rules and is clamped to the subtotal"
+          ],
+          "species": "Oathbreaker",
+          "requirement": "5.3"
+        },
+        {
+          "id": "oath-5.4-fixed-coupon-wrong-field",
+          "mutatorName": "Oathbreaker",
+          "location": {
+            "start": {
+              "line": 23,
+              "column": 7
+            },
+            "end": {
+              "line": 23,
+              "column": 28
+            }
+          },
+          "status": "Killed",
+          "replacement": ": coupon.minSubtotalCents;",
+          "description": "The fixed coupon discount is minSubtotalCents instead of amountCents.",
+          "killedBy": [
+            "test/api.test.ts::public API accepts typed carts and returns a typed Breakdown",
+            "test/price.test.ts::priceCart coupon discount discountCents follows the coupon rules and is clamped to the subtotal",
+            "test/price.test.ts::priceCart unit tests shipping thresholds uses the discounted subtotal for the free-shipping threshold",
+            "test/price.test.ts::priceCart unit tests coupon minimum subtotal fixed coupon below minimum gives 0 and at minimum applies"
+          ],
+          "species": "Oathbreaker",
+          "requirement": "5.4"
+        },
+        {
+          "id": "37fba1930bb6dd91b00976786335a73f",
+          "mutatorName": "MethodExpression",
+          "location": {
+            "start": {
+              "line": 24,
+              "column": 1
+            },
+            "end": {
+              "line": 24,
+              "column": 1
+            }
+          },
+          "status": "Killed",
+          "replacement": "Math.min(0, Math.min(raw, subtotal))",
+          "killedBy": [
+            "test/price.test.ts::priceCart coupon discount > discountCents follows the coupon rules and is clamped to the subtotal",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > uses the discounted subtotal for the free-shipping threshold",
+            "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > applies when minSubtotalCents equals the subtotal",
+            "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > fixed coupon below minimum gives 0 and at minimum applies",
+            "test/api.test.ts::public API > accepts typed carts and returns a typed Breakdown"
+          ]
+        },
+        {
+          "id": "a1c20a8f54bd797e58e73c97e5839d63",
+          "mutatorName": "MethodExpression",
+          "location": {
+            "start": {
+              "line": 24,
+              "column": 1
+            },
+            "end": {
+              "line": 24,
+              "column": 1
+            }
+          },
+          "status": "Killed",
+          "replacement": "Math.max(raw, subtotal)",
+          "killedBy": [
+            "test/price.test.ts::priceCart coupon discount > discountCents follows the coupon rules and is clamped to the subtotal",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > uses the discounted subtotal for the free-shipping threshold",
+            "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > applies when minSubtotalCents equals the subtotal",
+            "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > fixed coupon below minimum gives 0 and at minimum applies",
+            "test/price.test.ts::priceCart unit tests > empty cart > yields all zeros with coupon, express shipping, and nonzero taxBps",
+            "test/api.test.ts::public API > accepts typed carts and returns a typed Breakdown"
+          ]
+        },
+        {
+          "id": "oath-7.4-negative-discount-allowed",
+          "mutatorName": "Oathbreaker",
+          "location": {
+            "start": {
+              "line": 24,
+              "column": 3
+            },
+            "end": {
+              "line": 24,
+              "column": 47
+            }
+          },
+          "status": "Survived",
+          "replacement": "return Math.min(raw, subtotal);",
+          "description": "A fixed coupon with a negative amount produces a negative discountCents instead of a non-negative field.",
+          "killedBy": [],
+          "species": "Oathbreaker",
+          "requirement": "7.4"
+        },
+        {
+          "id": "oath-5.5-discount-exceeds-subtotal",
+          "mutatorName": "Oathbreaker",
+          "location": {
+            "start": {
+              "line": 24,
+              "column": 22
+            },
+            "end": {
+              "line": 24,
+              "column": 45
+            }
+          },
+          "status": "Killed",
+          "replacement": "raw",
+          "description": "discountCents is no longer limited to subtotalCents.",
+          "killedBy": [
+            "test/price.test.ts::priceCart unit tests empty cart yields all zeros with coupon, express shipping, and nonzero taxBps"
+          ],
+          "species": "Oathbreaker",
+          "requirement": "5.5"
+        },
+        {
+          "id": "bed34a4622de5fab86fe5d1b4244e411",
+          "mutatorName": "BlockStatement",
+          "location": {
+            "start": {
+              "line": 31,
+              "column": 1
+            },
+            "end": {
+              "line": 35,
+              "column": 1
+            }
+          },
+          "status": "Killed",
+          "replacement": "{}",
+          "killedBy": [
+            "test/price.test.ts::priceCart properties > empty carts price to all zeros",
+            "test/price.test.ts::priceCart shipping > shippingCents follows method and the discounted subtotal threshold",
+            "test/price.test.ts::priceCart breakdown invariants > fields are non-negative integers, discount <= subtotal, and total identity holds",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > standard shipping is 799 when discounted subtotal is 9999",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > standard shipping is free when discounted subtotal is 10000",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > express shipping is 1499 at discounted subtotal 10000",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > uses the discounted subtotal for the free-shipping threshold",
+            "test/price.test.ts::priceCart unit tests > empty cart > yields all zeros with coupon, express shipping, and nonzero taxBps",
+            "test/api.test.ts::public API > accepts typed carts and returns a typed Breakdown"
+          ]
+        },
+        {
+          "id": "63afc7536de2a29baa938f5bfc67a39e",
+          "mutatorName": "EqualityOperator",
+          "location": {
+            "start": {
+              "line": 32,
+              "column": 1
+            },
+            "end": {
+              "line": 32,
+              "column": 1
+            }
+          },
+          "status": "Killed",
+          "replacement": "lineCount !== 0",
+          "killedBy": [
+            "test/price.test.ts::priceCart properties > empty carts price to all zeros",
+            "test/price.test.ts::priceCart shipping > shippingCents follows method and the discounted subtotal threshold",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > standard shipping is 799 when discounted subtotal is 9999",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > express shipping is 1499 at discounted subtotal 10000",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > uses the discounted subtotal for the free-shipping threshold",
+            "test/price.test.ts::priceCart unit tests > empty cart > yields all zeros with coupon, express shipping, and nonzero taxBps",
+            "test/api.test.ts::public API > accepts typed carts and returns a typed Breakdown"
+          ]
+        },
+        {
+          "id": "a5507f1add25254ef1ffdfa8eb4fb4c1",
+          "mutatorName": "ConditionalExpression",
+          "location": {
+            "start": {
+              "line": 32,
+              "column": 1
+            },
+            "end": {
+              "line": 32,
+              "column": 1
+            }
+          },
+          "status": "Killed",
+          "replacement": "true",
+          "killedBy": [
+            "test/price.test.ts::priceCart shipping > shippingCents follows method and the discounted subtotal threshold",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > standard shipping is 799 when discounted subtotal is 9999",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > express shipping is 1499 at discounted subtotal 10000",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > uses the discounted subtotal for the free-shipping threshold",
+            "test/api.test.ts::public API > accepts typed carts and returns a typed Breakdown"
+          ]
+        },
+        {
+          "id": "eafde8cdf2344e6ec0e4eb34bcb1ccb3",
+          "mutatorName": "ConditionalExpression",
+          "location": {
+            "start": {
+              "line": 32,
+              "column": 1
+            },
+            "end": {
+              "line": 32,
+              "column": 1
+            }
+          },
+          "status": "Killed",
+          "replacement": "false",
+          "killedBy": [
+            "test/price.test.ts::priceCart properties > empty carts price to all zeros",
+            "test/price.test.ts::priceCart unit tests > empty cart > yields all zeros with coupon, express shipping, and nonzero taxBps"
+          ]
+        },
+        {
+          "id": "oath-6.1-empty-cart-charged-shipping",
+          "mutatorName": "Oathbreaker",
+          "location": {
+            "start": {
+              "line": 32,
+              "column": 3
+            },
+            "end": {
+              "line": 32,
+              "column": 33
+            }
+          },
+          "status": "Killed",
+          "replacement": "if (lineCount === 0) return STANDARD_SHIPPING;",
+          "description": "A cart with zero Lines is charged standard shipping instead of 0.",
+          "killedBy": [
+            "test/price.test.ts::priceCart properties empty carts price to all zeros",
+            "test/price.test.ts::priceCart unit tests empty cart yields all zeros with coupon, express shipping, and nonzero taxBps"
+          ],
+          "species": "Oathbreaker",
+          "requirement": "6.1"
+        },
+        {
+          "id": "55543a3c05d5e4068945fa8cee85a59d",
+          "mutatorName": "EqualityOperator",
+          "location": {
+            "start": {
+              "line": 33,
+              "column": 1
+            },
+            "end": {
+              "line": 33,
+              "column": 1
+            }
+          },
+          "status": "Killed",
+          "replacement": "method !== 'express'",
+          "killedBy": [
+            "test/price.test.ts::priceCart shipping > shippingCents follows method and the discounted subtotal threshold",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > standard shipping is 799 when discounted subtotal is 9999",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > standard shipping is free when discounted subtotal is 10000",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > express shipping is 1499 at discounted subtotal 10000",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > uses the discounted subtotal for the free-shipping threshold",
+            "test/api.test.ts::public API > accepts typed carts and returns a typed Breakdown"
+          ]
+        },
+        {
+          "id": "a62bdd9d3466854a79c5fbedd81074df",
+          "mutatorName": "ConditionalExpression",
+          "location": {
+            "start": {
+              "line": 33,
+              "column": 1
+            },
+            "end": {
+              "line": 33,
+              "column": 1
+            }
+          },
+          "status": "Killed",
+          "replacement": "true",
+          "killedBy": [
+            "test/price.test.ts::priceCart shipping > shippingCents follows method and the discounted subtotal threshold",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > standard shipping is 799 when discounted subtotal is 9999",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > standard shipping is free when discounted subtotal is 10000",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > uses the discounted subtotal for the free-shipping threshold",
+            "test/api.test.ts::public API > accepts typed carts and returns a typed Breakdown"
+          ]
+        },
+        {
+          "id": "c785a8898408ea47a24dfd35a5c56525",
+          "mutatorName": "StringLiteral",
+          "location": {
+            "start": {
+              "line": 33,
+              "column": 1
+            },
+            "end": {
+              "line": 33,
+              "column": 1
+            }
+          },
+          "status": "Killed",
+          "replacement": "\"\"",
+          "killedBy": [
+            "test/price.test.ts::priceCart shipping > shippingCents follows method and the discounted subtotal threshold",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > express shipping is 1499 at discounted subtotal 10000"
+          ]
+        },
+        {
+          "id": "cb2a56d4ad76860c38832d9dae78ebfb",
+          "mutatorName": "ConditionalExpression",
+          "location": {
+            "start": {
+              "line": 33,
+              "column": 1
+            },
+            "end": {
+              "line": 33,
+              "column": 1
+            }
+          },
+          "status": "Killed",
+          "replacement": "false",
+          "killedBy": [
+            "test/price.test.ts::priceCart shipping > shippingCents follows method and the discounted subtotal threshold",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > express shipping is 1499 at discounted subtotal 10000"
+          ]
+        },
+        {
+          "id": "oath-6.4-express-free-over-threshold",
+          "mutatorName": "Oathbreaker",
+          "location": {
+            "start": {
+              "line": 33,
+              "column": 3
+            },
+            "end": {
+              "line": 33,
+              "column": 53
+            }
+          },
+          "status": "Killed",
+          "replacement": "if (method === 'express') return discounted >= FREE_SHIPPING_THRESHOLD ? 0 : EXPRESS_SHIPPING;",
+          "description": "Express shipping becomes free above the threshold instead of always being 1499.",
+          "killedBy": [
+            "test/price.test.ts::priceCart shipping shippingCents follows method and the discounted subtotal threshold",
+            "test/price.test.ts::priceCart unit tests shipping thresholds express shipping is 1499 at discounted subtotal 10000"
+          ],
+          "species": "Oathbreaker",
+          "requirement": "6.4"
+        },
+        {
+          "id": "04d3315154a6b03b032f334fd7d2bcad",
+          "mutatorName": "ConditionalExpression",
+          "location": {
+            "start": {
+              "line": 34,
+              "column": 1
+            },
+            "end": {
+              "line": 34,
+              "column": 1
+            }
+          },
+          "status": "Killed",
+          "replacement": "false",
+          "killedBy": [
+            "test/price.test.ts::priceCart shipping > shippingCents follows method and the discounted subtotal threshold",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > standard shipping is free when discounted subtotal is 10000"
+          ]
+        },
+        {
+          "id": "942882389aefa2433e89baacccfc31bb",
+          "mutatorName": "EqualityOperator",
+          "location": {
+            "start": {
+              "line": 34,
+              "column": 1
+            },
+            "end": {
+              "line": 34,
+              "column": 1
+            }
+          },
+          "status": "Killed",
+          "replacement": "discounted > FREE_SHIPPING_THRESHOLD",
+          "killedBy": [
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > standard shipping is free when discounted subtotal is 10000"
+          ]
+        },
+        {
+          "id": "a9f76c84488dd3ddfa0c20ef2b2b47eb",
+          "mutatorName": "EqualityOperator",
+          "location": {
+            "start": {
+              "line": 34,
+              "column": 1
+            },
+            "end": {
+              "line": 34,
+              "column": 1
+            }
+          },
+          "status": "Killed",
+          "replacement": "discounted < FREE_SHIPPING_THRESHOLD",
+          "killedBy": [
+            "test/price.test.ts::priceCart shipping > shippingCents follows method and the discounted subtotal threshold",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > standard shipping is 799 when discounted subtotal is 9999",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > standard shipping is free when discounted subtotal is 10000",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > uses the discounted subtotal for the free-shipping threshold",
+            "test/api.test.ts::public API > accepts typed carts and returns a typed Breakdown"
+          ]
+        },
+        {
+          "id": "d9c9e661b362ecfdd26a3fbd627c4991",
+          "mutatorName": "ConditionalExpression",
+          "location": {
+            "start": {
+              "line": 34,
+              "column": 1
+            },
+            "end": {
+              "line": 34,
+              "column": 1
+            }
+          },
+          "status": "Killed",
+          "replacement": "true",
+          "killedBy": [
+            "test/price.test.ts::priceCart shipping > shippingCents follows method and the discounted subtotal threshold",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > standard shipping is 799 when discounted subtotal is 9999",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > uses the discounted subtotal for the free-shipping threshold",
+            "test/api.test.ts::public API > accepts typed carts and returns a typed Breakdown"
+          ]
+        },
+        {
+          "id": "oath-6.3-free-shipping-threshold-exclusive",
+          "mutatorName": "Oathbreaker",
+          "location": {
+            "start": {
+              "line": 34,
+              "column": 10
+            },
+            "end": {
+              "line": 34,
+              "column": 47
+            }
+          },
+          "status": "Killed",
+          "replacement": "discounted > FREE_SHIPPING_THRESHOLD",
+          "description": "Standard shipping is still charged when the Discounted_Subtotal is exactly 10000.",
+          "killedBy": [
+            "test/price.test.ts::priceCart unit tests shipping thresholds standard shipping is free when discounted subtotal is 10000"
+          ],
+          "species": "Oathbreaker",
+          "requirement": "6.3"
+        },
+        {
+          "id": "82220b97cf01940fa9ba9dd8165d48fa",
+          "mutatorName": "BlockStatement",
+          "location": {
+            "start": {
+              "line": 45,
+              "column": 1
+            },
+            "end": {
+              "line": 55,
+              "column": 1
+            }
+          },
+          "status": "Killed",
+          "replacement": "{}",
+          "killedBy": [
+            "test/price.test.ts::priceCart properties > subtotalCents is the sum of line totals with bulk discount",
+            "test/price.test.ts::priceCart properties > empty carts price to all zeros",
+            "test/price.test.ts::priceCart coupon discount > discountCents follows the coupon rules and is clamped to the subtotal",
+            "test/price.test.ts::priceCart shipping > shippingCents follows method and the discounted subtotal threshold",
+            "test/price.test.ts::priceCart tax > taxCents is percentOf the discounted subtotal and ignores shipping method",
+            "test/price.test.ts::priceCart breakdown invariants > fields are non-negative integers, discount <= subtotal, and total identity holds",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > standard shipping is 799 when discounted subtotal is 9999",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > standard shipping is free when discounted subtotal is 10000",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > express shipping is 1499 at discounted subtotal 10000",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > uses the discounted subtotal for the free-shipping threshold",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > quantity 9 at unit price 5 has line total 45",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > quantity 10 at unit price 5 has line total 45",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > quantity 10 at unit price 1 has line total 9",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > exact-half bulk discount: quantity 11 at unit price 5 gives 49",
+            "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > gives discount 0 when subtotal is below minSubtotalCents",
+            "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > applies when minSubtotalCents equals the subtotal",
+            "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > fixed coupon below minimum gives 0 and at minimum applies",
+            "test/price.test.ts::priceCart unit tests > empty cart > yields all zeros with coupon, express shipping, and nonzero taxBps",
+            "test/validation.test.ts::validation properties > reports a single invalid field by name",
+            "test/validation.test.ts::validation properties: multiple invalid fields > throws a ValidationError naming one of the invalid fields",
+            "test/validation.test.ts::validation unit tests > names lines[0].quantity",
+            "test/validation.test.ts::validation unit tests > names lines[2].unitPriceCents",
+            "test/validation.test.ts::validation unit tests > names taxBps",
+            "test/validation.test.ts::validation unit tests > quantity 0 valid=false",
+            "test/validation.test.ts::validation unit tests > quantity 1000 valid=false",
+            "test/validation.test.ts::validation unit tests > unit price 1000001 valid=false",
+            "test/validation.test.ts::validation unit tests > taxBps -1 valid=false",
+            "test/validation.test.ts::validation unit tests > taxBps 10001 valid=false",
+            "test/validation.test.ts::validation unit tests > reports one of several invalid fields",
+            "test/api.test.ts::public API > accepts typed carts and returns a typed Breakdown",
+            "test/api.test.ts::public API > throws ValidationError carrying the field name"
+          ]
+        },
+        {
+          "id": "266c7d1831c8faa6c816a19c6ec225e2",
+          "mutatorName": "CallExpression",
+          "location": {
+            "start": {
+              "line": 46,
+              "column": 1
+            },
+            "end": {
+              "line": 46,
+              "column": 1
+            }
+          },
+          "status": "Killed",
+          "replacement": ";",
+          "killedBy": [
+            "test/validation.test.ts::validation properties > reports a single invalid field by name",
+            "test/validation.test.ts::validation properties: multiple invalid fields > throws a ValidationError naming one of the invalid fields",
+            "test/validation.test.ts::validation unit tests > names lines[0].quantity",
+            "test/validation.test.ts::validation unit tests > names lines[2].unitPriceCents",
+            "test/validation.test.ts::validation unit tests > names taxBps",
+            "test/validation.test.ts::validation unit tests > quantity 0 valid=false",
+            "test/validation.test.ts::validation unit tests > quantity 1000 valid=false",
+            "test/validation.test.ts::validation unit tests > unit price 1000001 valid=false",
+            "test/validation.test.ts::validation unit tests > taxBps -1 valid=false",
+            "test/validation.test.ts::validation unit tests > taxBps 10001 valid=false",
+            "test/validation.test.ts::validation unit tests > reports one of several invalid fields",
+            "test/api.test.ts::public API > throws ValidationError carrying the field name"
+          ]
+        },
+        {
+          "id": "oath-4.4-empty-cart-nonzero-subtotal",
+          "mutatorName": "Oathbreaker",
+          "location": {
+            "start": {
+              "line": 47,
+              "column": 3
+            },
+            "end": {
+              "line": 47,
+              "column": 25
+            }
+          },
+          "status": "Killed",
+          "replacement": "let subtotalCents = cart.lines.length === 0 ? 1 : 0;",
+          "description": "A cart with zero Lines returns a Breakdown in which subtotalCents and totalCents are not 0.",
+          "killedBy": [
+            "test/price.test.ts::priceCart properties subtotalCents is the sum of line totals with bulk discount",
+            "test/price.test.ts::priceCart properties empty carts price to all zeros",
+            "test/price.test.ts::priceCart unit tests empty cart yields all zeros with coupon, express shipping, and nonzero taxBps"
+          ],
+          "species": "Oathbreaker",
+          "requirement": "4.4"
+        },
+        {
+          "id": "55d6c790543a59780d53f2f73778bc52",
+          "mutatorName": "AssignmentOperator",
+          "location": {
+            "start": {
+              "line": 48,
+              "column": 1
+            },
+            "end": {
+              "line": 48,
+              "column": 1
+            }
+          },
+          "status": "Killed",
+          "replacement": "subtotalCents -= lineTotal(line)",
+          "killedBy": [
+            "test/price.test.ts::priceCart properties > subtotalCents is the sum of line totals with bulk discount",
+            "test/price.test.ts::priceCart breakdown invariants > fields are non-negative integers, discount <= subtotal, and total identity holds",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > standard shipping is free when discounted subtotal is 10000",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > uses the discounted subtotal for the free-shipping threshold",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > quantity 9 at unit price 5 has line total 45",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > quantity 10 at unit price 5 has line total 45",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > quantity 10 at unit price 1 has line total 9",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > exact-half bulk discount: quantity 11 at unit price 5 gives 49",
+            "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > applies when minSubtotalCents equals the subtotal",
+            "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > fixed coupon below minimum gives 0 and at minimum applies",
+            "test/api.test.ts::public API > accepts typed carts and returns a typed Breakdown"
+          ]
+        },
+        {
+          "id": "oath-4.3-subtotal-last-line-only",
+          "mutatorName": "Oathbreaker",
+          "location": {
+            "start": {
+              "line": 48,
+              "column": 3
+            },
+            "end": {
+              "line": 48,
+              "column": 67
+            }
+          },
+          "status": "Killed",
+          "replacement": "for (const line of cart.lines) subtotalCents = lineTotal(line);",
+          "description": "The subtotal is the last Line_Total instead of the sum of all Line_Total values.",
+          "killedBy": [
+            "test/price.test.ts::priceCart properties subtotalCents is the sum of line totals with bulk discount"
+          ],
+          "species": "Oathbreaker",
+          "requirement": "4.3"
+        },
+        {
+          "id": "186f7d9d805531dc9171fce4c8c4f06d",
+          "mutatorName": "ArithmeticOperator",
+          "location": {
+            "start": {
+              "line": 50,
+              "column": 1
+            },
+            "end": {
+              "line": 50,
+              "column": 1
+            }
+          },
+          "status": "Killed",
+          "replacement": "subtotalCents + discountCents",
+          "killedBy": [
+            "test/price.test.ts::priceCart tax > taxCents is percentOf the discounted subtotal and ignores shipping method",
+            "test/price.test.ts::priceCart breakdown invariants > fields are non-negative integers, discount <= subtotal, and total identity holds",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > uses the discounted subtotal for the free-shipping threshold",
+            "test/api.test.ts::public API > accepts typed carts and returns a typed Breakdown"
+          ]
+        },
+        {
+          "id": "oath-7.1-tax-on-subtotal-before-coupon",
+          "mutatorName": "Oathbreaker",
+          "location": {
+            "start": {
+              "line": 52,
+              "column": 3
+            },
+            "end": {
+              "line": 52,
+              "column": 55
+            }
+          },
+          "status": "Killed",
+          "replacement": "const taxCents = percentOf(subtotalCents, cart.taxBps);",
+          "description": "Tax is computed on the Subtotal instead of the Discounted_Subtotal.",
+          "killedBy": [
+            "test/price.test.ts::priceCart tax taxCents is percentOf the discounted subtotal and ignores shipping method"
+          ],
+          "species": "Oathbreaker",
+          "requirement": "7.1"
+        },
+        {
+          "id": "oath-7.2-tax-includes-shipping",
+          "mutatorName": "Oathbreaker",
+          "location": {
+            "start": {
+              "line": 52,
+              "column": 3
+            },
+            "end": {
+              "line": 52,
+              "column": 55
+            }
+          },
+          "status": "Killed",
+          "replacement": "const taxCents = percentOf(discounted + shippingCents, cart.taxBps);",
+          "description": "shippingCents is included in the tax base.",
+          "killedBy": [
+            "test/price.test.ts::priceCart tax taxCents is percentOf the discounted subtotal and ignores shipping method"
+          ],
+          "species": "Oathbreaker",
+          "requirement": "7.2"
+        },
+        {
+          "id": "5d9a2a70c9794563f4f2f52756152bde",
+          "mutatorName": "ArithmeticOperator",
+          "location": {
+            "start": {
+              "line": 53,
+              "column": 1
+            },
+            "end": {
+              "line": 53,
+              "column": 1
+            }
+          },
+          "status": "Killed",
+          "replacement": "discounted + shippingCents - taxCents",
+          "killedBy": [
+            "test/price.test.ts::priceCart breakdown invariants > fields are non-negative integers, discount <= subtotal, and total identity holds"
+          ]
+        },
+        {
+          "id": "c6257708b0d7ae87213df4f3e140ce24",
+          "mutatorName": "ArithmeticOperator",
+          "location": {
+            "start": {
+              "line": 53,
+              "column": 1
+            },
+            "end": {
+              "line": 53,
+              "column": 1
+            }
+          },
+          "status": "Killed",
+          "replacement": "discounted - shippingCents",
+          "killedBy": [
+            "test/price.test.ts::priceCart breakdown invariants > fields are non-negative integers, discount <= subtotal, and total identity holds",
+            "test/api.test.ts::public API > accepts typed carts and returns a typed Breakdown"
+          ]
+        },
+        {
+          "id": "oath-7.3-total-uses-subtotal",
+          "mutatorName": "Oathbreaker",
+          "location": {
+            "start": {
+              "line": 53,
+              "column": 3
+            },
+            "end": {
+              "line": 53,
+              "column": 60
+            }
+          },
+          "status": "Killed",
+          "replacement": "const totalCents = subtotalCents + shippingCents + taxCents;",
+          "description": "totalCents is built from the Subtotal instead of the Discounted_Subtotal.",
+          "killedBy": [
+            "test/api.test.ts::public API accepts typed carts and returns a typed Breakdown",
+            "test/price.test.ts::priceCart breakdown invariants fields are non-negative integers, discount <= subtotal, and total identity holds"
+          ],
+          "species": "Oathbreaker",
+          "requirement": "7.3"
+        },
+        {
+          "id": "51e2e983274d08597e75806ee95e2553",
+          "mutatorName": "ObjectLiteral",
+          "location": {
+            "start": {
+              "line": 54,
+              "column": 1
+            },
+            "end": {
+              "line": 54,
+              "column": 1
+            }
+          },
+          "status": "Killed",
+          "replacement": "{}",
+          "killedBy": [
+            "test/price.test.ts::priceCart properties > subtotalCents is the sum of line totals with bulk discount",
+            "test/price.test.ts::priceCart properties > empty carts price to all zeros",
+            "test/price.test.ts::priceCart coupon discount > discountCents follows the coupon rules and is clamped to the subtotal",
+            "test/price.test.ts::priceCart shipping > shippingCents follows method and the discounted subtotal threshold",
+            "test/price.test.ts::priceCart tax > taxCents is percentOf the discounted subtotal and ignores shipping method",
+            "test/price.test.ts::priceCart breakdown invariants > fields are non-negative integers, discount <= subtotal, and total identity holds",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > standard shipping is 799 when discounted subtotal is 9999",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > standard shipping is free when discounted subtotal is 10000",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > express shipping is 1499 at discounted subtotal 10000",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > uses the discounted subtotal for the free-shipping threshold",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > quantity 9 at unit price 5 has line total 45",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > quantity 10 at unit price 5 has line total 45",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > quantity 10 at unit price 1 has line total 9",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > exact-half bulk discount: quantity 11 at unit price 5 gives 49",
+            "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > gives discount 0 when subtotal is below minSubtotalCents",
+            "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > applies when minSubtotalCents equals the subtotal",
+            "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > fixed coupon below minimum gives 0 and at minimum applies",
+            "test/price.test.ts::priceCart unit tests > empty cart > yields all zeros with coupon, express shipping, and nonzero taxBps",
+            "test/api.test.ts::public API > accepts typed carts and returns a typed Breakdown"
+          ]
+        }
+      ]
+    },
+    "src/validate.ts": {
+      "language": "typescript",
+      "source": "import { ValidationError } from './errors';\nimport type { Cart } from './types';\n\nfunction isIntInRange(v: unknown, min: number, max: number): boolean {\n  return typeof v === 'number' && Number.isInteger(v) && v >= min && v <= max;\n}\n\n/**\n * Validates the cart's taxBps and each line's quantity and unitPriceCents.\n * Throws ValidationError naming one invalid field. Coupon fields are not inspected.\n */\nexport function validateCart(cart: Cart): void {\n  if (!isIntInRange(cart.taxBps, 0, 10000)) {\n    throw new ValidationError('taxBps');\n  }\n  for (let i = 0; i < cart.lines.length; i++) {\n    const line = cart.lines[i];\n    if (!isIntInRange(line.quantity, 1, 999)) {\n      throw new ValidationError(`lines[${i}].quantity`);\n    }\n    if (!isIntInRange(line.unitPriceCents, 0, 1_000_000)) {\n      throw new ValidationError(`lines[${i}].unitPriceCents`);\n    }\n  }\n}\n",
+      "mutants": [
+        {
+          "id": "256e9eccb5b8538c48a65c7b9d333eb2",
+          "mutatorName": "BlockStatement",
+          "location": {
+            "start": {
+              "line": 4,
+              "column": 1
+            },
+            "end": {
+              "line": 6,
+              "column": 1
+            }
+          },
+          "status": "Killed",
+          "replacement": "{}",
+          "killedBy": [
+            "test/price.test.ts::priceCart properties > subtotalCents is the sum of line totals with bulk discount",
+            "test/price.test.ts::priceCart properties > empty carts price to all zeros",
+            "test/price.test.ts::priceCart coupon discount > discountCents follows the coupon rules and is clamped to the subtotal",
+            "test/price.test.ts::priceCart shipping > shippingCents follows method and the discounted subtotal threshold",
+            "test/price.test.ts::priceCart tax > taxCents is percentOf the discounted subtotal and ignores shipping method",
+            "test/price.test.ts::priceCart breakdown invariants > fields are non-negative integers, discount <= subtotal, and total identity holds",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > standard shipping is 799 when discounted subtotal is 9999",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > standard shipping is free when discounted subtotal is 10000",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > express shipping is 1499 at discounted subtotal 10000",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > uses the discounted subtotal for the free-shipping threshold",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > quantity 9 at unit price 5 has line total 45",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > quantity 10 at unit price 5 has line total 45",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > quantity 10 at unit price 1 has line total 9",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > exact-half bulk discount: quantity 11 at unit price 5 gives 49",
+            "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > gives discount 0 when subtotal is below minSubtotalCents",
+            "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > applies when minSubtotalCents equals the subtotal",
+            "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > fixed coupon below minimum gives 0 and at minimum applies",
+            "test/price.test.ts::priceCart unit tests > empty cart > yields all zeros with coupon, express shipping, and nonzero taxBps",
+            "test/api.test.ts::public API > accepts typed carts and returns a typed Breakdown",
+            "test/api.test.ts::public API > throws ValidationError carrying the field name",
+            "test/validation.test.ts::validation properties > reports a single invalid field by name",
+            "test/validation.test.ts::validation properties: multiple invalid fields > throws a ValidationError naming one of the invalid fields",
+            "test/validation.test.ts::validation unit tests > names lines[0].quantity",
+            "test/validation.test.ts::validation unit tests > names lines[2].unitPriceCents",
+            "test/validation.test.ts::validation unit tests > quantity 0 valid=false",
+            "test/validation.test.ts::validation unit tests > quantity 1 valid=true",
+            "test/validation.test.ts::validation unit tests > quantity 999 valid=true",
+            "test/validation.test.ts::validation unit tests > quantity 1000 valid=false",
+            "test/validation.test.ts::validation unit tests > unit price 0 valid=true",
+            "test/validation.test.ts::validation unit tests > unit price 1000000 valid=true",
+            "test/validation.test.ts::validation unit tests > unit price 1000001 valid=false",
+            "test/validation.test.ts::validation unit tests > taxBps 0 valid=true",
+            "test/validation.test.ts::validation unit tests > taxBps 10000 valid=true",
+            "test/validation.test.ts::validation unit tests > does not throw ValidationError for unusual coupon values"
+          ]
+        },
+        {
+          "id": "1944e9b50279eb0d64426bc7460a27a9",
+          "mutatorName": "ConditionalExpression",
+          "location": {
+            "start": {
+              "line": 5,
+              "column": 1
+            },
+            "end": {
+              "line": 5,
+              "column": 1
+            }
+          },
+          "status": "Killed",
+          "replacement": "true",
+          "killedBy": [
+            "test/api.test.ts::public API > throws ValidationError carrying the field name",
+            "test/validation.test.ts::validation properties > reports a single invalid field by name",
+            "test/validation.test.ts::validation properties: multiple invalid fields > throws a ValidationError naming one of the invalid fields",
+            "test/validation.test.ts::validation unit tests > names lines[0].quantity",
+            "test/validation.test.ts::validation unit tests > names lines[2].unitPriceCents",
+            "test/validation.test.ts::validation unit tests > names taxBps",
+            "test/validation.test.ts::validation unit tests > quantity 0 valid=false",
+            "test/validation.test.ts::validation unit tests > quantity 1000 valid=false",
+            "test/validation.test.ts::validation unit tests > unit price 1000001 valid=false",
+            "test/validation.test.ts::validation unit tests > taxBps -1 valid=false",
+            "test/validation.test.ts::validation unit tests > taxBps 10001 valid=false",
+            "test/validation.test.ts::validation unit tests > reports one of several invalid fields"
+          ]
+        },
+        {
+          "id": "2a6dea969ad49db5285c5be1298d48ce",
+          "mutatorName": "StringLiteral",
+          "location": {
+            "start": {
+              "line": 5,
+              "column": 1
+            },
+            "end": {
+              "line": 5,
+              "column": 1
+            }
+          },
+          "status": "Killed",
+          "replacement": "\"\"",
+          "killedBy": [
+            "test/price.test.ts::priceCart properties > subtotalCents is the sum of line totals with bulk discount",
+            "test/price.test.ts::priceCart properties > empty carts price to all zeros",
+            "test/price.test.ts::priceCart coupon discount > discountCents follows the coupon rules and is clamped to the subtotal",
+            "test/price.test.ts::priceCart shipping > shippingCents follows method and the discounted subtotal threshold",
+            "test/price.test.ts::priceCart tax > taxCents is percentOf the discounted subtotal and ignores shipping method",
+            "test/price.test.ts::priceCart breakdown invariants > fields are non-negative integers, discount <= subtotal, and total identity holds",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > standard shipping is 799 when discounted subtotal is 9999",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > standard shipping is free when discounted subtotal is 10000",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > express shipping is 1499 at discounted subtotal 10000",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > uses the discounted subtotal for the free-shipping threshold",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > quantity 9 at unit price 5 has line total 45",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > quantity 10 at unit price 5 has line total 45",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > quantity 10 at unit price 1 has line total 9",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > exact-half bulk discount: quantity 11 at unit price 5 gives 49",
+            "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > gives discount 0 when subtotal is below minSubtotalCents",
+            "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > applies when minSubtotalCents equals the subtotal",
+            "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > fixed coupon below minimum gives 0 and at minimum applies",
+            "test/price.test.ts::priceCart unit tests > empty cart > yields all zeros with coupon, express shipping, and nonzero taxBps",
+            "test/validation.test.ts::validation properties > reports a single invalid field by name",
+            "test/validation.test.ts::validation properties: multiple invalid fields > throws a ValidationError naming one of the invalid fields",
+            "test/validation.test.ts::validation unit tests > names lines[0].quantity",
+            "test/validation.test.ts::validation unit tests > names lines[2].unitPriceCents",
+            "test/validation.test.ts::validation unit tests > quantity 0 valid=false",
+            "test/validation.test.ts::validation unit tests > quantity 1 valid=true",
+            "test/validation.test.ts::validation unit tests > quantity 999 valid=true",
+            "test/validation.test.ts::validation unit tests > quantity 1000 valid=false",
+            "test/validation.test.ts::validation unit tests > unit price 0 valid=true",
+            "test/validation.test.ts::validation unit tests > unit price 1000000 valid=true",
+            "test/validation.test.ts::validation unit tests > unit price 1000001 valid=false",
+            "test/validation.test.ts::validation unit tests > taxBps 0 valid=true",
+            "test/validation.test.ts::validation unit tests > taxBps 10000 valid=true",
+            "test/validation.test.ts::validation unit tests > does not throw ValidationError for unusual coupon values",
+            "test/api.test.ts::public API > accepts typed carts and returns a typed Breakdown",
+            "test/api.test.ts::public API > throws ValidationError carrying the field name"
+          ]
+        },
+        {
+          "id": "36edad24bf9a6a62d744333f36f2e2a2",
+          "mutatorName": "EqualityOperator",
+          "location": {
+            "start": {
+              "line": 5,
+              "column": 1
+            },
+            "end": {
+              "line": 5,
+              "column": 1
+            }
+          },
+          "status": "Killed",
+          "replacement": "typeof v !== 'number'",
+          "killedBy": [
+            "test/price.test.ts::priceCart properties > subtotalCents is the sum of line totals with bulk discount",
+            "test/price.test.ts::priceCart properties > empty carts price to all zeros",
+            "test/price.test.ts::priceCart coupon discount > discountCents follows the coupon rules and is clamped to the subtotal",
+            "test/price.test.ts::priceCart shipping > shippingCents follows method and the discounted subtotal threshold",
+            "test/price.test.ts::priceCart tax > taxCents is percentOf the discounted subtotal and ignores shipping method",
+            "test/price.test.ts::priceCart breakdown invariants > fields are non-negative integers, discount <= subtotal, and total identity holds",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > standard shipping is 799 when discounted subtotal is 9999",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > standard shipping is free when discounted subtotal is 10000",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > express shipping is 1499 at discounted subtotal 10000",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > uses the discounted subtotal for the free-shipping threshold",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > quantity 9 at unit price 5 has line total 45",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > quantity 10 at unit price 5 has line total 45",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > quantity 10 at unit price 1 has line total 9",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > exact-half bulk discount: quantity 11 at unit price 5 gives 49",
+            "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > gives discount 0 when subtotal is below minSubtotalCents",
+            "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > applies when minSubtotalCents equals the subtotal",
+            "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > fixed coupon below minimum gives 0 and at minimum applies",
+            "test/price.test.ts::priceCart unit tests > empty cart > yields all zeros with coupon, express shipping, and nonzero taxBps",
+            "test/validation.test.ts::validation properties > reports a single invalid field by name",
+            "test/validation.test.ts::validation properties: multiple invalid fields > throws a ValidationError naming one of the invalid fields",
+            "test/validation.test.ts::validation unit tests > names lines[0].quantity",
+            "test/validation.test.ts::validation unit tests > names lines[2].unitPriceCents",
+            "test/validation.test.ts::validation unit tests > quantity 0 valid=false",
+            "test/validation.test.ts::validation unit tests > quantity 1 valid=true",
+            "test/validation.test.ts::validation unit tests > quantity 999 valid=true",
+            "test/validation.test.ts::validation unit tests > quantity 1000 valid=false",
+            "test/validation.test.ts::validation unit tests > unit price 0 valid=true",
+            "test/validation.test.ts::validation unit tests > unit price 1000000 valid=true",
+            "test/validation.test.ts::validation unit tests > unit price 1000001 valid=false",
+            "test/validation.test.ts::validation unit tests > taxBps 0 valid=true",
+            "test/validation.test.ts::validation unit tests > taxBps 10000 valid=true",
+            "test/validation.test.ts::validation unit tests > does not throw ValidationError for unusual coupon values",
+            "test/api.test.ts::public API > accepts typed carts and returns a typed Breakdown",
+            "test/api.test.ts::public API > throws ValidationError carrying the field name"
+          ]
+        },
+        {
+          "id": "3ad8a27bb2f042f805ec8aff1cc6bd4e",
+          "mutatorName": "ConditionalExpression",
+          "location": {
+            "start": {
+              "line": 5,
+              "column": 1
+            },
+            "end": {
+              "line": 5,
+              "column": 1
+            }
+          },
+          "status": "Killed",
+          "replacement": "true",
+          "killedBy": [
+            "test/validation.test.ts::validation properties > reports a single invalid field by name",
+            "test/validation.test.ts::validation properties: multiple invalid fields > throws a ValidationError naming one of the invalid fields",
+            "test/validation.test.ts::validation unit tests > names lines[0].quantity",
+            "test/validation.test.ts::validation unit tests > names lines[2].unitPriceCents",
+            "test/validation.test.ts::validation unit tests > names taxBps",
+            "test/validation.test.ts::validation unit tests > quantity 0 valid=false",
+            "test/validation.test.ts::validation unit tests > taxBps -1 valid=false",
+            "test/api.test.ts::public API > throws ValidationError carrying the field name"
+          ]
+        },
+        {
+          "id": "3f7497cce58cc2414f0f0c10ec5479df",
+          "mutatorName": "LogicalOperator",
+          "location": {
+            "start": {
+              "line": 5,
+              "column": 1
+            },
+            "end": {
+              "line": 5,
+              "column": 1
+            }
+          },
+          "status": "Killed",
+          "replacement": "typeof v === 'number' && Number.isInteger(v) && v >= min || v <= max",
+          "killedBy": [
+            "test/api.test.ts::public API > throws ValidationError carrying the field name",
+            "test/validation.test.ts::validation properties > reports a single invalid field by name",
+            "test/validation.test.ts::validation properties: multiple invalid fields > throws a ValidationError naming one of the invalid fields",
+            "test/validation.test.ts::validation unit tests > names lines[0].quantity",
+            "test/validation.test.ts::validation unit tests > names lines[2].unitPriceCents",
+            "test/validation.test.ts::validation unit tests > names taxBps",
+            "test/validation.test.ts::validation unit tests > quantity 0 valid=false",
+            "test/validation.test.ts::validation unit tests > quantity 1000 valid=false",
+            "test/validation.test.ts::validation unit tests > unit price 1000001 valid=false",
+            "test/validation.test.ts::validation unit tests > taxBps -1 valid=false",
+            "test/validation.test.ts::validation unit tests > taxBps 10001 valid=false",
+            "test/validation.test.ts::validation unit tests > reports one of several invalid fields"
+          ]
+        },
+        {
+          "id": "51f19cb7ad735d059c6ef56bcca5c121",
+          "mutatorName": "EqualityOperator",
+          "location": {
+            "start": {
+              "line": 5,
+              "column": 1
+            },
+            "end": {
+              "line": 5,
+              "column": 1
+            }
+          },
+          "status": "Killed",
+          "replacement": "v < max",
+          "killedBy": [
+            "test/price.test.ts::priceCart properties > subtotalCents is the sum of line totals with bulk discount",
+            "test/price.test.ts::priceCart coupon discount > discountCents follows the coupon rules and is clamped to the subtotal",
+            "test/price.test.ts::priceCart shipping > shippingCents follows method and the discounted subtotal threshold",
+            "test/price.test.ts::priceCart tax > taxCents is percentOf the discounted subtotal and ignores shipping method",
+            "test/price.test.ts::priceCart breakdown invariants > fields are non-negative integers, discount <= subtotal, and total identity holds",
+            "test/validation.test.ts::validation properties > reports a single invalid field by name",
+            "test/validation.test.ts::validation unit tests > quantity 999 valid=true",
+            "test/validation.test.ts::validation unit tests > unit price 1000000 valid=true",
+            "test/validation.test.ts::validation unit tests > taxBps 10000 valid=true"
+          ]
+        },
+        {
+          "id": "644b12fe29564b2195fcc3b4cef9f99f",
+          "mutatorName": "LogicalOperator",
+          "location": {
+            "start": {
+              "line": 5,
+              "column": 1
+            },
+            "end": {
+              "line": 5,
+              "column": 1
+            }
+          },
+          "status": "Killed",
+          "replacement": "typeof v === 'number' || Number.isInteger(v)",
+          "killedBy": [
+            "test/validation.test.ts::validation properties > reports a single invalid field by name"
+          ]
+        },
+        {
+          "id": "7c1ce892c6cd86293cf47b6a8d638457",
+          "mutatorName": "ConditionalExpression",
+          "location": {
+            "start": {
+              "line": 5,
+              "column": 1
+            },
+            "end": {
+              "line": 5,
+              "column": 1
+            }
+          },
+          "status": "Killed",
+          "replacement": "true",
+          "killedBy": [
+            "test/validation.test.ts::validation properties > reports a single invalid field by name",
+            "test/validation.test.ts::validation properties: multiple invalid fields > throws a ValidationError naming one of the invalid fields",
+            "test/validation.test.ts::validation unit tests > quantity 1000 valid=false",
+            "test/validation.test.ts::validation unit tests > unit price 1000001 valid=false",
+            "test/validation.test.ts::validation unit tests > taxBps 10001 valid=false"
+          ]
+        },
+        {
+          "id": "7e6674e71cc7b58ffb0fa7149cf1c83b",
+          "mutatorName": "EqualityOperator",
+          "location": {
+            "start": {
+              "line": 5,
+              "column": 1
+            },
+            "end": {
+              "line": 5,
+              "column": 1
+            }
+          },
+          "status": "Killed",
+          "replacement": "v < min",
+          "killedBy": [
+            "test/price.test.ts::priceCart properties > subtotalCents is the sum of line totals with bulk discount",
+            "test/price.test.ts::priceCart properties > empty carts price to all zeros",
+            "test/price.test.ts::priceCart coupon discount > discountCents follows the coupon rules and is clamped to the subtotal",
+            "test/price.test.ts::priceCart shipping > shippingCents follows method and the discounted subtotal threshold",
+            "test/price.test.ts::priceCart tax > taxCents is percentOf the discounted subtotal and ignores shipping method",
+            "test/price.test.ts::priceCart breakdown invariants > fields are non-negative integers, discount <= subtotal, and total identity holds",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > standard shipping is 799 when discounted subtotal is 9999",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > standard shipping is free when discounted subtotal is 10000",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > express shipping is 1499 at discounted subtotal 10000",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > uses the discounted subtotal for the free-shipping threshold",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > quantity 9 at unit price 5 has line total 45",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > quantity 10 at unit price 5 has line total 45",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > quantity 10 at unit price 1 has line total 9",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > exact-half bulk discount: quantity 11 at unit price 5 gives 49",
+            "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > gives discount 0 when subtotal is below minSubtotalCents",
+            "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > applies when minSubtotalCents equals the subtotal",
+            "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > fixed coupon below minimum gives 0 and at minimum applies",
+            "test/price.test.ts::priceCart unit tests > empty cart > yields all zeros with coupon, express shipping, and nonzero taxBps",
+            "test/validation.test.ts::validation properties > reports a single invalid field by name",
+            "test/validation.test.ts::validation properties: multiple invalid fields > throws a ValidationError naming one of the invalid fields",
+            "test/validation.test.ts::validation unit tests > names lines[0].quantity",
+            "test/validation.test.ts::validation unit tests > names lines[2].unitPriceCents",
+            "test/validation.test.ts::validation unit tests > names taxBps",
+            "test/validation.test.ts::validation unit tests > quantity 0 valid=false",
+            "test/validation.test.ts::validation unit tests > quantity 1 valid=true",
+            "test/validation.test.ts::validation unit tests > quantity 999 valid=true",
+            "test/validation.test.ts::validation unit tests > quantity 1000 valid=false",
+            "test/validation.test.ts::validation unit tests > unit price 0 valid=true",
+            "test/validation.test.ts::validation unit tests > unit price 1000000 valid=true",
+            "test/validation.test.ts::validation unit tests > unit price 1000001 valid=false",
+            "test/validation.test.ts::validation unit tests > taxBps -1 valid=false",
+            "test/validation.test.ts::validation unit tests > taxBps 0 valid=true",
+            "test/validation.test.ts::validation unit tests > taxBps 10000 valid=true",
+            "test/validation.test.ts::validation unit tests > does not throw ValidationError for unusual coupon values",
+            "test/api.test.ts::public API > accepts typed carts and returns a typed Breakdown",
+            "test/api.test.ts::public API > throws ValidationError carrying the field name"
+          ]
+        },
+        {
+          "id": "949b5f969ce08013dc5c820450bd2807",
+          "mutatorName": "LogicalOperator",
+          "location": {
+            "start": {
+              "line": 5,
+              "column": 1
+            },
+            "end": {
+              "line": 5,
+              "column": 1
+            }
+          },
+          "status": "Killed",
+          "replacement": "typeof v === 'number' && Number.isInteger(v) || v >= min",
+          "killedBy": [
+            "test/validation.test.ts::validation properties > reports a single invalid field by name",
+            "test/validation.test.ts::validation properties: multiple invalid fields > throws a ValidationError naming one of the invalid fields",
+            "test/validation.test.ts::validation unit tests > names lines[0].quantity",
+            "test/validation.test.ts::validation unit tests > names lines[2].unitPriceCents",
+            "test/validation.test.ts::validation unit tests > names taxBps",
+            "test/validation.test.ts::validation unit tests > quantity 0 valid=false",
+            "test/validation.test.ts::validation unit tests > taxBps -1 valid=false",
+            "test/api.test.ts::public API > throws ValidationError carrying the field name"
+          ]
+        },
+        {
+          "id": "9dc58adf3e3555ccb2eeb5046a98ce0a",
+          "mutatorName": "ConditionalExpression",
+          "location": {
+            "start": {
+              "line": 5,
+              "column": 1
+            },
+            "end": {
+              "line": 5,
+              "column": 1
+            }
+          },
+          "status": "Killed",
+          "replacement": "true",
+          "killedBy": [
+            "test/validation.test.ts::validation properties > reports a single invalid field by name",
+            "test/validation.test.ts::validation properties: multiple invalid fields > throws a ValidationError naming one of the invalid fields",
+            "test/validation.test.ts::validation unit tests > names lines[0].quantity",
+            "test/validation.test.ts::validation unit tests > names lines[2].unitPriceCents",
+            "test/validation.test.ts::validation unit tests > names taxBps",
+            "test/validation.test.ts::validation unit tests > quantity 0 valid=false",
+            "test/validation.test.ts::validation unit tests > taxBps -1 valid=false",
+            "test/api.test.ts::public API > throws ValidationError carrying the field name"
+          ]
+        },
+        {
+          "id": "b86c5ad20eb3c605cde5316b1abc4a71",
+          "mutatorName": "ConditionalExpression",
+          "location": {
+            "start": {
+              "line": 5,
+              "column": 1
+            },
+            "end": {
+              "line": 5,
+              "column": 1
+            }
+          },
+          "status": "Survived",
+          "replacement": "true",
+          "killedBy": []
+        },
+        {
+          "id": "d199971f793e30c36c5d4c935af1fabc",
+          "mutatorName": "EqualityOperator",
+          "location": {
+            "start": {
+              "line": 5,
+              "column": 1
+            },
+            "end": {
+              "line": 5,
+              "column": 1
+            }
+          },
+          "status": "Killed",
+          "replacement": "v > min",
+          "killedBy": [
+            "test/price.test.ts::priceCart properties > subtotalCents is the sum of line totals with bulk discount",
+            "test/price.test.ts::priceCart properties > empty carts price to all zeros",
+            "test/price.test.ts::priceCart coupon discount > discountCents follows the coupon rules and is clamped to the subtotal",
+            "test/price.test.ts::priceCart shipping > shippingCents follows method and the discounted subtotal threshold",
+            "test/price.test.ts::priceCart tax > taxCents is percentOf the discounted subtotal and ignores shipping method",
+            "test/price.test.ts::priceCart breakdown invariants > fields are non-negative integers, discount <= subtotal, and total identity holds",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > standard shipping is 799 when discounted subtotal is 9999",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > standard shipping is free when discounted subtotal is 10000",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > express shipping is 1499 at discounted subtotal 10000",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > uses the discounted subtotal for the free-shipping threshold",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > quantity 9 at unit price 5 has line total 45",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > quantity 10 at unit price 5 has line total 45",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > quantity 10 at unit price 1 has line total 9",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > exact-half bulk discount: quantity 11 at unit price 5 gives 49",
+            "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > gives discount 0 when subtotal is below minSubtotalCents",
+            "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > applies when minSubtotalCents equals the subtotal",
+            "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > fixed coupon below minimum gives 0 and at minimum applies",
+            "test/validation.test.ts::validation properties > reports a single invalid field by name",
+            "test/validation.test.ts::validation properties: multiple invalid fields > throws a ValidationError naming one of the invalid fields",
+            "test/validation.test.ts::validation unit tests > names lines[0].quantity",
+            "test/validation.test.ts::validation unit tests > names lines[2].unitPriceCents",
+            "test/validation.test.ts::validation unit tests > quantity 0 valid=false",
+            "test/validation.test.ts::validation unit tests > quantity 1 valid=true",
+            "test/validation.test.ts::validation unit tests > quantity 999 valid=true",
+            "test/validation.test.ts::validation unit tests > quantity 1000 valid=false",
+            "test/validation.test.ts::validation unit tests > unit price 0 valid=true",
+            "test/validation.test.ts::validation unit tests > unit price 1000000 valid=true",
+            "test/validation.test.ts::validation unit tests > unit price 1000001 valid=false",
+            "test/validation.test.ts::validation unit tests > taxBps 0 valid=true",
+            "test/validation.test.ts::validation unit tests > taxBps 10000 valid=true",
+            "test/validation.test.ts::validation unit tests > does not throw ValidationError for unusual coupon values",
+            "test/api.test.ts::public API > accepts typed carts and returns a typed Breakdown",
+            "test/api.test.ts::public API > throws ValidationError carrying the field name"
+          ]
+        },
+        {
+          "id": "d69b42b2d88a9f72cfb52ac28356b619",
+          "mutatorName": "ConditionalExpression",
+          "location": {
+            "start": {
+              "line": 5,
+              "column": 1
+            },
+            "end": {
+              "line": 5,
+              "column": 1
+            }
+          },
+          "status": "Killed",
+          "replacement": "true",
+          "killedBy": [
+            "test/validation.test.ts::validation properties > reports a single invalid field by name"
+          ]
+        },
+        {
+          "id": "eebf2b1aea183ee96c0069b9d157b6ab",
+          "mutatorName": "ConditionalExpression",
+          "location": {
+            "start": {
+              "line": 5,
+              "column": 1
+            },
+            "end": {
+              "line": 5,
+              "column": 1
+            }
+          },
+          "status": "Killed",
+          "replacement": "false",
+          "killedBy": [
+            "test/price.test.ts::priceCart properties > subtotalCents is the sum of line totals with bulk discount",
+            "test/price.test.ts::priceCart properties > empty carts price to all zeros",
+            "test/price.test.ts::priceCart coupon discount > discountCents follows the coupon rules and is clamped to the subtotal",
+            "test/price.test.ts::priceCart shipping > shippingCents follows method and the discounted subtotal threshold",
+            "test/price.test.ts::priceCart tax > taxCents is percentOf the discounted subtotal and ignores shipping method",
+            "test/price.test.ts::priceCart breakdown invariants > fields are non-negative integers, discount <= subtotal, and total identity holds",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > standard shipping is 799 when discounted subtotal is 9999",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > standard shipping is free when discounted subtotal is 10000",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > express shipping is 1499 at discounted subtotal 10000",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > uses the discounted subtotal for the free-shipping threshold",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > quantity 9 at unit price 5 has line total 45",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > quantity 10 at unit price 5 has line total 45",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > quantity 10 at unit price 1 has line total 9",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > exact-half bulk discount: quantity 11 at unit price 5 gives 49",
+            "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > gives discount 0 when subtotal is below minSubtotalCents",
+            "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > applies when minSubtotalCents equals the subtotal",
+            "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > fixed coupon below minimum gives 0 and at minimum applies",
+            "test/price.test.ts::priceCart unit tests > empty cart > yields all zeros with coupon, express shipping, and nonzero taxBps",
+            "test/validation.test.ts::validation properties > reports a single invalid field by name",
+            "test/validation.test.ts::validation properties: multiple invalid fields > throws a ValidationError naming one of the invalid fields",
+            "test/validation.test.ts::validation unit tests > names lines[0].quantity",
+            "test/validation.test.ts::validation unit tests > names lines[2].unitPriceCents",
+            "test/validation.test.ts::validation unit tests > quantity 0 valid=false",
+            "test/validation.test.ts::validation unit tests > quantity 1 valid=true",
+            "test/validation.test.ts::validation unit tests > quantity 999 valid=true",
+            "test/validation.test.ts::validation unit tests > quantity 1000 valid=false",
+            "test/validation.test.ts::validation unit tests > unit price 0 valid=true",
+            "test/validation.test.ts::validation unit tests > unit price 1000000 valid=true",
+            "test/validation.test.ts::validation unit tests > unit price 1000001 valid=false",
+            "test/validation.test.ts::validation unit tests > taxBps 0 valid=true",
+            "test/validation.test.ts::validation unit tests > taxBps 10000 valid=true",
+            "test/validation.test.ts::validation unit tests > does not throw ValidationError for unusual coupon values",
+            "test/api.test.ts::public API > accepts typed carts and returns a typed Breakdown",
+            "test/api.test.ts::public API > throws ValidationError carrying the field name"
+          ]
+        },
+        {
+          "id": "f48c70ca777388d69a2ef90b6fe62125",
+          "mutatorName": "EqualityOperator",
+          "location": {
+            "start": {
+              "line": 5,
+              "column": 1
+            },
+            "end": {
+              "line": 5,
+              "column": 1
+            }
+          },
+          "status": "Killed",
+          "replacement": "v > max",
+          "killedBy": [
+            "test/validation.test.ts::validation properties > reports a single invalid field by name",
+            "test/validation.test.ts::validation properties: multiple invalid fields > throws a ValidationError naming one of the invalid fields",
+            "test/validation.test.ts::validation unit tests > names lines[0].quantity",
+            "test/validation.test.ts::validation unit tests > names lines[2].unitPriceCents",
+            "test/validation.test.ts::validation unit tests > quantity 0 valid=false",
+            "test/validation.test.ts::validation unit tests > quantity 1 valid=true",
+            "test/validation.test.ts::validation unit tests > quantity 999 valid=true",
+            "test/validation.test.ts::validation unit tests > quantity 1000 valid=false",
+            "test/validation.test.ts::validation unit tests > unit price 0 valid=true",
+            "test/validation.test.ts::validation unit tests > unit price 1000000 valid=true",
+            "test/validation.test.ts::validation unit tests > unit price 1000001 valid=false",
+            "test/validation.test.ts::validation unit tests > taxBps 0 valid=true",
+            "test/validation.test.ts::validation unit tests > taxBps 10000 valid=true",
+            "test/validation.test.ts::validation unit tests > taxBps 10001 valid=false",
+            "test/validation.test.ts::validation unit tests > does not throw ValidationError for unusual coupon values",
+            "test/price.test.ts::priceCart properties > subtotalCents is the sum of line totals with bulk discount",
+            "test/price.test.ts::priceCart properties > empty carts price to all zeros",
+            "test/price.test.ts::priceCart coupon discount > discountCents follows the coupon rules and is clamped to the subtotal",
+            "test/price.test.ts::priceCart shipping > shippingCents follows method and the discounted subtotal threshold",
+            "test/price.test.ts::priceCart tax > taxCents is percentOf the discounted subtotal and ignores shipping method",
+            "test/price.test.ts::priceCart breakdown invariants > fields are non-negative integers, discount <= subtotal, and total identity holds",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > standard shipping is 799 when discounted subtotal is 9999",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > standard shipping is free when discounted subtotal is 10000",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > express shipping is 1499 at discounted subtotal 10000",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > uses the discounted subtotal for the free-shipping threshold",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > quantity 9 at unit price 5 has line total 45",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > quantity 10 at unit price 5 has line total 45",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > quantity 10 at unit price 1 has line total 9",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > exact-half bulk discount: quantity 11 at unit price 5 gives 49",
+            "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > gives discount 0 when subtotal is below minSubtotalCents",
+            "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > applies when minSubtotalCents equals the subtotal",
+            "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > fixed coupon below minimum gives 0 and at minimum applies",
+            "test/price.test.ts::priceCart unit tests > empty cart > yields all zeros with coupon, express shipping, and nonzero taxBps",
+            "test/api.test.ts::public API > accepts typed carts and returns a typed Breakdown",
+            "test/api.test.ts::public API > throws ValidationError carrying the field name"
+          ]
+        },
+        {
+          "id": "d0ca9a9745e5f7d27d642aed38a777d0",
+          "mutatorName": "BlockStatement",
+          "location": {
+            "start": {
+              "line": 12,
+              "column": 1
+            },
+            "end": {
+              "line": 25,
+              "column": 1
+            }
+          },
+          "status": "Killed",
+          "replacement": "{}",
+          "killedBy": [
+            "test/validation.test.ts::validation properties > reports a single invalid field by name",
+            "test/validation.test.ts::validation properties: multiple invalid fields > throws a ValidationError naming one of the invalid fields",
+            "test/validation.test.ts::validation unit tests > names lines[0].quantity",
+            "test/validation.test.ts::validation unit tests > names lines[2].unitPriceCents",
+            "test/validation.test.ts::validation unit tests > names taxBps",
+            "test/validation.test.ts::validation unit tests > quantity 0 valid=false",
+            "test/validation.test.ts::validation unit tests > quantity 1000 valid=false",
+            "test/validation.test.ts::validation unit tests > unit price 1000001 valid=false",
+            "test/validation.test.ts::validation unit tests > taxBps -1 valid=false",
+            "test/validation.test.ts::validation unit tests > taxBps 10001 valid=false",
+            "test/validation.test.ts::validation unit tests > reports one of several invalid fields",
+            "test/api.test.ts::public API > throws ValidationError carrying the field name"
+          ]
+        },
+        {
+          "id": "237932e9673fccde99e9f3051b097b6a",
+          "mutatorName": "ConditionalExpression",
+          "location": {
+            "start": {
+              "line": 13,
+              "column": 1
+            },
+            "end": {
+              "line": 13,
+              "column": 1
+            }
+          },
+          "status": "Killed",
+          "replacement": "false",
+          "killedBy": [
+            "test/validation.test.ts::validation properties > reports a single invalid field by name",
+            "test/validation.test.ts::validation unit tests > names taxBps",
+            "test/validation.test.ts::validation unit tests > taxBps -1 valid=false",
+            "test/validation.test.ts::validation unit tests > taxBps 10001 valid=false"
+          ]
+        },
+        {
+          "id": "318866d36e36b2d2b96ac60603491b83",
+          "mutatorName": "BooleanLiteral",
+          "location": {
+            "start": {
+              "line": 13,
+              "column": 1
+            },
+            "end": {
+              "line": 13,
+              "column": 1
+            }
+          },
+          "status": "Killed",
+          "replacement": "isIntInRange(cart.taxBps, 0, 10000)",
+          "killedBy": [
+            "test/validation.test.ts::validation properties > reports a single invalid field by name",
+            "test/validation.test.ts::validation properties: multiple invalid fields > throws a ValidationError naming one of the invalid fields",
+            "test/validation.test.ts::validation unit tests > names lines[0].quantity",
+            "test/validation.test.ts::validation unit tests > names lines[2].unitPriceCents",
+            "test/validation.test.ts::validation unit tests > names taxBps",
+            "test/validation.test.ts::validation unit tests > quantity 0 valid=false",
+            "test/validation.test.ts::validation unit tests > quantity 1 valid=true",
+            "test/validation.test.ts::validation unit tests > quantity 999 valid=true",
+            "test/validation.test.ts::validation unit tests > quantity 1000 valid=false",
+            "test/validation.test.ts::validation unit tests > unit price 0 valid=true",
+            "test/validation.test.ts::validation unit tests > unit price 1000000 valid=true",
+            "test/validation.test.ts::validation unit tests > unit price 1000001 valid=false",
+            "test/validation.test.ts::validation unit tests > taxBps -1 valid=false",
+            "test/validation.test.ts::validation unit tests > taxBps 0 valid=true",
+            "test/validation.test.ts::validation unit tests > taxBps 10000 valid=true",
+            "test/validation.test.ts::validation unit tests > taxBps 10001 valid=false",
+            "test/validation.test.ts::validation unit tests > does not throw ValidationError for unusual coupon values",
+            "test/price.test.ts::priceCart properties > subtotalCents is the sum of line totals with bulk discount",
+            "test/price.test.ts::priceCart properties > empty carts price to all zeros",
+            "test/price.test.ts::priceCart coupon discount > discountCents follows the coupon rules and is clamped to the subtotal",
+            "test/price.test.ts::priceCart shipping > shippingCents follows method and the discounted subtotal threshold",
+            "test/price.test.ts::priceCart tax > taxCents is percentOf the discounted subtotal and ignores shipping method",
+            "test/price.test.ts::priceCart breakdown invariants > fields are non-negative integers, discount <= subtotal, and total identity holds",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > standard shipping is 799 when discounted subtotal is 9999",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > standard shipping is free when discounted subtotal is 10000",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > express shipping is 1499 at discounted subtotal 10000",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > uses the discounted subtotal for the free-shipping threshold",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > quantity 9 at unit price 5 has line total 45",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > quantity 10 at unit price 5 has line total 45",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > quantity 10 at unit price 1 has line total 9",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > exact-half bulk discount: quantity 11 at unit price 5 gives 49",
+            "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > gives discount 0 when subtotal is below minSubtotalCents",
+            "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > applies when minSubtotalCents equals the subtotal",
+            "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > fixed coupon below minimum gives 0 and at minimum applies",
+            "test/price.test.ts::priceCart unit tests > empty cart > yields all zeros with coupon, express shipping, and nonzero taxBps",
+            "test/api.test.ts::public API > accepts typed carts and returns a typed Breakdown",
+            "test/api.test.ts::public API > throws ValidationError carrying the field name"
+          ]
+        },
+        {
+          "id": "8420a0d19cd72c774b2dea112303d854",
+          "mutatorName": "ConditionalExpression",
+          "location": {
+            "start": {
+              "line": 13,
+              "column": 1
+            },
+            "end": {
+              "line": 13,
+              "column": 1
+            }
+          },
+          "status": "Killed",
+          "replacement": "true",
+          "killedBy": [
+            "test/price.test.ts::priceCart properties > subtotalCents is the sum of line totals with bulk discount",
+            "test/price.test.ts::priceCart properties > empty carts price to all zeros",
+            "test/price.test.ts::priceCart coupon discount > discountCents follows the coupon rules and is clamped to the subtotal",
+            "test/price.test.ts::priceCart shipping > shippingCents follows method and the discounted subtotal threshold",
+            "test/price.test.ts::priceCart tax > taxCents is percentOf the discounted subtotal and ignores shipping method",
+            "test/price.test.ts::priceCart breakdown invariants > fields are non-negative integers, discount <= subtotal, and total identity holds",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > standard shipping is 799 when discounted subtotal is 9999",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > standard shipping is free when discounted subtotal is 10000",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > express shipping is 1499 at discounted subtotal 10000",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > uses the discounted subtotal for the free-shipping threshold",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > quantity 9 at unit price 5 has line total 45",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > quantity 10 at unit price 5 has line total 45",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > quantity 10 at unit price 1 has line total 9",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > exact-half bulk discount: quantity 11 at unit price 5 gives 49",
+            "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > gives discount 0 when subtotal is below minSubtotalCents",
+            "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > applies when minSubtotalCents equals the subtotal",
+            "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > fixed coupon below minimum gives 0 and at minimum applies",
+            "test/price.test.ts::priceCart unit tests > empty cart > yields all zeros with coupon, express shipping, and nonzero taxBps",
+            "test/validation.test.ts::validation properties > reports a single invalid field by name",
+            "test/validation.test.ts::validation properties: multiple invalid fields > throws a ValidationError naming one of the invalid fields",
+            "test/validation.test.ts::validation unit tests > names lines[0].quantity",
+            "test/validation.test.ts::validation unit tests > names lines[2].unitPriceCents",
+            "test/validation.test.ts::validation unit tests > quantity 0 valid=false",
+            "test/validation.test.ts::validation unit tests > quantity 1 valid=true",
+            "test/validation.test.ts::validation unit tests > quantity 999 valid=true",
+            "test/validation.test.ts::validation unit tests > quantity 1000 valid=false",
+            "test/validation.test.ts::validation unit tests > unit price 0 valid=true",
+            "test/validation.test.ts::validation unit tests > unit price 1000000 valid=true",
+            "test/validation.test.ts::validation unit tests > unit price 1000001 valid=false",
+            "test/validation.test.ts::validation unit tests > taxBps 0 valid=true",
+            "test/validation.test.ts::validation unit tests > taxBps 10000 valid=true",
+            "test/validation.test.ts::validation unit tests > does not throw ValidationError for unusual coupon values",
+            "test/api.test.ts::public API > accepts typed carts and returns a typed Breakdown",
+            "test/api.test.ts::public API > throws ValidationError carrying the field name"
+          ]
+        },
+        {
+          "id": "cc8fd6637269a061194d85f50a7c391a",
+          "mutatorName": "BlockStatement",
+          "location": {
+            "start": {
+              "line": 13,
+              "column": 1
+            },
+            "end": {
+              "line": 15,
+              "column": 1
+            }
+          },
+          "status": "Killed",
+          "replacement": "{}",
+          "killedBy": [
+            "test/validation.test.ts::validation properties > reports a single invalid field by name",
+            "test/validation.test.ts::validation unit tests > names taxBps",
+            "test/validation.test.ts::validation unit tests > taxBps -1 valid=false",
+            "test/validation.test.ts::validation unit tests > taxBps 10001 valid=false"
+          ]
+        },
+        {
+          "id": "oath-3.5-coupon-validated",
+          "mutatorName": "Oathbreaker",
+          "location": {
+            "start": {
+              "line": 13,
+              "column": 3
+            },
+            "end": {
+              "line": 13,
+              "column": 46
+            }
+          },
+          "status": "Killed",
+          "replacement": "if (cart.coupon !== undefined && cart.coupon.minSubtotalCents < 0) {\n    throw new ValidationError('coupon.minSubtotalCents');\n  }\n  if (!isIntInRange(cart.taxBps, 0, 10000)) {",
+          "description": "Rejects a coupon with a negative minSubtotalCents although coupon field values are accepted without validation.",
+          "killedBy": [
+            "test/validation.test.ts::validation unit tests does not throw ValidationError for unusual coupon values"
+          ],
+          "species": "Oathbreaker",
+          "requirement": "3.5"
+        },
+        {
+          "id": "oath-3.3-tax-bps-upper-bound",
+          "mutatorName": "Oathbreaker",
+          "location": {
+            "start": {
+              "line": 13,
+              "column": 8
+            },
+            "end": {
+              "line": 13,
+              "column": 43
+            }
+          },
+          "status": "Killed",
+          "replacement": "isIntInRange(cart.taxBps, 0, 10001)",
+          "description": "A taxBps of 10001 is accepted although taxBps must be an integer between 0 and 10000.",
+          "killedBy": [
+            "test/validation.test.ts::validation properties reports a single invalid field by name",
+            "test/validation.test.ts::validation unit tests taxBps 10001 valid=false"
+          ],
+          "species": "Oathbreaker",
+          "requirement": "3.3"
+        },
+        {
+          "id": "cda79bdf02519ebd94a6de8afa3a6817",
+          "mutatorName": "StringLiteral",
+          "location": {
+            "start": {
+              "line": 14,
+              "column": 1
+            },
+            "end": {
+              "line": 14,
+              "column": 1
+            }
+          },
+          "status": "Killed",
+          "replacement": "\"\"",
+          "killedBy": [
+            "test/validation.test.ts::validation properties > reports a single invalid field by name",
+            "test/validation.test.ts::validation properties: multiple invalid fields > throws a ValidationError naming one of the invalid fields",
+            "test/validation.test.ts::validation unit tests > names taxBps",
+            "test/validation.test.ts::validation unit tests > taxBps -1 valid=false",
+            "test/validation.test.ts::validation unit tests > taxBps 10001 valid=false",
+            "test/validation.test.ts::validation unit tests > reports one of several invalid fields"
+          ]
+        },
+        {
+          "id": "1cd568193bfc4024a4f38b689bbb5bf5",
+          "mutatorName": "ConditionalExpression",
+          "location": {
+            "start": {
+              "line": 16,
+              "column": 1
+            },
+            "end": {
+              "line": 16,
+              "column": 1
+            }
+          },
+          "status": "Killed",
+          "replacement": "false",
+          "killedBy": [
+            "test/validation.test.ts::validation properties > reports a single invalid field by name",
+            "test/validation.test.ts::validation properties: multiple invalid fields > throws a ValidationError naming one of the invalid fields",
+            "test/validation.test.ts::validation unit tests > names lines[0].quantity",
+            "test/validation.test.ts::validation unit tests > names lines[2].unitPriceCents",
+            "test/validation.test.ts::validation unit tests > quantity 0 valid=false",
+            "test/validation.test.ts::validation unit tests > quantity 1000 valid=false",
+            "test/validation.test.ts::validation unit tests > unit price 1000001 valid=false",
+            "test/api.test.ts::public API > throws ValidationError carrying the field name"
+          ]
+        },
+        {
+          "id": "53900dd6b852c9a14ffe4d2f9a8df913",
+          "mutatorName": "EqualityOperator",
+          "location": {
+            "start": {
+              "line": 16,
+              "column": 1
+            },
+            "end": {
+              "line": 16,
+              "column": 1
+            }
+          },
+          "status": "Killed",
+          "replacement": "i <= cart.lines.length",
+          "killedBy": [
+            "test/price.test.ts::priceCart properties > subtotalCents is the sum of line totals with bulk discount",
+            "test/price.test.ts::priceCart properties > empty carts price to all zeros",
+            "test/price.test.ts::priceCart coupon discount > discountCents follows the coupon rules and is clamped to the subtotal",
+            "test/price.test.ts::priceCart shipping > shippingCents follows method and the discounted subtotal threshold",
+            "test/price.test.ts::priceCart tax > taxCents is percentOf the discounted subtotal and ignores shipping method",
+            "test/price.test.ts::priceCart breakdown invariants > fields are non-negative integers, discount <= subtotal, and total identity holds",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > standard shipping is 799 when discounted subtotal is 9999",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > standard shipping is free when discounted subtotal is 10000",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > express shipping is 1499 at discounted subtotal 10000",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > uses the discounted subtotal for the free-shipping threshold",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > quantity 9 at unit price 5 has line total 45",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > quantity 10 at unit price 5 has line total 45",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > quantity 10 at unit price 1 has line total 9",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > exact-half bulk discount: quantity 11 at unit price 5 gives 49",
+            "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > gives discount 0 when subtotal is below minSubtotalCents",
+            "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > applies when minSubtotalCents equals the subtotal",
+            "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > fixed coupon below minimum gives 0 and at minimum applies",
+            "test/price.test.ts::priceCart unit tests > empty cart > yields all zeros with coupon, express shipping, and nonzero taxBps",
+            "test/api.test.ts::public API > accepts typed carts and returns a typed Breakdown"
+          ]
+        },
+        {
+          "id": "92f9328c3169cfd7e1742fc31a02ea45",
+          "mutatorName": "EqualityOperator",
+          "location": {
+            "start": {
+              "line": 16,
+              "column": 1
+            },
+            "end": {
+              "line": 16,
+              "column": 1
+            }
+          },
+          "status": "Killed",
+          "replacement": "i >= cart.lines.length",
+          "killedBy": [
+            "test/validation.test.ts::validation properties > reports a single invalid field by name",
+            "test/validation.test.ts::validation properties: multiple invalid fields > throws a ValidationError naming one of the invalid fields",
+            "test/validation.test.ts::validation unit tests > names lines[0].quantity",
+            "test/validation.test.ts::validation unit tests > names lines[2].unitPriceCents",
+            "test/validation.test.ts::validation unit tests > quantity 0 valid=false",
+            "test/validation.test.ts::validation unit tests > quantity 1000 valid=false",
+            "test/validation.test.ts::validation unit tests > unit price 1000001 valid=false",
+            "test/api.test.ts::public API > throws ValidationError carrying the field name",
+            "test/price.test.ts::priceCart properties > subtotalCents is the sum of line totals with bulk discount",
+            "test/price.test.ts::priceCart properties > empty carts price to all zeros",
+            "test/price.test.ts::priceCart coupon discount > discountCents follows the coupon rules and is clamped to the subtotal",
+            "test/price.test.ts::priceCart tax > taxCents is percentOf the discounted subtotal and ignores shipping method",
+            "test/price.test.ts::priceCart breakdown invariants > fields are non-negative integers, discount <= subtotal, and total identity holds",
+            "test/price.test.ts::priceCart unit tests > empty cart > yields all zeros with coupon, express shipping, and nonzero taxBps"
+          ]
+        },
+        {
+          "id": "98879b947f4b562823927ba20d1eca3e",
+          "mutatorName": "BlockStatement",
+          "location": {
+            "start": {
+              "line": 16,
+              "column": 1
+            },
+            "end": {
+              "line": 24,
+              "column": 1
+            }
+          },
+          "status": "Killed",
+          "replacement": "{}",
+          "killedBy": [
+            "test/validation.test.ts::validation properties > reports a single invalid field by name",
+            "test/validation.test.ts::validation properties: multiple invalid fields > throws a ValidationError naming one of the invalid fields",
+            "test/validation.test.ts::validation unit tests > names lines[0].quantity",
+            "test/validation.test.ts::validation unit tests > names lines[2].unitPriceCents",
+            "test/validation.test.ts::validation unit tests > quantity 0 valid=false",
+            "test/validation.test.ts::validation unit tests > quantity 1000 valid=false",
+            "test/validation.test.ts::validation unit tests > unit price 1000001 valid=false",
+            "test/api.test.ts::public API > throws ValidationError carrying the field name"
+          ]
+        },
+        {
+          "id": "c68dd227e7bcf1957f12d61d67e4621f",
+          "mutatorName": "UpdateOperator",
+          "location": {
+            "start": {
+              "line": 16,
+              "column": 1
+            },
+            "end": {
+              "line": 16,
+              "column": 1
+            }
+          },
+          "status": "Killed",
+          "replacement": "i--",
+          "killedBy": [
+            "test/price.test.ts::priceCart properties > subtotalCents is the sum of line totals with bulk discount",
+            "test/price.test.ts::priceCart coupon discount > discountCents follows the coupon rules and is clamped to the subtotal",
+            "test/price.test.ts::priceCart shipping > shippingCents follows method and the discounted subtotal threshold",
+            "test/price.test.ts::priceCart tax > taxCents is percentOf the discounted subtotal and ignores shipping method",
+            "test/price.test.ts::priceCart breakdown invariants > fields are non-negative integers, discount <= subtotal, and total identity holds",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > standard shipping is 799 when discounted subtotal is 9999",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > standard shipping is free when discounted subtotal is 10000",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > express shipping is 1499 at discounted subtotal 10000",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > uses the discounted subtotal for the free-shipping threshold",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > quantity 9 at unit price 5 has line total 45",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > quantity 10 at unit price 5 has line total 45",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > quantity 10 at unit price 1 has line total 9",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > exact-half bulk discount: quantity 11 at unit price 5 gives 49",
+            "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > gives discount 0 when subtotal is below minSubtotalCents",
+            "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > applies when minSubtotalCents equals the subtotal",
+            "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > fixed coupon below minimum gives 0 and at minimum applies",
+            "test/validation.test.ts::validation properties > reports a single invalid field by name",
+            "test/validation.test.ts::validation properties: multiple invalid fields > throws a ValidationError naming one of the invalid fields",
+            "test/validation.test.ts::validation unit tests > names lines[2].unitPriceCents",
+            "test/api.test.ts::public API > accepts typed carts and returns a typed Breakdown"
+          ]
+        },
+        {
+          "id": "76f8941f7aa7f34ff6273a34f6f80ebd",
+          "mutatorName": "BooleanLiteral",
+          "location": {
+            "start": {
+              "line": 18,
+              "column": 1
+            },
+            "end": {
+              "line": 18,
+              "column": 1
+            }
+          },
+          "status": "Killed",
+          "replacement": "isIntInRange(line.quantity, 1, 999)",
+          "killedBy": [
+            "test/price.test.ts::priceCart properties > subtotalCents is the sum of line totals with bulk discount",
+            "test/price.test.ts::priceCart coupon discount > discountCents follows the coupon rules and is clamped to the subtotal",
+            "test/price.test.ts::priceCart shipping > shippingCents follows method and the discounted subtotal threshold",
+            "test/price.test.ts::priceCart tax > taxCents is percentOf the discounted subtotal and ignores shipping method",
+            "test/price.test.ts::priceCart breakdown invariants > fields are non-negative integers, discount <= subtotal, and total identity holds",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > standard shipping is 799 when discounted subtotal is 9999",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > standard shipping is free when discounted subtotal is 10000",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > express shipping is 1499 at discounted subtotal 10000",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > uses the discounted subtotal for the free-shipping threshold",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > quantity 9 at unit price 5 has line total 45",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > quantity 10 at unit price 5 has line total 45",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > quantity 10 at unit price 1 has line total 9",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > exact-half bulk discount: quantity 11 at unit price 5 gives 49",
+            "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > gives discount 0 when subtotal is below minSubtotalCents",
+            "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > applies when minSubtotalCents equals the subtotal",
+            "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > fixed coupon below minimum gives 0 and at minimum applies",
+            "test/validation.test.ts::validation properties > reports a single invalid field by name",
+            "test/validation.test.ts::validation properties: multiple invalid fields > throws a ValidationError naming one of the invalid fields",
+            "test/validation.test.ts::validation unit tests > names lines[0].quantity",
+            "test/validation.test.ts::validation unit tests > names lines[2].unitPriceCents",
+            "test/validation.test.ts::validation unit tests > quantity 0 valid=false",
+            "test/validation.test.ts::validation unit tests > quantity 1 valid=true",
+            "test/validation.test.ts::validation unit tests > quantity 999 valid=true",
+            "test/validation.test.ts::validation unit tests > quantity 1000 valid=false",
+            "test/validation.test.ts::validation unit tests > unit price 0 valid=true",
+            "test/validation.test.ts::validation unit tests > unit price 1000000 valid=true",
+            "test/validation.test.ts::validation unit tests > unit price 1000001 valid=false",
+            "test/validation.test.ts::validation unit tests > taxBps 0 valid=true",
+            "test/validation.test.ts::validation unit tests > taxBps 10000 valid=true",
+            "test/validation.test.ts::validation unit tests > does not throw ValidationError for unusual coupon values",
+            "test/api.test.ts::public API > accepts typed carts and returns a typed Breakdown",
+            "test/api.test.ts::public API > throws ValidationError carrying the field name"
+          ]
+        },
+        {
+          "id": "7b2414e342f7733b9f0d99b09a2885ba",
+          "mutatorName": "ConditionalExpression",
+          "location": {
+            "start": {
+              "line": 18,
+              "column": 1
+            },
+            "end": {
+              "line": 18,
+              "column": 1
+            }
+          },
+          "status": "Killed",
+          "replacement": "false",
+          "killedBy": [
+            "test/validation.test.ts::validation properties > reports a single invalid field by name",
+            "test/validation.test.ts::validation properties: multiple invalid fields > throws a ValidationError naming one of the invalid fields",
+            "test/validation.test.ts::validation unit tests > names lines[0].quantity",
+            "test/validation.test.ts::validation unit tests > quantity 0 valid=false",
+            "test/validation.test.ts::validation unit tests > quantity 1000 valid=false",
+            "test/api.test.ts::public API > throws ValidationError carrying the field name"
+          ]
+        },
+        {
+          "id": "7dfd31390d122250a1c361aa316421b8",
+          "mutatorName": "ConditionalExpression",
+          "location": {
+            "start": {
+              "line": 18,
+              "column": 1
+            },
+            "end": {
+              "line": 18,
+              "column": 1
+            }
+          },
+          "status": "Killed",
+          "replacement": "true",
+          "killedBy": [
+            "test/validation.test.ts::validation properties > reports a single invalid field by name",
+            "test/validation.test.ts::validation properties: multiple invalid fields > throws a ValidationError naming one of the invalid fields",
+            "test/validation.test.ts::validation unit tests > names lines[2].unitPriceCents",
+            "test/validation.test.ts::validation unit tests > quantity 1 valid=true",
+            "test/validation.test.ts::validation unit tests > quantity 999 valid=true",
+            "test/validation.test.ts::validation unit tests > unit price 0 valid=true",
+            "test/validation.test.ts::validation unit tests > unit price 1000000 valid=true",
+            "test/validation.test.ts::validation unit tests > unit price 1000001 valid=false",
+            "test/validation.test.ts::validation unit tests > taxBps 0 valid=true",
+            "test/validation.test.ts::validation unit tests > taxBps 10000 valid=true",
+            "test/validation.test.ts::validation unit tests > does not throw ValidationError for unusual coupon values",
+            "test/api.test.ts::public API > accepts typed carts and returns a typed Breakdown",
+            "test/price.test.ts::priceCart properties > subtotalCents is the sum of line totals with bulk discount",
+            "test/price.test.ts::priceCart coupon discount > discountCents follows the coupon rules and is clamped to the subtotal",
+            "test/price.test.ts::priceCart shipping > shippingCents follows method and the discounted subtotal threshold",
+            "test/price.test.ts::priceCart tax > taxCents is percentOf the discounted subtotal and ignores shipping method",
+            "test/price.test.ts::priceCart breakdown invariants > fields are non-negative integers, discount <= subtotal, and total identity holds",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > standard shipping is 799 when discounted subtotal is 9999",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > standard shipping is free when discounted subtotal is 10000",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > express shipping is 1499 at discounted subtotal 10000",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > uses the discounted subtotal for the free-shipping threshold",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > quantity 9 at unit price 5 has line total 45",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > quantity 10 at unit price 5 has line total 45",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > quantity 10 at unit price 1 has line total 9",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > exact-half bulk discount: quantity 11 at unit price 5 gives 49",
+            "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > gives discount 0 when subtotal is below minSubtotalCents",
+            "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > applies when minSubtotalCents equals the subtotal",
+            "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > fixed coupon below minimum gives 0 and at minimum applies"
+          ]
+        },
+        {
+          "id": "b32e571bace12ebbb8856b686a5d7550",
+          "mutatorName": "BlockStatement",
+          "location": {
+            "start": {
+              "line": 18,
+              "column": 1
+            },
+            "end": {
+              "line": 20,
+              "column": 1
+            }
+          },
+          "status": "Killed",
+          "replacement": "{}",
+          "killedBy": [
+            "test/validation.test.ts::validation properties > reports a single invalid field by name",
+            "test/validation.test.ts::validation properties: multiple invalid fields > throws a ValidationError naming one of the invalid fields",
+            "test/validation.test.ts::validation unit tests > names lines[0].quantity",
+            "test/validation.test.ts::validation unit tests > quantity 0 valid=false",
+            "test/validation.test.ts::validation unit tests > quantity 1000 valid=false",
+            "test/api.test.ts::public API > throws ValidationError carrying the field name"
+          ]
+        },
+        {
+          "id": "oath-3.1-quantity-upper-bound",
+          "mutatorName": "Oathbreaker",
+          "location": {
+            "start": {
+              "line": 18,
+              "column": 10
+            },
+            "end": {
+              "line": 18,
+              "column": 45
+            }
+          },
+          "status": "Killed",
+          "replacement": "isIntInRange(line.quantity, 1, 1000)",
+          "description": "A quantity of 1000 is accepted although quantity must be an integer between 1 and 999.",
+          "killedBy": [
+            "test/validation.test.ts::validation properties reports a single invalid field by name",
+            "test/validation.test.ts::validation properties: multiple invalid fields throws a ValidationError naming one of the invalid fields",
+            "test/validation.test.ts::validation unit tests quantity 1000 valid=false"
+          ],
+          "species": "Oathbreaker",
+          "requirement": "3.1"
+        },
+        {
+          "id": "dffd0bf0532f91afb28cdea649ee89f5",
+          "mutatorName": "StringLiteral",
+          "location": {
+            "start": {
+              "line": 19,
+              "column": 1
+            },
+            "end": {
+              "line": 19,
+              "column": 1
+            }
+          },
+          "status": "Killed",
+          "replacement": "``",
+          "killedBy": [
+            "test/validation.test.ts::validation properties > reports a single invalid field by name",
+            "test/validation.test.ts::validation properties: multiple invalid fields > throws a ValidationError naming one of the invalid fields",
+            "test/validation.test.ts::validation unit tests > names lines[0].quantity",
+            "test/validation.test.ts::validation unit tests > quantity 0 valid=false",
+            "test/validation.test.ts::validation unit tests > quantity 1000 valid=false",
+            "test/api.test.ts::public API > throws ValidationError carrying the field name"
+          ]
+        },
+        {
+          "id": "40eb438d2ff5e1920427ca9b369e3632",
+          "mutatorName": "BooleanLiteral",
+          "location": {
+            "start": {
+              "line": 21,
+              "column": 1
+            },
+            "end": {
+              "line": 21,
+              "column": 1
+            }
+          },
+          "status": "Killed",
+          "replacement": "isIntInRange(line.unitPriceCents, 0, 1_000_000)",
+          "killedBy": [
+            "test/price.test.ts::priceCart properties > subtotalCents is the sum of line totals with bulk discount",
+            "test/price.test.ts::priceCart coupon discount > discountCents follows the coupon rules and is clamped to the subtotal",
+            "test/price.test.ts::priceCart shipping > shippingCents follows method and the discounted subtotal threshold",
+            "test/price.test.ts::priceCart tax > taxCents is percentOf the discounted subtotal and ignores shipping method",
+            "test/price.test.ts::priceCart breakdown invariants > fields are non-negative integers, discount <= subtotal, and total identity holds",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > standard shipping is 799 when discounted subtotal is 9999",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > standard shipping is free when discounted subtotal is 10000",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > express shipping is 1499 at discounted subtotal 10000",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > uses the discounted subtotal for the free-shipping threshold",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > quantity 9 at unit price 5 has line total 45",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > quantity 10 at unit price 5 has line total 45",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > quantity 10 at unit price 1 has line total 9",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > exact-half bulk discount: quantity 11 at unit price 5 gives 49",
+            "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > gives discount 0 when subtotal is below minSubtotalCents",
+            "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > applies when minSubtotalCents equals the subtotal",
+            "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > fixed coupon below minimum gives 0 and at minimum applies",
+            "test/validation.test.ts::validation properties > reports a single invalid field by name",
+            "test/validation.test.ts::validation properties: multiple invalid fields > throws a ValidationError naming one of the invalid fields",
+            "test/validation.test.ts::validation unit tests > names lines[2].unitPriceCents",
+            "test/validation.test.ts::validation unit tests > quantity 1 valid=true",
+            "test/validation.test.ts::validation unit tests > quantity 999 valid=true",
+            "test/validation.test.ts::validation unit tests > unit price 0 valid=true",
+            "test/validation.test.ts::validation unit tests > unit price 1000000 valid=true",
+            "test/validation.test.ts::validation unit tests > unit price 1000001 valid=false",
+            "test/validation.test.ts::validation unit tests > taxBps 0 valid=true",
+            "test/validation.test.ts::validation unit tests > taxBps 10000 valid=true",
+            "test/validation.test.ts::validation unit tests > does not throw ValidationError for unusual coupon values",
+            "test/api.test.ts::public API > accepts typed carts and returns a typed Breakdown"
+          ]
+        },
+        {
+          "id": "a76f5b1c3ab1e2cc757c9bd392795e34",
+          "mutatorName": "ConditionalExpression",
+          "location": {
+            "start": {
+              "line": 21,
+              "column": 1
+            },
+            "end": {
+              "line": 21,
+              "column": 1
+            }
+          },
+          "status": "Killed",
+          "replacement": "false",
+          "killedBy": [
+            "test/validation.test.ts::validation properties > reports a single invalid field by name",
+            "test/validation.test.ts::validation properties: multiple invalid fields > throws a ValidationError naming one of the invalid fields",
+            "test/validation.test.ts::validation unit tests > names lines[2].unitPriceCents",
+            "test/validation.test.ts::validation unit tests > unit price 1000001 valid=false"
+          ]
+        },
+        {
+          "id": "eb08eaaa9d5f5a3fe6598384e5e9a131",
+          "mutatorName": "BlockStatement",
+          "location": {
+            "start": {
+              "line": 21,
+              "column": 1
+            },
+            "end": {
+              "line": 23,
+              "column": 1
+            }
+          },
+          "status": "Killed",
+          "replacement": "{}",
+          "killedBy": [
+            "test/validation.test.ts::validation properties > reports a single invalid field by name",
+            "test/validation.test.ts::validation properties: multiple invalid fields > throws a ValidationError naming one of the invalid fields",
+            "test/validation.test.ts::validation unit tests > names lines[2].unitPriceCents",
+            "test/validation.test.ts::validation unit tests > unit price 1000001 valid=false"
+          ]
+        },
+        {
+          "id": "fd5b93923cea039448388a0866587331",
+          "mutatorName": "ConditionalExpression",
+          "location": {
+            "start": {
+              "line": 21,
+              "column": 1
+            },
+            "end": {
+              "line": 21,
+              "column": 1
+            }
+          },
+          "status": "Killed",
+          "replacement": "true",
+          "killedBy": [
+            "test/validation.test.ts::validation properties > reports a single invalid field by name",
+            "test/validation.test.ts::validation properties: multiple invalid fields > throws a ValidationError naming one of the invalid fields",
+            "test/validation.test.ts::validation unit tests > names lines[2].unitPriceCents",
+            "test/validation.test.ts::validation unit tests > quantity 1 valid=true",
+            "test/validation.test.ts::validation unit tests > quantity 999 valid=true",
+            "test/validation.test.ts::validation unit tests > unit price 0 valid=true",
+            "test/validation.test.ts::validation unit tests > unit price 1000000 valid=true",
+            "test/validation.test.ts::validation unit tests > taxBps 0 valid=true",
+            "test/validation.test.ts::validation unit tests > taxBps 10000 valid=true",
+            "test/validation.test.ts::validation unit tests > does not throw ValidationError for unusual coupon values",
+            "test/price.test.ts::priceCart properties > subtotalCents is the sum of line totals with bulk discount",
+            "test/price.test.ts::priceCart coupon discount > discountCents follows the coupon rules and is clamped to the subtotal",
+            "test/price.test.ts::priceCart shipping > shippingCents follows method and the discounted subtotal threshold",
+            "test/price.test.ts::priceCart tax > taxCents is percentOf the discounted subtotal and ignores shipping method",
+            "test/price.test.ts::priceCart breakdown invariants > fields are non-negative integers, discount <= subtotal, and total identity holds",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > standard shipping is 799 when discounted subtotal is 9999",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > standard shipping is free when discounted subtotal is 10000",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > express shipping is 1499 at discounted subtotal 10000",
+            "test/price.test.ts::priceCart unit tests > shipping thresholds > uses the discounted subtotal for the free-shipping threshold",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > quantity 9 at unit price 5 has line total 45",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > quantity 10 at unit price 5 has line total 45",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > quantity 10 at unit price 1 has line total 9",
+            "test/price.test.ts::priceCart unit tests > bulk discount boundary > exact-half bulk discount: quantity 11 at unit price 5 gives 49",
+            "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > gives discount 0 when subtotal is below minSubtotalCents",
+            "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > applies when minSubtotalCents equals the subtotal",
+            "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > fixed coupon below minimum gives 0 and at minimum applies",
+            "test/api.test.ts::public API > accepts typed carts and returns a typed Breakdown"
+          ]
+        },
+        {
+          "id": "oath-3.2-unit-price-upper-bound",
+          "mutatorName": "Oathbreaker",
+          "location": {
+            "start": {
+              "line": 21,
+              "column": 10
+            },
+            "end": {
+              "line": 21,
+              "column": 57
+            }
+          },
+          "status": "Killed",
+          "replacement": "isIntInRange(line.unitPriceCents, 0, 999_999)",
+          "description": "A unitPriceCents of exactly 1,000,000 is rejected although the range is inclusive.",
+          "killedBy": [
+            "test/price.test.ts::priceCart properties subtotalCents is the sum of line totals with bulk discount",
+            "test/price.test.ts::priceCart coupon discount discountCents follows the coupon rules and is clamped to the subtotal",
+            "test/price.test.ts::priceCart shipping shippingCents follows method and the discounted subtotal threshold",
+            "test/price.test.ts::priceCart tax taxCents is percentOf the discounted subtotal and ignores shipping method",
+            "test/price.test.ts::priceCart breakdown invariants fields are non-negative integers, discount <= subtotal, and total identity holds",
+            "test/validation.test.ts::validation properties reports a single invalid field by name",
+            "test/validation.test.ts::validation unit tests unit price 1000000 valid=true"
+          ],
+          "species": "Oathbreaker",
+          "requirement": "3.2"
+        },
+        {
+          "id": "1ac71092c1fe4cc0fae3dcb856f7e519",
+          "mutatorName": "StringLiteral",
+          "location": {
+            "start": {
+              "line": 22,
+              "column": 1
+            },
+            "end": {
+              "line": 22,
+              "column": 1
+            }
+          },
+          "status": "Killed",
+          "replacement": "``",
+          "killedBy": [
+            "test/validation.test.ts::validation properties > reports a single invalid field by name",
+            "test/validation.test.ts::validation properties: multiple invalid fields > throws a ValidationError naming one of the invalid fields",
+            "test/validation.test.ts::validation unit tests > names lines[2].unitPriceCents",
+            "test/validation.test.ts::validation unit tests > unit price 1000001 valid=false"
+          ]
+        }
+      ]
+    }
+  }
+}
