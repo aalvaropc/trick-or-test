@@ -1,10 +1,11 @@
-import { spawn } from "node:child_process";
 import { existsSync } from "node:fs";
 import { mkdtemp, readFile, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, join, relative, resolve } from "node:path";
 import { z } from "zod";
 import { err, ok, type Result } from "../core/result.js";
+import { extractFailingTests } from "../core/suite-result.js";
+import { ProcessRunner } from "./process-runner.js";
 
 export type SuiteTestStatus = "passed" | "failed" | "skipped";
 
@@ -42,6 +43,7 @@ const reportSchema = z.object({
   testResults: z.array(
     z.object({
       name: z.string(),
+      status: z.string(),
       assertionResults: z.array(
         z.object({
           fullName: z.string(),
@@ -52,6 +54,8 @@ const reportSchema = z.object({
     }),
   ),
 });
+
+const SUITE_EXCLUDES: readonly string[] = [".trickortest/**", "**/*.witness.test.ts"];
 
 const toStatus = (raw: string): SuiteTestStatus =>
   raw === "passed" ? "passed" : raw === "failed" ? "failed" : "skipped";
@@ -80,42 +84,24 @@ type Outcome = {
   readonly spawnError?: string;
 };
 
-const runProcess = (
+const runProcess = async (
   vitest: string,
   args: readonly string[],
   cwd: string,
   limitMs: number,
-): Promise<Outcome> =>
-  new Promise((done) => {
-    const child = spawn(process.execPath, [vitest, ...args], {
-      cwd,
-      detached: true,
-      stdio: ["ignore", "ignore", "pipe"],
-    });
-    let stderr = "";
-    let timedOut = false;
-    child.stderr.setEncoding("utf8");
-    child.stderr.on("data", (chunk: string) => {
-      if (stderr.length < 64 * 1024) stderr += chunk;
-    });
-    const timer = setTimeout(() => {
-      timedOut = true;
-      // Vitest runs tests in worker processes: kill the whole process group.
-      try {
-        if (child.pid !== undefined) process.kill(-child.pid, "SIGKILL");
-      } catch {
-        child.kill("SIGKILL");
-      }
-    }, limitMs);
-    child.on("error", (error) => {
-      clearTimeout(timer);
-      done({ timedOut, stderr, spawnError: error.message });
-    });
-    child.on("close", () => {
-      clearTimeout(timer);
-      done({ timedOut, stderr });
-    });
+): Promise<Outcome> => {
+  // Vitest runs tests in worker processes: the runner kills the whole process group.
+  const result = await ProcessRunner.run(process.execPath, [vitest, ...args], {
+    cwd,
+    timeoutMs: limitMs,
+    maxOutputBytes: 64 * 1024,
   });
+  return {
+    timedOut: result.timedOut,
+    stderr: result.stderr,
+    ...(result.spawnError !== undefined ? { spawnError: result.spawnError } : {}),
+  };
+};
 
 export const SuiteRunner = {
   /**
@@ -136,6 +122,9 @@ export const SuiteRunner = {
         "--reporter=json",
         `--outputFile=${outFile}`,
         "--includeTaskLocation",
+        // Never run a StrykerJS sandbox, a copied Sandbox or a generated Witness file
+        // (Requirements 3.20, 5.21). Added to the config's own excludes.
+        ...SUITE_EXCLUDES.flatMap((pattern) => ["--exclude", pattern]),
         ...(options.testFiles ?? []),
       ];
       const started = performance.now();
@@ -167,14 +156,27 @@ export const SuiteRunner = {
           message: `vitest JSON report does not match the expected shape: ${parsed.error.issues[0]?.message ?? "unknown"}`,
         });
       }
-      const files = parsed.data.testResults.map((file) => ({
-        path: relative(root, file.name).split("\\").join("/"),
-        tests: file.assertionResults.map((test) => ({
-          name: test.fullName,
-          status: toStatus(test.status),
-          startLine: test.location?.line ?? 0,
-        })),
-      }));
+      // A file that failed without any assertion result (import or collection error)
+      // is reported as one failing test named after the file (Requirements 3.15, 5.9).
+      const fileLevelFailures = new Set(
+        extractFailingTests(parsed.data)
+          .filter((failing) => failing.name === failing.filePath)
+          .map((failing) => failing.filePath),
+      );
+      const files = parsed.data.testResults.map((file) => {
+        const path = relative(root, file.name).split("\\").join("/");
+        if (file.assertionResults.length === 0 && fileLevelFailures.has(file.name)) {
+          return { path, tests: [{ name: path, status: "failed" as const, startLine: 0 }] };
+        }
+        return {
+          path,
+          tests: file.assertionResults.map((test) => ({
+            name: test.fullName,
+            status: toStatus(test.status),
+            startLine: test.location?.line ?? 0,
+          })),
+        };
+      });
       return ok({ durationMs, files });
     } finally {
       await rm(outDir, { recursive: true, force: true });

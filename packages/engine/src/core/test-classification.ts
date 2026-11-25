@@ -83,7 +83,7 @@ const blankCommentsAndLiterals = (source: string): string => {
 const escapeRegex = (ch: string): string => ch.replace(/[\\^$.*+?()[\]{}|/-]/g, "\\$&");
 
 /** Translate a glob with `**`, `*`, `?` and literal text into an anchored RegExp. */
-const globToRegExp = (glob: string): RegExp => {
+export const globToRegExp = (glob: string): RegExp => {
   let re = "";
   let i = 0;
   while (i < glob.length) {
@@ -115,7 +115,7 @@ const globToRegExp = (glob: string): RegExp => {
  * repeated groups work). A `{` without a matching `}` or without a comma at
  * its own depth is literal.
  */
-const expandBraces = (glob: string): string[] => {
+export const expandBraces = (glob: string): string[] => {
   for (let start = glob.indexOf("{"); start !== -1; start = glob.indexOf("{", start + 1)) {
     let depth = 0;
     const commas: number[] = [];

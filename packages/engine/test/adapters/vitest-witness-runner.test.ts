@@ -75,6 +75,47 @@ describe("WitnessRunner.run", () => {
     );
   });
 
+  it("5.16 reports a hanging witness as a timeout and keeps the other outcomes", async () => {
+    const hanging: WitnessInput = {
+      id: id("oath-1.4-hang"),
+      witness: { from: "src/hang", export: "hang", args: [], expected: 1 },
+    };
+    const run = await withSandbox(project, "witness-hang", async (sandbox) =>
+      WitnessRunner.run(sandbox.root, [witnesses[0] as WitnessInput, hanging], {
+        timeLimitMs: 60_000,
+        witnessTimeLimitMs: 1_000,
+      }),
+    );
+    expect(run.ok).toBe(true);
+    if (!run.ok || !run.value.ok) return;
+    const results = run.value.value;
+    expect(results[id("oath-1.1-value")]).toEqual({
+      ok: true,
+      value: { kind: "value", value: 12 },
+    });
+    const outcome = results[id("oath-1.4-hang")];
+    expect(outcome?.ok).toBe(true);
+    if (outcome?.ok) expect(outcome.value.kind).toBe("timeout");
+  });
+
+  it("5.16 gives a message without absolute paths when the import fails", async () => {
+    const run = await withSandbox(project, "witness-broken-message", async (sandbox) => ({
+      root: sandbox.root,
+      result: await WitnessRunner.run(sandbox.root, witnesses, { timeLimitMs: 60_000 }),
+    }));
+    expect(run.ok).toBe(true);
+    if (!run.ok || !run.value.result.ok) return;
+    const broken = run.value.result.value[id("oath-1.3-broken")];
+    expect(broken?.ok).toBe(false);
+    if (!broken || broken.ok) return;
+    expect(broken.error.message.length).toBeGreaterThan(0);
+    expect(broken.error.message).not.toContain(run.value.root);
+    expect(run.value.result.value[id("oath-1.2-error")]).toEqual({
+      ok: true,
+      value: { kind: "error", className: "NotPositiveError" },
+    });
+  });
+
   it("5.7 keeps the generated files out of the target's own suite run", async () => {
     const suite = await withSandbox(project, "witness-suite", async (sandbox) => {
       await WitnessRunner.run(sandbox.root, witnesses.slice(0, 1), { timeLimitMs: 60_000 });

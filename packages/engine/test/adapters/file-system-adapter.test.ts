@@ -1,4 +1,4 @@
-import { chmod, mkdir, mkdtemp, readdir, rm, writeFile } from "node:fs/promises";
+import { chmod, mkdir, mkdtemp, readdir, rm, symlink, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
@@ -103,5 +103,81 @@ describe("FileSystem adapter", () => {
     expect(result.ok).toBe(false);
     if (!result.ok) expect(result.error).toContain(`Cannot write ${path}:`);
     expect(await readdir(dir)).toEqual([]);
+  });
+});
+
+describe("FileSystem adapter listEntries", () => {
+  const setup = async () => {
+    const project = join(root, "project");
+    const outside = join(root, "outside");
+    await mkdir(join(project, "src", "deep"), { recursive: true });
+    await mkdir(join(project, "lib"), { recursive: true });
+    await mkdir(outside, { recursive: true });
+    await writeFile(join(project, "a.txt"), "a");
+    await writeFile(join(project, "src", "deep", "b.txt"), "b");
+    await writeFile(join(outside, "secret.txt"), "s");
+    return { project, outside };
+  };
+
+  it("5.18 lists files and nested directories with project-relative paths", async () => {
+    const { project } = await setup();
+    const entries = await fsa.listEntries(project);
+    expect(entries).toContainEqual({ path: "a.txt", kind: "file" });
+    expect(entries).toContainEqual({ path: "src", kind: "dir" });
+    expect(entries).toContainEqual({ path: "src/deep", kind: "dir" });
+    expect(entries).toContainEqual({ path: "src/deep/b.txt", kind: "file" });
+  });
+
+  it("5.18 lists a link to a file inside the project with a project-relative target", async () => {
+    const { project } = await setup();
+    await symlink(join(project, "a.txt"), join(project, "src", "link.txt"));
+    const entries = await fsa.listEntries(project);
+    expect(entries).toContainEqual({ path: "src/link.txt", kind: "symlink", target: "a.txt" });
+  });
+
+  it("5.18 lists a relative link to a directory inside the project", async () => {
+    const { project } = await setup();
+    await symlink("../src/deep", join(project, "lib", "deep-link"));
+    const entries = await fsa.listEntries(project);
+    expect(entries).toContainEqual({
+      path: "lib/deep-link",
+      kind: "symlink",
+      target: "src/deep",
+    });
+  });
+
+  it("5.18 does not descend into a link to a directory", async () => {
+    const { project } = await setup();
+    await symlink("../src/deep", join(project, "lib", "deep-link"));
+    const entries = await fsa.listEntries(project);
+    expect(entries.map((e) => e.path)).not.toContain("lib/deep-link/b.txt");
+  });
+
+  it("3.7 marks a link outside the project with a target that leaves the project", async () => {
+    const { project, outside } = await setup();
+    await symlink(outside, join(project, "out-link"));
+    const entries = await fsa.listEntries(project);
+    const link = entries.find((e) => e.path === "out-link");
+    expect(link?.kind).toBe("symlink");
+    expect(link?.target).toBe("../outside");
+  });
+
+  it("3.7 lists a broken link inside the project with its resolved target", async () => {
+    const { project } = await setup();
+    await symlink("missing.txt", join(project, "src", "broken"));
+    const entries = await fsa.listEntries(project);
+    expect(entries).toContainEqual({
+      path: "src/broken",
+      kind: "symlink",
+      target: "src/missing.txt",
+    });
+  });
+
+  it("3.7 marks a broken link that points outside the project as outside", async () => {
+    const { project } = await setup();
+    await symlink("../../gone", join(project, "src", "broken-out"));
+    const entries = await fsa.listEntries(project);
+    const link = entries.find((e) => e.path === "src/broken-out");
+    expect(link?.target).toBe("../gone");
   });
 });

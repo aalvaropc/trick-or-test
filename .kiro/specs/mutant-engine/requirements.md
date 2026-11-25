@@ -15,6 +15,7 @@ The engine makes no LLM calls (ADR 0004). The MCP server and the Kiro hook entry
 - **Config_Loader**: The Engine component that reads and validates `trickortest.config.json`.
 - **Requirements_Parser**: The Engine component that extracts acceptance criteria from a `requirements.md` file.
 - **Criterion**: One numbered acceptance criterion with an id `<requirement>.<criterion>`, a text and a line number.
+- **Failing_Test**: A test that fails an assertion or throws, or a test file that fails to load (an error at import or during collection, reported by Vitest as file status "failed" with no assertion results).
 - **Stryker_Adapter**: The Engine component that runs StrykerJS with the Vitest runner on the Target_Project.
 - **Species_Classifier**: The Engine component that maps a mechanical mutant to a species using the table in `.kiro/steering/bestiary.md`.
 - **Spec_Mutant_Loader**: The Engine component that reads and validates spec mutant files and `skipped.json`.
@@ -81,17 +82,22 @@ The engine makes no LLM calls (ADR 0004). The MCP server and the Kiro hook entry
 2. THE Stryker_Adapter SHALL list the Vitest runner in the Stryker `plugins` option.
 3. WHEN the Target_Project resolves TypeScript 7 or newer, THE Stryker_Adapter SHALL set the Stryker `tsconfigFile` option to a path that does not exist.
 4. WHEN the Target_Project resolves a TypeScript version older than 7, THE Stryker_Adapter SHALL leave the Stryker `tsconfigFile` option at the Target_Project value.
-5. IF the initial test run of StrykerJS fails because of static mutants, THEN THE Stryker_Adapter SHALL run StrykerJS exactly one more time with `ignoreStatic` enabled and record in the Mutation_Report that the retry happened.
-6. IF StrykerJS exits with an error, THEN THE Engine SHALL report the first error line of StrykerJS and write no Verdict_File.
-7. THE Stryker_Adapter SHALL exclude from the Stryker sandbox every folder that is not part of the Target_Project build, including every directory reached through a symbolic link.
+5. WHEN StrykerJS exits with an error and its captured output shows that the initial test run (the dry run) failed, THE Stryker_Adapter SHALL recognise the failure by a real dry-run-failure line copied from captured StrykerJS output, run StrykerJS exactly one more time with `ignoreStatic` enabled, and record in the Mutation_Report and the Verdict_File that the retry happened.
+6. IF StrykerJS exits with an error and no retry applies, or the retry of criterion 5 fails too, THEN THE Engine SHALL report the first ERROR-level line of the output of the last StrykerJS run, or the last non-empty line of that output WHEN it has no ERROR-level line, and write no Verdict_File.
+7. THE Stryker_Adapter SHALL detect every folder that is not part of the Target_Project build and every directory reached through a symbolic link, and SHALL pass the detected directories to the Stryker sandbox exclusion option.
 8. THE Stryker_Adapter SHALL exclude every file under `.stryker-tmp` from the tests that are run and from the tests that are counted.
-9. WHERE the user supplies a git ref, THE Stryker_Adapter SHALL restrict mutation to the Changed_Ranges since that ref, expressed as `file:start-end` mutate patterns.
+9. WHERE the user supplies a git ref, THE Stryker_Adapter SHALL restrict the git diff to the Target_Project directory, keep only the changed files that match the source globs, and restrict mutation to the Changed_Ranges since that ref, expressed as `file:start-end` mutate patterns with paths relative to the Target_Project root, including WHEN the Target_Project is a subdirectory of a larger git repository.
 10. WHERE the user supplies a git ref and no line changed since that ref in the source files, THE Stryker_Adapter SHALL report zero Mechanical_Mutants without running StrykerJS.
 11. THE Species_Classifier SHALL map each Mechanical_Mutant to the species listed for its `mutatorName` in `.kiro/steering/bestiary.md`, using the replacement text where the table requires it.
 12. IF the `mutatorName` of a Mechanical_Mutant is not in the species table, THEN THE Species_Classifier SHALL assign the species Unclassified.
 13. THE Species_Classifier SHALL return the same species for the same `mutatorName` and replacement on every call.
 14. THE Stryker_Adapter SHALL leave the Target_Project working tree unmodified, except for files in the output directory and in `.trickortest/`.
-15. IF any test fails in the Baseline_Run, THEN THE Engine SHALL abort the run, report the failing tests and write no Verdict_File.
+15. IF any Failing_Test occurs in the Baseline_Run, THEN THE Engine SHALL abort the run, report the Failing_Tests and write no Verdict_File.
+16. THE Stryker_Adapter SHALL keep in the Mutation_Report the start line, start column, end line and end column that StrykerJS reports for each Mechanical_Mutant.
+17. IF StrykerJS fails and its output does not show a failed initial test run (a failure after a successful dry run), THEN THE Stryker_Adapter SHALL NOT run StrykerJS again and SHALL NOT record that the `ignoreStatic` retry happened.
+18. THE Stryker_Adapter SHALL run the StrykerJS binary from the `node_modules/.bin` directory of the Target_Project, or with the `--no-install` option, so that the Engine never lets `npx` download a package.
+19. WHEN a StrykerJS run ends, THE Stryker_Adapter SHALL remove the temporary directory of StrykerJS, including WHEN the run fails.
+20. THE Engine SHALL exclude `.trickortest/**` from the Baseline_Run and SHALL NOT run a StrykerJS sandbox in the Baseline_Run.
 
 ### Requirement 4: Spec mutant loading
 
@@ -109,6 +115,8 @@ The engine makes no LLM calls (ADR 0004). The MCP server and the Kiro hook entry
 8. IF a Skip_File entry has an empty reason, THEN THE Spec_Mutant_Loader SHALL return an error that names the entry.
 9. IF a Skip_File entry names a Criterion id that does not exist or a Criterion that also has a Spec_Mutant, THEN THE Spec_Mutant_Loader SHALL return an error that names the entry.
 10. THE Spec_Mutant_Loader SHALL return Spec_Mutants ordered by id.
+11. IF the `file` or the `witness.from` of a Spec_Mutant is an absolute path, or contains a `..` segment, THEN THE Spec_Mutant_Loader SHALL return an error that names the mutant file and the field, so that both fields are relative paths inside the Target_Project.
+12. IF the `id` of a Spec_Mutant contains a path separator or the sequence `..`, or contains a character outside letters, digits, `.`, `_` and `-`, THEN THE Spec_Mutant_Loader SHALL return an error that names the mutant file and the field `id`.
 
 ### Requirement 5: Spec mutant execution
 
@@ -121,16 +129,22 @@ The engine makes no LLM calls (ADR 0004). The MCP server and the Kiro hook entry
 3. WHEN the mutation is applied, THE Spec_Mutant_Runner SHALL type-check the Sandbox, and IF the type-check reports an error, THEN THE Spec_Mutant_Runner SHALL set the Mutant_Status to CompileError.
 4. THE Spec_Mutant_Runner SHALL run each Witness through the Vitest of the Target_Project so that TypeScript and extensionless imports resolve as in the tests of the Target_Project.
 5. THE Spec_Mutant_Runner SHALL read the outcome of each Witness from a file written by the Witness, not from console output.
-6. IF the original code does not return the `expected` value, or does not throw an error of the class `expectedError`, for the Witness input, THEN THE Spec_Mutant_Runner SHALL set the Mutant_Status to InvalidWitness and report both the expected outcome and the outcome that the original code produced.
+6. IF the original code does not return the `expected` value, or does not throw an error of the class `expectedError`, for the Witness input, THEN THE Spec_Mutant_Runner SHALL set the Mutant_Status to InvalidWitness and write into the Verdict_File both the expected outcome and the outcome that the original code produced.
 7. IF the mutated code gives the same outcome as the original code for the Witness input, THEN THE Spec_Mutant_Runner SHALL set the Mutant_Status to Ghost.
-8. WHEN the Witness shows a difference between the original code and the mutated code, THE Spec_Mutant_Runner SHALL run the test suite of the Target_Project in the Sandbox.
-9. IF at least one test fails in the Sandbox, THEN THE Spec_Mutant_Runner SHALL set the Mutant_Status to Killed.
+8. WHEN the Witness shows a difference between the original code and the mutated code, including WHEN the Witness times out on the mutated code, THE Spec_Mutant_Runner SHALL run the test suite of the Target_Project in the Sandbox.
+9. IF at least one Failing_Test occurs in the Sandbox, THEN THE Spec_Mutant_Runner SHALL set the Mutant_Status to Killed.
 10. IF every test passes in the Sandbox, THEN THE Spec_Mutant_Runner SHALL set the Mutant_Status to Survived.
-11. IF the test run in the Sandbox exceeds the timeout, THEN THE Spec_Mutant_Runner SHALL set the Mutant_Status to Timeout.
+11. IF the test suite run in the Sandbox exceeds the suite time limit, THEN THE Spec_Mutant_Runner SHALL set the Mutant_Status to Timeout.
 12. THE Spec_Mutant_Runner SHALL compare Witness values by deep structural equality of their JSON form.
 13. THE Spec_Mutant_Runner SHALL remove each Sandbox after the Spec_Mutant is run, including when the run fails, times out or crashes.
 14. THE Spec_Mutant_Runner SHALL produce the same Mutant_Status for the same Target_Project and Spec_Mutant on every run.
 15. THE Spec_Mutant_Runner SHALL set the suite time limit for a Spec_Mutant to the duration of the Baseline_Run multiplied by 1.5, plus 5 seconds, and WHERE `timeoutMs` is set in the configuration, THE Spec_Mutant_Runner SHALL set the suite time limit to `timeoutMs` instead.
+16. WHEN the Witness times out on the mutated code, THE Spec_Mutant_Runner SHALL treat the outcome of the mutated code as different from the outcome of the original code, and SHALL NOT set the Mutant_Status to Timeout or Killed because of the Witness timeout alone.
+17. THE Spec_Mutant_Runner SHALL verify, before writing any file in a Sandbox, that the resolved path of the file stays inside the Sandbox.
+18. IF a symbolic link in the Target_Project points outside the Target_Project, THEN THE Spec_Mutant_Runner SHALL NOT copy the link into the Sandbox as a link that points outside the Sandbox.
+19. WHEN the Spec_Mutant_Runner copies the Target_Project into a Sandbox, THE Spec_Mutant_Runner SHALL exclude the output directory by its path relative to the Target_Project root and SHALL NOT exclude a directory of the same name at another depth, so that `src/reports/` is copied WHEN the output directory is `reports`.
+20. WHEN the Engine starts a run, THE Engine SHALL remove every leftover Sandbox under `.trickortest/sandboxes`.
+21. THE Spec_Mutant_Runner SHALL exclude `.trickortest/**` and every generated Witness file from every test suite run of a Spec_Mutant, so that the Witness files never run as tests of the suite.
 
 ### Requirement 6: Kill attribution
 
@@ -188,7 +202,7 @@ The engine makes no LLM calls (ADR 0004). The MCP server and the Kiro hook entry
 14. THE Reporter SHALL assign the species Oathbreaker to every Spec_Mutant.
 15. WHEN a Spec_Mutant and a Mechanical_Mutant make the same change (same file, same span, same replacement, compared without regard to mutant ids), THE Reporter SHALL include one mutant in the Mutation_Report: the Spec_Mutant, tied to its Criterion.
 16. FOR ALL sequences of HistoryRecord values, appending each record to `history.jsonl` then reading the file line by line SHALL return the same records in the same order, with each line parsed as one complete JSON object (round-trip property).
-17. THE Reporter SHALL write the configuration in each HistoryRecord as the configuration is written, with every path relative to the Target_Project root, and SHALL NOT write a resolved absolute path in the Mutation_Report, the Verdict_File or the History_File, so that the files do not depend on the machine that produced them. Absolute paths exist only at run time.
+17. THE Reporter SHALL write the configuration in each HistoryRecord as the configuration is written, with every path relative to the Target_Project root, and SHALL NOT write an absolute path in any field of the Mutation_Report, the Verdict_File or the History_File, including mutant descriptions, error text, NotApplicable read errors and NoOutcome messages, so that the files do not depend on the machine that produced them. Absolute paths exist only at run time.
 
 ### Requirement 9: Command-line interface
 
@@ -200,7 +214,7 @@ The engine makes no LLM calls (ADR 0004). The MCP server and the Kiro hook entry
 2. WHEN the user runs `trick-or-test measure`, THE CLI SHALL perform the actions of `run` and write the results into the output directory given for the command so that the files can be committed under `reports/`.
 3. WHERE the user passes the option `--since <git-ref>`, THE CLI SHALL restrict Mechanical_Mutants to the Changed_Ranges since that ref.
 4. WHERE the user passes the option `--project <path>`, THE CLI SHALL use that path as the Target_Project root, and otherwise THE CLI SHALL use the current working directory.
-5. WHERE the user passes the option `--spec <name>`, THE CLI SHALL attack that spec, and otherwise THE CLI SHALL attack every spec directory that has a `requirements.md` file.
+5. WHERE the user passes the option `--spec <name>`, THE CLI SHALL attack only that spec, and WHERE the option is absent and the Target_Project has exactly one spec directory with a `requirements.md` file, THE CLI SHALL attack that spec.
 6. WHEN a command finishes, THE CLI SHALL print a summary with the number of surviving Spec_Mutants, the count of Criteria per Coverage_Status, the number of strays, and the paths of the files written.
 7. WHEN a command finishes without an internal error, THE CLI SHALL exit with code 0, including when Spec_Mutants survive.
 8. THE CLI SHALL define no option that changes the exit code according to the number of surviving Spec_Mutants.
@@ -210,6 +224,8 @@ The engine makes no LLM calls (ADR 0004). The MCP server and the Kiro hook entry
 12. THE Engine repository SHALL define at its root the npm script `measure`, which runs the built CLI as `trick-or-test measure --project examples/pricing --spec cart-pricing` with the output directory `reports`.
 13. WHEN the npm script `measure` finishes, THE CLI SHALL have written the Mutation_Report, `verdict.json` and `history.jsonl` into `reports/`.
 14. THE Engine repository SHALL generate the files in `reports/` only through the `measure` command, and no person SHALL edit them by hand.
+15. WHEN the CLI receives SIGINT or SIGTERM, THE CLI SHALL stop its child processes (Vitest and StrykerJS), remove its Sandboxes, and exit with code 130 for SIGINT and code 143 for SIGTERM.
+16. IF the Target_Project has more than one spec directory with a `requirements.md` file and the user does not pass the option `--spec`, THEN THE CLI SHALL print to stderr an error that lists the names of those spec directories and asks for `--spec <name>`, and exit with code 1.
 
 ### Requirement 10: Architecture and verification
 
@@ -227,3 +243,6 @@ The engine makes no LLM calls (ADR 0004). The MCP server and the Kiro hook entry
 8. THE Engine SHALL include an end-to-end test that runs the CLI on `examples/pricing` with the spec `.kiro/specs/cart-pricing` and checks the files written.
 9. THE Engine SHALL run the end-to-end test from the separate npm script `test:e2e` and exclude the end-to-end test from `npm test`, because the end-to-end test takes about 20 seconds with StrykerJS and `npm test` runs in the quality gate on every turn.
 10. THE Engine SHALL leave the files under `examples/pricing/src/` and `examples/pricing/test/` byte-identical during every run.
+11. THE end-to-end test SHALL check that `git status` of `examples/pricing` shows no change outside `.trickortest/`, that the written reports contain no absolute path, and that the StrykerJS temporary directory does not grow between two runs.
+12. THE Engine SHALL test the Stryker_Adapter against fixtures that are real StrykerJS 10.1.1 output captured from a run.
+13. THE Engine SHALL test the Spec_Mutant_Runner and the InvalidWitness handling by reading the written Verdict_File, not an in-memory value.

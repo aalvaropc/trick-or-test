@@ -82,7 +82,7 @@ describe("Property 14: History is append-only", () => {
         let prev: HistoryRecord | undefined;
         let prevRun: MutantResult[] = [];
         runs.forEach((run, n) => {
-          const built = buildHistoryRecord(verdictOf(run, n), prev, config);
+          const built = buildHistoryRecord(verdictOf(run, n), prev, config, "/proj");
           expect(built.ok).toBe(true);
           if (!built.ok) return;
           const rec = built.value;

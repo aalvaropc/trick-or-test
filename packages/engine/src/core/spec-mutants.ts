@@ -74,8 +74,22 @@ const firstIssue = (filePath: string, issues: readonly z.core.$ZodIssue[]): Load
   );
 };
 
+/** True for a non-empty, project-relative path without `..` segments, backslashes or NUL (Requirement 4.11). */
+export function isSafeRelativePath(p: string): boolean {
+  if (p === "") return false;
+  if (p.includes("\0") || p.includes("\\")) return false;
+  if (p.startsWith("/") || p.startsWith("~")) return false;
+  if (/^[A-Za-z]:/.test(p)) return false;
+  return !p.split("/").includes("..");
+}
+
+/** True for an id of `[A-Za-z0-9._-]+` without `..` (Requirement 4.12). */
+export function isSafeMutantId(id: string): boolean {
+  return /^[A-Za-z0-9._-]+$/.test(id) && !id.includes("..");
+}
+
 /**
- * Validates one mutant file (Requirements 4.1-4.4).
+ * Validates one mutant file (Requirements 4.1-4.4, 4.11, 4.12).
  * Exactly one of `expected` and `expectedError` must be present; `from` defaults to `file`.
  */
 export function validateSpecMutant(raw: unknown, filePath: string): Result<SpecMutant, LoadError> {
@@ -101,7 +115,34 @@ export function validateSpecMutant(raw: unknown, filePath: string): Result<SpecM
     );
   }
 
+  if (!isSafeMutantId(data.id)) {
+    return err(
+      loadError(
+        filePath,
+        `has an unsafe id "${data.id}"; use only letters, digits, ".", "_" and "-", without ".."`,
+        "id",
+      ),
+    );
+  }
+  if (!isSafeRelativePath(data.file)) {
+    return err(
+      loadError(
+        filePath,
+        `has an unsafe file "${data.file}"; it must be a relative path without "..", backslashes or NUL`,
+        "file",
+      ),
+    );
+  }
   const from = w.from ?? data.file;
+  if (!isSafeRelativePath(from)) {
+    return err(
+      loadError(
+        filePath,
+        `has an unsafe witness.from "${from}"; it must be a relative path without "..", backslashes or NUL`,
+        "witness.from",
+      ),
+    );
+  }
   const witness: Witness = hasError
     ? { from, export: w.export, args: w.args, expectedError: w.expectedError as string }
     : { from, export: w.export, args: w.args, expected: w.expected };

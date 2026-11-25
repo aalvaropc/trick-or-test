@@ -1,5 +1,4 @@
 import { isAbsolute, relative } from "node:path";
-import type { ChangedRange } from "../adapters/git-adapter.js";
 import type {
   MechanicalMutant,
   MechanicalRunOptions,
@@ -14,11 +13,13 @@ import type {
   WitnessRunOptions,
   WitnessRunResult,
 } from "../adapters/vitest-witness-runner.js";
+import { type ChangedRange, parseChangedRanges } from "../core/changed-ranges.js";
 import { CONFIG_FILE_NAME, resolveConfigPaths, validateConfig } from "../core/config.js";
 import { computeCoverage } from "../core/coverage.js";
 import { computeKillClass } from "../core/kill-classification.js";
-import { assignOccurrenceIndexes, computeMutantId } from "../core/mutant-id.js";
+import { computeMutantId } from "../core/mutant-id.js";
 import { applyMutation } from "../core/mutation.js";
+import { assignOccurrenceIndexes } from "../core/occurrence.js";
 import {
   buildHistoryRecord,
   buildMutationReport,
@@ -31,6 +32,8 @@ import {
 } from "../core/report.js";
 import { parseRequirements } from "../core/requirements.js";
 import { err, ok, type Result } from "../core/result.js";
+import type { ProjectEntry } from "../core/sandbox-plan.js";
+import { selectSpec } from "../core/select-spec.js";
 import {
   checkCrossFileRules,
   type LoadedSkipEntry,
@@ -39,6 +42,8 @@ import {
   validateSkipFile,
 } from "../core/spec-mutants.js";
 import { classifySpecies } from "../core/species.js";
+import { computeStrykerExclusions, type StrykerExclusions } from "../core/stryker-exclusions.js";
+import type { Location } from "../core/stryker-output.js";
 import { computeSuiteTimeLimit } from "../core/suite-time-limit.js";
 import { classifyTest, type TestKind } from "../core/test-classification.js";
 import type {
@@ -53,7 +58,12 @@ import type {
   TestId,
   Witness,
 } from "../core/types.js";
-import { compareWitnessOutcome, type WitnessOutcome } from "../core/witness-compare.js";
+import {
+  compareOutcomes,
+  matchesExpectation,
+  type WitnessExpectation,
+  type WitnessOutcome,
+} from "../core/witness-compare.js";
 import type { CliOptions } from "./args.js";
 
 /** The slice of the file system adapter the load stage needs. */
@@ -66,6 +76,10 @@ export interface LoadFileSystem {
 
 export interface LoadAdapters {
   readonly fs: LoadFileSystem;
+  /** Removes the Sandboxes an interrupted run left behind and returns how many (5.20). */
+  readonly sandbox?: {
+    removeLeftovers(projectRoot: string): Promise<number>;
+  };
 }
 
 /** One structured error of the load stage; the CLI formats it (Requirements 9.5, 10.3). */
@@ -129,6 +143,9 @@ export async function loadProject(
 ): Promise<Result<LoadedProject, LoadStageError[]>> {
   const { fs } = adapters;
 
+  // 5.20: Sandboxes of an earlier killed run go first, before the config is read.
+  await adapters.sandbox?.removeLeftovers(options.project);
+
   const configPath = joinPath(options.project, CONFIG_FILE_NAME);
   let rawConfig: string | undefined;
   if (await fs.exists(configPath)) {
@@ -161,14 +178,6 @@ async function findSpecNames(
   only: string | undefined,
   fs: LoadFileSystem,
 ): Promise<Result<string[], LoadStageError[]>> {
-  if (only !== undefined) {
-    const path = joinPath(specDir, only, REQUIREMENTS_FILE_NAME);
-    if (!(await fs.exists(path))) {
-      return failures([{ filePath: path, message: "does not exist" }]);
-    }
-    return ok([only]);
-  }
-
   const listing = await fs.listDir(specDir);
   if (!listing.ok) {
     return failures([{ filePath: specDir, message: `cannot be listed: ${listing.error}` }]);
@@ -178,12 +187,16 @@ async function findSpecNames(
     // A directory without requirements.md is not a spec and is skipped.
     if (await fs.exists(joinPath(specDir, name, REQUIREMENTS_FILE_NAME))) names.push(name);
   }
-  if (names.length === 0) {
-    return failures([
-      { filePath: specDir, message: `has no spec with a ${REQUIREMENTS_FILE_NAME}` },
-    ]);
+  // 9.5, 9.16: one run attacks exactly one spec.
+  const selected = selectSpec(names, only);
+  if (!selected.ok) {
+    const filePath =
+      only !== undefined && names.length > 0
+        ? joinPath(specDir, only, REQUIREMENTS_FILE_NAME)
+        : specDir;
+    return failures([{ filePath, message: selected.error.message }]);
   }
-  return ok(names);
+  return ok([selected.value]);
 }
 
 async function loadSpec(
@@ -264,7 +277,10 @@ async function loadSpec(
 
 /** The slice of the adapters the baseline and mechanical stage needs. */
 export interface MechanicalAdapters {
-  readonly fs: Pick<LoadFileSystem, "readFile">;
+  readonly fs: Pick<LoadFileSystem, "readFile"> & {
+    /** Project listing for the StrykerJS exclusions (3.7). Without it nothing is excluded. */
+    listEntries?(root: string): Promise<ProjectEntry[]>;
+  };
   readonly suite: {
     run(root: string, options: SuiteRunOptions): Promise<Result<SuiteResult, SuiteError>>;
   };
@@ -272,7 +288,8 @@ export interface MechanicalAdapters {
     run(options: MechanicalRunOptions): Promise<Result<MechanicalRunResult, string>>;
   };
   readonly git: {
-    changedRanges(ref: string, cwd: string): Promise<Result<ChangedRange[], string>>;
+    /** Diff text against `ref`, limited to the Target_Project, with project-relative paths. */
+    diff(ref: string, cwd: string): Promise<Result<string, string>>;
   };
 }
 
@@ -299,6 +316,8 @@ export interface MechanicalOutcome {
   readonly replacement: string;
   readonly startLine: number;
   readonly endLine: number;
+  /** Start and end line and column from StrykerJS, 1-based. */
+  readonly location?: Location;
 }
 
 export interface MechanicalStageResult {
@@ -356,20 +375,33 @@ export async function runBaselineAndMechanical(
     return err({ kind: "baseline-error", message });
   }
   const failingTests = baseline.value.files.flatMap((file) =>
-    file.tests.filter((t) => t.status === "failed").map((t) => testIdOf(file.path, t.name)),
+    file.tests
+      .filter((t) => t.status === "failed")
+      // A file-level failure is named after its file: report the path once (3.15).
+      .map((t) => (t.name === file.path ? file.path : testIdOf(file.path, t.name))),
   );
   if (failingTests.length > 0) return err({ kind: "baseline-failed", failingTests });
 
   let changedRanges: ChangedRange[] | undefined;
   if (options.since !== undefined) {
-    const ranges = await adapters.git.changedRanges(options.since, options.project);
-    if (!ranges.ok) return err({ kind: "git-error", message: ranges.error });
-    changedRanges = ranges.value;
+    const diff = await adapters.git.diff(options.since, options.project);
+    if (!diff.ok) return err({ kind: "git-error", message: diff.error });
+    changedRanges = parseChangedRanges(
+      diff.value,
+      config.sourceGlobs.map((glob) => relativeToRoot(options.project, glob)),
+    );
+    // 3.10: no changed line in a source file gives zero mutants and no StrykerJS run.
+    if (changedRanges.length === 0) {
+      return ok({ baselineMs: baseline.value.durationMs, mutants: [], ignoreStaticRetried: false });
+    }
   }
+
+  const exclusions = await listExclusions(options.project, config, adapters.fs);
 
   const run = await adapters.mechanical.run({
     typescriptVersion: input.typescriptVersion,
     cwd: options.project,
+    ...(exclusions === undefined ? {} : { exclusions }),
     ...(input.nonBuildDirs === undefined ? {} : { nonBuildDirs: input.nonBuildDirs }),
     ...(changedRanges === undefined ? {} : { changedRanges, since: true }),
   });
@@ -383,6 +415,39 @@ export async function runBaselineAndMechanical(
   });
 }
 
+/**
+ * Build roots: the first path segment of each source and test glob (3.7). A glob whose first
+ * segment holds a wildcard or points outside the project gives no answer, so nothing is excluded.
+ */
+const buildRootsOf = (root: string, config: EngineConfig): string[] | undefined => {
+  const roots = new Set<string>();
+  for (const glob of [...config.sourceGlobs, ...config.testGlobs]) {
+    const first = relativeToRoot(root, glob)
+      .split("/")
+      .find((segment) => segment !== "" && segment !== ".");
+    if (first === undefined || first === ".." || /[*?{}[\]!]/.test(first)) return undefined;
+    roots.add(first);
+  }
+  return [...roots];
+};
+
+async function listExclusions(
+  root: string,
+  config: EngineConfig,
+  fs: MechanicalAdapters["fs"],
+): Promise<StrykerExclusions | undefined> {
+  if (fs.listEntries === undefined) return undefined;
+  const buildRoots = buildRootsOf(root, config);
+  if (buildRoots === undefined) return undefined;
+  const entries = await fs.listEntries(root);
+  const outputDir = relativeToRoot(root, config.outputDir);
+  return computeStrykerExclusions(
+    entries,
+    buildRoots,
+    outputDir.startsWith("..") ? undefined : outputDir,
+  );
+}
+
 const toOutcome = (mutant: MechanicalMutant, result: MutantResult): MechanicalOutcome => ({
   result,
   file: mutant.file,
@@ -391,6 +456,7 @@ const toOutcome = (mutant: MechanicalMutant, result: MutantResult): MechanicalOu
   replacement: mutant.replacement,
   startLine: mutant.startLine,
   endLine: mutant.endLine,
+  location: mutant.location,
 });
 
 async function toOutcomes(
@@ -408,8 +474,8 @@ async function toOutcomes(
       file: mutant.file,
       original: mutant.original,
       replacement: mutant.replacement,
-      line: mutant.startLine,
-      column: 0,
+      line: mutant.location.start.line,
+      column: mutant.location.start.column,
     })),
   );
 
@@ -606,6 +672,11 @@ async function originalOutcomes(
   }
 }
 
+const expectationOf = (witness: SpecMutant["witness"]): WitnessExpectation =>
+  "expectedError" in witness
+    ? { expectedError: witness.expectedError }
+    : { expected: witness.expected };
+
 async function runOneSpecMutant(
   mutant: SpecMutant,
   root: string,
@@ -648,8 +719,17 @@ async function runOneSpecMutant(
       message: original === undefined ? "witness produced no outcome" : original.error.message,
     });
   }
-  if (compareWitnessOutcome(mutant.witness, original.value) === "mismatch") {
-    return done("InvalidWitness", { originalOutcome: original.value });
+  // A timeout on the original code never matches the expectation.
+  if (!matchesExpectation(mutant.witness, original.value)) {
+    const invalid = done("InvalidWitness", { originalOutcome: original.value });
+    if (invalid.ok) {
+      // 5.6: the Verdict_File gets the expectation and what the original code produced.
+      invalid.value.result.invalidWitness = {
+        expected: expectationOf(mutant.witness),
+        originalOutcome: original.value,
+      };
+    }
+    return invalid;
   }
 
   // 5.7: the mutated code must change the outcome.
@@ -667,10 +747,8 @@ async function runOneSpecMutant(
   const mutatedRun = witnessRun.value[mutant.id];
   // A witness with no outcome on the mutated code (for example a failed import) is a change.
   const mutatedOutcome = mutatedRun?.ok ? mutatedRun.value : undefined;
-  if (
-    mutatedOutcome !== undefined &&
-    compareWitnessOutcome(mutant.witness, mutatedOutcome) === "match"
-  ) {
+  // 5.16: a timeout or a missing outcome on the mutated code is a difference, so the suite runs.
+  if (mutatedOutcome !== undefined && compareOutcomes(original.value, mutatedOutcome) === "same") {
     return done("Ghost", { originalOutcome: original.value, mutatedOutcome });
   }
   const seen = {
@@ -706,7 +784,11 @@ async function runOneSpecMutant(
     }
     kinds.push({
       kind: classifyTest(
-        { filePath: t.file, bodySource: extractTestBody(text, t.startLine) },
+        {
+          filePath: t.file,
+          // A file-level failure has no test body.
+          bodySource: t.name === t.file ? "" : extractTestBody(text, t.startLine),
+        },
         config.propertyTestGlobs,
       ),
     });
@@ -714,7 +796,8 @@ async function runOneSpecMutant(
   return done(
     "Killed",
     seen,
-    failing.map((t) => testIdOf(t.file, t.name)),
+    // A file-level failure is named after its file: the path alone is the killing test (5.9).
+    failing.map((t) => (t.name === t.file ? t.file : testIdOf(t.file, t.name)) as TestId),
     computeKillClass(kinds),
   );
 }
@@ -789,6 +872,7 @@ export async function writeReports(
     witnesses,
     ignoreStaticRetried: input.ignoreStaticRetried,
     metadata: input.metadata,
+    projectRoot: options.project,
   });
   if (!verdict.ok) return err({ kind: "build-error", message: verdict.error });
 
@@ -808,7 +892,7 @@ export async function writeReports(
   const mechanical: ReportMutantInput[] = input.mechanical.map((m) => ({
     id: m.result.id,
     file: m.file,
-    location: {
+    location: m.location ?? {
       start: { line: Math.max(1, m.startLine), column: 1 },
       end: { line: Math.max(1, m.endLine), column: 1 },
     },
@@ -841,6 +925,7 @@ export async function writeReports(
     mechanical,
     spec,
     ignoreStaticRetried: input.ignoreStaticRetried,
+    projectRoot: options.project,
   });
 
   // History: read first, so a corrupt file stops the run before any write.
@@ -872,6 +957,7 @@ export async function writeReports(
     verdict.value,
     previousRecord,
     configAsWritten(config, options.project),
+    options.project,
   );
   if (!record.ok) return err({ kind: "build-error", message: record.error });
   let line: string;

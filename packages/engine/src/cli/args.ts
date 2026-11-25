@@ -17,13 +17,13 @@ export interface UsageError {
 export const USAGE_TEXT = `Usage: trick-or-test <command> [options]
 
 Commands:
-  run                 Attack the specs and write the report, verdict and history
+  run                 Attack one spec and write the report, verdict and history
   measure             Same as run, writing the results into --output
 
 Options:
   --since <ref>       Restrict mechanical mutants to ranges changed since a git ref
   --project <path>    Target project root (default: current directory)
-  --spec <name>       Attack only this spec (default: every spec with requirements.md)
+  --spec <name>       The spec to attack (required when the project has more than one)
   --output <dir>      Output directory (measure only, default: reports)
 `;
 

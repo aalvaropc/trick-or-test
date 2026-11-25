@@ -1,11 +1,11 @@
 #!/usr/bin/env node
-import { execFile } from "node:child_process";
 import { readdir, readFile, realpath } from "node:fs/promises";
 import { dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createFileSystem } from "../adapters/file-system-adapter.js";
 import { Git } from "../adapters/git-adapter.js";
-import { Sandbox } from "../adapters/sandbox.js";
+import { ProcessRunner } from "../adapters/process-runner.js";
+import { removeLeftoverSandboxes, Sandbox } from "../adapters/sandbox.js";
 import { MechanicalRunner } from "../adapters/stryker-adapter.js";
 import { Typecheck } from "../adapters/typecheck-adapter.js";
 import { SuiteRunner } from "../adapters/vitest-suite-runner.js";
@@ -27,13 +27,17 @@ import {
   type SpecMutantStageError,
   writeReports,
 } from "./orchestrate.js";
+import { installShutdown, type ShutdownOptions } from "./shutdown.js";
 
 /** Everything the CLI touches outside the pure core, so tests can replace it. */
 export interface CliDeps {
   readonly cwd: string;
   stdout(text: string): void;
   stderr(text: string): void;
-  readonly fs: LoadAdapters["fs"] & ReportAdapters["fs"] & SpecMutantAdapters["fs"];
+  readonly fs: LoadAdapters["fs"] &
+    ReportAdapters["fs"] &
+    SpecMutantAdapters["fs"] &
+    MechanicalAdapters["fs"];
   readonly suite: MechanicalAdapters["suite"] & SpecMutantAdapters["suite"];
   readonly mechanical: MechanicalAdapters["mechanical"];
   readonly git: MechanicalAdapters["git"];
@@ -42,6 +46,10 @@ export interface CliDeps {
   /** Sandboxes exclude the output directory, which is given relative to the project root. */
   sandbox(outputDir: string): SpecMutantAdapters["sandbox"];
   metadata(projectRoot: string): Promise<RunMetadata>;
+  /** Removes leftover Sandboxes at startup (5.20). Absent in tests that need no cleanup. */
+  removeLeftovers?(projectRoot: string): Promise<number>;
+  /** Process and child runner for the SIGINT and SIGTERM handlers (9.15). Absent in tests that need none. */
+  readonly shutdown?: Pick<ShutdownOptions, "process" | "runner">;
 }
 
 const formatLoadError = (error: LoadStageError): string => {
@@ -90,7 +98,23 @@ export async function runCli(argv: readonly string[], deps: CliDeps): Promise<nu
   try {
     const options = { ...parsed.value, project: resolve(deps.cwd, parsed.value.project) };
 
-    const loaded = await loadProject(options, { fs: deps.fs });
+    // Before any adapter runs, so no child can start without the handlers in place (9.15).
+    if (deps.shutdown !== undefined) {
+      const removeLeftovers = deps.removeLeftovers;
+      installShutdown({
+        process: deps.shutdown.process,
+        runner: deps.shutdown.runner,
+        removeLeftoverSandboxes: async (root) => removeLeftovers?.(root),
+        projectRoot: options.project,
+      });
+    }
+
+    const loaded = await loadProject(options, {
+      fs: deps.fs,
+      ...(deps.removeLeftovers === undefined
+        ? {}
+        : { sandbox: { removeLeftovers: deps.removeLeftovers } }),
+    });
     if (!loaded.ok) return fail(loaded.error.map(formatLoadError).join("\n"));
     const project =
       options.command === "measure" && options.output !== undefined
@@ -181,12 +205,12 @@ const installedVersion = async (name: string, from: string): Promise<string> => 
   }
 };
 
-const gitCommit = (cwd: string): Promise<string> =>
-  new Promise((done) => {
-    execFile("git", ["rev-parse", "HEAD"], { cwd, encoding: "utf8" }, (error, stdout) => {
-      done(error ? "unknown" : String(stdout).trim());
-    });
-  });
+const gitCommit = async (cwd: string): Promise<string> => {
+  const result = await ProcessRunner.run("git", ["rev-parse", "HEAD"], { cwd });
+  return result.spawnError !== undefined || result.exitCode !== 0
+    ? "unknown"
+    : result.stdout.trim();
+};
 
 const defaultMetadata = async (projectRoot: string): Promise<RunMetadata> => ({
   gitCommit: await gitCommit(projectRoot),
@@ -215,6 +239,7 @@ export const createDefaultDeps = (): CliDeps => {
       readFile: (path) => base.readFile(path),
       writeFile: (path, content) => base.writeFile(path, content),
       exists: (path) => base.exists(path),
+      listEntries: (root) => base.listEntries(root),
       async listDir(path) {
         try {
           return ok(await readdir(path));
@@ -225,7 +250,7 @@ export const createDefaultDeps = (): CliDeps => {
     },
     suite: SuiteRunner,
     mechanical: MechanicalRunner,
-    git: Git,
+    git: { diff: (ref, cwd) => Git.diff(ref, cwd) },
     typecheck: Typecheck,
     witness: WitnessRunner,
     sandbox: (outputDir) => ({
@@ -233,6 +258,8 @@ export const createDefaultDeps = (): CliDeps => {
       destroy: (handle) => base.removeDir(handle.root),
     }),
     metadata: defaultMetadata,
+    removeLeftovers: (projectRoot) => removeLeftoverSandboxes(projectRoot),
+    shutdown: { process, runner: ProcessRunner },
   };
 };
 

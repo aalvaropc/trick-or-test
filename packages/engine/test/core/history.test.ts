@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { containsAbsolutePath } from "../../src/core/paths.js";
 import { appendHistory, buildHistoryRecord } from "../../src/core/report.js";
 import type {
   CriterionId,
@@ -10,6 +11,7 @@ import type {
   Verdict,
 } from "../../src/core/types.js";
 
+const ROOT = "/proj";
 const mid = (s: string) => s as MutantId;
 const cid = (s: string) => s as CriterionId;
 
@@ -52,7 +54,7 @@ const verdictOf = (mutants: MutantResult[], seed = 42): Verdict => ({
 });
 
 const build = (v: Verdict, prev?: HistoryRecord): HistoryRecord => {
-  const r = buildHistoryRecord(v, prev, config);
+  const r = buildHistoryRecord(v, prev, config, ROOT);
   if (!r.ok) throw new Error(r.error);
   return r.value;
 };
@@ -94,7 +96,7 @@ describe("history record", () => {
   });
 
   it("8.10 a record that fails the schema returns an error Result", () => {
-    const r = buildHistoryRecord(verdictOf([mutant("a", "Killed")], 1.5), undefined, config);
+    const r = buildHistoryRecord(verdictOf([mutant("a", "Killed")], 1.5), undefined, config, ROOT);
     expect(r.ok).toBe(false);
     if (!r.ok) expect(r.error).toContain("seed");
   });
@@ -106,5 +108,48 @@ describe("history record", () => {
     const next = appendHistory(old, second);
     expect(next).toEqual([first, second]);
     expect(old).toEqual([first]);
+  });
+});
+
+const stringsIn = (value: unknown): string[] => {
+  if (typeof value === "string") return [value];
+  if (Array.isArray(value)) return value.flatMap(stringsIn);
+  if (value !== null && typeof value === "object") {
+    return Object.entries(value).flatMap(([k, v]) => [k, ...stringsIn(v)]);
+  }
+  return [];
+};
+
+describe("history record, paths (8.17)", () => {
+  const resolved: EngineConfig = {
+    specDir: "/proj/.kiro/specs/x",
+    sourceGlobs: ["/proj/src/**/*.ts"],
+    testGlobs: ["/proj/test/**/*.test.ts"],
+    propertyTestGlobs: ["test/**/*.property.test.ts"],
+    mutantsDir: "/proj/mutants",
+    outputDir: "/var/reports",
+    timeoutMs: 5000,
+  };
+  const built = buildHistoryRecord(verdictOf([mutant("a", "Killed")]), undefined, resolved, ROOT);
+  const record = built.ok ? built.value : undefined;
+
+  it("8.17 a config path under the root is relative", () => {
+    expect(record?.config).toMatchObject({
+      specDir: ".kiro/specs/x",
+      sourceGlobs: ["src/**/*.ts"],
+      testGlobs: ["test/**/*.test.ts"],
+      propertyTestGlobs: ["test/**/*.property.test.ts"],
+      mutantsDir: "mutants",
+      timeoutMs: 5000,
+    });
+  });
+
+  it("8.17 a config path outside the root becomes <outside-project>/<basename>", () => {
+    expect(record?.config.outputDir).toBe("<outside-project>/reports");
+  });
+
+  it("8.17 no string in the history record contains an absolute path", () => {
+    expect(built.ok).toBe(true);
+    expect(stringsIn(record).filter(containsAbsolutePath)).toEqual([]);
   });
 });

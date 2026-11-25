@@ -1,6 +1,7 @@
 import { Ajv } from "ajv";
 import { schema } from "mutation-testing-report-schema";
 import { describe, expect, it } from "vitest";
+import { containsAbsolutePath } from "../../src/core/paths.js";
 import {
   buildMutationReport,
   mutationReportSchema,
@@ -41,6 +42,7 @@ const spec = (
 
 const build = (mechanical: ReportInput["mechanical"], specs: ReportInput["spec"] = []) =>
   buildMutationReport({
+    projectRoot: "/proj",
     files: { "src/a.ts": { language: "typescript", source: "a + b" } },
     mechanical,
     spec: specs,
@@ -157,6 +159,7 @@ describe("buildMutationReport", () => {
 
   it.each([true, false])("3.5 records ignoreStaticRetried=%s in the report config", (retried) => {
     const report = buildMutationReport({
+      projectRoot: "/proj",
       files: { "src/a.ts": { language: "typescript", source: "a + b" } },
       mechanical: [mech("m1", "Killed")],
       spec: [],
@@ -187,5 +190,64 @@ describe("buildMutationReport", () => {
     const validate = new Ajv({ strict: false }).compile(schema);
     expect(validate(report), JSON.stringify(validate.errors)).toBe(true);
     expect(mutationReportSchema.parse(report)).toEqual(report);
+  });
+});
+
+const stringsIn = (value: unknown): string[] => {
+  if (typeof value === "string") return [value];
+  if (Array.isArray(value)) return value.flatMap(stringsIn);
+  if (value !== null && typeof value === "object") {
+    return Object.entries(value).flatMap(([k, v]) => [k, ...stringsIn(v)]);
+  }
+  return [];
+};
+
+describe("buildMutationReport, paths (8.17)", () => {
+  const report = buildMutationReport({
+    projectRoot: "/proj",
+    files: { "/proj/src/a.ts": { language: "typescript", source: "a + b" } },
+    mechanical: [
+      mech("m1", "Killed", {
+        file: "/proj/src/a.ts",
+        killedBy: ["/proj/test/a.test.ts > adds" as TestId],
+      }),
+    ],
+    spec: [
+      spec("oath-2.1-x", "NotApplicable", {
+        file: "/proj/src/a.ts",
+        location: loc(2),
+        description: "breaks 2.1 (cannot read /proj/src/a.ts: ENOENT)",
+      }),
+      spec("oath-2.1-y", "Survived", {
+        file: "/proj/src/a.ts",
+        location: loc(3),
+        description: "see /srv/other/tmp/notes.json.",
+      }),
+    ],
+  });
+  const mutants = Object.values(report.files).flatMap((f) => f.mutants);
+
+  it("8.17 keys files by the path relative to the project root", () => {
+    expect(Object.keys(report.files)).toEqual(["src/a.ts"]);
+  });
+
+  it("8.17 an absolute path inside a description becomes the relative path", () => {
+    expect(mutants.find((m) => m.id === "oath-2.1-x")?.description).toBe(
+      "breaks 2.1 (cannot read src/a.ts: ENOENT)",
+    );
+  });
+
+  it("8.17 a path outside the root becomes <outside-project>/<basename>", () => {
+    expect(mutants.find((m) => m.id === "oath-2.1-y")?.description).toBe(
+      "see <outside-project>/notes.json.",
+    );
+  });
+
+  it("8.17 killing test ids lose the root prefix", () => {
+    expect(mutants.find((m) => m.id === "m1")?.killedBy).toEqual(["test/a.test.ts > adds"]);
+  });
+
+  it("8.17 no string in the report contains an absolute path", () => {
+    expect(stringsIn(report).filter(containsAbsolutePath)).toEqual([]);
   });
 });

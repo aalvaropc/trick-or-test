@@ -102,8 +102,8 @@ const harness = (setup: Setup = {}) => {
       },
     },
     git: {
-      async changedRanges() {
-        return ok([]);
+      async diff() {
+        return ok("");
       },
     },
     sandbox: () => ({

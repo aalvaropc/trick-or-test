@@ -51,6 +51,18 @@
     "3.30 Write Property 14: History is append-only": {
       "status": "passed",
       "lastRunTimestamp": 1795622112924
+    },
+    "12.7 Write Property 22: A witness timeout is a difference, not a kill": {
+      "status": "passed",
+      "lastRunTimestamp": 1795638347847
+    },
+    "12.27 Write Property 20: No absolute path in any report field": {
+      "status": "passed",
+      "lastRunTimestamp": 1795643390702
+    },
+    "12.40 Write Property 24: Stryker exclusion list": {
+      "status": "passed",
+      "lastRunTimestamp": 1795645434899
     }
   },
   "executionHistory": {
@@ -1025,6 +1037,445 @@
         "executionId": "3f47d2e1-ceba-4289-b2de-709ec19323b5",
         "chatSessionId": "sess_d1b6aecd-22e7-47be-807d-b83666cde04d",
         "timestamp": 1795633920310
+      }
+    ],
+    "12.1 Count file-level failures as Failing_Tests in `core/suite-result.ts`": [
+      {
+        "executionId": "a2a15bbd-c187-4ec8-b7b5-263f401a667c",
+        "chatSessionId": "sess_67fa41ed-31d8-4b5c-8940-d06460b93068",
+        "timestamp": 1795637489849
+      }
+    ],
+    "12.2 Write Property 21: Failing tests include file-level failures": [
+      {
+        "executionId": "f2cfe576-5171-421a-93a1-0e5f2e508149",
+        "chatSessionId": "sess_561e2e90-ef31-4f3e-ac09-82af6dd87843",
+        "timestamp": 1795637612904
+      }
+    ],
+    "12.3 Use `extractFailingTests` in the suite runner": [
+      {
+        "executionId": "fca25ef8-4c46-4fe8-b3e4-763a7d21b68d",
+        "chatSessionId": "sess_75625fbc-b8cc-4a22-b784-683987029007",
+        "timestamp": 1795637740834
+      }
+    ],
+    "12.4 Abort the run on a file-level failure in the Baseline_Run": [
+      {
+        "executionId": "d52afb3a-22a6-4dac-94e5-f529d8134070",
+        "chatSessionId": "sess_55c6e161-935b-4f5f-9a6d-3d5c0355e64b",
+        "timestamp": 1795637906357
+      }
+    ],
+    "12.5 Kill a Spec_Mutant on a file-level failure": [
+      {
+        "executionId": "6a91e7d1-06ee-4c1f-96fb-19f5f3422fec",
+        "chatSessionId": "sess_24a58386-c2de-4870-9577-47893ac0d86c",
+        "timestamp": 1795638061273
+      }
+    ],
+    "12.6 Add witness outcomes `timeout` and `no-outcome` to `core/witness-compare.ts`": [
+      {
+        "executionId": "4cede2c1-cde3-4764-9d86-03768947e70e",
+        "chatSessionId": "sess_d10f4285-243b-4f3a-895d-809b1dfd7209",
+        "timestamp": 1795638185539
+      }
+    ],
+    "12.7 Write Property 22: A witness timeout is a difference, not a kill": [
+      {
+        "executionId": "a361147a-92a5-48ae-9512-25728fb6f241",
+        "chatSessionId": "sess_5b58de7a-9c3d-483c-88ac-444346d90202",
+        "timestamp": 1795638308975
+      },
+      {
+        "executionId": "a361147a-92a5-48ae-9512-25728fb6f241",
+        "chatSessionId": "sess_5b58de7a-9c3d-483c-88ac-444346d90202",
+        "timestamp": 1795638388549
+      }
+    ],
+    "12.8 Report witness timeout and missing outcome from the witness runner": [
+      {
+        "executionId": "f00a8713-8708-4f70-9684-cc5d55d38b24",
+        "chatSessionId": "sess_6f9f882b-8c42-4664-ab41-2cbe3c8d412f",
+        "timestamp": 1795638441441
+      }
+    ],
+    "12.9 Run the suite when the witness times out on the mutated code": [
+      {
+        "executionId": "81e89f82-ed1b-4535-8f79-cf6911bb15be",
+        "chatSessionId": "sess_b8aa8720-9d9f-4b83-b6ae-442ad331f1fe",
+        "timestamp": 1795638621962
+      }
+    ],
+    "12.10 Keep the StrykerJS mutant location in `core/stryker-output.ts`": [
+      {
+        "executionId": "8ac775d0-d067-4f19-868a-cd83262fe6ce",
+        "chatSessionId": "sess_e3f1b205-c757-4b6e-87f3-1ff13a3155e9",
+        "timestamp": 1795638784718
+      },
+      {
+        "executionId": "2a074690-b208-4c6f-906a-804c7c77228f",
+        "chatSessionId": "sess_e3f1b205-c757-4b6e-87f3-1ff13a3155e9",
+        "timestamp": 1795639007112
+      }
+    ],
+    "12.11 Return the location from `MechanicalRunner`": [
+      {
+        "executionId": "7f0946a2-c14f-4acc-ba91-c2da4dd7d309",
+        "chatSessionId": "sess_ad898d21-34b5-487a-a68b-e571952ff979",
+        "timestamp": 1795639372267
+      }
+    ],
+    "12.12 Order the Occurrence_Index by the real location": [
+      {
+        "executionId": "be4bfcaf-50b5-45cf-8e13-2d2b11252411",
+        "chatSessionId": "sess_6369fdb5-14c1-46da-97ce-e9e3c4c5e580",
+        "timestamp": 1795639552180
+      }
+    ],
+    "12.13 Write the location into the Mutation_Report and compare it in the same-change check": [
+      {
+        "executionId": "ff407ac3-2341-498f-9a93-daf4db836c19",
+        "chatSessionId": "sess_5bd8226d-2bc0-4a3a-a0d7-8501c394ecf6",
+        "timestamp": 1795639711648
+      }
+    ],
+    "12.14 Pass real locations through the mechanical stage": [
+      {
+        "executionId": "19dd9e8d-da6f-4c84-8006-d234f5574db9",
+        "chatSessionId": "sess_03fb8bda-e9d6-4b0d-bc42-cd8b94fe8f56",
+        "timestamp": 1795639846901
+      }
+    ],
+    "12.15 Select the StrykerJS error line and the retry condition from real output": [
+      {
+        "executionId": "d7688d85-ca99-4d9f-8e17-64274918c992",
+        "chatSessionId": "sess_906024c4-860f-4f27-aae9-c79ec541bf91",
+        "timestamp": 1795640007159
+      },
+      {
+        "executionId": "c080b9b9-0d00-4aa8-9008-2935f1928c2e",
+        "chatSessionId": "sess_906024c4-860f-4f27-aae9-c79ec541bf91",
+        "timestamp": 1795640316576
+      }
+    ],
+    "12.16 Write Property 23: StrykerJS error selection": [
+      {
+        "executionId": "4e32576e-32be-4a17-87c7-75f452b27b3c",
+        "chatSessionId": "sess_eb06081a-dee6-4af3-9fd6-b2d9736d50cf",
+        "timestamp": 1795640709000
+      },
+      {
+        "executionId": "4e32576e-32be-4a17-87c7-75f452b27b3c",
+        "chatSessionId": "sess_eb06081a-dee6-4af3-9fd6-b2d9736d50cf",
+        "timestamp": 1795640826956
+      },
+      {
+        "executionId": "56fb632b-cc3a-42d6-842a-2b1750886e11",
+        "chatSessionId": "sess_eb06081a-dee6-4af3-9fd6-b2d9736d50cf",
+        "timestamp": 1795640955555
+      }
+    ],
+    "12.17 Use the error line and the retry rule in `MechanicalRunner`": [
+      {
+        "executionId": "96fd87bd-4cfb-42ae-afba-c57c12b74572",
+        "chatSessionId": "sess_5f588a0e-fcd7-4574-a327-a3f809eeec58",
+        "timestamp": 1795641257181
+      }
+    ],
+    "12.18 Parse relative Changed_Ranges in `core/changed-ranges.ts`": [
+      {
+        "executionId": "175c0017-a640-459f-8560-bade9891d459",
+        "chatSessionId": "sess_5e14575e-b22e-474a-ad0c-580800a152d1",
+        "timestamp": 1795641414115
+      }
+    ],
+    "12.19 Write Property 25: Changed ranges are relative and match the source globs": [
+      {
+        "executionId": "34e9b45f-2b60-4d04-825b-f5809e8bf670",
+        "chatSessionId": "sess_9f9c958b-d8d1-4cb8-851f-6cda4abb5f6c",
+        "timestamp": 1795641573022
+      }
+    ],
+    "12.20 Restrict the git diff to the Target_Project in `git-adapter.ts`": [
+      {
+        "executionId": "e4e19c3d-bec4-4280-aed9-f151c20bf5f7",
+        "chatSessionId": "sess_1a6c8f21-3820-49ba-9fe0-3d5bdd856ce7",
+        "timestamp": 1795641714323
+      }
+    ],
+    "12.21 Use `parseChangedRanges` for `--since` in the mechanical stage": [
+      {
+        "executionId": "617e5c93-0ab3-4751-a6fd-0391a2dc5ba6",
+        "chatSessionId": "sess_18bbf2ce-f6ad-409a-bebd-9c919c39a042",
+        "timestamp": 1795641883118
+      }
+    ],
+    "12.22 Write both outcomes of an InvalidWitness mutant into the Verdict": [
+      {
+        "executionId": "5d38e0e9-b37b-4ff4-9448-b007527811b0",
+        "chatSessionId": "sess_3537d430-486d-4c87-8b25-233a1b2ecd36",
+        "timestamp": 1795642093352
+      }
+    ],
+    "12.23 Extend Property 16 with InvalidWitness and outcome kinds": [
+      {
+        "executionId": "9c7fee4f-d531-483b-a9ea-79ce8489afb3",
+        "chatSessionId": "sess_cda0164a-0162-4e55-bdd9-97aa8b065e9e",
+        "timestamp": 1795642246997
+      }
+    ],
+    "12.24 Carry both outcomes from the pipeline to the Verdict": [
+      {
+        "executionId": "7a96804b-7a4c-4913-af47-1a184b0e346a",
+        "chatSessionId": "sess_d4b0fc0e-a73b-4847-a9e4-bc033d509d30",
+        "timestamp": 1795642409863
+      }
+    ],
+    "12.25 Add `core/paths.ts`": [
+      {
+        "executionId": "c9c96f31-70b7-4044-b253-8679cbaf504f",
+        "chatSessionId": "sess_beda6860-ddb0-4c04-ba69-71a01dafd4c8",
+        "timestamp": 1795642571832
+      }
+    ],
+    "12.26 Relativize every path in the report builders": [
+      {
+        "executionId": "c223fc8e-94cc-4cf2-be52-1091bef3b95b",
+        "chatSessionId": "sess_0a8407f1-46a5-49bc-976b-8d91afc6e1fe",
+        "timestamp": 1795642729729
+      },
+      {
+        "executionId": "ffa495a2-5db7-4544-befa-b94d4b18fb11",
+        "chatSessionId": "sess_0a8407f1-46a5-49bc-976b-8d91afc6e1fe",
+        "timestamp": 1795643070909
+      }
+    ],
+    "12.27 Write Property 20: No absolute path in any report field": [
+      {
+        "executionId": "72ac7c36-b8f1-4140-9ff8-76972e3694d9",
+        "chatSessionId": "sess_403e46a6-6848-48c9-bec0-2b5b60b61a70",
+        "timestamp": 1795643206383
+      }
+    ],
+    "12.28 Scrub run-time paths in the orchestration and extend the path test": [
+      {
+        "executionId": "b6b5715c-2ec3-4517-a4a1-d4fab69c01e8",
+        "chatSessionId": "sess_329bf9a1-f790-44ba-b0c5-201e740db4de",
+        "timestamp": 1795643483328
+      }
+    ],
+    "12.29 Validate Spec_Mutant paths and ids in the loader": [
+      {
+        "executionId": "bfb8e87c-0aee-424c-b81d-5576a89c6bab",
+        "chatSessionId": "sess_13934d58-bf0c-4d2f-926a-748873a86ab5",
+        "timestamp": 1795643620431
+      }
+    ],
+    "12.30 Write Property 18: Spec mutant path safety": [
+      {
+        "executionId": "e28696d6-bd11-4e33-b2b8-a6dbac0a0487",
+        "chatSessionId": "sess_cf0c6f5c-5870-400b-8484-075391eb00fc",
+        "timestamp": 1795643758814
+      },
+      {
+        "executionId": "e28696d6-bd11-4e33-b2b8-a6dbac0a0487",
+        "chatSessionId": "sess_cf0c6f5c-5870-400b-8484-075391eb00fc",
+        "timestamp": 1795643857654
+      }
+    ],
+    "12.31 Add `resolveInside` in `core/sandbox-plan.ts`": [
+      {
+        "executionId": "de47fddb-ee08-4785-b450-c7770ba5040f",
+        "chatSessionId": "sess_36d3a4ab-71ac-4ce2-a683-119db138a7ad",
+        "timestamp": 1795643902611
+      }
+    ],
+    "12.32 Plan symlinks and fixed exclusions in `planSandboxCopy`": [
+      {
+        "executionId": "dd98c098-2dc3-42be-b834-5fd8d49b3526",
+        "chatSessionId": "sess_af79d598-3204-4bfd-8eec-d19a5e98df10",
+        "timestamp": 1795644028501
+      }
+    ],
+    "12.33 List project entries in the file system adapter": [
+      {
+        "executionId": "fefb9f18-7bb4-4e40-8998-009b8a8a59ad",
+        "chatSessionId": "sess_8f205e80-0d95-4b3d-9f25-5d3bd6d473ea",
+        "timestamp": 1795644259452
+      }
+    ],
+    "12.34 Make the Sandbox copy follow the plan and check every write": [
+      {
+        "executionId": "9c54ddd5-e2e3-467e-bd1e-fee32be2cdf9",
+        "chatSessionId": "sess_42225387-8b5f-4470-8d50-b210473ac2fc",
+        "timestamp": 1795644411014
+      }
+    ],
+    "12.35 Run the StrykerJS binary from `node_modules/.bin`": [
+      {
+        "executionId": "1ab1db12-4d45-4b58-89aa-814c785d845f",
+        "chatSessionId": "sess_acf35a2f-678d-4af7-bb97-c4694b8a3724",
+        "timestamp": 1795644568975
+      }
+    ],
+    "12.36 Exclude the output directory by its project-relative path": [
+      {
+        "executionId": "4155e374-5516-408a-b051-f4efa47f0b47",
+        "chatSessionId": "sess_79fa1ec2-9d7f-4adf-93b7-61b40d52746d",
+        "timestamp": 1795644758820
+      }
+    ],
+    "12.37 Write Property 19: Sandbox path containment": [
+      {
+        "executionId": "03fff7b4-f5f7-466e-80bd-34f66c6aa12c",
+        "chatSessionId": "sess_761fcfd6-5d35-4ddb-b4b9-72fe630b51d6",
+        "timestamp": 1795644889769
+      }
+    ],
+    "12.38 Apply the relative output directory rule in the Sandbox adapter": [
+      {
+        "executionId": "0343928b-ef9f-407d-b7b0-e31557637b7e",
+        "chatSessionId": "sess_26045c7f-c0be-4b78-8952-aefd1bea4541",
+        "timestamp": 1795645068460
+      }
+    ],
+    "12.39 Compute the StrykerJS exclusions in `core/stryker-exclusions.ts`": [
+      {
+        "executionId": "c41e495c-6762-400e-86e2-49c8ca791693",
+        "chatSessionId": "sess_7c5ba58e-1033-4d88-88f6-4bdcf660c59d",
+        "timestamp": 1795645187201
+      }
+    ],
+    "12.40 Write Property 24: Stryker exclusion list": [
+      {
+        "executionId": "58fbe360-4ca9-4952-9eeb-99191897ea35",
+        "chatSessionId": "sess_0cf704ee-b489-4636-8f63-2da6f378ac95",
+        "timestamp": 1795645379754
+      }
+    ],
+    "12.41 Pass the exclusions to StrykerJS in `buildStrykerOptions`": [
+      {
+        "executionId": "98877ef9-a488-4c76-8a61-0e6057316f7f",
+        "chatSessionId": "sess_b1bcf6fa-7f02-4e6c-91ac-0d53734a0d41",
+        "timestamp": 1795645531738
+      }
+    ],
+    "12.42 List the project and compute the exclusions in the mechanical stage": [
+      {
+        "executionId": "ebc1a4b8-071e-406d-b0d8-25baf584f9d9",
+        "chatSessionId": "sess_e949519c-2cad-445c-8e39-444aca9446b3",
+        "timestamp": 1795645670933
+      }
+    ],
+    "12.43 Remove the StrykerJS temporary directory after every run": [
+      {
+        "executionId": "e5313de5-fd8d-4c21-ae71-3182032fe37b",
+        "chatSessionId": "sess_d1d27ca2-33c4-48d5-9b7c-d16fff5c7069",
+        "timestamp": 1795645859269
+      }
+    ],
+    "12.44 Remove leftover Sandboxes in `sandbox.ts`": [
+      {
+        "executionId": "85ee2c43-90da-404c-90e0-6752a65ca01a",
+        "chatSessionId": "sess_19fd2a9f-12af-4dad-82f3-2c4489ee1145",
+        "timestamp": 1795645999730
+      }
+    ],
+    "12.45 Call the leftover cleanup at startup": [
+      {
+        "executionId": "d0c651f2-bc15-43a7-8f36-7d6cb48d1746",
+        "chatSessionId": "sess_2c1d0251-67de-4344-b2ae-55595121bd1d",
+        "timestamp": 1795646124064
+      }
+    ],
+    "12.46 Select the one spec to attack in `core/select-spec.ts` and wire the load stage and the CLI": [
+      {
+        "executionId": "5699e9a0-b235-4bec-b085-aacd0a55da98",
+        "chatSessionId": "sess_787f3182-7831-4968-8402-a9d2f0199ea0",
+        "timestamp": 1795646274034
+      }
+    ],
+    "12.47 Track and kill child process groups in the process runner": [
+      {
+        "executionId": "bc2c30ac-fefe-4661-a4a9-dad66c8a6d23",
+        "chatSessionId": "sess_eac9c614-c2c2-47c9-89e5-914fd4d3fae4",
+        "timestamp": 1795646528645
+      }
+    ],
+    "12.48 Add the shutdown coordinator in `cli/shutdown.ts`": [
+      {
+        "executionId": "10f2434c-60c7-4339-a4b2-cb53481e0579",
+        "chatSessionId": "sess_b86edd1e-81ed-4f51-8100-c551dbee1696",
+        "timestamp": 1795646863223
+      }
+    ],
+    "12.49 Install the shutdown handlers in the CLI entry point": [
+      {
+        "executionId": "3af23aa3-7bc5-47a3-8760-20d0c14f07dd",
+        "chatSessionId": "sess_1a46324b-2e41-4c43-ac03-712a3865003b",
+        "timestamp": 1795646994388
+      }
+    ],
+    "12.50 Exclude `.trickortest/**` from every suite run": [
+      {
+        "executionId": "5e16ddbe-6492-4c5f-8c93-8af881c61a44",
+        "chatSessionId": "sess_681d2923-77a6-410f-8830-5e4ab4684d35",
+        "timestamp": 1795647128355
+      }
+    ],
+    "12.51 Make the narrow-include suite runner test able to fail": [
+      {
+        "executionId": "83a960db-d75e-4d8d-aae5-e28037cdcb1a",
+        "chatSessionId": "sess_9741d330-2540-4684-baa8-b342c1a61993",
+        "timestamp": 1795647304242
+      }
+    ],
+    "12.52 Read the written Verdict in the InvalidWitness test": [
+      {
+        "executionId": "5af2c61b-cbdb-439b-89a6-20ce942e53d1",
+        "chatSessionId": "sess_e394b44b-8bf1-4b64-813d-604e877448cc",
+        "timestamp": 1795647499915
+      }
+    ],
+    "12.53 Replace invented StrykerJS output in the adapter tests": [
+      {
+        "executionId": "af16f7c7-1c36-485e-9bba-ae521ce5bbd7",
+        "chatSessionId": "sess_87a71e5d-fbda-48f0-be81-2e06afc108d7",
+        "timestamp": 1795647639263
+      }
+    ],
+    "12.54 Strengthen the end-to-end test": [
+      {
+        "executionId": "425c9599-cbe2-464c-a180-628c558bae10",
+        "chatSessionId": "sess_aa2056ed-c32a-4722-9da3-84cc5450a9fe",
+        "timestamp": 1795647765397
+      }
+    ],
+    "12.55 Regenerate `reports/` with `npm run measure`": [
+      {
+        "executionId": "ead481f4-c68e-4aa5-9a30-3a55a53c7a09",
+        "chatSessionId": "sess_d43fcb52-8399-45b8-a579-1cfab51a450c",
+        "timestamp": 1795648213550
+      }
+    ],
+    "12.56 Checkpoint - Review fixes": [
+      {
+        "executionId": "9894eda2-3221-41e3-a5f8-752b7013a44a",
+        "chatSessionId": "sess_2aa56008-f17e-48d9-adc1-9a20532cdcad",
+        "timestamp": 1795648475001
+      },
+      {
+        "executionId": "9894eda2-3221-41e3-a5f8-752b7013a44a",
+        "chatSessionId": "sess_2aa56008-f17e-48d9-adc1-9a20532cdcad",
+        "timestamp": 1795648503080
+      }
+    ],
+    "12. Fix the defects found in the independent review of the adapters and the CLI": [
+      {
+        "executionId": "9894eda2-3221-41e3-a5f8-752b7013a44a",
+        "chatSessionId": "sess_2aa56008-f17e-48d9-adc1-9a20532cdcad",
+        "timestamp": 1795648503382
       }
     ]
   }

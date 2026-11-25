@@ -170,6 +170,31 @@ describe("spec mutant stage", () => {
     expect(f.suiteLimits).toEqual([]);
   });
 
+  it("5.6 InvalidWitness result holds expectedError and originalOutcome for an error class", async () => {
+    const f = fakes({
+      original: { "oath-1.1-a": { kind: "error", className: "TypeError" } },
+    });
+    const m = specMutant("oath-1.1-a", {
+      witness: { from: "src/f.ts", export: "f", args: [10], expectedError: "RangeError" },
+    });
+    const result = await run([m], f);
+    expect(result.ok && result.value[0]?.result.invalidWitness).toEqual({
+      expected: { expectedError: "RangeError" },
+      originalOutcome: { kind: "error", className: "TypeError" },
+    });
+  });
+
+  it("5.6 InvalidWitness result holds expected and originalOutcome for a timeout", async () => {
+    const f = fakes({
+      original: { "oath-1.1-a": { kind: "timeout", message: "witness exceeded 10000 ms" } },
+    });
+    const result = await run([specMutant("oath-1.1-a")], f);
+    expect(result.ok && result.value[0]?.result.invalidWitness).toEqual({
+      expected: { expected: false },
+      originalOutcome: { kind: "timeout", message: "witness exceeded 10000 ms" },
+    });
+  });
+
   it("5.7 Ghost when the mutated code gives the same outcome", async () => {
     const f = fakes({ mutated: { "oath-1.1-a": value(false) } });
     const result = await run([specMutant("oath-1.1-a")], f);
@@ -235,5 +260,74 @@ describe("spec mutant stage", () => {
     const statuses = (r: typeof first) => (r.ok ? r.value.map((o) => o.result.status) : []);
     expect(statuses(first)).toEqual(["Survived", "Survived"]);
     expect(statuses(second)).toEqual(statuses(first));
+  });
+});
+
+describe("spec mutant stage, file-level failures", () => {
+  const fileLevelFailure = (file: string): Result<SuiteResult, SuiteError> =>
+    ok({
+      durationMs: 5,
+      files: [
+        { path: file, tests: [{ name: file, status: "failed" as const, startLine: 0 }] },
+        {
+          path: "test/a.test.ts",
+          tests: [{ name: "example", status: "passed" as const, startLine: 1 }],
+        },
+      ],
+    });
+
+  it("5.9 Killed with the file path as killing test when a test file fails at import", async () => {
+    const f = fakes({ suite: fileLevelFailure("test/broken.test.ts") });
+    const result = await run([specMutant("oath-1.1-a")], f);
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.value[0]?.result.status).toBe("Killed");
+    expect(result.value[0]?.result.killingTests).toEqual(["test/broken.test.ts"]);
+  });
+
+  it("5.10 Survived when the suite run has no failure", async () => {
+    const f = fakes();
+    const result = await run([specMutant("oath-1.1-a")], f);
+    expect(result.ok && result.value[0]?.result.status).toBe("Survived");
+    expect(result.ok && result.value[0]?.result.killingTests).toEqual([]);
+  });
+});
+
+describe("spec mutant stage, witness timeout", () => {
+  const timeout: WitnessOutcome = { kind: "timeout", message: "witness exceeded 10000 ms" };
+
+  it("5.16 a witness timeout on the mutated code runs the suite and a passing suite is Survived", async () => {
+    const f = fakes({ mutated: { "oath-1.1-a": timeout } });
+    const result = await run([specMutant("oath-1.1-a")], f);
+    expect(result.ok && result.value[0]?.result.status).toBe("Survived");
+    expect(result.ok && result.value[0]?.mutatedOutcome).toEqual(timeout);
+    expect(f.suiteLimits).toHaveLength(1);
+  });
+
+  it("5.16 a witness timeout on the mutated code with a failing suite is Killed", async () => {
+    const f = fakes({
+      mutated: { "oath-1.1-a": timeout },
+      suite: failingSuite([{ file: "test/a.test.ts", name: "example" }]),
+    });
+    const result = await run([specMutant("oath-1.1-a")], f);
+    expect(result.ok && result.value[0]?.result.status).toBe("Killed");
+    expect(f.suiteLimits).toHaveLength(1);
+  });
+
+  it("5.16 a witness timeout on the original code is InvalidWitness and the suite does not run", async () => {
+    const f = fakes({ original: { "oath-1.1-a": timeout } });
+    const result = await run([specMutant("oath-1.1-a")], f);
+    expect(result.ok && result.value[0]?.result.status).toBe("InvalidWitness");
+    expect(result.ok && result.value[0]?.originalOutcome).toEqual(timeout);
+    expect(f.suiteLimits).toEqual([]);
+  });
+
+  it("5.16 no outcome on the original code is InvalidWitness", async () => {
+    const f = fakes({
+      original: { "oath-1.1-a": { kind: "no-outcome", message: "import failed" } },
+    });
+    const result = await run([specMutant("oath-1.1-a")], f);
+    expect(result.ok && result.value[0]?.result.status).toBe("InvalidWitness");
+    expect(f.suiteLimits).toEqual([]);
   });
 });

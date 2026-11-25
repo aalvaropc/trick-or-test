@@ -63,4 +63,5 @@ export const reportInputArb: fc.Arbitrary<ReportInput> = fc
     files: Object.fromEntries(FILES.map((f) => [f, { language: "typescript", source }])),
     mechanical: mechanical.map(({ requirement: _requirement, ...m }) => m),
     spec,
+    projectRoot: "/proj",
   }));

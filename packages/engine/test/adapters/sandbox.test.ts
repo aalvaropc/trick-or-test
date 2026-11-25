@@ -1,8 +1,19 @@
-import { access, mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import {
+  access,
+  mkdir,
+  mkdtemp,
+  readdir,
+  readFile,
+  readlink,
+  rm,
+  symlink,
+  writeFile,
+} from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { Sandbox, withSandbox } from "../../src/adapters/sandbox.js";
+import { createFileSystem, type FileSystem } from "../../src/adapters/file-system-adapter.js";
+import { removeLeftoverSandboxes, Sandbox, withSandbox } from "../../src/adapters/sandbox.js";
 
 let project: string;
 
@@ -80,5 +91,102 @@ describe("Sandbox", () => {
     });
     expect(result).toEqual({ ok: true, value: 42 });
     expect(await present(seen)).toBe(false);
+  });
+});
+
+describe("Sandbox copy plan", () => {
+  it("5.18 a link to a directory outside the project is skipped and nothing outside is written", async () => {
+    const outside = await mkdtemp(join(tmpdir(), "tot-outside-"));
+    try {
+      await writeFile(join(outside, "secret.txt"), "secret");
+      await symlink(outside, join(project, "src", "out-link"));
+      const warnings: string[] = [];
+      const created = await Sandbox.create(project, "s1", { warn: (m) => warnings.push(m) });
+      expect(created.ok).toBe(true);
+      if (!created.ok) return;
+      const linkInSandbox = join(created.value.root, "src", "out-link");
+      expect(await present(linkInSandbox)).toBe(false);
+      expect(await readdir(outside)).toEqual(["secret.txt"]);
+      expect(warnings).toHaveLength(1);
+      expect(warnings[0]).toContain("src/out-link");
+    } finally {
+      await rm(outside, { recursive: true, force: true });
+    }
+  });
+
+  it("5.18 a link inside the project is recreated as a relative link that works in the Sandbox", async () => {
+    await mkdir(join(project, "lib"), { recursive: true });
+    await writeFile(join(project, "lib", "real.txt"), "real");
+    await symlink(join(project, "lib"), join(project, "src", "lib-link"));
+    const created = await Sandbox.create(project, "s2");
+    expect(created.ok).toBe(true);
+    if (!created.ok) return;
+    const link = join(created.value.root, "src", "lib-link");
+    expect(await readlink(link)).toBe("../lib");
+    expect(await readFile(join(link, "real.txt"), "utf8")).toBe("real");
+    await writeFile(join(link, "new.txt"), "x");
+    expect(await present(join(created.value.root, "lib", "new.txt"))).toBe(true);
+    expect(await present(join(project, "lib", "new.txt"))).toBe(false);
+  });
+
+  it("5.17 a path that escapes the Sandbox returns an error and leaves no Sandbox", async () => {
+    const real = createFileSystem();
+    const fs: FileSystem = {
+      ...real,
+      listEntries: async () => [{ path: "../escaped.txt", kind: "file" }],
+    };
+    const created = await Sandbox.create(project, "s3", { fs });
+    expect(created.ok).toBe(false);
+    if (created.ok) return;
+    expect(created.error).toContain("../escaped.txt");
+    expect(await present(join(project, ".trickortest", "sandboxes", "s3"))).toBe(false);
+    expect(await present(join(project, ".trickortest", "sandboxes", "escaped.txt"))).toBe(false);
+    expect(await present(join(project, ".trickortest", "escaped.txt"))).toBe(false);
+  });
+});
+
+describe("Sandbox output directory", () => {
+  it("5.19 with output directory reports, reports/ is absent from the Sandbox", async () => {
+    const created = await Sandbox.create(project, "o1", { outputDir: "reports" });
+    expect(created.ok).toBe(true);
+    if (!created.ok) return;
+    expect(await present(join(created.value.root, "reports"))).toBe(false);
+  });
+
+  it("5.19 with output directory reports, src/reports/ is present in the Sandbox", async () => {
+    await mkdir(join(project, "src", "reports"), { recursive: true });
+    await writeFile(join(project, "src", "reports", "f.txt"), "nested");
+    const created = await Sandbox.create(project, "o2", { outputDir: "reports" });
+    expect(created.ok).toBe(true);
+    if (!created.ok) return;
+    expect(await readFile(join(created.value.root, "src", "reports", "f.txt"), "utf8")).toBe(
+      "nested",
+    );
+  });
+});
+
+describe("removeLeftoverSandboxes", () => {
+  it("5.20 removes two leftover Sandboxes and returns 2", async () => {
+    for (const id of ["a", "b"]) {
+      await mkdir(join(project, ".trickortest", "sandboxes", id, "src"), { recursive: true });
+      await writeFile(join(project, ".trickortest", "sandboxes", id, "src", "f.txt"), id);
+    }
+    expect(await removeLeftoverSandboxes(project)).toBe(2);
+    expect(await readdir(join(project, ".trickortest", "sandboxes"))).toEqual([]);
+  });
+
+  it("5.20 returns 0 when .trickortest/sandboxes does not exist", async () => {
+    expect(await removeLeftoverSandboxes(project)).toBe(0);
+  });
+
+  it("5.20 leaves files outside .trickortest/sandboxes untouched", async () => {
+    await mkdir(join(project, ".trickortest", "sandboxes", "a"), { recursive: true });
+    await writeFile(join(project, ".trickortest", "sandboxes", "a", "f.txt"), "a");
+    expect(await removeLeftoverSandboxes(project)).toBe(1);
+    expect(await readFile(join(project, ".trickortest", "old", "f.txt"), "utf8")).toBe(
+      ".trickortest/old",
+    );
+    expect(await readFile(join(project, "src", "f.txt"), "utf8")).toBe("src");
+    expect(await present(join(project, "package.json"))).toBe(true);
   });
 });

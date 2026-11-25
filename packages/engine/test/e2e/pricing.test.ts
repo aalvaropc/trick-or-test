@@ -1,13 +1,14 @@
 import { execFile } from "node:child_process";
 import { createHash } from "node:crypto";
 import { existsSync } from "node:fs";
-import { mkdtemp, readdir, readFile, rm } from "node:fs/promises";
+import { lstat, mkdtemp, readdir, readFile, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { Ajv } from "ajv";
 import { schema } from "mutation-testing-report-schema";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { containsAbsolutePath } from "../../src/core/paths.js";
 import {
   historyRecordSchema,
   mutationReportSchema,
@@ -62,7 +63,36 @@ const hashTree = async (dir: string): Promise<string> => {
   return hash.digest("hex");
 };
 
+const strykerTmpDir = join(project, ".trickortest", "stryker-tmp");
+
+const treeSize = async (dir: string): Promise<number> => {
+  if (!existsSync(dir)) return 0;
+  const entries = await readdir(dir, { withFileTypes: true, recursive: true });
+  let total = 0;
+  for (const entry of entries) {
+    if (!entry.isFile()) continue;
+    total += (await lstat(join(entry.parentPath, entry.name))).size;
+  }
+  return total;
+};
+
+const collectStrings = (value: unknown, out: string[] = []): string[] => {
+  if (typeof value === "string") out.push(value);
+  else if (Array.isArray(value)) for (const item of value) collectStrings(item, out);
+  else if (typeof value === "object" && value !== null) {
+    for (const [key, item] of Object.entries(value)) {
+      out.push(key);
+      collectStrings(item, out);
+    }
+  }
+  return out;
+};
+
 describe("pricing end-to-end", () => {
+  let gitStatusBefore = "";
+  let gitStatusAfter = "";
+  let strykerTmpSizeAfterFirst = 0;
+  let strykerTmpSizeAfterSecond = 0;
   let outputDir = "";
   let srcBefore = "";
   let testBefore = "";
@@ -99,7 +129,10 @@ describe("pricing end-to-end", () => {
       "--output",
       outputDir,
     ];
+    gitStatusBefore = (await exec("git", ["status", "--porcelain", "examples/pricing"], repoRoot))
+      .stdout;
     first = await exec(process.execPath, args, repoRoot);
+    strykerTmpSizeAfterFirst = await treeSize(strykerTmpDir);
     historyAfterFirst = existsSync(join(outputDir, "history.jsonl"))
       ? await readFile(join(outputDir, "history.jsonl"), "utf8")
       : "";
@@ -107,6 +140,10 @@ describe("pricing end-to-end", () => {
     historyAfterSecond = existsSync(join(outputDir, "history.jsonl"))
       ? await readFile(join(outputDir, "history.jsonl"), "utf8")
       : "";
+
+    strykerTmpSizeAfterSecond = await treeSize(strykerTmpDir);
+    gitStatusAfter = (await exec("git", ["status", "--porcelain", "examples/pricing"], repoRoot))
+      .stdout;
 
     srcAfter = await hashTree(join(project, "src"));
     testAfter = await hashTree(join(project, "test"));
@@ -164,6 +201,28 @@ describe("pricing end-to-end", () => {
   it("10.9 .trickortest/sandboxes is empty or absent after the runs", async () => {
     if (!existsSync(sandboxesDir)) return;
     expect(await readdir(sandboxesDir)).toEqual([]);
+  });
+
+  it("10.9 git status shows no change in examples/pricing outside .trickortest", () => {
+    const outside = (text: string): string[] =>
+      text.split("\n").filter((line) => line !== "" && !line.includes(".trickortest/"));
+    expect(outside(gitStatusAfter)).toEqual(outside(gitStatusBefore));
+  });
+
+  it("10.11 no string in the report, verdict or history holds an absolute path", () => {
+    const history = historyAfterSecond
+      .split("\n")
+      .filter((line) => line !== "")
+      .map((line) => JSON.parse(line) as unknown);
+    const strings = [...collectStrings(report), ...collectStrings(verdict)];
+    for (const record of history) strings.push(...collectStrings(record));
+    expect(strings.length).toBeGreaterThan(0);
+    const offending = strings.filter((s) => containsAbsolutePath(s));
+    expect(offending).toEqual([]);
+  });
+
+  it("10.11 .trickortest/stryker-tmp is not larger after the second run than after the first", () => {
+    expect(strykerTmpSizeAfterSecond).toBeLessThanOrEqual(strykerTmpSizeAfterFirst);
   });
 
   it("10.10 all 24 spec mutants are present and valid", () => {

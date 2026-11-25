@@ -62,6 +62,7 @@ Workspaces add their own scripts (for example `attack`, `measure`, `dev`) when t
 - **No secrets and no telemetry.** `.kiro/settings/mcp.json` holds no credentials.
 - **Dependencies.** Add one only when it removes real work, pin the exact version, and say why in the commit body. Ask before adding a runtime dependency to the viewer.
 - **Edit files with the file tools.** Create and change files with the file editing tools, never through shell commands (`cat > file`, heredocs, `sed -i`, `python -c`, `tee`). Shell edits skip review and the hooks that guard sealed tests, so they are denied. Use the shell only to run commands such as tests and checks.
+- **Scratch files stay inside the repository.** Probes, throwaway projects and captured output go under `.trickortest/` (git ignores it), never outside the repository, and are removed when the work is done. Writes outside the repository cannot be reviewed and are denied.
 
 ## Do not use
 
