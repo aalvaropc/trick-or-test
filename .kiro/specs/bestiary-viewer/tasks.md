@@ -94,7 +94,7 @@ Conventions for every task:
     - _Requirements: 2.6_
     - _Validation: `npm test -w trick-or-test-viewer -- test/fixtures/fixtures.test.ts` passes_
 
-  - [ ] 3.2 Implement `loader/recognise.ts`
+  - [x] 3.2 Implement `loader/recognise.ts`
     - Add the shared types in `src/loader/types.ts` (`Result`, `LoadError` with `fileName`, `message`, optional `line`, `fieldPaths`, `truncatedCount`, and `FileKind`). Implement `recognise(text)` with the precedence from the design: a whole-document Mutation_Report or Verdict_File first, then JSON Lines history (at least one non-empty line validates with `historyRecordSchema`, blank lines ignored, LF or CRLF, trailing newline allowed), then invalid JSON or empty.
     - Recognise by content, never by file name. A Plain_Stryker_Report and a Trick or Test report both give `mutation-report`.
     - Example tests in `test/loader/recognise.test.ts`: single-line report is not history (1.6), blank lines, CRLF and trailing newline (1.12), zero-byte and whitespace-only files give the empty error (1.14), invalid JSON (1.7).
