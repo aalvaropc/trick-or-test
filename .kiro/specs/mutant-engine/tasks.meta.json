@@ -854,6 +854,18 @@
         "chatSessionId": "sess_59374eaf-7ee6-4130-8c8a-8f92cc49a92f",
         "timestamp": 1795629412108
       }
+    ],
+    "3.46 Add the JSON Lines functions for `history.jsonl`": [
+      {
+        "executionId": "8ece5f47-e653-4181-a30d-3408b075f80f",
+        "chatSessionId": "sess_8a7c3b7c-1c80-4190-a34c-f8131db2771a",
+        "timestamp": 1795629681615
+      },
+      {
+        "executionId": "8ece5f47-e653-4181-a30d-3408b075f80f",
+        "chatSessionId": "sess_8a7c3b7c-1c80-4190-a34c-f8131db2771a",
+        "timestamp": 1795629762415
+      }
     ]
   }
 }

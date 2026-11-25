@@ -2,6 +2,7 @@
 // It must stay free of `node:` imports (Requirement 10.4) and must not reach core/mutant-id.ts (Requirement 10.1).
 
 export type {
+  HistoryError,
   MutationTestingReport,
   ReportFile,
   ReportLocation,
@@ -16,10 +17,12 @@ export {
   mutantResultSchema,
   mutantStatusSchema,
   mutationReportSchema,
+  parseHistoryLines,
   reportFileSchema,
   reportMutantSchema,
   reportStatusSchema,
   runMetadataSchema,
+  serializeHistoryRecord,
   speciesSchema,
   verdictSchema,
   witnessSchema,

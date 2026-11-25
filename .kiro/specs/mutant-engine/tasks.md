@@ -321,7 +321,7 @@ Conventions used in every task:
     - _Requirements: 8.15_
     - _Validation: npx vitest run --project engine packages/engine/test/core/report.dedup.property.test.ts passes_
 
-  - [ ] 3.46 Add the JSON Lines functions for `history.jsonl`
+  - [x] 3.46 Add the JSON Lines functions for `history.jsonl`
     - Note: task 3.29 built `appendHistory(records, record)` over an in-memory list. This task adds the file format. `history.jsonl` is JSON Lines, one HistoryRecord per line, with no JSON array and no pretty-printing.
     - In `core/report.ts` implement `serializeHistoryRecord(record): string` (a single-line JSON object with no embedded newline, validated with the zod schema first) and `parseHistoryLines(text): Result<HistoryRecord[], HistoryError>` (parses each non-empty line as one complete JSON object, in order, and returns an error that names the line number for a malformed or schema-invalid line).
     - Export both functions and the HistoryRecord schema from `src/report/index.ts` so the viewer reads exactly this format through `trick-or-test/report`.
