@@ -11,6 +11,15 @@ export type LoadError = {
   truncatedCount?: number;
 };
 
+/** The parsed files of one run, joined by mutant id. `verdict` keeps only entries the report contains. */
+export type RawRun = {
+  report: MutationTestingReport;
+  verdict: Verdict | undefined;
+  /** Ordered by `time` ascending, file order for equal `time`. */
+  history: HistoryRecord[];
+  ignoredVerdictEntryCount: number;
+};
+
 export type FileKind = "mutation-report" | "verdict" | "history" | "unknown";
 
 /** A file that passed its schema. `history` holds records in file order. */

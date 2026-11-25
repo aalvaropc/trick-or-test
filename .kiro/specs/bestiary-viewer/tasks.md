@@ -113,7 +113,7 @@ Conventions for every task:
     - _Requirements: 1.6, 1.7, 1.8, 1.9, 1.12, 1.13, 1.14_
     - _Validation: `npm test -w trick-or-test-viewer -- test/loader/loader.never-throws.property.test.ts` passes_
 
-  - [ ] 3.5 Implement `loader/join-run.ts`
+  - [x] 3.5 Implement `loader/join-run.ts`
     - Implement `joinRun(files)` returning `Result<RawRun, LoadError>`: build the RawRun from a Mutation_Report, join Verdict_File mutants by mutant id, keep a Plain_Stryker_Report as a RawRun without Criterion data, order history records by `time` ascending and keep file order for equal `time`, and count Verdict_File entries with no matching report mutant. Return the "a Mutation_Report is required" error when no report is present. Never mutate the parsed inputs.
     - Example tests in `test/loader/join-run.test.ts` named by criterion: join by id (1.3), plain report (1.5), equal `time` order (1.4), ignored entry count (1.10), no report error (1.9), valid report displays as a RawRun (1.2).
     - _Requirements: 1.2, 1.3, 1.4, 1.5, 1.9, 1.10_
