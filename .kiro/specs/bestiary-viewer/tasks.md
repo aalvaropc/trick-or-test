@@ -272,7 +272,7 @@ Conventions for every task:
     - _Requirements: 9.3, 9.4, 9.5, 9.12, 9.13_
     - _Validation: `npm test -w trick-or-test-viewer -- test/plain-view/sort.permutation.property.test.ts` passes_
 
-  - [ ] 5.4 Write property test for conserved counts
+  - [x] 5.4 Write property test for conserved counts
     - **Property V6: Counts are conserved**
     - File: `test/bestiary/counts.property.test.ts`. For any valid RunModel built from generated reports and verdicts, `buildRows` has one row per Mutant, and for every `CreatureState` the number of rows in that state equals the count in the headline and legend from `counts.ts`. The four Kill_Class counts sum to the killed Mutants that have a class, and the number of seals equals the coverage list length.
     - _Requirements: 4.11, 6.1, 6.15, 6.16, 9.2, 9.8_

@@ -481,6 +481,20 @@
         "chatSessionId": "sess_b65791dc-4ec9-4222-a488-1153a34b1119",
         "timestamp": 1795635544682
       }
+    ],
+    "5.3 Write property test for sorting being a permutation": [
+      {
+        "executionId": "c9928070-8874-4c44-9632-d2269354a83d",
+        "chatSessionId": "sess_33712189-4767-43bd-a005-dc7eaafea429",
+        "timestamp": 1795635654038
+      }
+    ],
+    "5.4 Write property test for conserved counts": [
+      {
+        "executionId": "04bac78d-ba0f-4ffd-a83e-492cd4696aae",
+        "chatSessionId": "sess_75025adb-ecd3-4a81-9971-08f71514d28d",
+        "timestamp": 1795635785723
+      }
     ]
   }
 }
