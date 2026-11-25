@@ -49,7 +49,7 @@ Conventions for every task:
     - _Requirements: 12.1, 12.3, 12.7_
     - _Validation: `npm run typecheck` passes_
 
-  - [ ] 1.3 Add the Vitest project and the shared fast-check configuration
+  - [x] 1.3 Add the Vitest project and the shared fast-check configuration
     - Create `apps/viewer/vitest.config.ts` with `test.name: "viewer"`, `environment: "jsdom"`, `setupFiles: ["test/setup.ts"]`, `include: ["test/**/*.test.{ts,tsx}"]`, and exclude `test/fixtures/**`.
     - Create `apps/viewer/test/setup.ts` calling `fc.configureGlobal({ seed: 20261116, numRuns: 100 })` once (the same constants as `packages/engine/test/setup.ts`). No test passes its own seed to `fc.assert`.
     - Add a `test` script with `vitest run` (the engine-first prefix is added in 1.4).
