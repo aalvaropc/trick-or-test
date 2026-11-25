@@ -315,7 +315,7 @@ Conventions used in every task:
     - _Requirements: 8.15_
     - _Validation: npx vitest run --project engine packages/engine/test/core/report.test.ts passes_
 
-  - [ ] 3.45 Generate Spec_Mutants without twins in Property 15
+  - [x] 3.45 Generate Spec_Mutants without twins in Property 15
     - In `test/core/report.dedup.property.test.ts` generate Spec_Mutants with a mechanical twin and Spec_Mutants without one, plus Mechanical_Mutants that differ from a Spec_Mutant only in the span end, the span start, the file or the replacement. Check that a Spec_Mutant without a twin is always kept and that a differing Mechanical_Mutant is always kept.
     - **Validates: Requirements 8.15**
     - _Requirements: 8.15_

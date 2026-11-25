@@ -43,7 +43,115 @@ const pairArb = fc.record({
   requirement: fc.constantFrom("1.1", "2.3", "8.15").map((s) => s as CriterionId),
 });
 
+const FILES = ["src/a.ts", "src/b.ts", "src/c.ts"];
+
+type Change = {
+  file: string;
+  location: { start: { line: number; column: number }; end: { line: number; column: number } };
+  replacement: string;
+};
+
+const changeKey = (c: Change): string =>
+  JSON.stringify([c.file, c.location.start, c.location.end, c.replacement]);
+
+const VARIATIONS = ["end", "start", "file", "replacement"] as const;
+
+function vary(c: Change, how: (typeof VARIATIONS)[number]): Change {
+  switch (how) {
+    case "end":
+      return {
+        ...c,
+        location: { ...c.location, end: { ...c.location.end, column: c.location.end.column + 1 } },
+      };
+    case "start":
+      return {
+        ...c,
+        location: {
+          ...c.location,
+          start: { ...c.location.start, column: c.location.start.column + 100 },
+        },
+      };
+    case "file":
+      return { ...c, file: FILES[(FILES.indexOf(c.file) + 1) % FILES.length] as string };
+    case "replacement":
+      return { ...c, replacement: `${c.replacement}x` };
+  }
+}
+
+const mixedArb = fc.array(
+  fc.record({
+    change: changeArb,
+    hasTwin: fc.boolean(),
+    variation: fc.option(fc.constantFrom(...VARIATIONS), { nil: undefined }),
+    specStatus: fc.constantFrom(...STATUSES),
+    mechStatus: fc.constantFrom(...STATUSES),
+  }),
+  { maxLength: 10 },
+);
+
 describe("Property 15: One creature per change", () => {
+  it("8.15 a Spec_Mutant without a twin is always kept and a Mechanical_Mutant differing in file, span start, span end or replacement is always kept", () => {
+    fc.assert(
+      fc.property(mixedArb, (items) => {
+        const specKeys = new Set<string>();
+        const unique = items.filter((p) => {
+          const key = changeKey(p.change);
+          if (specKeys.has(key)) return false;
+          specKeys.add(key);
+          return true;
+        });
+
+        const spec: SpecReportMutantInput[] = unique.map((p, i) => ({
+          ...p.change,
+          id: `oath-1.1-s${i}` as MutantId,
+          status: p.specStatus,
+          requirement: "1.1" as CriterionId,
+        }));
+        const mechanical: ReportMutantInput[] = [];
+        const mechKeys = new Set<string>();
+        const keptMechIds: string[] = [];
+        for (const [i, p] of unique.entries()) {
+          if (p.hasTwin) {
+            mechanical.push({
+              ...p.change,
+              id: `mech-twin-${i}` as MutantId,
+              status: p.mechStatus,
+            });
+          }
+          if (p.variation !== undefined) {
+            const changed = vary(p.change, p.variation);
+            const key = changeKey(changed);
+            if (
+              specKeys.has(key) ||
+              mechKeys.has(key) ||
+              (p.hasTwin && key === changeKey(p.change))
+            )
+              continue;
+            mechKeys.add(key);
+            const id = `mech-diff-${i}`;
+            keptMechIds.push(id);
+            mechanical.push({ ...changed, id: id as MutantId, status: p.mechStatus });
+          }
+        }
+        const files = Object.fromEntries(
+          FILES.map((f) => [f, { language: "typescript", source: "" }]),
+        );
+
+        const report = buildMutationReport({ files, mechanical, spec });
+        const ids = new Set(
+          Object.values(report.files).flatMap((f) => f.mutants.map((m) => m.id as string)),
+        );
+
+        for (const [i] of unique.entries()) expect(ids.has(`oath-1.1-s${i}`)).toBe(true);
+        for (const id of keptMechIds) expect(ids.has(id)).toBe(true);
+        for (const [i, p] of unique.entries()) {
+          if (p.hasTwin) expect(ids.has(`mech-twin-${i}`)).toBe(false);
+        }
+        expect(ids.size).toBe(unique.length + keptMechIds.length);
+      }),
+    );
+  });
+
   it("8.15 a Spec_Mutant and a Mechanical_Mutant making the same change yield exactly one mutant: the Spec_Mutant", () => {
     fc.assert(
       fc.property(fc.array(pairArb, { maxLength: 10 }), (pairs) => {
