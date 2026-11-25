@@ -12,6 +12,7 @@ const input = (mutants: MutantResult[]): VerdictInput => ({
   mutants,
   witnesses: {},
   ignoreStaticRetried: false,
+  projectRoot: "/proj",
   metadata: {
     gitCommit: "abc123",
     seed: 42,

@@ -207,11 +207,13 @@ describe("Property 6: Deterministic ids", () => {
     fc.assert(
       fc.property(withPermutation(reportMechanical), withPermutation(reportSpec), (mech, specs) => {
         const original = buildMutationReport({
+          projectRoot: "/proj",
           files: reportFiles,
           mechanical: mech.list,
           spec: specs.list,
         });
         const shuffled = buildMutationReport({
+          projectRoot: "/proj",
           files: reportFiles,
           mechanical: mech.shuffled,
           spec: specs.shuffled,

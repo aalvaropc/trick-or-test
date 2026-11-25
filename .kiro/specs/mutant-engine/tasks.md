@@ -668,7 +668,7 @@ Conventions used in every task:
     - _Requirements: 8.17_
     - _Validation: npx vitest run --project engine packages/engine/test/core/paths.test.ts passes_
 
-  - [ ] 12.26 Relativize every path in the report builders
+  - [x] 12.26 Relativize every path in the report builders
     - In `core/report.ts` give each builder the `projectRoot` as data, relativize every path and scrub every free-text field (mutant descriptions, `statusReason`, error text, NotApplicable read errors, NoOutcome messages, configuration paths) through `core/paths.ts` before the field is created.
     - Add examples to `test/core/report.test.ts`, `test/core/verdict.test.ts` and `test/core/history.test.ts`: an absolute path inside a message becomes the relative path, a path outside the root becomes `<outside-project>/<basename>`, a config path under the root is relative, and `containsAbsolutePath` is false for every string in each output.
     - _Requirements: 8.17_

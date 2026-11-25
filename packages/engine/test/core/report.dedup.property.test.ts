@@ -137,7 +137,7 @@ describe("Property 15: One creature per change", () => {
           FILES.map((f) => [f, { language: "typescript", source: "" }]),
         );
 
-        const report = buildMutationReport({ files, mechanical, spec });
+        const report = buildMutationReport({ files, mechanical, spec, projectRoot: "/proj" });
         const ids = new Set(
           Object.values(report.files).flatMap((f) => f.mutants.map((m) => m.id as string)),
         );
@@ -181,7 +181,7 @@ describe("Property 15: One creature per change", () => {
           ]),
         );
 
-        const report = buildMutationReport({ files, mechanical, spec });
+        const report = buildMutationReport({ files, mechanical, spec, projectRoot: "/proj" });
         const all = Object.values(report.files).flatMap((f) => f.mutants);
 
         expect(all).toHaveLength(unique.length);

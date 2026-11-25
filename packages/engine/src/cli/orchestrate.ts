@@ -827,6 +827,7 @@ export async function writeReports(
     witnesses,
     ignoreStaticRetried: input.ignoreStaticRetried,
     metadata: input.metadata,
+    projectRoot: options.project,
   });
   if (!verdict.ok) return err({ kind: "build-error", message: verdict.error });
 
@@ -879,6 +880,7 @@ export async function writeReports(
     mechanical,
     spec,
     ignoreStaticRetried: input.ignoreStaticRetried,
+    projectRoot: options.project,
   });
 
   // History: read first, so a corrupt file stops the run before any write.
@@ -910,6 +912,7 @@ export async function writeReports(
     verdict.value,
     previousRecord,
     configAsWritten(config, options.project),
+    options.project,
   );
   if (!record.ok) return err({ kind: "build-error", message: record.error });
   let line: string;

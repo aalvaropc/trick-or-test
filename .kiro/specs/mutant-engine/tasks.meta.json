@@ -1223,6 +1223,13 @@
         "chatSessionId": "sess_d4b0fc0e-a73b-4847-a9e4-bc033d509d30",
         "timestamp": 1795642409863
       }
+    ],
+    "12.25 Add `core/paths.ts`": [
+      {
+        "executionId": "c9c96f31-70b7-4044-b253-8679cbaf504f",
+        "chatSessionId": "sess_beda6860-ddb0-4c04-ba69-71a01dafd4c8",
+        "timestamp": 1795642571832
+      }
     ]
   }
 }

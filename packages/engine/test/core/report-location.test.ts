@@ -17,6 +17,7 @@ const build = (
 ) =>
   Object.values(
     buildMutationReport({
+      projectRoot: "/proj",
       files: { "src/a.ts": { language: "typescript", source: "a" } },
       mechanical,
       spec,

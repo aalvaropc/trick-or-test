@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { containsAbsolutePath } from "../../src/core/paths.js";
 import { buildVerdict, serializeVerdict, type VerdictInput } from "../../src/core/report.js";
 import type { CriterionId, MutantId, TestId, Verdict } from "../../src/core/types.js";
 
@@ -32,6 +33,7 @@ const base = (): VerdictInput => ({
     [mid("oath-1.1")]: { from: "src/a.ts", export: "f", args: [1], expected: 2 },
   },
   ignoreStaticRetried: false,
+  projectRoot: "/proj",
   metadata: {
     gitCommit: "abc123",
     seed: 42,
@@ -141,5 +143,69 @@ describe("serializeVerdict", () => {
     expect(serializeVerdict(reordered)).toBe(text);
     expect(text.startsWith('{\n  "coverage": [')).toBe(true);
     expect(text.endsWith("}\n")).toBe(true);
+  });
+});
+
+const stringsIn = (value: unknown): string[] => {
+  if (typeof value === "string") return [value];
+  if (Array.isArray(value)) return value.flatMap(stringsIn);
+  if (value !== null && typeof value === "object") {
+    return Object.entries(value).flatMap(([k, v]) => [k, ...stringsIn(v)]);
+  }
+  return [];
+};
+
+describe("buildVerdict, paths (8.17)", () => {
+  const pathInput = (): VerdictInput => ({
+    ...base(),
+    coverage: [
+      { criterion: cid("1.2"), status: "skipped", reason: "covered by /proj/docs/manual.md" },
+    ],
+    mutants: [
+      {
+        id: mid("oath-1.1"),
+        species: "Oathbreaker",
+        status: "Killed",
+        requirement: cid("1.1"),
+        killingTests: [tid("/proj/test/a.test.ts > adds")],
+      },
+      {
+        id: mid("oath-1.4"),
+        species: "Oathbreaker",
+        status: "InvalidWitness",
+        requirement: cid("1.4"),
+        killingTests: [],
+        invalidWitness: {
+          expected: { expected: 1 },
+          originalOutcome: { kind: "no-outcome", message: "cannot read /opt/cache/out.json" },
+        },
+      },
+    ],
+    witnesses: {
+      [mid("oath-1.1")]: { from: "/proj/src/a.ts", export: "f", args: [1], expected: 2 },
+    },
+  });
+  const built = buildVerdict(pathInput());
+  const v = built.ok ? built.value : undefined;
+
+  it("8.17 an absolute path inside a skip reason becomes the relative path", () => {
+    expect(v?.coverage[0]?.reason).toBe("covered by docs/manual.md");
+  });
+
+  it("8.17 a NoOutcome message path outside the root becomes <outside-project>/<basename>", () => {
+    expect(v?.mutants[1]?.invalidWitness?.originalOutcome).toEqual({
+      kind: "no-outcome",
+      message: "cannot read <outside-project>/out.json",
+    });
+  });
+
+  it("8.17 killing test ids and witness sources lose the root prefix", () => {
+    expect(v?.mutants[0]?.killingTests).toEqual(["test/a.test.ts > adds"]);
+    expect(v?.witnesses[mid("oath-1.1")]?.from).toBe("src/a.ts");
+  });
+
+  it("8.17 no string in the verdict contains an absolute path", () => {
+    expect(built.ok).toBe(true);
+    expect(stringsIn(v).filter(containsAbsolutePath)).toEqual([]);
   });
 });

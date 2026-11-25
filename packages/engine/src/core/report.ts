@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { relativizePath, scrubAbsolutePaths } from "./paths.js";
 import { err, ok, type Result } from "./result.js";
 import type {
   CoverageStatus,
@@ -6,6 +7,7 @@ import type {
   CriterionId,
   EngineConfig,
   HistoryRecord,
+  InvalidWitnessRecord,
   MutantId,
   MutantResult,
   MutantStatus,
@@ -15,6 +17,7 @@ import type {
   Verdict,
   Witness,
 } from "./types.js";
+import type { WitnessOutcome } from "./witness-compare.js";
 
 // ---------------------------------------------------------------------------
 // Zod schemas (Requirement 8.10 validates the Verdict and history records with these).
@@ -209,28 +212,63 @@ export type VerdictInput = {
   witnesses: Record<MutantId, Witness>;
   ignoreStaticRetried: boolean;
   metadata: RunMetadata;
+  /** Root of the Target_Project, as data. Every path and free-text field is made relative to it (8.17). */
+  projectRoot: string;
+};
+
+const scrubTestId = (id: TestId, root: string): TestId => scrubAbsolutePaths(id, root) as TestId;
+
+const scrubInvalidWitness = (record: InvalidWitnessRecord, root: string): InvalidWitnessRecord => {
+  const expected =
+    "expectedError" in record.expected
+      ? { expectedError: scrubAbsolutePaths(record.expected.expectedError, root) }
+      : record.expected;
+  const o = record.originalOutcome;
+  const originalOutcome: WitnessOutcome =
+    o.kind === "timeout" || o.kind === "no-outcome"
+      ? { kind: o.kind, message: scrubAbsolutePaths(o.message, root) }
+      : o.kind === "error"
+        ? { kind: "error", className: scrubAbsolutePaths(o.className, root) }
+        : o;
+  return { expected, originalOutcome };
+};
+
+const scrubWitness = (w: Witness, root: string): Witness => {
+  const from = relativizePath(root, w.from);
+  return "expectedError" in w
+    ? { ...w, from, expectedError: scrubAbsolutePaths(w.expectedError, root) }
+    : { ...w, from };
 };
 
 /**
- * Builds the Verdict (8.5, 8.6, 8.13). A kill class is kept only on Killed mutants, and a Killed
- * mutant without one is marked "unattributed". The timestamp comes from the input, so the output
- * is a pure function of it. Validates with the zod schema (8.10) and returns an error message
- * instead of throwing.
+ * Builds the Verdict (8.5, 8.6, 8.13, 8.17). A kill class is kept only on Killed mutants, and a
+ * Killed mutant without one is marked "unattributed". The timestamp comes from the input, so the
+ * output is a pure function of it. Paths and free text (skip reasons, test ids, error text,
+ * NoOutcome messages, witness sources) go through `paths.ts`, so no absolute path is emitted.
+ * Validates with the zod schema (8.10) and returns an error message instead of throwing.
  */
 export const buildVerdict = (input: VerdictInput): Result<Verdict, string> => {
+  const root = input.projectRoot;
   const mutants = input.mutants.map((m): MutantResult => {
     const { killClass, invalidWitness, ...rest } = m;
+    const killingTests = m.killingTests.map((t) => scrubTestId(t, root));
     const withInvalid: Partial<MutantResult> =
-      m.status === "InvalidWitness" && invalidWitness !== undefined ? { invalidWitness } : {};
+      m.status === "InvalidWitness" && invalidWitness !== undefined
+        ? { invalidWitness: scrubInvalidWitness(invalidWitness, root) }
+        : {};
     if (m.status !== "Killed") {
-      return { ...rest, ...withInvalid, killingTests: [...m.killingTests] };
+      return { ...rest, ...withInvalid, killingTests };
     }
-    return { ...rest, killingTests: [...m.killingTests], killClass: killClass ?? "unattributed" };
+    return { ...rest, killingTests, killClass: killClass ?? "unattributed" };
   });
   const candidate: Verdict = {
-    coverage: input.coverage.map((c) => ({ ...c })),
+    coverage: input.coverage.map((c) =>
+      c.reason === undefined ? { ...c } : { ...c, reason: scrubAbsolutePaths(c.reason, root) },
+    ),
     mutants,
-    witnesses: { ...input.witnesses },
+    witnesses: Object.fromEntries(
+      Object.entries(input.witnesses).map(([id, w]) => [id, scrubWitness(w, root)]),
+    ) as Record<MutantId, Witness>,
     ignoreStaticRetried: input.ignoreStaticRetried,
     metadata: { ...input.metadata },
   };
@@ -290,6 +328,8 @@ export type ReportInput = {
   thresholds?: { high: number; low: number };
   /** Whether StrykerJS ran again with `ignoreStatic` (Requirement 3.5). Defaults to false. */
   ignoreStaticRetried?: boolean;
+  /** Root of the Target_Project, as data. Every path and free-text field is made relative to it (8.17). */
+  projectRoot: string;
 };
 
 export const REPORT_SCHEMA_VERSION = "2";
@@ -327,18 +367,20 @@ const changeKey = (m: ReportMutantInput): string =>
 const toReportMutant = (
   m: ReportMutantInput,
   extra: { species?: Species; requirement?: CriterionId },
+  root: string,
 ): ReportMutant => {
   const mapped = mapStatus(m.status);
+  const scrub = (s: string): string => scrubAbsolutePaths(s, root);
   return {
     id: m.id,
-    mutatorName: m.mutatorName ?? extra.species ?? "Mechanical",
+    mutatorName: scrub(m.mutatorName ?? extra.species ?? "Mechanical"),
     location: m.location,
     status: mapped.status,
     replacement: m.replacement,
-    ...(m.description === undefined ? {} : { description: m.description }),
-    ...(mapped.statusReason === undefined ? {} : { statusReason: mapped.statusReason }),
-    ...(m.killedBy === undefined ? {} : { killedBy: [...m.killedBy] }),
-    ...(m.coveredBy === undefined ? {} : { coveredBy: [...m.coveredBy] }),
+    ...(m.description === undefined ? {} : { description: scrub(m.description) }),
+    ...(mapped.statusReason === undefined ? {} : { statusReason: scrub(mapped.statusReason) }),
+    ...(m.killedBy === undefined ? {} : { killedBy: m.killedBy.map(scrub) }),
+    ...(m.coveredBy === undefined ? {} : { coveredBy: m.coveredBy.map(scrub) }),
     ...(m.durationMs === undefined ? {} : { duration: m.durationMs }),
     ...(extra.species === undefined ? {} : { species: extra.species }),
     ...(extra.requirement === undefined ? {} : { requirement: extra.requirement }),
@@ -357,24 +399,29 @@ const compareMutants = (a: ReportMutant, b: ReportMutant): number =>
  * replacement and not by id (8.15). Output order is deterministic. Pure.
  */
 export const buildMutationReport = (input: ReportInput): MutationTestingReport => {
-  const specKeys = new Set(input.spec.map(changeKey));
+  const root = input.projectRoot;
+  const rel = (file: string): string => relativizePath(root, file);
+  const mechanical = input.mechanical.map((m) => ({ ...m, file: rel(m.file) }));
+  const spec = input.spec.map((m) => ({ ...m, file: rel(m.file) }));
+  const inputFiles = new Map(Object.entries(input.files).map(([p, meta]) => [rel(p), meta]));
+  const specKeys = new Set(spec.map(changeKey));
   const perFile = new Map<string, ReportMutant[]>();
   const push = (file: string, m: ReportMutant): void => {
     const list = perFile.get(file);
     if (list === undefined) perFile.set(file, [m]);
     else list.push(m);
   };
-  for (const m of input.mechanical) {
+  for (const m of mechanical) {
     if (specKeys.has(changeKey(m))) continue;
-    push(m.file, toReportMutant(m, {}));
+    push(m.file, toReportMutant(m, {}, root));
   }
-  for (const m of input.spec) {
-    push(m.file, toReportMutant(m, { species: OATHBREAKER, requirement: m.requirement }));
+  for (const m of spec) {
+    push(m.file, toReportMutant(m, { species: OATHBREAKER, requirement: m.requirement }, root));
   }
-  const paths = [...new Set([...Object.keys(input.files), ...perFile.keys()])].sort();
+  const paths = [...new Set([...inputFiles.keys(), ...perFile.keys()])].sort();
   const files: Record<string, ReportFile> = {};
   for (const path of paths) {
-    const meta = input.files[path] ?? { language: "typescript", source: "" };
+    const meta = inputFiles.get(path) ?? { language: "typescript", source: "" };
     files[path] = {
       language: meta.language,
       source: meta.source,
@@ -408,13 +455,25 @@ const COVERAGE_STATUSES: CoverageStatus[] = ["guarded", "unguarded", "unattacked
  * Builds the history record of a run (8.8, 8.9). Time, commit and seed come from the Verdict
  * metadata, so the output is a pure function of the inputs. `newlyKilledIds` lists the Killed
  * mutants that the previous record did not list as Killed. Validates with the zod schema (8.10)
- * and returns an error message instead of throwing.
+ * and returns an error message instead of throwing. Config paths are made relative to
+ * `projectRoot` (8.17).
  */
 export const buildHistoryRecord = (
   verdict: Verdict,
   previousRecord: HistoryRecord | undefined,
   config: EngineConfig,
+  projectRoot: string,
 ): Result<HistoryRecord, string> => {
+  const rel = (p: string): string => relativizePath(projectRoot, p);
+  const relConfig: EngineConfig = {
+    specDir: rel(config.specDir),
+    sourceGlobs: config.sourceGlobs.map(rel),
+    testGlobs: config.testGlobs.map(rel),
+    propertyTestGlobs: config.propertyTestGlobs.map(rel),
+    mutantsDir: rel(config.mutantsDir),
+    outputDir: rel(config.outputDir),
+    ...(config.timeoutMs === undefined ? {} : { timeoutMs: config.timeoutMs }),
+  };
   const statusCounts = Object.fromEntries(MUTANT_STATUSES.map((s) => [s, 0])) as Record<
     MutantStatus,
     number
@@ -432,7 +491,7 @@ export const buildHistoryRecord = (
     time: verdict.metadata.timestamp,
     gitCommit: verdict.metadata.gitCommit,
     seed: verdict.metadata.seed,
-    config: { ...config },
+    config: relConfig,
     mutants: verdict.mutants.map((m) => ({ id: m.id, status: m.status })),
     statusCounts,
     coverageCounts,
