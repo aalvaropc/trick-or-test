@@ -776,7 +776,7 @@ Conventions used in every task:
     - _Requirements: 3.19_
     - _Validation: npx vitest run --project engine packages/engine/test/adapters/stryker-adapter.test.ts passes_
 
-  - [ ] 12.44 Remove leftover Sandboxes in `sandbox.ts`
+  - [x] 12.44 Remove leftover Sandboxes in `sandbox.ts`
     - In `adapters/sandbox.ts` add `removeLeftoverSandboxes(projectRoot)` that removes every entry under `.trickortest/sandboxes` and returns the number removed. A missing directory is not an error.
     - Add examples to `test/adapters/sandbox.test.ts`: two leftover Sandboxes are removed, a missing directory returns zero, files outside `.trickortest/sandboxes` are untouched.
     - _Requirements: 5.20_

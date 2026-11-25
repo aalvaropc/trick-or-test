@@ -13,7 +13,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { createFileSystem, type FileSystem } from "../../src/adapters/file-system-adapter.js";
-import { Sandbox, withSandbox } from "../../src/adapters/sandbox.js";
+import { removeLeftoverSandboxes, Sandbox, withSandbox } from "../../src/adapters/sandbox.js";
 
 let project: string;
 
@@ -162,5 +162,31 @@ describe("Sandbox output directory", () => {
     expect(await readFile(join(created.value.root, "src", "reports", "f.txt"), "utf8")).toBe(
       "nested",
     );
+  });
+});
+
+describe("removeLeftoverSandboxes", () => {
+  it("5.20 removes two leftover Sandboxes and returns 2", async () => {
+    for (const id of ["a", "b"]) {
+      await mkdir(join(project, ".trickortest", "sandboxes", id, "src"), { recursive: true });
+      await writeFile(join(project, ".trickortest", "sandboxes", id, "src", "f.txt"), id);
+    }
+    expect(await removeLeftoverSandboxes(project)).toBe(2);
+    expect(await readdir(join(project, ".trickortest", "sandboxes"))).toEqual([]);
+  });
+
+  it("5.20 returns 0 when .trickortest/sandboxes does not exist", async () => {
+    expect(await removeLeftoverSandboxes(project)).toBe(0);
+  });
+
+  it("5.20 leaves files outside .trickortest/sandboxes untouched", async () => {
+    await mkdir(join(project, ".trickortest", "sandboxes", "a"), { recursive: true });
+    await writeFile(join(project, ".trickortest", "sandboxes", "a", "f.txt"), "a");
+    expect(await removeLeftoverSandboxes(project)).toBe(1);
+    expect(await readFile(join(project, ".trickortest", "old", "f.txt"), "utf8")).toBe(
+      ".trickortest/old",
+    );
+    expect(await readFile(join(project, "src", "f.txt"), "utf8")).toBe("src");
+    expect(await present(join(project, "package.json"))).toBe(true);
   });
 });

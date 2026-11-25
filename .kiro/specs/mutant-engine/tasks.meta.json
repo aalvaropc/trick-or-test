@@ -1367,6 +1367,13 @@
         "chatSessionId": "sess_e949519c-2cad-445c-8e39-444aca9446b3",
         "timestamp": 1795645670933
       }
+    ],
+    "12.43 Remove the StrykerJS temporary directory after every run": [
+      {
+        "executionId": "e5313de5-fd8d-4c21-ae71-3182032fe37b",
+        "chatSessionId": "sess_d1d27ca2-33c4-48d5-9b7c-d16fff5c7069",
+        "timestamp": 1795645859269
+      }
     ]
   }
 }

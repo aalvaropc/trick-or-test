@@ -1,3 +1,4 @@
+import { readdir } from "node:fs/promises";
 import { join } from "node:path";
 import { err, ok, type Result } from "../core/result.js";
 import { type PathEscapeError, planSandboxCopy, resolveInside } from "../core/sandbox-plan.js";
@@ -104,6 +105,30 @@ export const Sandbox = {
     const fs = options.fs ?? createFileSystem();
     return fs.removeDir(handle.root);
   },
+};
+
+/**
+ * Removes every entry under `.trickortest/sandboxes` left behind by an interrupted run and returns
+ * how many were removed. A missing directory is not an error (Requirement 5.20).
+ */
+export const removeLeftoverSandboxes = async (
+  projectRoot: string,
+  options: SandboxOptions = {},
+): Promise<number> => {
+  const fs = options.fs ?? createFileSystem();
+  const dir = join(projectRoot, WORK_DIR, "sandboxes");
+  let names: string[];
+  try {
+    names = await readdir(dir);
+  } catch {
+    return 0;
+  }
+  let removed = 0;
+  for (const name of names) {
+    const done = await fs.removeDir(join(dir, name));
+    if (done.ok) removed += 1;
+  }
+  return removed;
 };
 
 /** Creates a sandbox, runs `fn`, and always destroys the sandbox afterwards. */
