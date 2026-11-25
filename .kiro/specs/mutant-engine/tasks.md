@@ -56,7 +56,7 @@ Conventions used in every task:
     - _Requirements: 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7_
     - _Validation: npx vitest run --project engine packages/engine/test/core/config.test.ts passes_
 
-  - [ ] 3.3 Implement `requirements.ts` (Requirements_Parser) with example tests
+  - [x] 3.3 Implement `requirements.ts` (Requirements_Parser) with example tests
     - Implement `parseRequirements(text, filePath)` as a line-oriented scan that returns `Criterion[]` in document order, with id `<requirement>.<criterion>`, text and 1-based line.
     - Return errors for a duplicate id (file, id, both lines), an item outside any `### Requirement N:` heading (file, line) and a document with no criterion (file).
     - Write `test/core/requirements.test.ts`, including a parse of the fixed fixture `.kiro/specs/cart-pricing/requirements.md` that expects its known requirement and criterion counts and ids.
