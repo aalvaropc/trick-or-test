@@ -1374,6 +1374,13 @@
         "chatSessionId": "sess_d1d27ca2-33c4-48d5-9b7c-d16fff5c7069",
         "timestamp": 1795645859269
       }
+    ],
+    "12.44 Remove leftover Sandboxes in `sandbox.ts`": [
+      {
+        "executionId": "85ee2c43-90da-404c-90e0-6752a65ca01a",
+        "chatSessionId": "sess_19fd2a9f-12af-4dad-82f3-2c4489ee1145",
+        "timestamp": 1795645999730
+      }
     ]
   }
 }

@@ -5,7 +5,7 @@ import { dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createFileSystem } from "../adapters/file-system-adapter.js";
 import { Git } from "../adapters/git-adapter.js";
-import { Sandbox } from "../adapters/sandbox.js";
+import { removeLeftoverSandboxes, Sandbox } from "../adapters/sandbox.js";
 import { MechanicalRunner } from "../adapters/stryker-adapter.js";
 import { Typecheck } from "../adapters/typecheck-adapter.js";
 import { SuiteRunner } from "../adapters/vitest-suite-runner.js";
@@ -45,6 +45,8 @@ export interface CliDeps {
   /** Sandboxes exclude the output directory, which is given relative to the project root. */
   sandbox(outputDir: string): SpecMutantAdapters["sandbox"];
   metadata(projectRoot: string): Promise<RunMetadata>;
+  /** Removes leftover Sandboxes at startup (5.20). Absent in tests that need no cleanup. */
+  removeLeftovers?(projectRoot: string): Promise<number>;
 }
 
 const formatLoadError = (error: LoadStageError): string => {
@@ -93,7 +95,12 @@ export async function runCli(argv: readonly string[], deps: CliDeps): Promise<nu
   try {
     const options = { ...parsed.value, project: resolve(deps.cwd, parsed.value.project) };
 
-    const loaded = await loadProject(options, { fs: deps.fs });
+    const loaded = await loadProject(options, {
+      fs: deps.fs,
+      ...(deps.removeLeftovers === undefined
+        ? {}
+        : { sandbox: { removeLeftovers: deps.removeLeftovers } }),
+    });
     if (!loaded.ok) return fail(loaded.error.map(formatLoadError).join("\n"));
     const project =
       options.command === "measure" && options.output !== undefined
@@ -237,6 +244,7 @@ export const createDefaultDeps = (): CliDeps => {
       destroy: (handle) => base.removeDir(handle.root),
     }),
     metadata: defaultMetadata,
+    removeLeftovers: (projectRoot) => removeLeftoverSandboxes(projectRoot),
   };
 };
 

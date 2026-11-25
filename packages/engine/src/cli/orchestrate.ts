@@ -75,6 +75,10 @@ export interface LoadFileSystem {
 
 export interface LoadAdapters {
   readonly fs: LoadFileSystem;
+  /** Removes the Sandboxes an interrupted run left behind and returns how many (5.20). */
+  readonly sandbox?: {
+    removeLeftovers(projectRoot: string): Promise<number>;
+  };
 }
 
 /** One structured error of the load stage; the CLI formats it (Requirements 9.5, 10.3). */
@@ -137,6 +141,9 @@ export async function loadProject(
   adapters: LoadAdapters,
 ): Promise<Result<LoadedProject, LoadStageError[]>> {
   const { fs } = adapters;
+
+  // 5.20: Sandboxes of an earlier killed run go first, before the config is read.
+  await adapters.sandbox?.removeLeftovers(options.project);
 
   const configPath = joinPath(options.project, CONFIG_FILE_NAME);
   let rawConfig: string | undefined;

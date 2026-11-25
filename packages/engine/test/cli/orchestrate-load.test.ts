@@ -174,6 +174,29 @@ describe("load and validate stage", () => {
     }
   });
 
+  it("5.20 removes leftover Sandboxes once, before the first config read", async () => {
+    const calls: string[] = [];
+    const fs = fakeFs(validProject());
+    const order: string[] = [];
+    const readFile = fs.readFile.bind(fs);
+    fs.readFile = async (path) => {
+      order.push(`read ${path}`);
+      return readFile(path);
+    };
+    const sandbox = {
+      async removeLeftovers(projectRoot: string): Promise<number> {
+        calls.push(projectRoot);
+        order.push("cleanup");
+        return 2;
+      },
+    };
+    const loaded = await loadProject({ project: ROOT }, { fs, sandbox });
+    expect(loaded.ok).toBe(true);
+    expect(calls).toEqual([ROOT]);
+    expect(order[0]).toBe("cleanup");
+    expect(order.filter((o) => o === "cleanup")).toHaveLength(1);
+  });
+
   it("9.5 a project with no spec at all is an error", async () => {
     const loaded = await load({ [`${ROOT}/.kiro/specs/draft/design.md`]: "# Draft" }).result;
     expect(loaded.ok).toBe(false);

@@ -782,7 +782,7 @@ Conventions used in every task:
     - _Requirements: 5.20_
     - _Validation: npx vitest run --project engine packages/engine/test/adapters/sandbox.test.ts passes_
 
-  - [ ] 12.45 Call the leftover cleanup at startup
+  - [x] 12.45 Call the leftover cleanup at startup
     - In `cli/orchestrate.ts` call `removeLeftoverSandboxes` before the load stage.
     - Add an example to `test/cli/orchestrate-load.test.ts`: a fake Sandbox adapter that reports two leftovers is called once, before the first config read.
     - _Requirements: 5.20_
