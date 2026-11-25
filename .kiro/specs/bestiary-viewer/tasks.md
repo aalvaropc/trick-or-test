@@ -266,7 +266,7 @@ Conventions for every task:
     - _Requirements: 9.3, 9.4, 9.5_
     - _Validation: `npm test -w trick-or-test-viewer -- test/plain-view/sort.test.ts` passes_
 
-  - [ ] 5.3 Write property test for sorting being a permutation
+  - [x] 5.3 Write property test for sorting being a permutation
     - **Property V10: Sorting is a permutation**
     - File: `test/plain-view/sort.permutation.property.test.ts`. For any rows, column and direction, `sortRows` returns the same multiset of rows (by mutant id). Sorting the result again with the same column and direction gives the same order.
     - _Requirements: 9.3, 9.4, 9.5, 9.12, 9.13_
