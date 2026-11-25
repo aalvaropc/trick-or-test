@@ -488,6 +488,11 @@ Conventions used in every task:
   - Run `npm run check` from the repository root, then run the end-to-end test. Ensure all tests pass, ask the user if questions arise.
   - _Validation: npm run check passes_
 
+- [x] 11. Give Property 13 an explicit timeout
+  - test/adapters/sandbox.property.test.ts runs 100 generated sequences of real sandbox copies and removals. It is I/O bound and timed out at Vitest's default 5 seconds when the machine was busy (two worktrees running npm run check at once). Pass an explicit timeout of 60 seconds to that test (the last argument of it). Do not lower numRuns and do not change what the property checks.
+  - _Requirements: 3.14, 5.1, 5.13, 10.10_
+  - _Validation: npx vitest run --project engine packages/engine/test/adapters/sandbox.property.test.ts passes_
+
 ## Notes
 
 - Every task is required. No task is optional.
@@ -532,7 +537,8 @@ Conventions used in every task:
     { "id": 19, "tasks": ["3.33", "3.36", "3.38", "3.41", "3.44"] },
     { "id": 20, "tasks": ["3.34", "3.45"] },
     { "id": 21, "tasks": ["7.8", "7.9"] },
-    { "id": 22, "tasks": ["9.2"] }
+    { "id": 22, "tasks": ["9.2"] },
+    { "id": 23, "tasks": ["11"] }
   ]
 }
 ```
