@@ -1117,6 +1117,20 @@
         "chatSessionId": "sess_ad898d21-34b5-487a-a68b-e571952ff979",
         "timestamp": 1795639372267
       }
+    ],
+    "12.12 Order the Occurrence_Index by the real location": [
+      {
+        "executionId": "be4bfcaf-50b5-45cf-8e13-2d2b11252411",
+        "chatSessionId": "sess_6369fdb5-14c1-46da-97ce-e9e3c4c5e580",
+        "timestamp": 1795639552180
+      }
+    ],
+    "12.13 Write the location into the Mutation_Report and compare it in the same-change check": [
+      {
+        "executionId": "ff407ac3-2341-498f-9a93-daf4db836c19",
+        "chatSessionId": "sess_5bd8226d-2bc0-4a3a-a0d7-8501c394ecf6",
+        "timestamp": 1795639711648
+      }
     ]
   }
 }

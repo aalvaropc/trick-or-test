@@ -589,7 +589,7 @@ Conventions used in every task:
     - _Requirements: 8.7, 3.16_
     - _Validation: npx vitest run --project engine packages/engine/test/core/occurrence.test.ts passes_
 
-  - [ ] 12.13 Write the location into the Mutation_Report and compare it in the same-change check
+  - [x] 12.13 Write the location into the Mutation_Report and compare it in the same-change check
     - In `core/report.ts` write the start and end line and column of each Mechanical_Mutant into the schema `location`, and use start and end location plus replacement in the 8.15 same-change check (no span offsets, no ids).
     - Add examples to `test/core/report.test.ts`: the report location equals the input location, a Spec_Mutant and a Mechanical_Mutant with equal start and end location and replacement give one mutant, and the same pair differing only in the end column gives two.
     - _Requirements: 3.16, 8.15_
