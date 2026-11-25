@@ -198,7 +198,7 @@ Conventions for every task:
     - _Requirements: 5.14_
     - _Validation: `npm test -w trick-or-test-viewer -- test/bestiary/escape-xml.test.ts` passes_
 
-  - [ ] 4.10 Implement `bestiary/glyph.ts`
+  - [x] 4.10 Implement `bestiary/glyph.ts`
     - Implement `glyphFor(species, original, replacement)` with the glyph rule of each species from `bestiary.md`. Return `"?"` for any species when both texts are missing or empty. Never throw.
     - Example tests in `test/bestiary/glyph.test.ts`: one example per species, plus missing and empty inputs.
     - _Requirements: 5.11, 5.15_
