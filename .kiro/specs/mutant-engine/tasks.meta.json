@@ -728,6 +728,18 @@
         "chatSessionId": "sess_348691b5-1e61-4a06-aede-455bbfefc471",
         "timestamp": 1795628198597
       }
+    ],
+    "3.38 Extend Property 11 with brace globs": [
+      {
+        "executionId": "5e8fc624-dc6f-4b45-8645-84c66789c50d",
+        "chatSessionId": "sess_b52b85e0-79e5-453b-8364-17f826d78627",
+        "timestamp": 1795628243968
+      },
+      {
+        "executionId": "5e8fc624-dc6f-4b45-8645-84c66789c50d",
+        "chatSessionId": "sess_b52b85e0-79e5-453b-8364-17f826d78627",
+        "timestamp": 1795628279614
+      }
     ]
   }
 }

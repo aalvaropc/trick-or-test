@@ -274,7 +274,7 @@ Conventions used in every task:
     - _Requirements: 6.3_
     - _Validation: npx vitest run --project engine packages/engine/test/core/test-classification.test.ts passes_
 
-  - [ ] 3.38 Extend Property 11 with brace globs
+  - [x] 3.38 Extend Property 11 with brace globs
     - In `test/core/test-classification.property.test.ts` add generated globs with brace groups and check that a file path matching any expansion is a Property_Test.
     - **Validates: Requirements 6.3, 6.4, 6.5**
     - _Requirements: 6.3_
