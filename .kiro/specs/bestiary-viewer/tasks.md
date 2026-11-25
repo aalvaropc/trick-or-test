@@ -254,7 +254,7 @@ Conventions for every task:
     - _Validation: `npm test -w trick-or-test-viewer -- test/bestiary/escape.property.test.ts` passes_
 
 - [ ] 5. Plain view logic
-  - [ ] 5.1 Implement `plain-view/columns.ts` and the row builder
+  - [x] 5.1 Implement `plain-view/columns.ts` and the row builder
     - Create `src/plain-view/columns.ts` with the column definitions (id, label, accessor, comparator) for mutant id, species, state label, status, Criterion id, file and line, and Kill_Class. Add `buildRows(runModel)` returning one `PlainRow` per Mutant, with the state label `"not counted"` for any not-counted or unrecognised-status Mutant (the row stays in the table).
     - Example tests in `test/plain-view/columns.test.ts`: one row per Mutant (9.2), columns present (9.2), `not counted` label for unrecognised status and for Ignored without Ghost (4.8, 9.6), state counts per state equal the headline counts on the fixture (4.11).
     - _Requirements: 4.8, 4.11, 9.2, 9.6_
