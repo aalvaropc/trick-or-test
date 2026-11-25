@@ -1,0 +1,14 @@
+{
+  "id": "oath-5.6-no-coupon-nonzero-discount",
+  "requirement": "5.6",
+  "file": "src/price.ts",
+  "original": "if (coupon === undefined || subtotal < coupon.minSubtotalCents) return 0;",
+  "mutated": "if (coupon === undefined) return Math.min(1, subtotal);\n  if (subtotal < coupon.minSubtotalCents) return 0;",
+  "why": "A cart without a coupon gets a discount of 1 cent instead of 0.",
+  "witness": {
+    "from": "src/index.ts",
+    "export": "priceCart",
+    "args": [{ "lines": [{ "quantity": 1, "unitPriceCents": 1000 }], "shipping": "standard", "taxBps": 0 }],
+    "expected": { "subtotalCents": 1000, "discountCents": 0, "shippingCents": 799, "taxCents": 0, "totalCents": 1799 }
+  }
+}

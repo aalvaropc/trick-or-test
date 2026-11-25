@@ -1,0 +1,14 @@
+{
+  "id": "oath-6.1-empty-cart-charged-shipping",
+  "requirement": "6.1",
+  "file": "src/price.ts",
+  "original": "if (lineCount === 0) return 0;",
+  "mutated": "if (lineCount === 0) return STANDARD_SHIPPING;",
+  "why": "A cart with zero Lines is charged standard shipping instead of 0.",
+  "witness": {
+    "from": "src/index.ts",
+    "export": "priceCart",
+    "args": [{ "lines": [], "shipping": "standard", "taxBps": 0 }],
+    "expected": { "subtotalCents": 0, "discountCents": 0, "shippingCents": 0, "taxCents": 0, "totalCents": 0 }
+  }
+}

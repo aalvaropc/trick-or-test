@@ -1,0 +1,14 @@
+{
+  "id": "oath-4.3-subtotal-last-line-only",
+  "requirement": "4.3",
+  "file": "src/price.ts",
+  "original": "for (const line of cart.lines) subtotalCents += lineTotal(line);",
+  "mutated": "for (const line of cart.lines) subtotalCents = lineTotal(line);",
+  "why": "The subtotal is the last Line_Total instead of the sum of all Line_Total values.",
+  "witness": {
+    "from": "src/index.ts",
+    "export": "priceCart",
+    "args": [{ "lines": [{ "quantity": 1, "unitPriceCents": 100 }, { "quantity": 2, "unitPriceCents": 200 }], "shipping": "standard", "taxBps": 0 }],
+    "expected": { "subtotalCents": 500, "discountCents": 0, "shippingCents": 799, "taxCents": 0, "totalCents": 1299 }
+  }
+}

@@ -1,0 +1,93 @@
+import { describe, expect, it } from "vitest";
+import { extractTestBody } from "../../src/adapters/test-body-extractor.js";
+
+describe("extractTestBody", () => {
+  it("6.2 extracts a simple test call from its start line to the closing bracket", () => {
+    const text = ["it('a', () => {", "  expect(1).toBe(1);", "});", "it('b', () => {});"].join(
+      "\n",
+    );
+    expect(extractTestBody(text, 1)).toBe("it('a', () => {\n  expect(1).toBe(1);\n})");
+    expect(extractTestBody(text, 4)).toBe("it('b', () => {});".slice(0, -1));
+  });
+
+  it("6.2 ignores brackets inside strings, templates and comments", () => {
+    const text = [
+      "it('x', () => {",
+      "  const a = '}))';",
+      '  const b = "{[(";',
+      "  const c = `${ '}' } ) ${`)`}`;",
+      "  // ))) }",
+      "  /* ) } */",
+      "  expect(a).toBe(b);",
+      "});",
+      "after();",
+    ].join("\n");
+    const body = extractTestBody(text, 1);
+    expect(body.endsWith("expect(a).toBe(b);\n})")).toBe(true);
+    expect(body).not.toContain("after");
+  });
+
+  it("6.4 ignores brackets inside regular expression literals", () => {
+    const text = [
+      "it('r', () => {",
+      "  expect(s).toMatch(/[)}]+\\/)/g);",
+      "  const x = 4 / 2;",
+      "});",
+      "tail();",
+    ].join("\n");
+    const body = extractTestBody(text, 1);
+    expect(body.endsWith("const x = 4 / 2;\n})")).toBe(true);
+  });
+
+  it.each([
+    "return",
+    "typeof",
+    "case",
+    "in",
+    "of",
+    "delete",
+    "void",
+    "throw",
+    "new",
+    "instanceof",
+    "yield",
+    "await",
+  ])("6.4 treats a slash after `%s` as a regular expression start", (kw) => {
+    const text = [
+      `it('k', () => { const f = (s) => { ${kw} /"/.test(s) }; fc.assert(p); });`,
+      "tail();",
+    ].join("\n");
+    const body = extractTestBody(text, 1);
+    expect(body).toContain("fc.assert(p);");
+    expect(body.endsWith("});")).toBe(false);
+    expect(body).not.toContain("tail");
+  });
+
+  it("6.4 treats a slash after an operator or opening bracket as a regular expression start", () => {
+    const text = ["it('k', () => { const a = /'/; const b = [/)/]; });", "tail();"].join("\n");
+    expect(extractTestBody(text, 1)).toBe("it('k', () => { const a = /'/; const b = [/)/]; })");
+  });
+
+  it("6.4 treats a slash after an identifier as division", () => {
+    const text = ["it('d', () => { const q = a / b; const r = c / d; });", "tail();"].join("\n");
+    expect(extractTestBody(text, 1)).toBe("it('d', () => { const q = a / b; const r = c / d; })");
+  });
+
+  it("6.4 covers a whole nested describe block when started on the describe line", () => {
+    const text = [
+      "describe('d', () => {",
+      "  it('i', () => {",
+      "    f();",
+      "  });",
+      "});",
+      "other();",
+    ].join("\n");
+    expect(extractTestBody(text, 1)).toBe(`${text.split("\n").slice(0, 4).join("\n")}\n})`);
+    expect(extractTestBody(text, 2)).toBe("  it('i', () => {\n    f();\n  })");
+  });
+
+  it("6.2 returns an empty string when the start line is past the end of the file", () => {
+    expect(extractTestBody("it('a', () => {});\n", 5)).toBe("");
+    expect(extractTestBody("", 1)).toBe("");
+  });
+});

@@ -31,6 +31,8 @@ Decisions behind this stack are recorded in `docs/decisions/`. Do not change a c
 | `npm test`                        | Runs all tests                                                      |
 | `npm run test:coverage`           | Runs all tests with coverage                                        |
 | `npm run build`                   | Builds every workspace                                              |
+| `npm run test:e2e -w trick-or-test` | Runs the engine end-to-end test (slow, about two minutes) |
+| `npm run measure`                 | Builds the engine and attacks `examples/pricing` with the `cart-pricing` spec, writing `reports/`. Files in `reports/` are generated only by this command and are never edited by hand |
 
 Workspaces add their own scripts (for example `attack`, `measure`, `dev`) when their spec creates them; add the matching row here in the same commit.
 
@@ -56,6 +58,8 @@ Workspaces add their own scripts (for example `attack`, `measure`, `dev`) when t
 - **Money** in the example project is integer cents. No floating-point currency.
 - **No secrets and no telemetry.** `.kiro/settings/mcp.json` holds no credentials.
 - **Dependencies.** Add one only when it removes real work, pin the exact version, and say why in the commit body. Ask before adding a runtime dependency to the viewer.
+- **Edit files with the file tools.** Create and change files with the file editing tools, never through shell commands (`cat > file`, heredocs, `sed -i`, `python -c`, `tee`). Shell edits skip review and the hooks that guard sealed tests, so they are denied. Use the shell only to run commands such as tests and checks.
+- **Scratch files stay inside the repository.** Probes, throwaway projects and captured output go under `.trickortest/` (git ignores it), never outside the repository, and are removed when the work is done. Writes outside the repository cannot be reviewed and are denied.
 
 ## Do not use
 

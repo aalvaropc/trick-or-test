@@ -48,3 +48,4 @@ Rules for every task in this repository, for AI agents and people alike. Kiro lo
 - Read or write secrets. `.env*`, `*.pem` and `*.key` are listed in `.kiroignore`.
 - Write absolute paths from your machine into code, tests or docs. Use relative paths, or `/tmp/...` in tests.
 - Add a dependency without pinning it and explaining why in the commit body.
+- Write or edit files through shell commands (`sed -i`, `cat > file`, `python -c`, heredocs). Use the file editing tools, so every change is a reviewable diff and passes through the hooks that guard sealed tests.

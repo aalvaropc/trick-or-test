@@ -1,0 +1,9 @@
+^[[32m16:00:47 (548337) INFO ProjectReader^[[39m Found 1 of 4 file(s) to be mutated.
+^[[32m16:00:48 (548337) INFO Instrumenter^[[39m Instrumented 1 source file(s) with 6 mutant(s)
+^[[32m16:00:48 (548337) INFO ConcurrencyTokenProvider^[[39m Creating 19 test runner process(es).
+^[[32m16:00:49 (548337) INFO DryRunExecutor^[[39m Starting initial test run (vitest test runner with "perTest" coverage analysis). This may take a while.
+^[[32m16:00:49 (548337) INFO DryRunExecutor^[[39m Initial test run succeeded. Ran 1 tests in 0 seconds (net 1.6392550000000483 ms, overhead 179.36074499999995 ms).
+^[[91m16:00:50 (548337) ERROR MutationTestReportHelper^[[39m Final mutation score 50.00 under breaking threshold 100, setting exit code to 1 (failure).
+^[[32m16:00:50 (548337) INFO MutationTestReportHelper^[[39m (improve mutation score or set `thresholds.break = null` to prevent this error in the future)
+^[[32m16:00:50 (548337) INFO JsonReporter^[[39m Your report can be found at: file:///project/packages/engine/.trickortest/cap-after/reports/mutation.json
+^[[32m16:00:50 (548337) INFO MutationTestExecutor^[[39m Done in 2 seconds.

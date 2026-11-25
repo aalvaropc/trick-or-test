@@ -1,0 +1,14 @@
+{
+  "id": "oath-6.2-free-shipping-threshold-lowered",
+  "requirement": "6.2",
+  "file": "src/price.ts",
+  "original": "const FREE_SHIPPING_THRESHOLD = 10000;",
+  "mutated": "const FREE_SHIPPING_THRESHOLD = 9999;",
+  "why": "Standard shipping is free at a Discounted_Subtotal of 9999 instead of being 799 below 10000.",
+  "witness": {
+    "from": "src/index.ts",
+    "export": "priceCart",
+    "args": [{ "lines": [{ "quantity": 1, "unitPriceCents": 9999 }], "shipping": "standard", "taxBps": 0 }],
+    "expected": { "subtotalCents": 9999, "discountCents": 0, "shippingCents": 799, "taxCents": 0, "totalCents": 10798 }
+  }
+}
