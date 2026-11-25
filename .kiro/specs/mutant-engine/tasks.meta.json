@@ -981,6 +981,37 @@
         "chatSessionId": "sess_3fd11347-9bb3-4625-bac5-8ada55ba4ea4",
         "timestamp": 1795632203132
       }
+    ],
+    "8. Checkpoint - CLI phase": [
+      {
+        "executionId": "9fc029af-cb75-4839-8ce7-8af684be9d60",
+        "chatSessionId": "sess_ca8ff5da-9587-4fa3-94ba-d1cd332404d3",
+        "timestamp": 1795632323296
+      },
+      {
+        "executionId": "9fc029af-cb75-4839-8ce7-8af684be9d60",
+        "chatSessionId": "sess_ca8ff5da-9587-4fa3-94ba-d1cd332404d3",
+        "timestamp": 1795632352921
+      }
+    ],
+    "9.1 Write the end-to-end test for `examples/pricing`": [
+      {
+        "executionId": "6e7a5dc6-3cf2-430a-ac42-856d7ea38d38",
+        "chatSessionId": "sess_40887394-c862-493c-9869-78c75e65b246",
+        "timestamp": 1795632430806
+      }
+    ],
+    "9.2 Run `npm run measure` once and commit `reports/`": [
+      {
+        "executionId": "0d08809f-e581-45dd-97d6-cfc81a19c60a",
+        "chatSessionId": "sess_8637f48d-9d3e-46d6-ad40-e84e6ebb6dd3",
+        "timestamp": 1795632954707
+      },
+      {
+        "executionId": "cb1540a3-7318-4605-b1ce-e3c3808acc04",
+        "chatSessionId": "sess_8637f48d-9d3e-46d6-ad40-e84e6ebb6dd3",
+        "timestamp": 1795633118162
+      }
     ]
   }
 }
