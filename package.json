@@ -17,7 +17,7 @@
     "prepare": "lefthook install",
     "lint": "biome check .",
     "format": "biome check --write .",
-    "typecheck": "tsc -b",
+    "typecheck": "tsc -b && npm run typecheck --workspaces --if-present",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "build": "tsc -b",
