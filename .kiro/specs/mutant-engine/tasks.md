@@ -204,7 +204,7 @@ Conventions used in every task:
     - _Requirements: 8.15_
     - _Validation: npx vitest run --project engine packages/engine/test/core/report.dedup.property.test.ts passes_
 
-  - [ ] 3.27 Implement `buildVerdict` with example tests
+  - [x] 3.27 Implement `buildVerdict` with example tests
     - In `report.ts` implement `buildVerdict(input)`: coverage per criterion, engine status per mutant, kill class per killed mutant, witnesses, the `ignoreStatic` retry flag and the run metadata (commit, seed, versions of the engine, Node.js, StrykerJS, Vitest and TypeScript). Validate with the zod schema before returning.
     - Write `test/core/verdict.test.ts`: all fields present, kill class only on Killed mutants, the retry flag, a build that fails the schema returns an error, and the output is the same for the same input except `metadata.timestamp`.
     - _Requirements: 8.5, 8.6, 8.10, 8.13_

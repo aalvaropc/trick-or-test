@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { err, ok, type Result } from "./result.js";
 import type {
   CriterionCoverage,
   CriterionId,
@@ -7,6 +8,7 @@ import type {
   MutantId,
   MutantResult,
   MutantStatus,
+  RunMetadata,
   Species,
   TestId,
   Verdict,
@@ -175,6 +177,46 @@ export type ReportLocation = z.infer<typeof locationSchema>;
 export type ReportMutant = z.infer<typeof reportMutantSchema>;
 export type ReportFile = z.infer<typeof reportFileSchema>;
 export type MutationTestingReport = z.infer<typeof mutationReportSchema>;
+
+// ---------------------------------------------------------------------------
+// buildVerdict
+// ---------------------------------------------------------------------------
+
+export type VerdictInput = {
+  coverage: CriterionCoverage[];
+  mutants: MutantResult[];
+  witnesses: Record<MutantId, Witness>;
+  ignoreStaticRetried: boolean;
+  metadata: RunMetadata;
+};
+
+/**
+ * Builds the Verdict (8.5, 8.6, 8.13). A kill class is kept only on Killed mutants, and a Killed
+ * mutant without one is marked "unattributed". The timestamp comes from the input, so the output
+ * is a pure function of it. Validates with the zod schema (8.10) and returns an error message
+ * instead of throwing.
+ */
+export const buildVerdict = (input: VerdictInput): Result<Verdict, string> => {
+  const mutants = input.mutants.map((m): MutantResult => {
+    const { killClass, ...rest } = m;
+    if (m.status !== "Killed") return { ...rest, killingTests: [...m.killingTests] };
+    return { ...rest, killingTests: [...m.killingTests], killClass: killClass ?? "unattributed" };
+  });
+  const candidate: Verdict = {
+    coverage: input.coverage.map((c) => ({ ...c })),
+    mutants,
+    witnesses: { ...input.witnesses },
+    ignoreStaticRetried: input.ignoreStaticRetried,
+    metadata: { ...input.metadata },
+  };
+  const parsed = verdictSchema.safeParse(candidate);
+  if (!parsed.success) {
+    return err(
+      `Invalid verdict: ${parsed.error.issues.map((i) => `${i.path.join(".")}: ${i.message}`).join("; ")}`,
+    );
+  }
+  return ok(parsed.data);
+};
 
 // ---------------------------------------------------------------------------
 // buildMutationReport
