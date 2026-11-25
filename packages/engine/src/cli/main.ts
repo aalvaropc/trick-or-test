@@ -10,6 +10,7 @@ import { MechanicalRunner } from "../adapters/stryker-adapter.js";
 import { Typecheck } from "../adapters/typecheck-adapter.js";
 import { SuiteRunner } from "../adapters/vitest-suite-runner.js";
 import { WitnessRunner } from "../adapters/vitest-witness-runner.js";
+import { parseChangedRanges } from "../core/changed-ranges.js";
 import { err, ok } from "../core/result.js";
 import type { CoverageStatus, RunMetadata } from "../core/types.js";
 import { parseArgs, USAGE_TEXT } from "./args.js";
@@ -225,7 +226,12 @@ export const createDefaultDeps = (): CliDeps => {
     },
     suite: SuiteRunner,
     mechanical: MechanicalRunner,
-    git: Git,
+    git: {
+      async changedRanges(ref, cwd, sourceGlobs) {
+        const diff = await Git.diff(ref, cwd);
+        return diff.ok ? ok(parseChangedRanges(diff.value, sourceGlobs)) : diff;
+      },
+    },
     typecheck: Typecheck,
     witness: WitnessRunner,
     sandbox: (outputDir) => ({

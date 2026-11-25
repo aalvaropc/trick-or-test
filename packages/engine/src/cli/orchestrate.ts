@@ -278,7 +278,11 @@ export interface MechanicalAdapters {
     run(options: MechanicalRunOptions): Promise<Result<MechanicalRunResult, string>>;
   };
   readonly git: {
-    changedRanges(ref: string, cwd: string): Promise<Result<ChangedRange[], string>>;
+    changedRanges(
+      ref: string,
+      cwd: string,
+      sourceGlobs: string[],
+    ): Promise<Result<ChangedRange[], string>>;
   };
 }
 
@@ -373,7 +377,11 @@ export async function runBaselineAndMechanical(
 
   let changedRanges: ChangedRange[] | undefined;
   if (options.since !== undefined) {
-    const ranges = await adapters.git.changedRanges(options.since, options.project);
+    const ranges = await adapters.git.changedRanges(
+      options.since,
+      options.project,
+      config.sourceGlobs.map((glob) => relativeToRoot(options.project, glob)),
+    );
     if (!ranges.ok) return err({ kind: "git-error", message: ranges.error });
     changedRanges = ranges.value;
   }

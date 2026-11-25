@@ -632,7 +632,7 @@ Conventions used in every task:
     - _Requirements: 3.9, 3.10_
     - _Validation: npx vitest run --project engine packages/engine/test/core/changed-ranges.property.test.ts passes_
 
-  - [ ] 12.20 Restrict the git diff to the Target_Project in `git-adapter.ts`
+  - [x] 12.20 Restrict the git diff to the Target_Project in `git-adapter.ts`
     - In `adapters/git-adapter.ts` run `git diff --relative --unified=0 <ref> -- .` from the Target_Project root and return the diff text; remove the range parsing from the adapter (the core function parses it).
     - Add examples to `test/adapters/git-adapter.test.ts` on a temp git repository whose Target_Project is a subdirectory (a monorepo layout): a change inside the project gives a project-relative path, a change in a sibling directory does not appear, no change gives an empty text, an unknown ref returns an error.
     - _Requirements: 3.9, 3.10_
