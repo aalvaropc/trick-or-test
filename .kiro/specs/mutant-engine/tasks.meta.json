@@ -1167,6 +1167,20 @@
         "chatSessionId": "sess_eb06081a-dee6-4af3-9fd6-b2d9736d50cf",
         "timestamp": 1795640955555
       }
+    ],
+    "12.17 Use the error line and the retry rule in `MechanicalRunner`": [
+      {
+        "executionId": "96fd87bd-4cfb-42ae-afba-c57c12b74572",
+        "chatSessionId": "sess_5f588a0e-fcd7-4574-a327-a3f809eeec58",
+        "timestamp": 1795641257181
+      }
+    ],
+    "12.18 Parse relative Changed_Ranges in `core/changed-ranges.ts`": [
+      {
+        "executionId": "175c0017-a640-459f-8560-bade9891d459",
+        "chatSessionId": "sess_5e14575e-b22e-474a-ad0c-580800a152d1",
+        "timestamp": 1795641414115
+      }
     ]
   }
 }

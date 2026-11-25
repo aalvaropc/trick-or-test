@@ -620,7 +620,7 @@ Conventions used in every task:
     - _Requirements: 3.5, 3.6, 3.17, 10.12_
     - _Validation: npx vitest run --project engine packages/engine/test/adapters/stryker-adapter.test.ts passes_
 
-  - [ ] 12.18 Parse relative Changed_Ranges in `core/changed-ranges.ts`
+  - [x] 12.18 Parse relative Changed_Ranges in `core/changed-ranges.ts`
     - Create `core/changed-ranges.ts` with `parseChangedRanges(diffText, sourceGlobs): ChangedRange[]` for the output of `git diff --relative --unified=0`: project-relative paths, only files that match the source globs, no range for a pure deletion, `start <= end`, sorted by file and then start line.
     - Write `test/core/changed-ranges.test.ts`: one hunk, several hunks in one file, a pure deletion, a file outside the source globs, a file outside the project directory (path with `..` or not relative), a count-less hunk header (`@@ -1 +1 @@`), an empty diff.
     - _Requirements: 3.9, 3.10_
