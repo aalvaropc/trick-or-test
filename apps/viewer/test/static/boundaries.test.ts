@@ -101,11 +101,17 @@ describe("viewer static boundaries", () => {
     expect(offenders).toEqual([]);
   });
 
-  it("12.9 dangerouslySetInnerHTML appears in at most one file, src/bestiary/Creature.tsx", () => {
+  it("12.9 dangerouslySetInnerHTML appears in exactly one file, src/bestiary/Creature.tsx", () => {
     const users = files
       .filter(({ text }) => text.includes("dangerouslySetInnerHTML"))
-      .map(({ rel }) => rel.replace(/^/, ""));
-    expect(users.length).toBeLessThanOrEqual(1);
-    for (const user of users) expect(user).toBe("src/bestiary/Creature.tsx");
+      .map(({ rel }) => rel);
+    expect(users).toEqual(["src/bestiary/Creature.tsx"]);
+  });
+
+  it("12.9 dangerouslySetInnerHTML wraps a creature( call and nothing else", () => {
+    const source = files.find(({ rel }) => rel === "src/bestiary/Creature.tsx")?.text ?? "";
+    const uses = [...source.matchAll(/dangerouslySetInnerHTML\s*=\s*\{\{([^}]*)\}\}/g)];
+    expect(uses).toHaveLength(1);
+    expect((uses[0]?.[1] ?? "").trim()).toMatch(/^__html:\s*creature\(/);
   });
 });

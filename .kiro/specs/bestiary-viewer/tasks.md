@@ -308,7 +308,7 @@ Conventions for every task:
     - _Requirements: 11.1, 11.2_
     - _Validation: `npm test -w trick-or-test-viewer -- test/styles/layout.test.ts` passes_
 
-  - [ ] 8.4 Implement `bestiary/Creature.tsx`
+  - [x] 8.4 Implement `bestiary/Creature.tsx`
     - Create the React component `<Creature species seed state mutant />`. It calls `creature()` during the same render and passes only that return value to `dangerouslySetInnerHTML`. It never passes a raw file, verdict or history value, and never concatenates one into the markup. Tighten the static check from 1.6 so that exactly one file contains `dangerouslySetInnerHTML`, and it is this one, wrapping a `creature(` call.
     - Example tests in `test/bestiary/Creature.test.tsx`: renders an `svg` with `role="img"` and the title, a hostile file path such as `"><script>` renders no `script` element (12.9), same props give the same markup.
     - _Requirements: 12.9_
