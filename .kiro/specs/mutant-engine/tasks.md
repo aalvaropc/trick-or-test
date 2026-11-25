@@ -836,7 +836,7 @@ Conventions used in every task:
     - _Requirements: 10.12_
     - _Validation: npx vitest run --project engine packages/engine/test/adapters/stryker-adapter.test.ts passes_
 
-  - [ ] 12.54 Strengthen the end-to-end test
+  - [x] 12.54 Strengthen the end-to-end test
     - In `test/e2e/pricing.test.ts` add: `git status --porcelain examples/pricing` shows no change outside `.trickortest/` after the run; every string in the written report, verdict and history line satisfies `containsAbsolutePath === false`; the size of `.trickortest/stryker-tmp` after the second run is not larger than after the first run; `.trickortest/sandboxes/` is empty.
     - Note: this task changes the test only. Re-run `npm run test:e2e --workspace trick-or-test` after the fixes of tasks 12.1 to 12.53, because they change ids, locations and paths in the written files.
     - _Requirements: 10.10, 10.11_
