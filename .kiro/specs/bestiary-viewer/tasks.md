@@ -247,7 +247,7 @@ Conventions for every task:
     - _Requirements: 5.11, 5.14_
     - _Validation: `npm test -w trick-or-test-viewer -- test/bestiary/creature.glyph.property.test.ts` passes_
 
-  - [ ] 4.18 Write property test for safe escaping
+  - [x] 4.18 Write property test for safe escaping
     - **Property V11: Escaping is safe**
     - File: `test/bestiary/escape.property.test.ts`. For any string used as file path, glyph text or id, the SVG from `creature()` has no unescaped `&`, `<`, `>`, `"` or `'` from that string. Every occurrence sits inside its entity.
     - _Requirements: 5.14, 10.9, 12.9_

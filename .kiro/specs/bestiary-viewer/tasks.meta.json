@@ -453,6 +453,13 @@
         "chatSessionId": "sess_fbc3f833-f9a7-4cca-895f-601508937d41",
         "timestamp": 1795635037041
       }
+    ],
+    "4.17 Write property test for the glyph being present": [
+      {
+        "executionId": "37d7905d-5e52-4865-81ad-c43fd4ed0fb9",
+        "chatSessionId": "sess_767c47bd-6f95-401d-b835-e605cddae4cf",
+        "timestamp": 1795635167596
+      }
     ]
   }
 }
