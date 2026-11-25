@@ -143,7 +143,7 @@ Conventions used in every task:
     - _Requirements: 6.6, 6.7, 6.8, 6.9, 6.10_
     - _Validation: npx vitest run --project engine packages/engine/test/core/kill-classification.property.test.ts passes_
 
-  - [ ] 3.17 Write Property 10: Single-run attribution
+  - [x] 3.17 Write Property 10: Single-run attribution
     - Write `test/core/kill-classification.single-run.property.test.ts` with **Property 10: Single-run attribution**. Compare the class from the combined list with the class derived from separate example-only and property-only partitions of the same list.
     - **Validates: Requirements 6.1, 6.2**
     - _Requirements: 6.1, 6.2_
