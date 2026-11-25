@@ -1209,6 +1209,20 @@
         "chatSessionId": "sess_3537d430-486d-4c87-8b25-233a1b2ecd36",
         "timestamp": 1795642093352
       }
+    ],
+    "12.23 Extend Property 16 with InvalidWitness and outcome kinds": [
+      {
+        "executionId": "9c7fee4f-d531-483b-a9ea-79ce8489afb3",
+        "chatSessionId": "sess_cda0164a-0162-4e55-bdd9-97aa8b065e9e",
+        "timestamp": 1795642246997
+      }
+    ],
+    "12.24 Carry both outcomes from the pipeline to the Verdict": [
+      {
+        "executionId": "7a96804b-7a4c-4913-af47-1a184b0e346a",
+        "chatSessionId": "sess_d4b0fc0e-a73b-4847-a9e4-bc033d509d30",
+        "timestamp": 1795642409863
+      }
     ]
   }
 }

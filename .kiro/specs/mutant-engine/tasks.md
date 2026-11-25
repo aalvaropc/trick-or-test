@@ -662,7 +662,7 @@ Conventions used in every task:
     - _Requirements: 5.6_
     - _Validation: npx vitest run --project engine packages/engine/test/cli/orchestrate-spec-mutants.test.ts passes_
 
-  - [ ] 12.25 Add `core/paths.ts`
+  - [x] 12.25 Add `core/paths.ts`
     - Create `core/paths.ts` with `relativizePath(projectRoot, p)`, `scrubAbsolutePaths(text, projectRoot)` and `containsAbsolutePath(text)` as in `design.md`, without `node:` imports.
     - Write `test/core/paths.test.ts`: a path under the root, the root itself, a path outside the root (`<outside-project>/<basename>`), a Windows drive path, a UNC path, a URL (not a path), free text with several paths, text without paths, and `containsAbsolutePath` on each.
     - _Requirements: 8.17_
