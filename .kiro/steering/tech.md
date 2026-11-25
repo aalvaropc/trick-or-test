@@ -31,6 +31,7 @@ Decisions behind this stack are recorded in `docs/decisions/`. Do not change a c
 | `npm test`                        | Runs all tests                                                      |
 | `npm run test:coverage`           | Runs all tests with coverage                                        |
 | `npm run build`                   | Builds every workspace                                              |
+| `npm run test:e2e -w trick-or-test` | Runs the engine end-to-end test (slow, about two minutes) |
 
 Workspaces add their own scripts (for example `attack`, `measure`, `dev`) when their spec creates them; add the matching row here in the same commit.
 

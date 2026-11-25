@@ -16,6 +16,7 @@
       "!**/package-lock.json",
       "!**/*.md",
       "!examples/pricing",
+      "!packages/engine/test/fixtures",
       "!.kiro/specs"
     ]
   },

@@ -16,7 +16,7 @@ Conventions used in every task:
 ## Tasks
 
 - [ ] 1. Set up the `packages/engine` workspace
-  - [ ] 1.1 Create the workspace package, TypeScript project and Vitest project
+  - [x] 1.1 Create the workspace package, TypeScript project and Vitest project
     - Create `packages/engine/package.json` with name `trick-or-test`, `"type": "module"`, `bin` for the CLI, `exports` for `.` and `./report`, and `engines.node` `>=22.12`.
     - Add exact-version dependencies: `zod` 4.6.7, `@stryker-mutator/core` 10.1.1, `@stryker-mutator/vitest-runner` 10.1.1, `mutation-testing-report-schema` 3.9.0. Add exact-version devDependencies: `fast-check` 4.10.2 (the version `examples/pricing` already uses), `vitest` 5.1.0, `typescript` 7.0.2, `@types/node` 26.6.6.
     - Add scripts `build` (`tsc -b`), `typecheck` (`tsc --noEmit`), `test` (`vitest run`) and `test:e2e` (`vitest run --config vitest.e2e.config.ts`).
