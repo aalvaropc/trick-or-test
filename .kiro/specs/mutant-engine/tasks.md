@@ -94,7 +94,7 @@ Conventions used in every task:
     - _Requirements: 5.2_
     - _Validation: npx vitest run --project engine packages/engine/test/core/mutation.round-trip.property.test.ts passes_
 
-  - [ ] 3.9 Write Property 2: Uniqueness
+  - [x] 3.9 Write Property 2: Uniqueness
     - Write `test/core/mutation.uniqueness.property.test.ts` with **Property 2: Uniqueness**. The generator produces sources where `original` occurs exactly 0, exactly 2 and many times. Check the NotApplicable error and that the source is unchanged.
     - **Validates: Requirements 4.4, 5.2**
     - _Requirements: 4.4, 5.2_
