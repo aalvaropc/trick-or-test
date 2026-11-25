@@ -61,6 +61,23 @@ export const criterionCoverageSchema: z.ZodType<CriterionCoverage> = z.strictObj
   reason: z.string().optional(),
 }) as unknown as z.ZodType<CriterionCoverage>;
 
+export const witnessExpectationSchema = z.union([
+  z.strictObject({ expected: z.unknown() }),
+  z.strictObject({ expectedError: z.string() }),
+]);
+
+export const witnessOutcomeSchema = z.discriminatedUnion("kind", [
+  z.strictObject({ kind: z.literal("value"), value: z.unknown() }),
+  z.strictObject({ kind: z.literal("error"), className: z.string() }),
+  z.strictObject({ kind: z.literal("timeout"), message: z.string() }),
+  z.strictObject({ kind: z.literal("no-outcome"), message: z.string() }),
+]);
+
+export const invalidWitnessSchema = z.strictObject({
+  expected: witnessExpectationSchema,
+  originalOutcome: witnessOutcomeSchema,
+});
+
 export const mutantResultSchema: z.ZodType<MutantResult> = z.strictObject({
   id: mutantIdSchema,
   species: speciesSchema,
@@ -68,6 +85,7 @@ export const mutantResultSchema: z.ZodType<MutantResult> = z.strictObject({
   requirement: criterionIdSchema.optional(),
   killingTests: z.array(testIdSchema),
   killClass: killClassSchema.optional(),
+  invalidWitness: invalidWitnessSchema.optional(),
 }) as unknown as z.ZodType<MutantResult>;
 
 export const runMetadataSchema = z.strictObject({
@@ -201,8 +219,12 @@ export type VerdictInput = {
  */
 export const buildVerdict = (input: VerdictInput): Result<Verdict, string> => {
   const mutants = input.mutants.map((m): MutantResult => {
-    const { killClass, ...rest } = m;
-    if (m.status !== "Killed") return { ...rest, killingTests: [...m.killingTests] };
+    const { killClass, invalidWitness, ...rest } = m;
+    const withInvalid: Partial<MutantResult> =
+      m.status === "InvalidWitness" && invalidWitness !== undefined ? { invalidWitness } : {};
+    if (m.status !== "Killed") {
+      return { ...rest, ...withInvalid, killingTests: [...m.killingTests] };
+    }
     return { ...rest, killingTests: [...m.killingTests], killClass: killClass ?? "unattributed" };
   });
   const candidate: Verdict = {

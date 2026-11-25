@@ -1195,6 +1195,13 @@
         "chatSessionId": "sess_1a6c8f21-3820-49ba-9fe0-3d5bdd856ce7",
         "timestamp": 1795641714323
       }
+    ],
+    "12.21 Use `parseChangedRanges` for `--since` in the mechanical stage": [
+      {
+        "executionId": "617e5c93-0ab3-4751-a6fd-0391a2dc5ba6",
+        "chatSessionId": "sess_18bbf2ce-f6ad-409a-bebd-9c919c39a042",
+        "timestamp": 1795641883118
+      }
     ]
   }
 }

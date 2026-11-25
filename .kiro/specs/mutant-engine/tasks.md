@@ -644,7 +644,7 @@ Conventions used in every task:
     - _Requirements: 3.9, 3.10, 9.3_
     - _Validation: npx vitest run --project engine packages/engine/test/cli/orchestrate-mechanical.test.ts passes_
 
-  - [ ] 12.22 Write both outcomes of an InvalidWitness mutant into the Verdict
+  - [x] 12.22 Write both outcomes of an InvalidWitness mutant into the Verdict
     - In `core/types.ts` and `core/report.ts` add `invalidWitness: { expected, originalOutcome }` to the Verdict entry of a mutant with status InvalidWitness, with its zod schema, and no such field for other statuses.
     - Add examples to `test/core/verdict.test.ts`: an InvalidWitness mutant carries both outcomes, `originalOutcome` of kind `timeout` and `no-outcome` validates, a Killed mutant has no `invalidWitness`.
     - _Requirements: 5.6, 8.5_

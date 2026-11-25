@@ -1,3 +1,5 @@
+import type { WitnessExpectation, WitnessOutcome } from "./witness-compare.js";
+
 // Branded ids (ADR 0005).
 // A Spec_Mutant's MutantId is the id from its file (oath-<criterion>-<slug>), unique per Requirement 4.5.
 // A Mechanical_Mutant's MutantId is the sha256 hash of file, original text and replacement (Requirement 8.7).
@@ -55,6 +57,11 @@ export type SpecMutant = {
 
 export type SkipEntry = { requirement: CriterionId; reason: string };
 
+export type InvalidWitnessRecord = {
+  expected: WitnessExpectation;
+  originalOutcome: WitnessOutcome;
+};
+
 export type MutantResult = {
   id: MutantId;
   species: Species;
@@ -64,6 +71,8 @@ export type MutantResult = {
   killingTests: TestId[];
   /** Present only when status is Killed; a Timeout has no failing tests, so no kill class. */
   killClass?: KillClass;
+  /** Present only when status is InvalidWitness (Requirement 5.6). */
+  invalidWitness?: InvalidWitnessRecord;
 };
 
 export type EngineConfig = {
