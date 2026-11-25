@@ -174,7 +174,7 @@ Conventions used in every task:
     - _Requirements: 7.6, 7.7_
     - _Validation: npx vitest run --project engine packages/engine/test/core/coverage.invalid.property.test.ts passes_
 
-  - [ ] 3.22 Write Property 4: Coverage partition
+  - [x] 3.22 Write Property 4: Coverage partition
     - Write `test/core/coverage.partition.property.test.ts` with **Property 4: Coverage partition**.
     - **Validates: Requirements 7.1, 7.2, 7.3, 7.4, 7.5, 7.8**
     - _Requirements: 7.1, 7.2, 7.3, 7.4, 7.5, 7.8_

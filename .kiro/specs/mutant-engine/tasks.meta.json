@@ -31,6 +31,10 @@
     "3.21 Write Property 3: No invalid mutant is counted": {
       "status": "passed",
       "lastRunTimestamp": 1795620621272
+    },
+    "3.22 Write Property 4: Coverage partition": {
+      "status": "passed",
+      "lastRunTimestamp": 1795620690242
     }
   },
   "executionHistory": {
@@ -337,6 +341,18 @@
         "executionId": "202ec912-17f9-4aac-9d22-968fc7721300",
         "chatSessionId": "sess_cd1f1304-8800-43d0-a544-4b27a4c47e5c",
         "timestamp": 1795620627739
+      }
+    ],
+    "3.22 Write Property 4: Coverage partition": [
+      {
+        "executionId": "1ecc7f1b-a0d0-41e4-aba4-2ee76961cf1b",
+        "chatSessionId": "sess_6a3a781f-6fbc-4133-8047-b9d0a78d97ad",
+        "timestamp": 1795620653367
+      },
+      {
+        "executionId": "1ecc7f1b-a0d0-41e4-aba4-2ee76961cf1b",
+        "chatSessionId": "sess_6a3a781f-6fbc-4133-8047-b9d0a78d97ad",
+        "timestamp": 1795620696363
       }
     ]
   }
