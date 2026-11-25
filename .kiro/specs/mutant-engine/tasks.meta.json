@@ -531,6 +531,18 @@
         "chatSessionId": "sess_62e50c85-933b-4c1d-a0a4-84dc72cc128a",
         "timestamp": 1795622819976
       }
+    ],
+    "5.3 Write Property 13: Sandbox isolation": [
+      {
+        "executionId": "bd397569-b777-4991-bc1b-efc9b0b19ea8",
+        "chatSessionId": "sess_f002dcef-00f1-4acd-8e80-2031b6f6e630",
+        "timestamp": 1795622851163
+      },
+      {
+        "executionId": "bd397569-b777-4991-bc1b-efc9b0b19ea8",
+        "chatSessionId": "sess_f002dcef-00f1-4acd-8e80-2031b6f6e630",
+        "timestamp": 1795622914763
+      }
     ]
   }
 }

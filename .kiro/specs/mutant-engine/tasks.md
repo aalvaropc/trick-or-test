@@ -251,7 +251,7 @@ Conventions used in every task:
     - _Requirements: 5.1, 5.13, 3.14_
     - _Validation: npx vitest run --project engine packages/engine/test/adapters/sandbox.test.ts passes_
 
-  - [ ] 5.3 Write Property 13: Sandbox isolation
+  - [x] 5.3 Write Property 13: Sandbox isolation
     - Write `test/adapters/sandbox.property.test.ts` with **Property 13: Sandbox isolation**. Generate sequences of runs that pass, throw and time out inside `withSandbox` on a temp project, then compare a hash of every file outside `.trickortest/` before and after and check that `.trickortest/sandboxes/` is empty.
     - **Validates: Requirements 3.14, 5.1, 5.13, 10.10**
     - _Requirements: 3.14, 5.1, 5.13, 10.10_
