@@ -354,6 +354,28 @@
         "chatSessionId": "sess_6a3a781f-6fbc-4133-8047-b9d0a78d97ad",
         "timestamp": 1795620696363
       }
+    ],
+    "3.23 Write Property 12: Skip is not attack": [
+      {
+        "executionId": "5f7628de-11f2-419c-8323-51a2a90304db",
+        "chatSessionId": "sess_e44c1b07-23d9-4725-9b64-cae1bf048686",
+        "timestamp": 1795620728223
+      },
+      {
+        "executionId": "5f7628de-11f2-419c-8323-51a2a90304db",
+        "chatSessionId": "sess_e44c1b07-23d9-4725-9b64-cae1bf048686",
+        "timestamp": 1795620794222
+      },
+      {
+        "executionId": "9208d970-e419-4b63-9771-48e479a95e1a",
+        "chatSessionId": "sess_e44c1b07-23d9-4725-9b64-cae1bf048686",
+        "timestamp": 1795620815198
+      },
+      {
+        "executionId": "2b603f77-466c-4bfe-9748-2b562a64efa2",
+        "chatSessionId": "sess_e44c1b07-23d9-4725-9b64-cae1bf048686",
+        "timestamp": 1795621033381
+      }
     ]
   }
 }

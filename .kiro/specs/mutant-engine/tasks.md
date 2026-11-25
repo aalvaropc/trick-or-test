@@ -180,7 +180,7 @@ Conventions used in every task:
     - _Requirements: 7.1, 7.2, 7.3, 7.4, 7.5, 7.8_
     - _Validation: npx vitest run --project engine packages/engine/test/core/coverage.partition.property.test.ts passes_
 
-  - [ ] 3.23 Write Property 12: Skip is not attack
+  - [x] 3.23 Write Property 12: Skip is not attack
     - Write `test/core/coverage.skip.property.test.ts` with **Property 12: Skip is not attack**. Include skip entries with empty reasons and entries that name a criterion that has a valid mutant, and check them through `checkCrossFileRules` and `computeCoverage`.
     - **Validates: Requirements 4.8, 4.9, 7.3, 7.4, 7.5**
     - _Requirements: 4.8, 4.9, 7.3, 7.4, 7.5_
