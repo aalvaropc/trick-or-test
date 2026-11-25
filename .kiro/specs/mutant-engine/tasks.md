@@ -329,7 +329,7 @@ Conventions used in every task:
     - _Requirements: 8.8, 8.9, 8.10, 8.16_
     - _Validation: npx vitest run --project engine packages/engine/test/core/history-lines.test.ts passes_
 
-  - [ ] 3.47 Write Property 17: History lines round trip
+  - [x] 3.47 Write Property 17: History lines round trip
     - Write `test/core/history-lines.property.test.ts` with **Property 17: History lines round trip**. Generate sequences of HistoryRecord values (including strings with newlines and quotes), serialize each record, join the lines as `history.jsonl` would hold them, parse with `parseHistoryLines`, and check that the same records come back in the same order, that each line is one complete JSON object, and that appending one more line leaves the earlier lines byte-identical.
     - **Validates: Requirements 8.9, 8.10, 8.16**
     - _Requirements: 8.9, 8.10, 8.16_

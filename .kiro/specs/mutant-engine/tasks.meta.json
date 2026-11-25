@@ -866,6 +866,18 @@
         "chatSessionId": "sess_8a7c3b7c-1c80-4190-a34c-f8131db2771a",
         "timestamp": 1795629762415
       }
+    ],
+    "3.47 Write Property 17: History lines round trip": [
+      {
+        "executionId": "044f39ae-9a49-4246-b680-56bae4ac43e3",
+        "chatSessionId": "sess_08bb5302-5169-4256-934a-feac5e426dbf",
+        "timestamp": 1795629809512
+      },
+      {
+        "executionId": "044f39ae-9a49-4246-b680-56bae4ac43e3",
+        "chatSessionId": "sess_08bb5302-5169-4256-934a-feac5e426dbf",
+        "timestamp": 1795629897201
+      }
     ]
   }
 }
