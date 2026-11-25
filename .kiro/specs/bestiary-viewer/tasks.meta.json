@@ -12,6 +12,18 @@
         "chatSessionId": "sess_3ba4a2d2-77eb-48e4-afd9-4372bca88aca",
         "timestamp": 1795627413191
       }
+    ],
+    "1.2 Add the TypeScript project, Vite config and entry stub": [
+      {
+        "executionId": "4ac1d23b-ffc7-4129-8c41-6f777b23a380",
+        "chatSessionId": "sess_33a127fa-bc7f-4ed0-b01e-c41bf84c87f5",
+        "timestamp": 1795627467260
+      },
+      {
+        "executionId": "4ac1d23b-ffc7-4129-8c41-6f777b23a380",
+        "chatSessionId": "sess_33a127fa-bc7f-4ed0-b01e-c41bf84c87f5",
+        "timestamp": 1795627527368
+      }
     ]
   }
 }

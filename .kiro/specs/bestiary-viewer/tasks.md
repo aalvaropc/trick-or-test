@@ -41,7 +41,7 @@ Conventions for every task:
     - _Requirements: 12.1, 12.4, 12.5, 12.16_
     - _Validation: `npm ls -w trick-or-test-viewer` passes_
 
-  - [ ] 1.2 Add the TypeScript project, Vite config and entry stub
+  - [x] 1.2 Add the TypeScript project, Vite config and entry stub
     - Create `apps/viewer/tsconfig.json` extending `../../tsconfig.base.json` with `strict`, `jsx: react-jsx`, `lib: ["es2024", "dom", "dom.iterable"]`, `module: esnext`, `moduleResolution: bundler`, `noEmit`, `types: ["vite/client"]`, and `include` of `src`, `test`, `vite.config.ts` and `vitest.config.ts`. Resolve `trick-or-test/report` through the engine package export and its built `dist/`, not through a source alias.
     - Add a `typecheck` script that runs `tsc --noEmit -p tsconfig.json`. The root `typecheck` runs `tsc -b` first (building the engine) and then every workspace `typecheck`. Add a root project reference only if `tsc -b` accepts it with the viewer's `noEmit` setting. Otherwise rely on that order and report it.
     - Create `apps/viewer/vite.config.ts` with `base: "/trick-or-test/"` and the React plugin. Create `apps/viewer/index.html` with one `#root` element and no external `<link>` or `<script>`.
