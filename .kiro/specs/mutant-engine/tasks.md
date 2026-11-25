@@ -280,7 +280,7 @@ Conventions used in every task:
     - _Requirements: 6.3_
     - _Validation: npx vitest run --project engine packages/engine/test/core/test-classification.property.test.ts passes_
 
-  - [ ] 3.39 Fix regular expression detection in the test-body scanner
+  - [x] 3.39 Fix regular expression detection in the test-body scanner
     - In `src/adapters/test-body-extractor.ts` treat `/` as the start of a regular expression when the previous token is an operator, an opening bracket, or one of `return`, `typeof`, `case`, `in`, `of`, `delete`, `void`, `throw`, `new`, `instanceof`, `yield`, `await`; otherwise treat it as division.
     - Add one example per keyword to `test/adapters/test-body-extractor.test.ts`, each with a regex that holds a quote or a bracket, for instance `const f = (s) => { return /"/.test(s) }; fc.assert(p);` is classified as a property body. Add a division example (`a / b`) that is still division.
     - _Requirements: 6.4_

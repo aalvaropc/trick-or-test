@@ -740,6 +740,28 @@
         "chatSessionId": "sess_b52b85e0-79e5-453b-8364-17f826d78627",
         "timestamp": 1795628279614
       }
+    ],
+    "3.39 Fix regular expression detection in the test-body scanner": [
+      {
+        "executionId": "7b1a34f2-e408-4471-a18e-28646a2209e5",
+        "chatSessionId": "sess_4e5018fd-3a00-46f3-9aa2-362f8f075d80",
+        "timestamp": 1795628556375
+      },
+      {
+        "executionId": "7b1a34f2-e408-4471-a18e-28646a2209e5",
+        "chatSessionId": "sess_4e5018fd-3a00-46f3-9aa2-362f8f075d80",
+        "timestamp": 1795628597477
+      },
+      {
+        "executionId": "1335decf-07d3-4709-90c9-7655e722af63",
+        "chatSessionId": "sess_4e5018fd-3a00-46f3-9aa2-362f8f075d80",
+        "timestamp": 1795628635766
+      },
+      {
+        "executionId": "1335decf-07d3-4709-90c9-7655e722af63",
+        "chatSessionId": "sess_4e5018fd-3a00-46f3-9aa2-362f8f075d80",
+        "timestamp": 1795628681000
+      }
     ]
   }
 }
