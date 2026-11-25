@@ -746,7 +746,7 @@ Conventions used in every task:
     - _Requirements: 5.19_
     - _Validation: npx vitest run --project engine packages/engine/test/adapters/sandbox.test.ts passes_
 
-  - [ ] 12.39 Compute the StrykerJS exclusions in `core/stryker-exclusions.ts`
+  - [x] 12.39 Compute the StrykerJS exclusions in `core/stryker-exclusions.ts`
     - Create `core/stryker-exclusions.ts` with `computeStrykerExclusions(listing, buildRoots)` as in `design.md`: every top-level directory that is not a build root in `nonBuildDirs`, every directory reached through a symlink in `symlinkedDirs`, `ignorePatterns` as the sorted, de-duplicated union with `.stryker-tmp`, `.trickortest` and the output directory as `<dir>/**`.
     - Write `test/core/stryker-exclusions.test.ts`: a typical project, a build root never listed, a symlinked directory, a symlink to a file (not listed), `.stryker-tmp` and `.trickortest` always present, input order changed gives the same output.
     - _Requirements: 3.7, 3.8_
