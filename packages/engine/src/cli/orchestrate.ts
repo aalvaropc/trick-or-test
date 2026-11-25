@@ -40,6 +40,7 @@ import {
   validateSkipFile,
 } from "../core/spec-mutants.js";
 import { classifySpecies } from "../core/species.js";
+import type { Location } from "../core/stryker-output.js";
 import { computeSuiteTimeLimit } from "../core/suite-time-limit.js";
 import { classifyTest, type TestKind } from "../core/test-classification.js";
 import type {
@@ -304,6 +305,8 @@ export interface MechanicalOutcome {
   readonly replacement: string;
   readonly startLine: number;
   readonly endLine: number;
+  /** Start and end line and column from StrykerJS, 1-based. */
+  readonly location?: Location;
 }
 
 export interface MechanicalStageResult {
@@ -399,6 +402,7 @@ const toOutcome = (mutant: MechanicalMutant, result: MutantResult): MechanicalOu
   replacement: mutant.replacement,
   startLine: mutant.startLine,
   endLine: mutant.endLine,
+  location: mutant.location,
 });
 
 async function toOutcomes(
@@ -416,8 +420,8 @@ async function toOutcomes(
       file: mutant.file,
       original: mutant.original,
       replacement: mutant.replacement,
-      line: mutant.startLine,
-      column: 0,
+      line: mutant.location.start.line,
+      column: mutant.location.start.column,
     })),
   );
 
@@ -820,7 +824,7 @@ export async function writeReports(
   const mechanical: ReportMutantInput[] = input.mechanical.map((m) => ({
     id: m.result.id,
     file: m.file,
-    location: {
+    location: m.location ?? {
       start: { line: Math.max(1, m.startLine), column: 1 },
       end: { line: Math.max(1, m.endLine), column: 1 },
     },

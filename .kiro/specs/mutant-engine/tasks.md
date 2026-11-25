@@ -595,7 +595,7 @@ Conventions used in every task:
     - _Requirements: 3.16, 8.15_
     - _Validation: npx vitest run --project engine packages/engine/test/core/report.test.ts passes_
 
-  - [ ] 12.14 Pass real locations through the mechanical stage
+  - [x] 12.14 Pass real locations through the mechanical stage
     - In `cli/orchestrate.ts` (mechanical stage) pass the StrykerJS locations to `assignOccurrenceIndexes` and to the report input, so ids and the report use the real positions.
     - Add examples to `test/cli/orchestrate-mechanical.test.ts`: two identical changes at different lines get different ids, the ids do not change when unrelated lines move, and the report input carries the location. Note: the pinned ids of task 7.8 do not change.
     - _Requirements: 3.16, 8.7_
