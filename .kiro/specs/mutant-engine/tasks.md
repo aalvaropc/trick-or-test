@@ -710,7 +710,7 @@ Conventions used in every task:
     - _Requirements: 5.18_
     - _Validation: npx vitest run --project engine packages/engine/test/core/sandbox-plan.test.ts passes_
 
-  - [ ] 12.33 List project entries in the file system adapter
+  - [x] 12.33 List project entries in the file system adapter
     - In `adapters/file-system-adapter.ts` add `listEntries(root): ProjectEntry[]`: files, directories and symlinks with project-relative paths and symlink targets resolved to project-relative paths (a target outside the project is kept as an outside marker the plan can detect). Add it to the `FileSystem` interface.
     - Add examples to `test/adapters/file-system-adapter.test.ts` on a temp directory: files, nested directories, a link to a file inside, a link to a directory inside, a link outside the project, a broken link.
     - _Requirements: 5.18, 3.7_

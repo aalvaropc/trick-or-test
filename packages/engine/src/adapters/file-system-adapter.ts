@@ -5,12 +5,14 @@ import {
   readdir,
   readFile,
   readlink,
+  realpath,
   rm,
   symlink,
   writeFile,
 } from "node:fs/promises";
-import { dirname, join, relative, sep } from "node:path";
+import { dirname, join, relative, resolve, sep } from "node:path";
 import { err, ok, type Result } from "../core/result.js";
+import type { ProjectEntry } from "../core/sandbox-plan.js";
 
 export interface FileSystem {
   readFile(path: string): Promise<Result<string, string>>;
@@ -18,6 +20,11 @@ export interface FileSystem {
   copyDir(src: string, dest: string, exclude?: readonly string[]): Promise<Result<void, string>>;
   removeDir(path: string): Promise<Result<void, string>>;
   exists(path: string): Promise<boolean>;
+  /**
+   * Lists every file, directory and symlink under `root` with project-relative `/` paths. Symlink
+   * targets are project-relative; a target outside the project starts with `..`. Links are not followed.
+   */
+  listEntries(root: string): Promise<ProjectEntry[]>;
 }
 
 const messageOf = (error: unknown): string =>
@@ -70,7 +77,46 @@ const copyTree = async (
   }
 };
 
+/**
+ * Resolves a symlink to a path relative to the project root. Uses `realpath` when the target
+ * exists and falls back to lexical resolution for a broken link. A target outside the project
+ * keeps a leading `..` segment, which `planSandboxCopy` treats as outside.
+ */
+const resolveLinkTarget = async (realRoot: string, linkPath: string): Promise<string> => {
+  let resolved: string;
+  try {
+    resolved = await realpath(linkPath);
+  } catch {
+    resolved = resolve(dirname(linkPath), await readlink(linkPath));
+  }
+  return toPosix(relative(realRoot, resolved));
+};
+
+const walkEntries = async (realRoot: string, dir: string, out: ProjectEntry[]): Promise<void> => {
+  const children = await readdir(dir, { withFileTypes: true });
+  children.sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0));
+  for (const child of children) {
+    const abs = join(dir, child.name);
+    const path = toPosix(relative(realRoot, abs));
+    if (child.isSymbolicLink()) {
+      out.push({ path, kind: "symlink", target: await resolveLinkTarget(realRoot, abs) });
+    } else if (child.isDirectory()) {
+      out.push({ path, kind: "dir" });
+      await walkEntries(realRoot, abs, out);
+    } else if (child.isFile()) {
+      out.push({ path, kind: "file" });
+    }
+  }
+};
+
 export const createFileSystem = (): FileSystem => ({
+  async listEntries(root) {
+    const realRoot = await realpath(root);
+    const out: ProjectEntry[] = [];
+    await walkEntries(realRoot, realRoot, out);
+    return out;
+  },
+
   async readFile(path) {
     try {
       return ok(await readFile(path, "utf8"));
