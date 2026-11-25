@@ -1,0 +1,14 @@
+{
+  "id": "oath-2.1-half-rounds-down",
+  "requirement": "2.1",
+  "file": "src/percent.ts",
+  "original": "const HALF = 5000;",
+  "mutated": "const HALF = 4999;",
+  "why": "Exact halves round down instead of up, so Round_Half_Up is no longer honoured.",
+  "witness": {
+    "from": "src/index.ts",
+    "export": "percentOf",
+    "args": [5, 1000],
+    "expected": 1
+  }
+}

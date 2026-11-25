@@ -1,0 +1,14 @@
+{
+  "id": "oath-3.5-coupon-validated",
+  "requirement": "3.5",
+  "file": "src/validate.ts",
+  "original": "if (!isIntInRange(cart.taxBps, 0, 10000)) {",
+  "mutated": "if (cart.coupon !== undefined && cart.coupon.minSubtotalCents < 0) {\n    throw new ValidationError('coupon.minSubtotalCents');\n  }\n  if (!isIntInRange(cart.taxBps, 0, 10000)) {",
+  "why": "Rejects a coupon with a negative minSubtotalCents although coupon field values are accepted without validation.",
+  "witness": {
+    "from": "src/index.ts",
+    "export": "priceCart",
+    "args": [{ "lines": [{ "quantity": 1, "unitPriceCents": 1000 }], "coupon": { "kind": "fixed", "amountCents": 100, "minSubtotalCents": -1 }, "shipping": "standard", "taxBps": 0 }],
+    "expected": { "subtotalCents": 1000, "discountCents": 100, "shippingCents": 799, "taxCents": 0, "totalCents": 1699 }
+  }
+}

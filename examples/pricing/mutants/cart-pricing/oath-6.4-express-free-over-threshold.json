@@ -1,0 +1,14 @@
+{
+  "id": "oath-6.4-express-free-over-threshold",
+  "requirement": "6.4",
+  "file": "src/price.ts",
+  "original": "if (method === 'express') return EXPRESS_SHIPPING;",
+  "mutated": "if (method === 'express') return discounted >= FREE_SHIPPING_THRESHOLD ? 0 : EXPRESS_SHIPPING;",
+  "why": "Express shipping becomes free above the threshold instead of always being 1499.",
+  "witness": {
+    "from": "src/index.ts",
+    "export": "priceCart",
+    "args": [{ "lines": [{ "quantity": 1, "unitPriceCents": 10000 }], "shipping": "express", "taxBps": 0 }],
+    "expected": { "subtotalCents": 10000, "discountCents": 0, "shippingCents": 1499, "taxCents": 0, "totalCents": 11499 }
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "id": "oath-5.3-percent-coupon-uncapped",
+  "requirement": "5.3",
+  "file": "src/price.ts",
+  "original": "Math.min(percentOf(subtotal, coupon.bps), coupon.maxDiscountCents)",
+  "mutated": "percentOf(subtotal, coupon.bps)",
+  "why": "The percent coupon discount is not limited to maxDiscountCents.",
+  "witness": {
+    "from": "src/index.ts",
+    "export": "priceCart",
+    "args": [{ "lines": [{ "quantity": 1, "unitPriceCents": 1000 }], "coupon": { "kind": "percent", "bps": 5000, "maxDiscountCents": 100, "minSubtotalCents": 0 }, "shipping": "standard", "taxBps": 0 }],
+    "expected": { "subtotalCents": 1000, "discountCents": 100, "shippingCents": 799, "taxCents": 0, "totalCents": 1699 }
+  }
+}

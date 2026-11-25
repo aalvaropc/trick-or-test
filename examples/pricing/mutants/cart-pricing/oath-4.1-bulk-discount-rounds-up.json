@@ -1,0 +1,14 @@
+{
+  "id": "oath-4.1-bulk-discount-rounds-up",
+  "requirement": "4.1",
+  "file": "src/price.ts",
+  "original": "raw - percentOf(raw, BULK_DISCOUNT_BPS)",
+  "mutated": "percentOf(raw, 10000 - BULK_DISCOUNT_BPS)",
+  "why": "Rounds the discounted line total instead of the discount amount, so the bulk discount of 5.5 becomes 5 instead of 6.",
+  "witness": {
+    "from": "src/index.ts",
+    "export": "priceCart",
+    "args": [{ "lines": [{ "quantity": 11, "unitPriceCents": 5 }], "shipping": "standard", "taxBps": 0 }],
+    "expected": { "subtotalCents": 49, "discountCents": 0, "shippingCents": 799, "taxCents": 0, "totalCents": 848 }
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "id": "oath-7.1-tax-on-subtotal-before-coupon",
+  "requirement": "7.1",
+  "file": "src/price.ts",
+  "original": "const taxCents = percentOf(discounted, cart.taxBps);",
+  "mutated": "const taxCents = percentOf(subtotalCents, cart.taxBps);",
+  "why": "Tax is computed on the Subtotal instead of the Discounted_Subtotal.",
+  "witness": {
+    "from": "src/index.ts",
+    "export": "priceCart",
+    "args": [{ "lines": [{ "quantity": 1, "unitPriceCents": 1000 }], "coupon": { "kind": "fixed", "amountCents": 500, "minSubtotalCents": 0 }, "shipping": "standard", "taxBps": 1000 }],
+    "expected": { "subtotalCents": 1000, "discountCents": 500, "shippingCents": 799, "taxCents": 50, "totalCents": 1349 }
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "id": "oath-5.1-coupon-min-exclusive",
+  "requirement": "5.1",
+  "file": "src/price.ts",
+  "original": "subtotal < coupon.minSubtotalCents",
+  "mutated": "subtotal <= coupon.minSubtotalCents",
+  "why": "The coupon is not applied when the Subtotal is exactly equal to minSubtotalCents.",
+  "witness": {
+    "from": "src/index.ts",
+    "export": "priceCart",
+    "args": [{ "lines": [{ "quantity": 1, "unitPriceCents": 1000 }], "coupon": { "kind": "fixed", "amountCents": 100, "minSubtotalCents": 1000 }, "shipping": "standard", "taxBps": 0 }],
+    "expected": { "subtotalCents": 1000, "discountCents": 100, "shippingCents": 799, "taxCents": 0, "totalCents": 1699 }
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "id": "oath-5.4-fixed-coupon-wrong-field",
+  "requirement": "5.4",
+  "file": "src/price.ts",
+  "original": ": coupon.amountCents;",
+  "mutated": ": coupon.minSubtotalCents;",
+  "why": "The fixed coupon discount is minSubtotalCents instead of amountCents.",
+  "witness": {
+    "from": "src/index.ts",
+    "export": "priceCart",
+    "args": [{ "lines": [{ "quantity": 1, "unitPriceCents": 1000 }], "coupon": { "kind": "fixed", "amountCents": 200, "minSubtotalCents": 100 }, "shipping": "standard", "taxBps": 0 }],
+    "expected": { "subtotalCents": 1000, "discountCents": 200, "shippingCents": 799, "taxCents": 0, "totalCents": 1599 }
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "id": "oath-4.4-empty-cart-nonzero-subtotal",
+  "requirement": "4.4",
+  "file": "src/price.ts",
+  "original": "let subtotalCents = 0;",
+  "mutated": "let subtotalCents = cart.lines.length === 0 ? 1 : 0;",
+  "why": "A cart with zero Lines returns a Breakdown in which subtotalCents and totalCents are not 0.",
+  "witness": {
+    "from": "src/index.ts",
+    "export": "priceCart",
+    "args": [{ "lines": [], "shipping": "standard", "taxBps": 1000 }],
+    "expected": { "subtotalCents": 0, "discountCents": 0, "shippingCents": 0, "taxCents": 0, "totalCents": 0 }
+  }
+}

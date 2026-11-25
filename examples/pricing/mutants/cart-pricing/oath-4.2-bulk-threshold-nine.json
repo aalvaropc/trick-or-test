@@ -1,0 +1,14 @@
+{
+  "id": "oath-4.2-bulk-threshold-nine",
+  "requirement": "4.2",
+  "file": "src/price.ts",
+  "original": "line.quantity >= BULK_THRESHOLD",
+  "mutated": "line.quantity >= BULK_THRESHOLD - 1",
+  "why": "Applies the bulk discount to a quantity of 9, which is below 10.",
+  "witness": {
+    "from": "src/index.ts",
+    "export": "priceCart",
+    "args": [{ "lines": [{ "quantity": 9, "unitPriceCents": 100 }], "shipping": "standard", "taxBps": 0 }],
+    "expected": { "subtotalCents": 900, "discountCents": 0, "shippingCents": 799, "taxCents": 0, "totalCents": 1699 }
+  }
+}
