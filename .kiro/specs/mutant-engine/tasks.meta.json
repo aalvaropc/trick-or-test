@@ -1084,6 +1084,13 @@
         "chatSessionId": "sess_5b58de7a-9c3d-483c-88ac-444346d90202",
         "timestamp": 1795638388549
       }
+    ],
+    "12.8 Report witness timeout and missing outcome from the witness runner": [
+      {
+        "executionId": "f00a8713-8708-4f70-9684-cc5d55d38b24",
+        "chatSessionId": "sess_6f9f882b-8c42-4664-ab41-2cbe3c8d412f",
+        "timestamp": 1795638441441
+      }
     ]
   }
 }

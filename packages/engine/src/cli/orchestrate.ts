@@ -53,7 +53,11 @@ import type {
   TestId,
   Witness,
 } from "../core/types.js";
-import { compareWitnessOutcome, type WitnessOutcome } from "../core/witness-compare.js";
+import {
+  compareOutcomes,
+  matchesExpectation,
+  type WitnessOutcome,
+} from "../core/witness-compare.js";
 import type { CliOptions } from "./args.js";
 
 /** The slice of the file system adapter the load stage needs. */
@@ -651,7 +655,8 @@ async function runOneSpecMutant(
       message: original === undefined ? "witness produced no outcome" : original.error.message,
     });
   }
-  if (compareWitnessOutcome(mutant.witness, original.value) === "mismatch") {
+  // A timeout on the original code never matches the expectation.
+  if (!matchesExpectation(mutant.witness, original.value)) {
     return done("InvalidWitness", { originalOutcome: original.value });
   }
 
@@ -670,10 +675,8 @@ async function runOneSpecMutant(
   const mutatedRun = witnessRun.value[mutant.id];
   // A witness with no outcome on the mutated code (for example a failed import) is a change.
   const mutatedOutcome = mutatedRun?.ok ? mutatedRun.value : undefined;
-  if (
-    mutatedOutcome !== undefined &&
-    compareWitnessOutcome(mutant.witness, mutatedOutcome) === "match"
-  ) {
+  // 5.16: a timeout or a missing outcome on the mutated code is a difference, so the suite runs.
+  if (mutatedOutcome !== undefined && compareOutcomes(original.value, mutatedOutcome) === "same") {
     return done("Ghost", { originalOutcome: original.value, mutatedOutcome });
   }
   const seen = {

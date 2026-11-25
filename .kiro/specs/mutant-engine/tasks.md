@@ -564,7 +564,7 @@ Conventions used in every task:
     - _Requirements: 5.4, 5.5, 5.16_
     - _Validation: npx vitest run --project engine packages/engine/test/adapters/vitest-witness-runner.test.ts passes_
 
-  - [ ] 12.9 Run the suite when the witness times out on the mutated code
+  - [x] 12.9 Run the suite when the witness times out on the mutated code
     - In `cli/orchestrate.ts` (spec mutant stage) use `compareOutcomes` and `matchesExpectation`. A `timeout` of the mutated code is a difference, so the suite runs and the status comes from that run (Killed, Survived or Timeout by the suite time limit). A witness timeout alone never gives Timeout or Killed. A `timeout` or `no-outcome` on the original code gives InvalidWitness.
     - Add examples to `test/cli/orchestrate-spec-mutants.test.ts`: witness timeout on mutated code with a passing suite is Survived; with a failing suite is Killed; witness timeout on the original code is InvalidWitness; the suite runner is called in the first case.
     - _Requirements: 5.6, 5.8, 5.16_
