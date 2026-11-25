@@ -119,7 +119,7 @@ Conventions used in every task:
     - _Requirements: 5.6, 5.12_
     - _Validation: npx vitest run --project engine packages/engine/test/core/witness-compare.test.ts passes_
 
-  - [ ] 3.13 Implement `test-classification.ts` with example tests
+  - [x] 3.13 Implement `test-classification.ts` with example tests
     - Implement `classifyTest({ filePath, bodySource }, propertyTestGlobs)`: property when the path matches a glob or the body calls `fc.assert`, `fc.check` or `test.prop`; otherwise example.
     - Write `test/core/test-classification.test.ts`: glob match, each of the three entry points, a plain example body, a body that only mentions `fc.assert` in a comment or a string, and a helper-only case that is classified by glob alone.
     - _Requirements: 6.3, 6.4, 6.5_
