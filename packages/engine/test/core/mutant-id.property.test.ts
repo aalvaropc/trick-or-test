@@ -1,8 +1,8 @@
-// Property 6: Deterministic ids. Validates: Requirements 4.5, 8.7
+// Property 6: Deterministic ids. Validates: Requirements 4.5, 8.7, 8.13
 // buildMutationReport (core/report.ts, task 3.24) does not exist yet, so report order is modelled as ordering by id on plain data.
 import fc from "fast-check";
 import { describe, expect, it } from "vitest";
-import { computeMutantId } from "../../src/core/mutant-id.js";
+import { assignOccurrenceIndexes, computeMutantId } from "../../src/core/mutant-id.js";
 import type { MutantId } from "../../src/core/types.js";
 
 type Mechanical = { kind: "mechanical"; file: string; original: string; replacement: string };
@@ -47,7 +47,80 @@ const withPermutation = (entries: fc.Arbitrary<Entry[]>) =>
       .map((order) => ({ list, shuffled: order.map((i) => list[i] as Entry) })),
   );
 
+type Located = {
+  file: string;
+  original: string;
+  replacement: string;
+  line: number;
+  column: number;
+};
+
+// Mutants drawn from a few shared (file, original, replacement) groups, all at distinct locations.
+const located: fc.Arbitrary<Located[]> = fc
+  .uniqueArray(fc.tuple(fc.integer({ min: 1, max: 40 }), fc.integer({ min: 1, max: 20 })), {
+    minLength: 1,
+    maxLength: 12,
+    selector: ([line, column]) => `${line}:${column}`,
+  })
+  .chain((locs) =>
+    fc
+      .array(
+        fc.record({
+          file: fc.constantFrom("a.ts", "b.ts"),
+          original: fc.constantFrom("+", "<"),
+          replacement: fc.constantFrom("-", ">"),
+        }),
+        { minLength: locs.length, maxLength: locs.length },
+      )
+      .map((groups) =>
+        locs.map(([line, column], i) => ({
+          ...(groups[i] as Omit<Located, "line" | "column">),
+          line,
+          column,
+        })),
+      ),
+  );
+
+const groupKey = (m: Located): string => JSON.stringify([m.file, m.original, m.replacement]);
+
+const idsOf = (list: Located[]): string[] => {
+  const indexes = assignOccurrenceIndexes(list);
+  return list.map((m, i) =>
+    computeMutantId(m.file, m.original, m.replacement, indexes[i] as number),
+  );
+};
+
 describe("Property 6: Deterministic ids", () => {
+  it("8.7 mutants sharing file, original and replacement at different locations get different ids", () => {
+    fc.assert(
+      fc.property(located, (list) => {
+        const ids = idsOf(list);
+        expect(new Set(ids).size).toBe(list.length);
+        for (let i = 0; i < list.length; i++) {
+          for (let j = i + 1; j < list.length; j++) {
+            if (groupKey(list[i] as Located) === groupKey(list[j] as Located)) {
+              expect(ids[i]).not.toBe(ids[j]);
+            }
+          }
+        }
+      }),
+    );
+  });
+
+  it("8.13 moving unrelated lines without reordering a group changes no id", () => {
+    fc.assert(
+      fc.property(
+        located,
+        fc.integer({ min: 1, max: 40 }),
+        fc.integer({ min: 1, max: 100 }),
+        (list, pivot, shift) => {
+          const moved = list.map((m) => (m.line >= pivot ? { ...m, line: m.line + shift } : m));
+          expect(idsOf(moved)).toEqual(idsOf(list));
+        },
+      ),
+    );
+  });
+
   it("8.7 a mechanical id depends only on file, original text and replacement", () => {
     fc.assert(
       fc.property(mechanical, mechanical, (a, b) => {

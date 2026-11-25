@@ -658,6 +658,28 @@
         "chatSessionId": "sess_6561d72c-3516-43fc-bbf9-20cdf1f7092a",
         "timestamp": 1795626617924
       }
+    ],
+    "3.33 Extend Property 6 for the Occurrence_Index": [
+      {
+        "executionId": "92ec43bc-ce37-4406-9d52-f9457199e5de",
+        "chatSessionId": "sess_d1466106-c197-43da-ad61-3b536c6ff0de",
+        "timestamp": 1795626666772
+      },
+      {
+        "executionId": "92ec43bc-ce37-4406-9d52-f9457199e5de",
+        "chatSessionId": "sess_d1466106-c197-43da-ad61-3b536c6ff0de",
+        "timestamp": 1795626723638
+      },
+      {
+        "executionId": "364632ac-ed30-420f-af97-904e7cc2d832",
+        "chatSessionId": "sess_d1466106-c197-43da-ad61-3b536c6ff0de",
+        "timestamp": 1795626750870
+      },
+      {
+        "executionId": "364632ac-ed30-420f-af97-904e7cc2d832",
+        "chatSessionId": "sess_d1466106-c197-43da-ad61-3b536c6ff0de",
+        "timestamp": 1795626794051
+      }
     ]
   }
 }

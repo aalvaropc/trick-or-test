@@ -244,7 +244,7 @@ Conventions used in every task:
     - _Requirements: 8.7, 4.5, 8.13_
     - _Validation: npx vitest run --project engine packages/engine/test/core/mutant-id.test.ts passes_
 
-  - [ ] 3.33 Extend Property 6 for the Occurrence_Index
+  - [x] 3.33 Extend Property 6 for the Occurrence_Index
     - In `test/core/mutant-id.property.test.ts` add the clause: two mutants with the same file, original text and replacement but different locations get different ids, and moving unrelated lines (without changing the order inside a group) changes no id. The generators include groups of mutants that share file, original text and replacement.
     - **Validates: Requirements 8.7, 4.5, 8.13**
     - _Requirements: 8.7, 4.5, 8.13_
