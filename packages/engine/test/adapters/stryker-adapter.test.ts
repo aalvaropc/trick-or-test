@@ -70,6 +70,8 @@ const failure = (name: string): StrykerProcessResult => ({
   output: capture(name),
   exitCode: 1,
 });
+const expectedError = (name: string): string =>
+  readFileSync(new URL(`../fixtures/stryker/${name}`, import.meta.url), "utf8").trim();
 const staticFailure = failure("dry-run-failed-module-constant.txt");
 
 describe("MechanicalRunner.run", () => {
@@ -99,11 +101,7 @@ describe("MechanicalRunner.run", () => {
     const { process, calls } = fake([staticFailure, staticFailure]);
     const result = await MechanicalRunner.run(base, process);
     expect(calls).toHaveLength(2);
-    expect(result).toEqual(
-      err(
-        "16:00:30 (545566) ERROR DryRunExecutor One or more tests failed in the initial test run:",
-      ),
-    );
+    expect(result).toEqual(err(expectedError("dry-run-failed-module-constant.error.txt")));
   });
 
   it("3.5 retries once and flags it for each captured failed dry run", async () => {
@@ -122,11 +120,7 @@ describe("MechanicalRunner.run", () => {
     const { process, calls } = fake([failure("failed-after-dry-run.txt")]);
     const result = await MechanicalRunner.run(base, process);
     expect(calls).toHaveLength(1);
-    expect(result).toEqual(
-      err(
-        "16:00:50 (548337) ERROR MutationTestReportHelper Final mutation score 50.00 under breaking threshold 100, setting exit code to 1 (failure).",
-      ),
-    );
+    expect(result).toEqual(err(expectedError("failed-after-dry-run.error.txt")));
   });
 
   it("3.6 returns the first ERROR-level line, without colour codes, not the first line", async () => {

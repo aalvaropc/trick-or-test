@@ -830,7 +830,7 @@ Conventions used in every task:
     - _Requirements: 10.13, 5.6_
     - _Validation: npx vitest run --project engine packages/engine/test/cli/orchestrate-invalid-witness.test.ts passes_
 
-  - [ ] 12.53 Replace invented StrykerJS output in the adapter tests
+  - [x] 12.53 Replace invented StrykerJS output in the adapter tests
     - In `test/adapters/stryker-adapter.test.ts` replace every fake process output that was written by hand (clean run, static-mutant failure, other error) by the captured real StrykerJS 10.1.1 fixtures of tasks 12.10 and 12.15. If a case has no captured output yet (for example a failed run without a JSON report), capture it from a real run.
     - Check with `grep` that no inline StrykerJS log text remains in the test file.
     - _Requirements: 10.12_

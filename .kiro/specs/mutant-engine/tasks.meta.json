@@ -1430,6 +1430,20 @@
         "chatSessionId": "sess_9741d330-2540-4684-baa8-b342c1a61993",
         "timestamp": 1795647304242
       }
+    ],
+    "12.52 Read the written Verdict in the InvalidWitness test": [
+      {
+        "executionId": "5af2c61b-cbdb-439b-89a6-20ce942e53d1",
+        "chatSessionId": "sess_e394b44b-8bf1-4b64-813d-604e877448cc",
+        "timestamp": 1795647499915
+      }
+    ],
+    "12.53 Replace invented StrykerJS output in the adapter tests": [
+      {
+        "executionId": "af16f7c7-1c36-485e-9bba-ae521ce5bbd7",
+        "chatSessionId": "sess_87a71e5d-fbda-48f0-be81-2e06afc108d7",
+        "timestamp": 1795647639263
+      }
     ]
   }
 }

@@ -20,4 +20,6 @@ Two edits were made to the captures:
 Neither failed dry run prints any text about static mutants. StrykerJS 10.1.1 prints a
 static-mutant warning only after a successful dry run.
 
+`*.error.txt` hold the first ERROR-level line of the capture with the same base name, copied
+without the ANSI colour codes. They are the error line the adapter tests expect.
 `mutation-report.json` is the JSON report of task 12.10.
