@@ -61,6 +61,20 @@ describe("validateConfig", () => {
     expect(result).toMatchObject({ ok: false, error: { filePath: FILE, field: "specDirectory" } });
   });
 
+  it.each([
+    ["null", null],
+    ["an array", []],
+    ["a string", '"text"'],
+    ["a number", 42],
+  ])("1.5 names the file when the content is %s", (_label, raw) => {
+    const result = validateConfig(raw);
+    expect(result).toMatchObject({ ok: false, error: { filePath: FILE } });
+  });
+
+  it("1.3 treats an empty object as all defaults", () => {
+    expect(validateConfig({})).toEqual({ ok: true, value: DEFAULT_CONFIG });
+  });
+
   it("1.7 leaves timeoutMs unset when absent", () => {
     const result = validateConfig({ specDir: "s" });
     expect(result.ok && "timeoutMs" in result.value).toBe(false);

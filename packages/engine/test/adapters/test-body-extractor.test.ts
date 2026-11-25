@@ -39,6 +39,40 @@ describe("extractTestBody", () => {
     expect(body.endsWith("const x = 4 / 2;\n})")).toBe(true);
   });
 
+  it.each([
+    "return",
+    "typeof",
+    "case",
+    "in",
+    "of",
+    "delete",
+    "void",
+    "throw",
+    "new",
+    "instanceof",
+    "yield",
+    "await",
+  ])("6.4 treats a slash after `%s` as a regular expression start", (kw) => {
+    const text = [
+      `it('k', () => { const f = (s) => { ${kw} /"/.test(s) }; fc.assert(p); });`,
+      "tail();",
+    ].join("\n");
+    const body = extractTestBody(text, 1);
+    expect(body).toContain("fc.assert(p);");
+    expect(body.endsWith("});")).toBe(false);
+    expect(body).not.toContain("tail");
+  });
+
+  it("6.4 treats a slash after an operator or opening bracket as a regular expression start", () => {
+    const text = ["it('k', () => { const a = /'/; const b = [/)/]; });", "tail();"].join("\n");
+    expect(extractTestBody(text, 1)).toBe("it('k', () => { const a = /'/; const b = [/)/]; })");
+  });
+
+  it("6.4 treats a slash after an identifier as division", () => {
+    const text = ["it('d', () => { const q = a / b; const r = c / d; });", "tail();"].join("\n");
+    expect(extractTestBody(text, 1)).toBe("it('d', () => { const q = a / b; const r = c / d; })");
+  });
+
   it("6.4 covers a whole nested describe block when started on the describe line", () => {
     const text = [
       "describe('d', () => {",

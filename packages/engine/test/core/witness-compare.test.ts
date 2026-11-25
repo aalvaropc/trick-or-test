@@ -33,6 +33,28 @@ describe("compareWitnessOutcome", () => {
     expect(compareWitnessOutcome({ expected: [] }, value({}))).toBe("mismatch");
   });
 
+  it("5.12 -0 equals 0", () => {
+    expect(compareWitnessOutcome({ expected: -0 }, value(0))).toBe("match");
+    expect(compareWitnessOutcome({ expected: 0 }, value(-0))).toBe("match");
+  });
+
+  it("5.12 -0 equals 0 inside an array and an object", () => {
+    expect(compareWitnessOutcome({ expected: [1, -0] }, value([1, 0]))).toBe("match");
+    expect(compareWitnessOutcome({ expected: { a: -0 } }, value({ a: 0 }))).toBe("match");
+  });
+
+  it("5.12 undefined object members are dropped by the JSON form", () => {
+    expect(compareWitnessOutcome({ expected: { a: 1 } }, value({ a: 1, b: undefined }))).toBe(
+      "match",
+    );
+    expect(compareWitnessOutcome({ expected: { a: undefined } }, value({}))).toBe("match");
+  });
+
+  it("5.12 a top-level undefined does not throw", () => {
+    expect(compareWitnessOutcome({ expected: undefined }, value(undefined))).toBe("match");
+    expect(compareWitnessOutcome({ expected: undefined }, value(null))).toBe("mismatch");
+  });
+
   it("5.6 expectedError matches an error with the same class name", () => {
     expect(compareWitnessOutcome({ expectedError: "RangeError" }, error("RangeError"))).toBe(
       "match",

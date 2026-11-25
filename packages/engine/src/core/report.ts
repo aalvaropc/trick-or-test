@@ -170,6 +170,8 @@ export const reportFileSchema = z.strictObject({
 export const mutationReportSchema = z.strictObject({
   schemaVersion: z.string(),
   thresholds: z.strictObject({ high: z.number(), low: z.number() }),
+  /** Free-form run configuration of the schema. Holds `ignoreStaticRetried` (Requirement 3.5). */
+  config: z.record(z.string(), z.unknown()).optional(),
   files: z.record(z.string(), reportFileSchema),
 });
 
@@ -264,6 +266,8 @@ export type ReportInput = {
   mechanical: ReportMutantInput[];
   spec: SpecReportMutantInput[];
   thresholds?: { high: number; low: number };
+  /** Whether StrykerJS ran again with `ignoreStatic` (Requirement 3.5). Defaults to false. */
+  ignoreStaticRetried?: boolean;
 };
 
 export const REPORT_SCHEMA_VERSION = "2";
@@ -358,6 +362,7 @@ export const buildMutationReport = (input: ReportInput): MutationTestingReport =
   return {
     schemaVersion: REPORT_SCHEMA_VERSION,
     thresholds: { ...(input.thresholds ?? DEFAULT_THRESHOLDS) },
+    config: { ignoreStaticRetried: input.ignoreStaticRetried ?? false },
     files,
   };
 };
@@ -427,3 +432,52 @@ export const appendHistory = (
   records: readonly HistoryRecord[],
   record: HistoryRecord,
 ): HistoryRecord[] => [...records, record];
+
+// ---------------------------------------------------------------------------
+// history.jsonl: JSON Lines, one HistoryRecord per line (8.16)
+// ---------------------------------------------------------------------------
+
+/** A malformed or schema-invalid line of history.jsonl. `line` is 1-based. */
+export type HistoryError = { line: number; message: string };
+
+/**
+ * One HistoryRecord as a single-line JSON object without a trailing newline. JSON.stringify
+ * escapes newlines inside strings, so the output has no raw `\n`. Validates with the zod
+ * schema first and throws on an invalid record (8.10, 8.16).
+ */
+export const serializeHistoryRecord = (record: HistoryRecord): string => {
+  const parsed = historyRecordSchema.safeParse(record);
+  if (!parsed.success) {
+    throw new Error(
+      `Invalid history record: ${parsed.error.issues.map((i) => `${i.path.join(".")}: ${i.message}`).join("; ")}`,
+    );
+  }
+  return JSON.stringify(parsed.data);
+};
+
+/**
+ * Parses the text of history.jsonl. Each non-empty line is one JSON object; records keep their
+ * file order. A malformed or schema-invalid line returns an error that names its line number.
+ */
+export const parseHistoryLines = (text: string): Result<HistoryRecord[], HistoryError> => {
+  const records: HistoryRecord[] = [];
+  const lines = text.split(/\r?\n/);
+  for (let i = 0; i < lines.length; i++) {
+    const raw = lines[i] as string;
+    if (raw.trim() === "") continue;
+    const line = i + 1;
+    let json: unknown;
+    try {
+      json = JSON.parse(raw);
+    } catch (e) {
+      return err({ line, message: `Line ${line}: malformed JSON (${(e as Error).message})` });
+    }
+    const parsed = historyRecordSchema.safeParse(json);
+    if (!parsed.success) {
+      const issues = parsed.error.issues.map((x) => `${x.path.join(".")}: ${x.message}`).join("; ");
+      return err({ line, message: `Line ${line}: invalid history record (${issues})` });
+    }
+    records.push(parsed.data);
+  }
+  return ok(records);
+};

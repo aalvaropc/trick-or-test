@@ -101,6 +101,25 @@ describe("Property 11: Property-test classification", () => {
     );
   });
 
+  it("6.3 a file path matching any expansion of a brace glob is a property test with no fast-check call in its body", () => {
+    const subDir = fc.constantFrom("", "core/", "deep/dir/");
+    const braceCase = fc.uniqueArray(ident, { minLength: 2, maxLength: 4 }).chain((alts) =>
+      fc.record({
+        alts: fc.constant(alts),
+        picked: fc.constantFrom(...alts),
+        sub: subDir,
+        name: ident,
+      }),
+    );
+    fc.assert(
+      fc.property(braceCase, exampleBody, ({ alts, picked, sub, name }, bodySource) => {
+        const glob = `test/**/*.{${alts.join(",")}}.test.ts`;
+        const filePath = `test/${sub}${name}.${picked}.test.ts`;
+        return classifyTest({ filePath, bodySource }, [glob]) === "property";
+      }),
+    );
+  });
+
   it("6.3 with no configured globs only the body decides", () => {
     fc.assert(
       fc.property(

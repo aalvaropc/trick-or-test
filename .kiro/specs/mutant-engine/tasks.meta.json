@@ -567,6 +567,465 @@
         "chatSessionId": "sess_b6e4c823-cfd8-457d-be60-9e2d7bf4abda",
         "timestamp": 1795623138523
       }
+    ],
+    "5.6 Implement `typecheck-adapter.ts` with tests": [
+      {
+        "executionId": "3891376f-5624-4b20-95ea-92efd93a2e82",
+        "chatSessionId": "sess_54e9edfa-8f66-4ef2-a5bf-af91ab58a7dc",
+        "timestamp": 1795623201991
+      },
+      {
+        "executionId": "3891376f-5624-4b20-95ea-92efd93a2e82",
+        "chatSessionId": "sess_54e9edfa-8f66-4ef2-a5bf-af91ab58a7dc",
+        "timestamp": 1795625199596
+      }
+    ],
+    "5.7 Implement `vitest-suite-runner.ts` with tests": [
+      {
+        "executionId": "1e8d8287-530d-42ae-8a96-1ab982817d1e",
+        "chatSessionId": "sess_6b396594-eb8c-476c-8e36-490f71bfe682",
+        "timestamp": 1795625260869
+      },
+      {
+        "executionId": "1e8d8287-530d-42ae-8a96-1ab982817d1e",
+        "chatSessionId": "sess_6b396594-eb8c-476c-8e36-490f71bfe682",
+        "timestamp": 1795625453776
+      }
+    ],
+    "5.8 Implement `vitest-witness-runner.ts` with tests": [
+      {
+        "executionId": "c7dcb48d-55a9-4a2d-a062-aa244cd0bc51",
+        "chatSessionId": "sess_e4997dd5-3448-4239-bd7d-cf16ded046e4",
+        "timestamp": 1795625497092
+      },
+      {
+        "executionId": "c7dcb48d-55a9-4a2d-a062-aa244cd0bc51",
+        "chatSessionId": "sess_e4997dd5-3448-4239-bd7d-cf16ded046e4",
+        "timestamp": 1795625660346
+      }
+    ],
+    "5.9 Implement the Stryker options builder in `stryker-adapter.ts` with tests": [
+      {
+        "executionId": "c4a44e26-0a85-4e25-9733-c59be2e3335f",
+        "chatSessionId": "sess_44279dd9-35be-4eee-b459-477c11a77359",
+        "timestamp": 1795625692995
+      },
+      {
+        "executionId": "c4a44e26-0a85-4e25-9733-c59be2e3335f",
+        "chatSessionId": "sess_44279dd9-35be-4eee-b459-477c11a77359",
+        "timestamp": 1795625777954
+      }
+    ],
+    "5.10 Implement the Stryker run, retry and result parsing in `stryker-adapter.ts` with tests": [
+      {
+        "executionId": "a6b14e11-0080-46b8-be69-038c1be2966d",
+        "chatSessionId": "sess_e03366cb-e77c-4336-ade1-2c7460fae163",
+        "timestamp": 1795625812289
+      },
+      {
+        "executionId": "d3bae7cf-d7a5-4ecf-a999-b8d0ccc8f344",
+        "chatSessionId": "sess_e03366cb-e77c-4336-ade1-2c7460fae163",
+        "timestamp": 1795626187202
+      }
+    ],
+    "5. Implement the adapters (`packages/engine/src/adapters/`)": [
+      {
+        "executionId": "d3bae7cf-d7a5-4ecf-a999-b8d0ccc8f344",
+        "chatSessionId": "sess_e03366cb-e77c-4336-ade1-2c7460fae163",
+        "timestamp": 1795626187303
+      }
+    ],
+    "6. Checkpoint - Adapters phase": [
+      {
+        "executionId": "4737ab2f-2ee6-4094-98c8-e7ed14103068",
+        "chatSessionId": "sess_7b8e8960-fca9-42a9-81a8-fbb14699710f",
+        "timestamp": 1795626214797
+      },
+      {
+        "executionId": "4737ab2f-2ee6-4094-98c8-e7ed14103068",
+        "chatSessionId": "sess_7b8e8960-fca9-42a9-81a8-fbb14699710f",
+        "timestamp": 1795626238760
+      }
+    ],
+    "3.32 Add the Occurrence_Index to `computeMutantId`": [
+      {
+        "executionId": "940deaa7-aca9-446e-8000-db1840876381",
+        "chatSessionId": "sess_6561d72c-3516-43fc-bbf9-20cdf1f7092a",
+        "timestamp": 1795626528942
+      },
+      {
+        "executionId": "940deaa7-aca9-446e-8000-db1840876381",
+        "chatSessionId": "sess_6561d72c-3516-43fc-bbf9-20cdf1f7092a",
+        "timestamp": 1795626617924
+      }
+    ],
+    "3.33 Extend Property 6 for the Occurrence_Index": [
+      {
+        "executionId": "92ec43bc-ce37-4406-9d52-f9457199e5de",
+        "chatSessionId": "sess_d1466106-c197-43da-ad61-3b536c6ff0de",
+        "timestamp": 1795626666772
+      },
+      {
+        "executionId": "92ec43bc-ce37-4406-9d52-f9457199e5de",
+        "chatSessionId": "sess_d1466106-c197-43da-ad61-3b536c6ff0de",
+        "timestamp": 1795626723638
+      },
+      {
+        "executionId": "364632ac-ed30-420f-af97-904e7cc2d832",
+        "chatSessionId": "sess_d1466106-c197-43da-ad61-3b536c6ff0de",
+        "timestamp": 1795626750870
+      },
+      {
+        "executionId": "364632ac-ed30-420f-af97-904e7cc2d832",
+        "chatSessionId": "sess_d1466106-c197-43da-ad61-3b536c6ff0de",
+        "timestamp": 1795626794051
+      }
+    ],
+    "3.34 Fix the report-order clause of Property 6": [
+      {
+        "executionId": "0e54aba6-c503-4a7e-8a34-dc637a4dba3a",
+        "chatSessionId": "sess_41e3ec49-e6c7-45df-b23b-3662ccca5d34",
+        "timestamp": 1795626833105
+      },
+      {
+        "executionId": "0e54aba6-c503-4a7e-8a34-dc637a4dba3a",
+        "chatSessionId": "sess_41e3ec49-e6c7-45df-b23b-3662ccca5d34",
+        "timestamp": 1795627761689
+      }
+    ],
+    "3.35 Record the `ignoreStatic` retry in the Mutation_Report": [
+      {
+        "executionId": "de2cce36-5d01-4a11-8551-6c0fbe2fa85e",
+        "chatSessionId": "sess_41e3ec49-e6c7-45df-b23b-3662ccca5d34",
+        "timestamp": 1795627861016
+      },
+      {
+        "executionId": "de2cce36-5d01-4a11-8551-6c0fbe2fa85e",
+        "chatSessionId": "sess_41e3ec49-e6c7-45df-b23b-3662ccca5d34",
+        "timestamp": 1795627990029
+      }
+    ],
+    "3.36 Extend Property 7 with the retry flag": [
+      {
+        "executionId": "420df93f-567a-40a8-86db-3851ecf694c7",
+        "chatSessionId": "sess_531b7328-57b9-4175-a8c2-41c1c6f0080d",
+        "timestamp": 1795628030352
+      },
+      {
+        "executionId": "420df93f-567a-40a8-86db-3851ecf694c7",
+        "chatSessionId": "sess_531b7328-57b9-4175-a8c2-41c1c6f0080d",
+        "timestamp": 1795628102842
+      }
+    ],
+    "3.37 Expand braces in the property-test glob matcher": [
+      {
+        "executionId": "18713e71-4bbb-48ea-815f-2436dcb0d1c3",
+        "chatSessionId": "sess_348691b5-1e61-4a06-aede-455bbfefc471",
+        "timestamp": 1795628140737
+      },
+      {
+        "executionId": "18713e71-4bbb-48ea-815f-2436dcb0d1c3",
+        "chatSessionId": "sess_348691b5-1e61-4a06-aede-455bbfefc471",
+        "timestamp": 1795628198597
+      }
+    ],
+    "3.38 Extend Property 11 with brace globs": [
+      {
+        "executionId": "5e8fc624-dc6f-4b45-8645-84c66789c50d",
+        "chatSessionId": "sess_b52b85e0-79e5-453b-8364-17f826d78627",
+        "timestamp": 1795628243968
+      },
+      {
+        "executionId": "5e8fc624-dc6f-4b45-8645-84c66789c50d",
+        "chatSessionId": "sess_b52b85e0-79e5-453b-8364-17f826d78627",
+        "timestamp": 1795628279614
+      }
+    ],
+    "3.39 Fix regular expression detection in the test-body scanner": [
+      {
+        "executionId": "7b1a34f2-e408-4471-a18e-28646a2209e5",
+        "chatSessionId": "sess_4e5018fd-3a00-46f3-9aa2-362f8f075d80",
+        "timestamp": 1795628556375
+      },
+      {
+        "executionId": "7b1a34f2-e408-4471-a18e-28646a2209e5",
+        "chatSessionId": "sess_4e5018fd-3a00-46f3-9aa2-362f8f075d80",
+        "timestamp": 1795628597477
+      },
+      {
+        "executionId": "1335decf-07d3-4709-90c9-7655e722af63",
+        "chatSessionId": "sess_4e5018fd-3a00-46f3-9aa2-362f8f075d80",
+        "timestamp": 1795628635766
+      },
+      {
+        "executionId": "1335decf-07d3-4709-90c9-7655e722af63",
+        "chatSessionId": "sess_4e5018fd-3a00-46f3-9aa2-362f8f075d80",
+        "timestamp": 1795628681000
+      }
+    ],
+    "3.40 Ignore fenced code blocks in the requirements parser": [
+      {
+        "executionId": "1040f72e-4a51-41e5-a352-f2a87df2814b",
+        "chatSessionId": "sess_0d4523b8-7395-40ba-9bf9-0703c2837741",
+        "timestamp": 1795628727436
+      },
+      {
+        "executionId": "1040f72e-4a51-41e5-a352-f2a87df2814b",
+        "chatSessionId": "sess_0d4523b8-7395-40ba-9bf9-0703c2837741",
+        "timestamp": 1795628769373
+      }
+    ],
+    "3.41 Extend the Property 8 generator with fenced blocks": [
+      {
+        "executionId": "295774fc-39d6-4653-845c-69cf9a2b669c",
+        "chatSessionId": "sess_555741cc-a375-4e49-b08e-3399775494a5",
+        "timestamp": 1795628817600
+      },
+      {
+        "executionId": "0c92520a-06ca-479c-8971-fb00a6c2183c",
+        "chatSessionId": "sess_555741cc-a375-4e49-b08e-3399775494a5",
+        "timestamp": 1795628940280
+      }
+    ],
+    "3.42 Compare witness values by their JSON form": [
+      {
+        "executionId": "0fe57698-dd8f-4a0f-a996-9f678bd28888",
+        "chatSessionId": "sess_e37b46a9-d56e-47f0-9421-5b1bb0d48bdd",
+        "timestamp": 1795628977193
+      },
+      {
+        "executionId": "0fe57698-dd8f-4a0f-a996-9f678bd28888",
+        "chatSessionId": "sess_e37b46a9-d56e-47f0-9421-5b1bb0d48bdd",
+        "timestamp": 1795629019954
+      },
+      {
+        "executionId": "5ca9b651-180d-445c-9e49-1111a81a1283",
+        "chatSessionId": "sess_e37b46a9-d56e-47f0-9421-5b1bb0d48bdd",
+        "timestamp": 1795629049887
+      },
+      {
+        "executionId": "5ca9b651-180d-445c-9e49-1111a81a1283",
+        "chatSessionId": "sess_e37b46a9-d56e-47f0-9421-5b1bb0d48bdd",
+        "timestamp": 1795629091708
+      }
+    ],
+    "3.43 Make `validateConfig(null)` an error": [
+      {
+        "executionId": "aae179e6-9072-4de4-8889-f8f37930345f",
+        "chatSessionId": "sess_364d21b1-decd-4415-bba0-372c80f786db",
+        "timestamp": 1795629127402
+      },
+      {
+        "executionId": "aae179e6-9072-4de4-8889-f8f37930345f",
+        "chatSessionId": "sess_364d21b1-decd-4415-bba0-372c80f786db",
+        "timestamp": 1795629161663
+      }
+    ],
+    "3.44 Add a span-end example for the same-change check": [
+      {
+        "executionId": "dbb501d8-f57e-4e8f-9223-3a5fad4233ef",
+        "chatSessionId": "sess_b715d9d8-b9ad-4e8b-a9a7-3f1ac899be22",
+        "timestamp": 1795629205683
+      },
+      {
+        "executionId": "dbb501d8-f57e-4e8f-9223-3a5fad4233ef",
+        "chatSessionId": "sess_b715d9d8-b9ad-4e8b-a9a7-3f1ac899be22",
+        "timestamp": 1795629249745
+      }
+    ],
+    "3.45 Generate Spec_Mutants without twins in Property 15": [
+      {
+        "executionId": "7598b374-c607-4df6-98dc-846f7788464f",
+        "chatSessionId": "sess_59374eaf-7ee6-4130-8c8a-8f92cc49a92f",
+        "timestamp": 1795629299272
+      },
+      {
+        "executionId": "7598b374-c607-4df6-98dc-846f7788464f",
+        "chatSessionId": "sess_59374eaf-7ee6-4130-8c8a-8f92cc49a92f",
+        "timestamp": 1795629341320
+      },
+      {
+        "executionId": "41adb852-d305-4048-8451-b5c92c9818d4",
+        "chatSessionId": "sess_59374eaf-7ee6-4130-8c8a-8f92cc49a92f",
+        "timestamp": 1795629370986
+      },
+      {
+        "executionId": "41adb852-d305-4048-8451-b5c92c9818d4",
+        "chatSessionId": "sess_59374eaf-7ee6-4130-8c8a-8f92cc49a92f",
+        "timestamp": 1795629412108
+      }
+    ],
+    "3.46 Add the JSON Lines functions for `history.jsonl`": [
+      {
+        "executionId": "8ece5f47-e653-4181-a30d-3408b075f80f",
+        "chatSessionId": "sess_8a7c3b7c-1c80-4190-a34c-f8131db2771a",
+        "timestamp": 1795629681615
+      },
+      {
+        "executionId": "8ece5f47-e653-4181-a30d-3408b075f80f",
+        "chatSessionId": "sess_8a7c3b7c-1c80-4190-a34c-f8131db2771a",
+        "timestamp": 1795629762415
+      }
+    ],
+    "3.47 Write Property 17: History lines round trip": [
+      {
+        "executionId": "044f39ae-9a49-4246-b680-56bae4ac43e3",
+        "chatSessionId": "sess_08bb5302-5169-4256-934a-feac5e426dbf",
+        "timestamp": 1795629809512
+      },
+      {
+        "executionId": "044f39ae-9a49-4246-b680-56bae4ac43e3",
+        "chatSessionId": "sess_08bb5302-5169-4256-934a-feac5e426dbf",
+        "timestamp": 1795629897201
+      }
+    ],
+    "7.1 Implement the argument parser with tests": [
+      {
+        "executionId": "c09631bc-bc65-48c3-91be-d1ca75771a59",
+        "chatSessionId": "sess_b7babfee-0457-4947-b064-6892db4d703b",
+        "timestamp": 1795629933906
+      },
+      {
+        "executionId": "c09631bc-bc65-48c3-91be-d1ca75771a59",
+        "chatSessionId": "sess_b7babfee-0457-4947-b064-6892db4d703b",
+        "timestamp": 1795630008168
+      }
+    ],
+    "7.2 Implement the load and validate stage of the orchestration with tests": [
+      {
+        "executionId": "129495eb-3490-40f7-b3a6-c8575581243f",
+        "chatSessionId": "sess_b7babfee-0457-4947-b064-6892db4d703b",
+        "timestamp": 1795630180928
+      },
+      {
+        "executionId": "129495eb-3490-40f7-b3a6-c8575581243f",
+        "chatSessionId": "sess_b7babfee-0457-4947-b064-6892db4d703b",
+        "timestamp": 1795630482646
+      },
+      {
+        "executionId": "51fcfd19-3023-4c26-86c1-e76c8f5b8cbb",
+        "chatSessionId": "sess_b7babfee-0457-4947-b064-6892db4d703b",
+        "timestamp": 1795630525311
+      },
+      {
+        "executionId": "9af4d9c7-90f0-4c6a-bba6-b611b6d2e843",
+        "chatSessionId": "sess_49054b16-21e9-49f3-b7f5-14af1fd5b9d7",
+        "timestamp": 1795630594108
+      }
+    ],
+    "7.3 Implement the baseline and mechanical stage of the orchestration with tests": [
+      {
+        "executionId": "9af4d9c7-90f0-4c6a-bba6-b611b6d2e843",
+        "chatSessionId": "sess_49054b16-21e9-49f3-b7f5-14af1fd5b9d7",
+        "timestamp": 1795630594367
+      },
+      {
+        "executionId": "9af4d9c7-90f0-4c6a-bba6-b611b6d2e843",
+        "chatSessionId": "sess_49054b16-21e9-49f3-b7f5-14af1fd5b9d7",
+        "timestamp": 1795630838330
+      }
+    ],
+    "7.4 Implement the spec mutant stage of the orchestration with tests": [
+      {
+        "executionId": "2da760d8-d6d5-4412-87ee-d396ac31ea6c",
+        "chatSessionId": "sess_8cf78b33-0841-4ba9-87c0-22d9e649d171",
+        "timestamp": 1795630888002
+      },
+      {
+        "executionId": "2da760d8-d6d5-4412-87ee-d396ac31ea6c",
+        "chatSessionId": "sess_8cf78b33-0841-4ba9-87c0-22d9e649d171",
+        "timestamp": 1795631044364
+      }
+    ],
+    "7.5 Implement the reporting stage of the orchestration with tests": [
+      {
+        "executionId": "cb652b1a-c673-4da9-9353-3e9f03f3dae5",
+        "chatSessionId": "sess_30ce3e27-a970-462b-a927-5142b6f0342d",
+        "timestamp": 1795631090870
+      },
+      {
+        "executionId": "cb652b1a-c673-4da9-9353-3e9f03f3dae5",
+        "chatSessionId": "sess_30ce3e27-a970-462b-a927-5142b6f0342d",
+        "timestamp": 1795631249068
+      }
+    ],
+    "7.6 Implement the CLI entry point, summary and exit codes with tests": [
+      {
+        "executionId": "cd100349-38db-4a32-a200-6cde5281d49f",
+        "chatSessionId": "sess_13724b6c-3e62-480b-876d-6fddd8f36310",
+        "timestamp": 1795631294991
+      }
+    ],
+    "7.7 Add the no-LLM, no-network test": [
+      {
+        "executionId": "38d79803-a891-469d-9654-ba47b9682672",
+        "chatSessionId": "sess_66f1ee5a-a8ad-4017-980e-a085576290e8",
+        "timestamp": 1795631818288
+      },
+      {
+        "executionId": "efc0dbcc-2149-4af2-b379-cd228a8498d8",
+        "chatSessionId": "sess_66f1ee5a-a8ad-4017-980e-a085576290e8",
+        "timestamp": 1795631998005
+      }
+    ],
+    "7.8 Pin the exact Mechanical_Mutant id in a test": [
+      {
+        "executionId": "541e92e0-25b0-482b-a83b-aab520b912b5",
+        "chatSessionId": "sess_2c5797db-bc9b-49ce-a2a0-bff8c4c376ef",
+        "timestamp": 1795632097905
+      }
+    ],
+    "7.9 Add the root `measure` npm script": [
+      {
+        "executionId": "46860915-ff13-4b85-9ab2-e235c516dd7e",
+        "chatSessionId": "sess_3fd11347-9bb3-4625-bac5-8ada55ba4ea4",
+        "timestamp": 1795632203132
+      }
+    ],
+    "8. Checkpoint - CLI phase": [
+      {
+        "executionId": "9fc029af-cb75-4839-8ce7-8af684be9d60",
+        "chatSessionId": "sess_ca8ff5da-9587-4fa3-94ba-d1cd332404d3",
+        "timestamp": 1795632323296
+      },
+      {
+        "executionId": "9fc029af-cb75-4839-8ce7-8af684be9d60",
+        "chatSessionId": "sess_ca8ff5da-9587-4fa3-94ba-d1cd332404d3",
+        "timestamp": 1795632352921
+      }
+    ],
+    "9.1 Write the end-to-end test for `examples/pricing`": [
+      {
+        "executionId": "6e7a5dc6-3cf2-430a-ac42-856d7ea38d38",
+        "chatSessionId": "sess_40887394-c862-493c-9869-78c75e65b246",
+        "timestamp": 1795632430806
+      }
+    ],
+    "9.2 Run `npm run measure` once and commit `reports/`": [
+      {
+        "executionId": "0d08809f-e581-45dd-97d6-cfc81a19c60a",
+        "chatSessionId": "sess_8637f48d-9d3e-46d6-ad40-e84e6ebb6dd3",
+        "timestamp": 1795632954707
+      },
+      {
+        "executionId": "cb1540a3-7318-4605-b1ce-e3c3808acc04",
+        "chatSessionId": "sess_8637f48d-9d3e-46d6-ad40-e84e6ebb6dd3",
+        "timestamp": 1795633118162
+      }
+    ],
+    "10. Final checkpoint - Whole engine": [
+      {
+        "executionId": "ae7f785b-0457-4f2d-befa-5edd563cb7e8",
+        "chatSessionId": "sess_ea2507bf-8ba6-4e27-a11c-a82e95d622fc",
+        "timestamp": 1795633568696
+      }
+    ],
+    "11. Give Property 13 an explicit timeout": [
+      {
+        "executionId": "3f47d2e1-ceba-4289-b2de-709ec19323b5",
+        "chatSessionId": "sess_d1b6aecd-22e7-47be-807d-b83666cde04d",
+        "timestamp": 1795633920310
+      }
     ]
   }
 }

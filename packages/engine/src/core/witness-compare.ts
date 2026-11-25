@@ -24,6 +24,16 @@ function deepEqual(a: unknown, b: unknown): boolean {
   return aKeys.every((key) => Object.hasOwn(bObj, key) && deepEqual(aObj[key], bObj[key]));
 }
 
+/** Reduces a value to its JSON form. Unserializable values (top-level undefined, functions, BigInt) become undefined or stay as-is without throwing. */
+function toJsonForm(value: unknown): unknown {
+  try {
+    const text = JSON.stringify(value);
+    return text === undefined ? undefined : JSON.parse(text);
+  } catch {
+    return value;
+  }
+}
+
 /**
  * Compares a witness expectation with an observed outcome.
  * Values use deep structural equality (object key order ignored, array order significant).
@@ -38,7 +48,8 @@ export function compareWitnessOutcome(
       ? "match"
       : "mismatch";
   }
-  return actual.kind === "value" && deepEqual(expected.expected, actual.value)
+  return actual.kind === "value" &&
+    deepEqual(toJsonForm(expected.expected), toJsonForm(actual.value))
     ? "match"
     : "mismatch";
 }

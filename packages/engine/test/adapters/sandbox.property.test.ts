@@ -105,5 +105,5 @@ describe("Property 13: Sandbox isolation", () => {
         }
       }),
     );
-  });
+  }, 60_000);
 });

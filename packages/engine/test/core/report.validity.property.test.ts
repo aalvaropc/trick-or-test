@@ -1,4 +1,4 @@
-// Property 7: Report validity. Validates: Requirements 8.1, 8.2, 8.3, 8.4
+// Property 7: Report validity. Validates: Requirements 3.5, 8.1, 8.2, 8.3, 8.4
 import { Ajv } from "ajv";
 import fc from "fast-check";
 import { schema } from "mutation-testing-report-schema";
@@ -17,6 +17,18 @@ describe("Property 7: Report validity", () => {
         const ok = validate(buildMutationReport(input));
         expect(validate.errors ?? []).toEqual([]);
         expect(ok).toBe(true);
+      }),
+    );
+  });
+
+  it("3.5 8.1 a report built with the retry flag validates and records it in config", () => {
+    fc.assert(
+      fc.property(reportInputArb, fc.boolean(), (base, ignoreStaticRetried) => {
+        const report = buildMutationReport({ ...base, ignoreStaticRetried });
+        const ok = validate(report);
+        expect(validate.errors ?? []).toEqual([]);
+        expect(ok).toBe(true);
+        expect(report.config?.ignoreStaticRetried).toBe(ignoreStaticRetried);
       }),
     );
   });

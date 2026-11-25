@@ -126,11 +126,49 @@ describe("buildMutationReport", () => {
     expect(r).toHaveLength(2);
   });
 
+  it("8.15 keeps both mutants when only the span end differs", () => {
+    const sameStart = { start: { line: 1, column: 1 }, end: { line: 1, column: 9 } };
+    const r = all(
+      build(
+        [mech("m1", "Survived", { location: sameStart })],
+        [spec("oath-2.1-s", "Killed", { location: loc(1) })],
+      ),
+    );
+    expect(r.map((m) => m.id).sort()).toEqual(["m1", "oath-2.1-s"]);
+  });
+
+  it("8.15 keeps only the Spec_Mutant when the span is identical", () => {
+    const span = { start: { line: 2, column: 3 }, end: { line: 2, column: 8 } };
+    const r = all(
+      build(
+        [mech("m1", "Survived", { location: span })],
+        [spec("oath-2.1-s", "Killed", { location: span })],
+      ),
+    );
+    expect(r.map((m) => m.id)).toEqual(["oath-2.1-s"]);
+  });
+
   it("8.15 keeps both mutants when the file differs", () => {
     const r = all(
       build([mech("m1", "Survived", { file: "src/b.ts" })], [spec("oath-2.1-s", "Killed")]),
     );
     expect(r).toHaveLength(2);
+  });
+
+  it.each([true, false])("3.5 records ignoreStaticRetried=%s in the report config", (retried) => {
+    const report = buildMutationReport({
+      files: { "src/a.ts": { language: "typescript", source: "a + b" } },
+      mechanical: [mech("m1", "Killed")],
+      spec: [],
+      ignoreStaticRetried: retried,
+    });
+    expect(report.config).toEqual({ ignoreStaticRetried: retried });
+    const validate = new Ajv({ strict: false }).compile(schema);
+    expect(validate(report), JSON.stringify(validate.errors)).toBe(true);
+  });
+
+  it("3.5 records no retry when the flag is not given", () => {
+    expect(build([mech("m1", "Killed")]).config).toEqual({ ignoreStaticRetried: false });
   });
 
   it("8.1 validates one built report against mutation-testing-report-schema", () => {

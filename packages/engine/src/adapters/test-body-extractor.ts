@@ -9,8 +9,13 @@ const REGEX_KEYWORDS = new Set([
   "else",
   "in",
   "of",
+  "delete",
   "void",
+  "throw",
+  "new",
+  "instanceof",
   "yield",
+  "await",
 ]);
 
 const isIdentChar = (ch: string | undefined): boolean => ch !== undefined && /[\w$]/.test(ch);

@@ -32,6 +32,7 @@ Decisions behind this stack are recorded in `docs/decisions/`. Do not change a c
 | `npm run test:coverage`           | Runs all tests with coverage                                        |
 | `npm run build`                   | Builds every workspace                                              |
 | `npm run test:e2e -w trick-or-test` | Runs the engine end-to-end test (slow, about two minutes) |
+| `npm run measure`                 | Builds the engine and attacks `examples/pricing` with the `cart-pricing` spec, writing `reports/`. Files in `reports/` are generated only by this command and are never edited by hand |
 | `npm run dev -w trick-or-test-viewer` | Builds the engine first, then starts the viewer dev server |
 | `npm run build -w trick-or-test-viewer` | Builds the engine first, then type-checks and builds the viewer |
 | `npm run preview -w trick-or-test-viewer` | Builds the engine first, then serves the built viewer locally |

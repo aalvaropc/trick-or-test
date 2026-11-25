@@ -152,12 +152,14 @@ Conventions used in every task:
   - [x] 3.18 Implement `mutant-id.ts` with example tests
     - Implement `computeMutantId(file, original, replacement)` for Mechanical_Mutants only, as a hex-truncated hash from `createHash('sha256')` of `node:crypto`. Do not hand-write a sha256. This is the only core module that imports from `node:`. Keep it out of the `trick-or-test/report` import graph.
     - Spec_Mutants do not pass through this function: a Spec_Mutant keeps the id from its file (`oath-<criterion>-<slug>`), unique per Requirement 4.5.
+    - Note: the Occurrence_Index added to the hash in Requirement 8.7 is implemented by task 3.32.
     - Write `test/core/mutant-id.test.ts`: a fixed known hash, a different file, a different original, a different replacement, and the empty string.
     - _Requirements: 8.7, 10.4_
     - _Validation: npx vitest run --project engine packages/engine/test/core/mutant-id.test.ts passes_
 
   - [x] 3.19 Write Property 6: Deterministic ids
     - Write `test/core/mutant-id.property.test.ts` with **Property 6: Deterministic ids**. For lists of Mechanical_Mutants, check that each id depends only on file, original text and replacement. For lists that also contain Spec_Mutants, check that each Spec_Mutant keeps the id from its file. Shuffle the list and check that no id changes and that the report output order is the same.
+    - Note: tasks 3.33 and 3.34 extend this property (Occurrence_Index, shuffled `buildMutationReport` input).
     - **Validates: Requirements 4.5, 8.7**
     - _Requirements: 4.5, 8.7_
     - _Validation: npx vitest run --project engine packages/engine/test/core/mutant-id.property.test.ts passes_
@@ -200,6 +202,7 @@ Conventions used in every task:
 
   - [x] 3.26 Write Property 15: One creature per change
     - Write `test/core/report.dedup.property.test.ts` with **Property 15: One creature per change**. Pairs are matched by file, span and replacement, and the generated ids differ between the two kinds.
+    - Note: task 3.45 adds Spec_Mutants without twins and span-end differences to this property.
     - **Validates: Requirements 8.15**
     - _Requirements: 8.15_
     - _Validation: npx vitest run --project engine packages/engine/test/core/report.dedup.property.test.ts passes_
@@ -234,11 +237,109 @@ Conventions used in every task:
     - _Requirements: 10.1, 10.4_
     - _Validation: npx vitest run --project engine packages/engine/test/report/no-node-imports.test.ts passes_
 
+  - [x] 3.32 Add the Occurrence_Index to `computeMutantId`
+    - In `core/mutant-id.ts` change the signature to `computeMutantId(file, original, replacement, occurrenceIndex)` and hash all four values (no timestamp, no line number).
+    - Add the pure helper `assignOccurrenceIndexes(mutants)` that groups Mechanical_Mutants by (file, original, replacement), sorts each group by line then column, and returns each mutant's 0-based position in its group. The CLI (task 7.3) calls it.
+    - Update `test/core/mutant-id.test.ts`: two identical changes on different lines get different ids, the same change keeps its id when unrelated lines above it move, index 0 versus index 1, and `assignOccurrenceIndexes` on a group of three with unordered input.
+    - _Requirements: 8.7, 4.5, 8.13_
+    - _Validation: npx vitest run --project engine packages/engine/test/core/mutant-id.test.ts passes_
+
+  - [x] 3.33 Extend Property 6 for the Occurrence_Index
+    - In `test/core/mutant-id.property.test.ts` add the clause: two mutants with the same file, original text and replacement but different locations get different ids, and moving unrelated lines (without changing the order inside a group) changes no id. The generators include groups of mutants that share file, original text and replacement.
+    - **Validates: Requirements 8.7, 4.5, 8.13**
+    - _Requirements: 8.7, 4.5, 8.13_
+    - _Validation: npx vitest run --project engine packages/engine/test/core/mutant-id.property.test.ts passes_
+
+  - [x] 3.34 Fix the report-order clause of Property 6
+    - In `test/core/mutant-id.property.test.ts` replace the comparison against a sorted stand-in: shuffle the input list of `buildMutationReport` itself and check that the two outputs are equal.
+    - **Validates: Requirements 8.13**
+    - _Requirements: 8.13_
+    - _Validation: npx vitest run --project engine packages/engine/test/core/mutant-id.property.test.ts passes_
+
+  - [x] 3.35 Record the `ignoreStatic` retry in the Mutation_Report
+    - In `core/report.ts` make `buildMutationReport` put the retry flag in the schema's free-form `config` object (the Verdict keeps `ignoreStaticRetried`).
+    - Add examples to `test/core/report.test.ts`: retry true, retry false.
+    - _Requirements: 3.5_
+    - _Validation: npx vitest run --project engine packages/engine/test/core/report.test.ts passes_
+
+  - [x] 3.36 Extend Property 7 with the retry flag
+    - In `test/core/report.validity.property.test.ts` generate the retry flag, check that every generated report validates against `mutation-testing-report-schema` with it, and that the report's `config` records the flag.
+    - **Validates: Requirements 3.5, 8.1**
+    - _Requirements: 3.5, 8.1_
+    - _Validation: npx vitest run --project engine packages/engine/test/core/report.validity.property.test.ts passes_
+
+  - [x] 3.37 Expand braces in the property-test glob matcher
+    - In `core/test-classification.ts` expand brace groups before matching, so `test/**/*.{property,prop}.test.ts` matches `test/a.property.test.ts` and `test/a.prop.test.ts`.
+    - Add examples to `test/core/test-classification.test.ts`: each expansion of a brace group matches, a name outside the group does not, and a glob without braces still works.
+    - _Requirements: 6.3_
+    - _Validation: npx vitest run --project engine packages/engine/test/core/test-classification.test.ts passes_
+
+  - [x] 3.38 Extend Property 11 with brace globs
+    - In `test/core/test-classification.property.test.ts` add generated globs with brace groups and check that a file path matching any expansion is a Property_Test.
+    - **Validates: Requirements 6.3, 6.4, 6.5**
+    - _Requirements: 6.3_
+    - _Validation: npx vitest run --project engine packages/engine/test/core/test-classification.property.test.ts passes_
+
+  - [x] 3.39 Fix regular expression detection in the test-body scanner
+    - In `src/adapters/test-body-extractor.ts` treat `/` as the start of a regular expression when the previous token is an operator, an opening bracket, or one of `return`, `typeof`, `case`, `in`, `of`, `delete`, `void`, `throw`, `new`, `instanceof`, `yield`, `await`; otherwise treat it as division.
+    - Add one example per keyword to `test/adapters/test-body-extractor.test.ts`, each with a regex that holds a quote or a bracket, for instance `const f = (s) => { return /"/.test(s) }; fc.assert(p);` is classified as a property body. Add a division example (`a / b`) that is still division.
+    - _Requirements: 6.4_
+    - _Validation: npx vitest run --project engine packages/engine/test/adapters/test-body-extractor.test.ts passes_
+
+  - [x] 3.40 Ignore fenced code blocks in the requirements parser
+    - In `core/requirements.ts` treat lines inside a fence (opened by ``` or ~~~, closed by a fence of the same character) as neither headings nor criteria.
+    - Add examples to `test/core/requirements.test.ts`: a `#` line inside a fence does not end the criteria section, a numbered line inside a fence is not a criterion, a `~~~` fence, a ``` fence containing `~~~`, and an unclosed fence.
+    - _Requirements: 2.1_
+    - _Validation: npx vitest run --project engine packages/engine/test/core/requirements.test.ts passes_
+
+  - [x] 3.41 Extend the Property 8 generator with fenced blocks
+    - In `test/helpers/requirements-generator.ts` insert fenced blocks whose lines look like requirement headings, criteria headings or numbered items. `test/core/requirements.property.test.ts` still expects exactly the ids `n.k`.
+    - **Validates: Requirements 2.1, 2.2, 2.8**
+    - _Requirements: 2.1, 2.8_
+    - _Validation: npx vitest run --project engine packages/engine/test/core/requirements.property.test.ts passes_
+
+  - [x] 3.42 Compare witness values by their JSON form
+    - In `core/witness-compare.ts` serialize and parse each value before the deep comparison, so `-0` and `0` are equal.
+    - Add examples to `test/core/witness-compare.test.ts`: `-0` versus `0`, `-0` inside an array and an object, `undefined` object members dropped by the JSON form.
+    - _Requirements: 5.12_
+    - _Validation: npx vitest run --project engine packages/engine/test/core/witness-compare.test.ts passes_
+
+  - [x] 3.43 Make `validateConfig(null)` an error
+    - In `core/config.ts` return an error that names `trickortest.config.json` for `null` and for every other non-object value (array, string, number). Only a missing file gives defaults, and the caller decides that without calling `validateConfig`.
+    - Add examples to `test/core/config.test.ts`: `null`, an array, a string, a number, and `{}` (still all defaults).
+    - _Requirements: 1.3, 1.5_
+    - _Validation: npx vitest run --project engine packages/engine/test/core/config.test.ts passes_
+
+  - [x] 3.44 Add a span-end example for the same-change check
+    - In `test/core/report.test.ts` add an example where a Spec_Mutant and a Mechanical_Mutant have the same file, span start and replacement and differ only in the span end. Both mutants stay in the report. Add the mirror example with an identical span, where only the Spec_Mutant stays.
+    - _Requirements: 8.15_
+    - _Validation: npx vitest run --project engine packages/engine/test/core/report.test.ts passes_
+
+  - [x] 3.45 Generate Spec_Mutants without twins in Property 15
+    - In `test/core/report.dedup.property.test.ts` generate Spec_Mutants with a mechanical twin and Spec_Mutants without one, plus Mechanical_Mutants that differ from a Spec_Mutant only in the span end, the span start, the file or the replacement. Check that a Spec_Mutant without a twin is always kept and that a differing Mechanical_Mutant is always kept.
+    - **Validates: Requirements 8.15**
+    - _Requirements: 8.15_
+    - _Validation: npx vitest run --project engine packages/engine/test/core/report.dedup.property.test.ts passes_
+
+  - [x] 3.46 Add the JSON Lines functions for `history.jsonl`
+    - Note: task 3.29 built `appendHistory(records, record)` over an in-memory list. This task adds the file format. `history.jsonl` is JSON Lines, one HistoryRecord per line, with no JSON array and no pretty-printing.
+    - In `core/report.ts` implement `serializeHistoryRecord(record): string` (a single-line JSON object with no embedded newline, validated with the zod schema first) and `parseHistoryLines(text): Result<HistoryRecord[], HistoryError>` (parses each non-empty line as one complete JSON object, in order, and returns an error that names the line number for a malformed or schema-invalid line).
+    - Export both functions and the HistoryRecord schema from `src/report/index.ts` so the viewer reads exactly this format through `trick-or-test/report`.
+    - Write `test/core/history-lines.test.ts`: one record gives one line without `\n`, a record whose string fields contain newlines stays on one line, an empty file gives an empty list, a trailing newline, a blank line between records, a malformed line (error names its line number), a line that holds a JSON array instead of an object, and a schema-invalid line.
+    - _Requirements: 8.8, 8.9, 8.10, 8.16_
+    - _Validation: npx vitest run --project engine packages/engine/test/core/history-lines.test.ts passes_
+
+  - [x] 3.47 Write Property 17: History lines round trip
+    - Write `test/core/history-lines.property.test.ts` with **Property 17: History lines round trip**. Generate sequences of HistoryRecord values (including strings with newlines and quotes), serialize each record, join the lines as `history.jsonl` would hold them, parse with `parseHistoryLines`, and check that the same records come back in the same order, that each line is one complete JSON object, and that appending one more line leaves the earlier lines byte-identical.
+    - **Validates: Requirements 8.9, 8.10, 8.16**
+    - _Requirements: 8.9, 8.10, 8.16_
+    - _Validation: npx vitest run --project engine packages/engine/test/core/history-lines.property.test.ts passes_
+
 - [x] 4. Checkpoint - Core phase
   - Run `npm run check` from the repository root. Ensure all tests pass, ask the user if questions arise.
   - _Validation: npm run check passes_
 
-- [ ] 5. Implement the adapters (`packages/engine/src/adapters/`)
+- [x] 5. Implement the adapters (`packages/engine/src/adapters/`)
   - [x] 5.1 Implement `file-system-adapter.ts` with tests
     - Define the `FileSystem` interface (`readFile`, `writeFile`, `copyDir`, `removeDir`, `exists`) and implement it over `node:fs/promises`. Writes return a `Result` error that names the path when the path cannot be written.
     - Write `test/adapters/file-system-adapter.test.ts` on a temp directory: read, write, copy with an exclude list, remove, exists, and a write into a read-only directory that returns the error with the path.
@@ -269,88 +370,103 @@ Conventions used in every task:
     - _Requirements: 6.2, 6.4_
     - _Validation: npx vitest run --project engine packages/engine/test/adapters/test-body-extractor.test.ts passes_
 
-  - [ ] 5.6 Implement `typecheck-adapter.ts` with tests
+  - [x] 5.6 Implement `typecheck-adapter.ts` with tests
     - Implement `Typecheck.run(sandboxRoot)` that runs the TypeScript compiler from the target project with `--noEmit` and returns a `CompileError` result with the first error line.
     - Write `test/adapters/typecheck-adapter.test.ts` on two small fixture projects under `packages/engine/test/fixtures/` (for example `typecheck-ok/` and `typecheck-error/`): one that type-checks and one with a type error on purpose.
     - _Requirements: 5.3_
     - _Validation: npx vitest run --project engine packages/engine/test/adapters/typecheck-adapter.test.ts passes_
 
-  - [ ] 5.7 Implement `vitest-suite-runner.ts` with tests
+  - [x] 5.7 Implement `vitest-suite-runner.ts` with tests
     - Implement `SuiteRunner.run(root, options)` that runs the target's Vitest with the JSON reporter and `includeTaskLocation`, parses the output with a zod schema into `durationMs` and per-file tests (name, status, start line), and enforces the suite time limit as a process timeout that reports a Timeout result.
     - Write `test/adapters/vitest-suite-runner.test.ts` on a small fixture project under `packages/engine/test/fixtures/` (for example `suite-runner/`): all passing, one failing test with its start line, and a hanging test that hits a short time limit.
     - _Requirements: 5.8, 5.9, 5.10, 5.11, 6.2_
     - _Validation: npx vitest run --project engine packages/engine/test/adapters/vitest-suite-runner.test.ts passes_
 
-  - [ ] 5.8 Implement `vitest-witness-runner.ts` with tests
+  - [x] 5.8 Implement `vitest-witness-runner.ts` with tests
     - Implement `WitnessRunner.run(sandboxRoot, witnesses)`: generate `.trickortest/witnesses/<mutant id>.witness.test.ts` that imports the `export` from `witness.from`, calls it with `args` and writes `{ kind: 'value', value }` or `{ kind: 'error', className }` to `<mutant id>.outcome.json`. Generate `.trickortest/witnesses/vitest.config.ts` that extends the target config and includes only the witness files. Read outcomes from the files, never from console output, and parse them with a zod schema.
     - Write `test/adapters/vitest-witness-runner.test.ts` on a small fixture project under `packages/engine/test/fixtures/` (for example `witness-runner/`) with extensionless TypeScript imports: a returned value, a thrown error class, a witness that fails to import, and a check that the target's own suite run ignores the generated files.
     - _Requirements: 5.4, 5.5, 5.6, 5.7_
     - _Validation: npx vitest run --project engine packages/engine/test/adapters/vitest-witness-runner.test.ts passes_
 
-  - [ ] 5.9 Implement the Stryker options builder in `stryker-adapter.ts` with tests
+  - [x] 5.9 Implement the Stryker options builder in `stryker-adapter.ts` with tests
     - Implement `buildStrykerOptions(input)` as a pure function: `plugins` lists the Vitest runner, incremental mode with `incrementalFile`, the JSON reporter with `fileName`, `tempDirName` and `disableBail`, all under `.trickortest/`; `tsconfigFile` set to a nonexistent path only when TypeScript is 7 or newer; `mutate` patterns as `file:start-end` from Changed_Ranges; exclusion of non-build folders including symlinked directories and every file under `.stryker-tmp`; `ignoreStatic` only on retry.
     - Write `test/adapters/stryker-options.test.ts`: TypeScript 6 versus 7 versus 8, the `plugins` entry, the `.trickortest/` paths, mutate patterns for one and several ranges, a symlinked directory, and `.stryker-tmp` exclusion.
     - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.7, 3.8, 3.9, 3.14_
     - _Validation: npx vitest run --project engine packages/engine/test/adapters/stryker-options.test.ts passes_
 
-  - [ ] 5.10 Implement the Stryker run, retry and result parsing in `stryker-adapter.ts` with tests
+  - [x] 5.10 Implement the Stryker run, retry and result parsing in `stryker-adapter.ts` with tests
     - Implement `MechanicalRunner.run(options)`: return zero mutants without starting StrykerJS when `--since` finds no changed line; run StrykerJS; retry exactly once with `ignoreStatic` when the initial test run fails because of static mutants and flag the retry; return the first error line as a `Result` error for any other StrykerJS failure; parse the JSON report with a zod schema into mutants with `killedBy` and `testFiles`.
     - Write `test/adapters/stryker-adapter.test.ts` with a fake process runner: a clean run, the static-mutant failure followed by a successful retry, a retry that fails again (no second retry), another error returning the first error line, and no changed lines (the runner is never called).
     - _Requirements: 3.5, 3.6, 3.10, 6.1_
     - _Validation: npx vitest run --project engine packages/engine/test/adapters/stryker-adapter.test.ts passes_
 
-- [ ] 6. Checkpoint - Adapters phase
+- [x] 6. Checkpoint - Adapters phase
   - Run `npm run check` from the repository root. Ensure all tests pass, ask the user if questions arise.
   - _Validation: npm run check passes_
 
-- [ ] 7. Implement the CLI (`packages/engine/src/cli/`)
-  - [ ] 7.1 Implement the argument parser with tests
-    - Implement a dependency-free parser for the commands `run` and `measure` and the options `--since <ref>`, `--project <path>`, `--spec <name>` and the output directory option of `measure`. An unknown command or option returns a usage error. No option changes the exit code by survivor count.
+- [x] 7. Implement the CLI (`packages/engine/src/cli/`)
+  - [x] 7.1 Implement the argument parser with tests
+    - Implement a dependency-free parser for the commands `run` and `measure` and the options `--since <ref>`, `--project <path>`, `--spec <name>` and the option `--output <dir>` of `measure`. An unknown command or option returns a usage error. No option changes the exit code by survivor count.
     - Write `test/cli/args.test.ts`: each command and option, defaults (cwd as project), a missing option value, an unknown command, an unknown option.
     - _Requirements: 9.3, 9.4, 9.5, 9.8, 9.10_
     - _Validation: npx vitest run --project engine packages/engine/test/cli/args.test.ts passes_
 
-  - [ ] 7.2 Implement the load and validate stage of the orchestration with tests
+  - [x] 7.2 Implement the load and validate stage of the orchestration with tests
     - In `orchestrate.ts` implement the first stage: read and validate the config, find the spec directories that have a `requirements.md` (or the one given by `--spec`), parse the requirements, load the mutants and the Skip_File, and run the cross-file rules. Any error returns before the baseline and before StrykerJS. Adapters come in through interfaces.
     - Write `test/cli/orchestrate-load.test.ts` with fake adapters: a valid project, an invalid config, a parse error, a malformed mutant file (the other files still load and the run ends before the baseline), and a spec directory without `requirements.md` that is skipped.
     - _Requirements: 4.4, 9.1, 9.5, 10.2, 10.3_
     - _Validation: npx vitest run --project engine packages/engine/test/cli/orchestrate-load.test.ts passes_
 
-  - [ ] 7.3 Implement the baseline and mechanical stage of the orchestration with tests
-    - In `orchestrate.ts` add the baseline run (record its duration) and the mechanical run through `MechanicalRunner`, with `--since` ranges from `Git`. A failing baseline returns the failing tests and a StrykerJS error returns its first error line. Neither writes a Verdict_File. Compute the id of each mechanical mutant here with `computeMutantId(file, original, replacement)`. Classify the species and the kill class of each mechanical mutant from `killedBy`, the extracted test bodies and the property-test globs.
+  - [x] 7.3 Implement the baseline and mechanical stage of the orchestration with tests
+    - In `orchestrate.ts` add the baseline run (record its duration) and the mechanical run through `MechanicalRunner`, with `--since` ranges from `Git`. A failing baseline returns the failing tests and a StrykerJS error returns its first error line. Neither writes a Verdict_File. Compute the id of each mechanical mutant here with `assignOccurrenceIndexes` and `computeMutantId(file, original, replacement, occurrenceIndex)` from task 3.32. Classify the species and the kill class of each mechanical mutant from `killedBy`, the extracted test bodies and the property-test globs.
     - Write `test/cli/orchestrate-mechanical.test.ts` with fake adapters: baseline failure, StrykerJS error, a normal run with killed and survived mutants, `--since` with no changes (zero mechanical mutants), a killed mutant whose killing tests are unknown (`unattributed`), and the same mechanical mutant getting the same hash id on two runs.
     - _Requirements: 3.6, 3.15, 6.1, 6.9, 9.1, 9.3_
     - _Validation: npx vitest run --project engine packages/engine/test/cli/orchestrate-mechanical.test.ts passes_
 
-  - [ ] 7.4 Implement the spec mutant stage of the orchestration with tests
+  - [x] 7.4 Implement the spec mutant stage of the orchestration with tests
     - In `orchestrate.ts` add the spec mutant pipeline: one pristine sandbox for the witnesses on the original code, then per mutant a sandbox, `applyMutation`, type-check, InvalidWitness check, mutated witness run, Ghost check, one suite run with the time limit from `computeSuiteTimeLimit`, status mapping (Killed, Survived, Timeout), kill class from the failing tests, and sandbox removal in a `finally`. Keep the order of mutants stable (by id). A Spec_Mutant keeps the id from its file; the pipeline never recomputes it.
     - Write `test/cli/orchestrate-spec-mutants.test.ts` with fake adapters, one example per path: NotApplicable, CompileError, InvalidWitness (reports both outcomes), Ghost, Killed, Survived, Timeout, a crash in the suite runner (sandbox still removed), and the same status on two runs.
     - _Requirements: 5.1, 5.2, 5.3, 5.6, 5.7, 5.8, 5.9, 5.10, 5.11, 5.13, 5.14, 5.15, 6.2_
     - _Validation: npx vitest run --project engine packages/engine/test/cli/orchestrate-spec-mutants.test.ts passes_
 
-  - [ ] 7.5 Implement the reporting stage of the orchestration with tests
-    - In `orchestrate.ts` add the final stage: compute coverage, build the mutation report, the verdict and the history record (with the previous record read through the `FileSystem`), then write the report, the verdict and the appended history to the output directory. Pass the mutant ids to `report.ts` as data (file ids for Spec_Mutants, `computeMutantId` hashes from task 7.3 for Mechanical_Mutants). A write failure returns an error that names the path.
-    - Write `test/cli/orchestrate-report.test.ts` with a fake file system: the three outputs are written, the history keeps earlier records, a write failure names the path, two runs with the same inputs write identical report and verdict content except `metadata.timestamp`.
-    - _Requirements: 8.1, 8.5, 8.8, 8.11, 8.13, 9.1_
+  - [x] 7.5 Implement the reporting stage of the orchestration with tests
+    - In `orchestrate.ts` add the final stage: compute coverage, build the mutation report, the verdict and the history record, then write the report and the verdict to the output directory. Write `history.jsonl` as JSON Lines: read the existing file through the `FileSystem`, parse it with `parseHistoryLines` (task 3.46) to get the previous record, and append exactly one line made by `serializeHistoryRecord` (ending in `\n`), leaving every earlier line byte-identical. Never write the history as a JSON array. A history file that does not parse returns an error that names the path and the line. Pass the mutant ids to `report.ts` as data (file ids for Spec_Mutants, `computeMutantId` hashes from task 7.3 for Mechanical_Mutants). A write failure returns an error that names the path.
+    - Write `test/cli/orchestrate-report.test.ts` with a fake file system: the three outputs are written, `history.jsonl` is a first line for a first run and gains exactly one line per later run with earlier lines byte-identical, every line is one JSON object, a corrupt history line is an error, a write failure names the path, two runs with the same inputs write identical report and verdict content except `metadata.timestamp`.
+    - _Requirements: 8.1, 8.5, 8.8, 8.9, 8.11, 8.13, 8.16, 9.1_
     - _Validation: npx vitest run --project engine packages/engine/test/cli/orchestrate-report.test.ts passes_
 
-  - [ ] 7.6 Implement the CLI entry point, summary and exit codes with tests
+  - [x] 7.6 Implement the CLI entry point, summary and exit codes with tests
     - Create `src/cli/main.ts` and the `bin` entry. `run` uses the configured output directory. `measure` writes into the output directory given for the command. Print the summary: surviving Spec_Mutants, count per Coverage_Status, strays and the paths written. Exit 0 on a completed run even when Spec_Mutants survive. On a configuration, parsing, baseline, StrykerJS or runtime error print the message to stderr and exit 1. An unknown command or option prints the usage to stderr and exits 1.
     - Write `test/cli/main.test.ts` with fake adapters: summary content, exit 0 with survivors, exit 1 for each error kind, usage on an unknown command and option, `measure` output directory.
     - _Requirements: 9.1, 9.2, 9.6, 9.7, 9.9, 9.10_
     - _Validation: npx vitest run --project engine packages/engine/test/cli/main.test.ts passes_
 
-  - [ ] 7.7 Add the no-LLM, no-network test
+  - [x] 7.7 Add the no-LLM, no-network test
     - Write `test/cli/no-network.test.ts` that scans the files under `src/` and `package.json` for imports or dependencies of HTTP clients and LLM SDKs, for `fetch(`, `node:http`, `node:https` and `node:net`, and for any reference to an API key variable. The test fails with the file name.
     - _Requirements: 9.11_
     - _Validation: npx vitest run --project engine packages/engine/test/cli/no-network.test.ts passes_
 
-- [ ] 8. Checkpoint - CLI phase
+  - [x] 7.8 Pin the exact Mechanical_Mutant id in a test
+    - Note: task 3.32 changed `test/core/mutant-id.test.ts` so that it only checks the 32-character hex format. Without a pinned value, a change to the hashing would pass every test.
+    - Create `test/cli/mutant-id-pin.test.ts`. It calls `computeMutantId` with one fixed input (file `src/price.ts`, original `a < b`, replacement `a <= b`, occurrence index `0`) and expects the exact 32-character id string, written as a literal in the test (compute it once with the final implementation and paste it in). Add a second case with occurrence index `1` that expects a different literal id.
+    - The test name states that a change to the hash input or the hash function must change the pinned values on purpose.
+    - _Requirements: 8.7_
+    - _Validation: npx vitest run --project engine packages/engine/test/cli/mutant-id-pin.test.ts passes_
+
+  - [x] 7.9 Add the root `measure` npm script
+    - In the root `package.json` add the script `measure` that builds the engine and runs the built CLI as `trick-or-test measure --project examples/pricing --spec cart-pricing --output reports`, so the output directory is `reports`.
+    - Add `trick-or-test` as a workspace so the `trick-or-test` bin resolves from the root scripts (it is already a workspace through `packages/*`; run `npm install` if the link is missing).
+    - Add the `measure` row to the commands table in `.kiro/steering/tech.md` in the same commit. State there that files in `reports/` are generated only by `npm run measure` and are never edited by hand.
+    - Write `test/cli/measure-script.test.ts` that reads the root `package.json` and checks that the `measure` script contains `trick-or-test measure`, `--project examples/pricing`, `--spec cart-pricing` and `--output reports`.
+    - _Requirements: 9.2, 9.12, 9.14_
+    - _Validation: npx vitest run --project engine packages/engine/test/cli/measure-script.test.ts passes_
+
+- [x] 8. Checkpoint - CLI phase
   - Run `npm run check` from the repository root. Ensure all tests pass, ask the user if questions arise.
   - _Validation: npm run check passes_
 
-- [ ] 9. Write the end-to-end test
-  - [ ] 9.1 Write the end-to-end test for `examples/pricing`
+- [x] 9. Write the end-to-end test
+  - [x] 9.1 Write the end-to-end test for `examples/pricing`
     - Create `test/e2e/pricing.test.ts` that runs the built CLI (`trick-or-test measure --project examples/pricing --spec cart-pricing`, output into a temp directory) with the real StrykerJS and Vitest, and checks that the mutation report validates against `mutation-testing-report-schema`, that `verdict.json` and the history file exist and match their zod schemas, that the exit code is 0, and that a second run appends exactly one history record.
     - Hash `examples/pricing/src/` and `examples/pricing/test/` before and after the run and check that they are byte-identical, and check that `.trickortest/sandboxes/` is empty afterwards.
     - Precondition supplied by the user: before this task starts, the user adds `examples/pricing/mutants/cart-pricing/` with the 24 spec mutants bred by a Kiro agent from the cart-pricing spec. This task does not invent or add any mutant. Against the current tests, 23 are killed and `oath-7.4` survives.
@@ -359,14 +475,30 @@ Conventions used in every task:
     - _Requirements: 10.8, 10.9, 10.10_
     - _Validation: npm run test:e2e --workspace trick-or-test passes_
 
-- [ ] 10. Final checkpoint - Whole engine
+  - [x] 9.2 Run `npm run measure` once and commit `reports/`
+    - Run `npm run measure` from the repository root. The command writes the mutation report (`reports/mutation-report.json`), `reports/verdict.json` and `reports/history.jsonl` through the CLI. Nobody edits these files by hand. If the output is wrong, fix the engine and run the script again.
+    - Check that `reports/history.jsonl` has exactly one line for this first run, and that the line parses as one JSON object.
+    - Commit the three files in `reports/` with `git add reports` and a Conventional Commits message (for example `chore(reports): add first measure run`).
+    - A first run stored resolved absolute paths in the configuration of the history record. Fix: `writeReports` records the configuration relative to the Target_Project root (Requirement 8.17). Test in `test/cli/orchestrate-report-paths.test.ts`. Delete the generated `reports/` files and run the script again, so history starts with one line.
+    - Precondition: tasks 7.9 and 9.1 are done, and `examples/pricing/mutants/cart-pricing/` holds the spec mutants.
+    - _Requirements: 8.2, 8.17, 9.2, 9.13, 9.14_
+    - _Validation: npm run measure && test -f reports/mutation-report.json && test -f reports/verdict.json && test -f reports/history.jsonl passes_
+
+- [x] 10. Final checkpoint - Whole engine
   - Run `npm run check` from the repository root, then run the end-to-end test. Ensure all tests pass, ask the user if questions arise.
   - _Validation: npm run check passes_
+
+- [x] 11. Give Property 13 an explicit timeout
+  - test/adapters/sandbox.property.test.ts runs 100 generated sequences of real sandbox copies and removals. It is I/O bound and timed out at Vitest's default 5 seconds when the machine was busy (two worktrees running npm run check at once). Pass an explicit timeout of 60 seconds to that test (the last argument of it). Do not lower numRuns and do not change what the property checks.
+  - _Requirements: 3.14, 5.1, 5.13, 10.10_
+  - _Validation: npx vitest run --project engine packages/engine/test/adapters/sandbox.property.test.ts passes_
 
 ## Notes
 
 - Every task is required. No task is optional.
-- Each of the 16 correctness properties in `design.md` has its own task: P1 (3.8), P2 (3.9), P3 (3.21), P4 (3.22), P5 (3.16), P6 (3.19), P7 (3.25), P8 (3.4), P9 (3.6), P10 (3.17), P11 (3.14), P12 (3.23), P13 (5.3), P14 (3.30), P15 (3.26), P16 (3.28).
+- Each of the 17 correctness properties in `design.md` has its own task: P1 (3.8), P2 (3.9), P3 (3.21), P4 (3.22), P5 (3.16), P6 (3.19), P7 (3.25), P8 (3.4), P9 (3.6), P10 (3.17), P11 (3.14), P12 (3.23), P13 (5.3), P14 (3.30), P15 (3.26), P16 (3.28), P17 (3.47).
+- `history.jsonl` is JSON Lines, one HistoryRecord per line. Tasks 3.46 and 3.47 add the line functions that task 7.5 uses, and the viewer reads the same format through `trick-or-test/report`.
+- The files in `reports/` are generated only by `npm run measure` (task 9.2) and are never edited by hand.
 - `computeSuiteTimeLimit` has no property test. Example tests at the boundaries in task 3.11 cover it.
 - Property tests and example tests are in separate files. The suffix `.property.test.ts` marks property tests.
 - `npm test` runs every engine test except `test/e2e/`. `npm run test:e2e --workspace trick-or-test` runs the end-to-end test.
@@ -391,8 +523,8 @@ Conventions used in every task:
     { "id": 5, "tasks": ["3.25", "3.26", "3.27"] },
     { "id": 6, "tasks": ["3.28", "3.29"] },
     { "id": 7, "tasks": ["3.30", "3.31"] },
-    { "id": 8, "tasks": ["5.1", "5.4", "5.5", "5.6", "5.7", "5.9"] },
-    { "id": 9, "tasks": ["5.2", "5.8", "5.10"] },
+    { "id": 8, "tasks": ["3.46", "5.1", "5.4", "5.5", "5.6", "5.7", "5.9"] },
+    { "id": 9, "tasks": ["3.47", "5.2", "5.8", "5.10"] },
     { "id": 10, "tasks": ["5.3", "7.1"] },
     { "id": 11, "tasks": ["7.2"] },
     { "id": 12, "tasks": ["7.3"] },
@@ -400,7 +532,13 @@ Conventions used in every task:
     { "id": 14, "tasks": ["7.5"] },
     { "id": 15, "tasks": ["7.6"] },
     { "id": 16, "tasks": ["7.7"] },
-    { "id": 17, "tasks": ["9.1"] }
+    { "id": 17, "tasks": ["9.1"] },
+    { "id": 18, "tasks": ["3.32", "3.35", "3.37", "3.39", "3.40", "3.42", "3.43"] },
+    { "id": 19, "tasks": ["3.33", "3.36", "3.38", "3.41", "3.44"] },
+    { "id": 20, "tasks": ["3.34", "3.45"] },
+    { "id": 21, "tasks": ["7.8", "7.9"] },
+    { "id": 22, "tasks": ["9.2"] },
+    { "id": 23, "tasks": ["11"] }
   ]
 }
 ```
