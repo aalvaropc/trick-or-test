@@ -226,6 +226,18 @@
         "chatSessionId": "sess_3af43d00-610f-464a-bc95-5fef0abd3cfa",
         "timestamp": 1795619900907
       }
+    ],
+    "3.14 Write Property 11: Property-test classification": [
+      {
+        "executionId": "3e3d52f1-69c1-498c-b105-1a0476d2a14e",
+        "chatSessionId": "sess_9618eef6-c46f-444e-aca8-fec85f678565",
+        "timestamp": 1795619934138
+      },
+      {
+        "executionId": "3e3d52f1-69c1-498c-b105-1a0476d2a14e",
+        "chatSessionId": "sess_9618eef6-c46f-444e-aca8-fec85f678565",
+        "timestamp": 1795619996955
+      }
     ]
   }
 }

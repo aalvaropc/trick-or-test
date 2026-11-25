@@ -125,7 +125,7 @@ Conventions used in every task:
     - _Requirements: 6.3, 6.4, 6.5_
     - _Validation: npx vitest run --project engine packages/engine/test/core/test-classification.test.ts passes_
 
-  - [ ] 3.14 Write Property 11: Property-test classification
+  - [x] 3.14 Write Property 11: Property-test classification
     - Write `test/core/test-classification.property.test.ts` with **Property 11: Property-test classification**. Generate test files that mix property bodies and example bodies, and check the if-and-only-if rule.
     - **Validates: Requirements 6.3, 6.4, 6.5**
     - _Requirements: 6.3, 6.4, 6.5_
