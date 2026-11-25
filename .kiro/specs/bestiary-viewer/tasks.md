@@ -131,7 +131,7 @@ Conventions for every task:
     - _Requirements: 1.4, 1.12, 8.1, 8.3_
     - _Validation: `npm test -w trick-or-test-viewer -- test/hunt/hunt.order.property.test.ts` passes_
 
-  - [ ] 3.8 Implement `loader/file-reader.ts`
+  - [x] 3.8 Implement `loader/file-reader.ts`
     - Implement `readFiles(files: File[])`. Check `File.size > 52_428_800` before reading and reject without reading the content, with an error naming the file and the 50 MB limit. Read with browser APIs only and send nothing over the network. Return per-file `Result`s so one bad file does not hide the others.
     - Example tests in `test/loader/file-reader.test.ts`: a file of exactly 52,428,800 bytes is read, a file of 52,428,801 bytes is rejected and `File.prototype.text` or `FileReader` is not called (1.11), `fetch` is never called (1.1), a read failure becomes a `LoadError` (12.14).
     - _Requirements: 1.1, 1.11, 12.14_
