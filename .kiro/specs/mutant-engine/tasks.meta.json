@@ -786,6 +786,28 @@
         "chatSessionId": "sess_555741cc-a375-4e49-b08e-3399775494a5",
         "timestamp": 1795628940280
       }
+    ],
+    "3.42 Compare witness values by their JSON form": [
+      {
+        "executionId": "0fe57698-dd8f-4a0f-a996-9f678bd28888",
+        "chatSessionId": "sess_e37b46a9-d56e-47f0-9421-5b1bb0d48bdd",
+        "timestamp": 1795628977193
+      },
+      {
+        "executionId": "0fe57698-dd8f-4a0f-a996-9f678bd28888",
+        "chatSessionId": "sess_e37b46a9-d56e-47f0-9421-5b1bb0d48bdd",
+        "timestamp": 1795629019954
+      },
+      {
+        "executionId": "5ca9b651-180d-445c-9e49-1111a81a1283",
+        "chatSessionId": "sess_e37b46a9-d56e-47f0-9421-5b1bb0d48bdd",
+        "timestamp": 1795629049887
+      },
+      {
+        "executionId": "5ca9b651-180d-445c-9e49-1111a81a1283",
+        "chatSessionId": "sess_e37b46a9-d56e-47f0-9421-5b1bb0d48bdd",
+        "timestamp": 1795629091708
+      }
     ]
   }
 }

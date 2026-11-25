@@ -298,7 +298,7 @@ Conventions used in every task:
     - _Requirements: 2.1, 2.8_
     - _Validation: npx vitest run --project engine packages/engine/test/core/requirements.property.test.ts passes_
 
-  - [ ] 3.42 Compare witness values by their JSON form
+  - [x] 3.42 Compare witness values by their JSON form
     - In `core/witness-compare.ts` serialize and parse each value before the deep comparison, so `-0` and `0` are equal.
     - Add examples to `test/core/witness-compare.test.ts`: `-0` versus `0`, `-0` inside an array and an object, `undefined` object members dropped by the JSON form.
     - _Requirements: 5.12_
