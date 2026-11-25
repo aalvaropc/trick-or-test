@@ -522,7 +522,7 @@ Conventions used in every task:
     - _Requirements: 3.15, 5.9, 5.10_
     - _Validation: npx vitest run --project engine packages/engine/test/core/suite-result.test.ts passes_
 
-  - [ ] 12.2 Write Property 21: Failing tests include file-level failures
+  - [x] 12.2 Write Property 21: Failing tests include file-level failures
     - Write `test/core/suite-result.property.test.ts` with **Property 21: Failing tests include file-level failures**. Generate Vitest JSON results with passed, failed and file-level-failed entries and check the rule stated in the property.
     - **Validates: Requirements 3.15, 5.9, 5.10**
     - _Requirements: 3.15, 5.9, 5.10_

@@ -1026,6 +1026,13 @@
         "chatSessionId": "sess_d1b6aecd-22e7-47be-807d-b83666cde04d",
         "timestamp": 1795633920310
       }
+    ],
+    "12.1 Count file-level failures as Failing_Tests in `core/suite-result.ts`": [
+      {
+        "executionId": "a2a15bbd-c187-4ec8-b7b5-263f401a667c",
+        "chatSessionId": "sess_67fa41ed-31d8-4b5c-8940-d06460b93068",
+        "timestamp": 1795637489849
+      }
     ]
   }
 }
