@@ -39,6 +39,10 @@
     "3.25 Write Property 7: Report validity": {
       "status": "passed",
       "lastRunTimestamp": 1795621360402
+    },
+    "3.26 Write Property 15: One creature per change": {
+      "status": "passed",
+      "lastRunTimestamp": 1795621457964
     }
   },
   "executionHistory": {
@@ -403,6 +407,18 @@
         "executionId": "54f94679-80a1-4ad8-bc98-d499b7b9a775",
         "chatSessionId": "sess_383e4c81-a8de-495d-9c4e-ea02645a7251",
         "timestamp": 1795621382702
+      }
+    ],
+    "3.26 Write Property 15: One creature per change": [
+      {
+        "executionId": "afd5922e-d2cf-4fbc-872a-77069ef81b7d",
+        "chatSessionId": "sess_f6ee841d-7231-41eb-ae8d-31572611167c",
+        "timestamp": 1795621410500
+      },
+      {
+        "executionId": "afd5922e-d2cf-4fbc-872a-77069ef81b7d",
+        "chatSessionId": "sess_f6ee841d-7231-41eb-ae8d-31572611167c",
+        "timestamp": 1795621466295
       }
     ]
   }

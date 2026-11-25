@@ -198,7 +198,7 @@ Conventions used in every task:
     - _Requirements: 8.1, 8.2, 8.3, 8.4_
     - _Validation: npx vitest run --project engine packages/engine/test/core/report.validity.property.test.ts passes_
 
-  - [ ] 3.26 Write Property 15: One creature per change
+  - [x] 3.26 Write Property 15: One creature per change
     - Write `test/core/report.dedup.property.test.ts` with **Property 15: One creature per change**. Pairs are matched by file, span and replacement, and the generated ids differ between the two kinds.
     - **Validates: Requirements 8.15**
     - _Requirements: 8.15_
