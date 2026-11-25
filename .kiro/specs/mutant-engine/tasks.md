@@ -608,7 +608,7 @@ Conventions used in every task:
     - _Requirements: 3.5, 3.6, 3.17, 10.12_
     - _Validation: npx vitest run --project engine packages/engine/test/core/stryker-output.test.ts packages/engine/test/core/stryker-failure.test.ts passes_
 
-  - [ ] 12.16 Write Property 23: StrykerJS error selection
+  - [x] 12.16 Write Property 23: StrykerJS error selection
     - Write `test/core/stryker-output.property.test.ts` with **Property 23: StrykerJS error selection**. Generate outputs with and without ERROR-level lines, with blank lines and arbitrary text, and attempts that failed before and after a successful dry run.
     - **Validates: Requirements 3.5, 3.6, 3.17**
     - _Requirements: 3.5, 3.6, 3.17_
