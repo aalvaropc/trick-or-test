@@ -405,7 +405,7 @@ Conventions used in every task:
   - _Validation: npm run check passes_
 
 - [ ] 7. Implement the CLI (`packages/engine/src/cli/`)
-  - [ ] 7.1 Implement the argument parser with tests
+  - [x] 7.1 Implement the argument parser with tests
     - Implement a dependency-free parser for the commands `run` and `measure` and the options `--since <ref>`, `--project <path>`, `--spec <name>` and the option `--output <dir>` of `measure`. An unknown command or option returns a usage error. No option changes the exit code by survivor count.
     - Write `test/cli/args.test.ts`: each command and option, defaults (cwd as project), a missing option value, an unknown command, an unknown option.
     - _Requirements: 9.3, 9.4, 9.5, 9.8, 9.10_
