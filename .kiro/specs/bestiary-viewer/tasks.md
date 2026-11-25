@@ -14,7 +14,7 @@ Conventions for every task:
 
 ## Tasks
 
-- [ ] 1. Workspace setup
+- [x] 1. Workspace setup
   - [x] 1.1 Create the workspace package and install pinned dependencies
     - Create `apps/viewer/package.json` named `trick-or-test-viewer` (`private`, `type: module`), covered by the root `apps/*` workspace glob. Run `npm install` so `package-lock.json` updates.
     - Pin every entry to an exact version (no `^`, `~` or range). Publish dates below come from `npm view <pkg> time` on 2026-11-25. Every date is at least 14 days before 2026-11-25, so every version is old enough. Re-run `npm view <pkg> time` when adding each package, and if a version no longer qualifies or a peer conflict appears, take the newest older version that qualifies and update the list here.
@@ -73,7 +73,7 @@ Conventions for every task:
     - _Requirements: 12.12, 12.15_
     - _Validation: `npm run lint` passes_
 
-  - [ ] 1.6 Add the static boundary checks
+  - [x] 1.6 Add the static boundary checks
     - Add `apps/viewer/test/static/boundaries.test.ts` that walks `apps/viewer/src/` (tests and config files run in Node and are out of scope) and asserts:
       - 12.8: no non-`.tsx` file under `src/` imports `react`, `react-dom` or a `.tsx` module.
       - 12.2: no file imports a `node:` module or a bare Node built-in name, and the only specifier that starts with `trick-or-test` is exactly `trick-or-test/report` (no relative path into `packages/engine`).
