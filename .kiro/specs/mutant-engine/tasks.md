@@ -820,7 +820,7 @@ Conventions used in every task:
     - _Requirements: 3.20, 5.21_
     - _Validation: npx vitest run --project engine packages/engine/test/adapters/vitest-suite-runner.test.ts passes_
 
-  - [ ] 12.51 Make the narrow-include suite runner test able to fail
+  - [x] 12.51 Make the narrow-include suite runner test able to fail
     - In `test/adapters/vitest-suite-runner.test.ts` replace the test that uses the narrow-include fixture: the fixture holds a passing test that matches the include and a failing test that the include does not match, and the test asserts the exact list of test files that ran and the failing count. Check that the test fails when the exclusion of task 12.50 or the include is removed (run it once with the exclusion removed and put the result in the commit body).
     - _Requirements: 10.13_
     - _Validation: npx vitest run --project engine packages/engine/test/adapters/vitest-suite-runner.test.ts passes_

@@ -1416,6 +1416,13 @@
         "chatSessionId": "sess_1a46324b-2e41-4c43-ac03-712a3865003b",
         "timestamp": 1795646994388
       }
+    ],
+    "12.50 Exclude `.trickortest/**` from every suite run": [
+      {
+        "executionId": "5e16ddbe-6492-4c5f-8c93-8af881c61a44",
+        "chatSessionId": "sess_681d2923-77a6-410f-8830-5e4ab4684d35",
+        "timestamp": 1795647128355
+      }
     ]
   }
 }

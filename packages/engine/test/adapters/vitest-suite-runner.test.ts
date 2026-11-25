@@ -16,7 +16,16 @@ const writeFailing = async (relative: string): Promise<void> => {
   await writeFile(file, failingSource);
 };
 
+const narrowRoot = join(import.meta.dirname, "..", "fixtures", "suite-runner-narrow");
+
+const writeNarrowFailing = async (relative: string): Promise<void> => {
+  const file = join(narrowRoot, relative);
+  await mkdir(join(file, ".."), { recursive: true });
+  await writeFile(file, failingSource);
+};
+
 afterEach(async () => {
+  await rm(join(narrowRoot, ".trickortest"), { recursive: true, force: true });
   await rm(scratch, { recursive: true, force: true });
   await rm(join(excludesRoot, "generated.witness.test.ts"), { force: true });
 });
@@ -82,6 +91,22 @@ describe("SuiteRunner.run", () => {
     expect(result.ok).toBe(true);
     if (!result.ok) return;
     expect(result.value.files.map((f) => f.path)).toEqual(["pass.test.ts"]);
+  });
+
+  it("10.13 a narrow include runs only the matching file and leaves the failing file and a .trickortest copy unrun", async () => {
+    await writeNarrowFailing(".trickortest/stryker-tmp/sandbox-abc/matched/copy.test.ts");
+    const result = await SuiteRunner.run(narrowRoot, {
+      timeLimitMs: 60_000,
+      testFiles: ["matched/"],
+    });
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.value.files.map((f) => f.path)).toEqual(["matched/ok.test.ts"]);
+    const failing = result.value.files.flatMap((f) => f.tests).filter((t) => t.status === "failed");
+    expect(failing).toHaveLength(0);
+    expect(result.value.files.flatMap((f) => f.tests).map((t) => t.name)).toEqual([
+      "matches the include and passes",
+    ]);
   });
 
   it("5.21 does not run a generated Witness file outside .trickortest", async () => {
