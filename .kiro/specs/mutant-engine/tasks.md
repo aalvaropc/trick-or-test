@@ -650,7 +650,7 @@ Conventions used in every task:
     - _Requirements: 5.6, 8.5_
     - _Validation: npx vitest run --project engine packages/engine/test/core/verdict.test.ts passes_
 
-  - [ ] 12.23 Extend Property 16 with InvalidWitness and outcome kinds
+  - [x] 12.23 Extend Property 16 with InvalidWitness and outcome kinds
     - In `test/core/verdict.property.test.ts` generate mutants with status InvalidWitness that carry `invalidWitness`, and outcomes of kind `timeout` and `no-outcome`. The write, read, write round trip still produces identical content.
     - **Validates: Requirements 5.6, 8.5, 8.10, 8.12**
     - _Requirements: 5.6, 8.5, 8.10, 8.12_

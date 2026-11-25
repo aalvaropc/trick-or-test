@@ -1202,6 +1202,13 @@
         "chatSessionId": "sess_18bbf2ce-f6ad-409a-bebd-9c919c39a042",
         "timestamp": 1795641883118
       }
+    ],
+    "12.22 Write both outcomes of an InvalidWitness mutant into the Verdict": [
+      {
+        "executionId": "5d38e0e9-b37b-4ff4-9448-b007527811b0",
+        "chatSessionId": "sess_3537d430-486d-4c87-8b25-233a1b2ecd36",
+        "timestamp": 1795642093352
+      }
     ]
   }
 }
