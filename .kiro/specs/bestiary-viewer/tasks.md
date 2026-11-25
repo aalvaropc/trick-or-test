@@ -119,7 +119,7 @@ Conventions for every task:
     - _Requirements: 1.2, 1.3, 1.4, 1.5, 1.9, 1.10_
     - _Validation: `npm test -w trick-or-test-viewer -- test/loader/join-run.test.ts` passes_
 
-  - [ ] 3.6 Implement the hunt timeline builder
+  - [x] 3.6 Implement the hunt timeline builder
     - Create `src/hunt/timeline.ts` (pure): `buildTimeline(history)` returns one entry per history record, ordered by `time` ascending with a stable order for equal `time`. Each entry holds the run time, git commit, `newlyKilledIds` and `survivors`, taken as `statusCounts.Survived` of the record.
     - Example tests in `test/hunt/timeline.test.ts`: entry count equals record count (8.11), survivors equal `statusCounts.Survived` (8.3, 8.12), fields present (8.2), ordering with equal times (8.1).
     - _Requirements: 8.1, 8.2, 8.3, 8.11, 8.12_
