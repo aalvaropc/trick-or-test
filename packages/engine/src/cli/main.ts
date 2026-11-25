@@ -33,7 +33,10 @@ export interface CliDeps {
   readonly cwd: string;
   stdout(text: string): void;
   stderr(text: string): void;
-  readonly fs: LoadAdapters["fs"] & ReportAdapters["fs"] & SpecMutantAdapters["fs"];
+  readonly fs: LoadAdapters["fs"] &
+    ReportAdapters["fs"] &
+    SpecMutantAdapters["fs"] &
+    MechanicalAdapters["fs"];
   readonly suite: MechanicalAdapters["suite"] & SpecMutantAdapters["suite"];
   readonly mechanical: MechanicalAdapters["mechanical"];
   readonly git: MechanicalAdapters["git"];
@@ -215,6 +218,7 @@ export const createDefaultDeps = (): CliDeps => {
       readFile: (path) => base.readFile(path),
       writeFile: (path, content) => base.writeFile(path, content),
       exists: (path) => base.exists(path),
+      listEntries: (root) => base.listEntries(root),
       async listDir(path) {
         try {
           return ok(await readdir(path));

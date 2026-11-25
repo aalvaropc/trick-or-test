@@ -764,7 +764,7 @@ Conventions used in every task:
     - _Requirements: 3.7, 3.8_
     - _Validation: npx vitest run --project engine packages/engine/test/adapters/stryker-options.test.ts passes_
 
-  - [ ] 12.42 List the project and compute the exclusions in the mechanical stage
+  - [x] 12.42 List the project and compute the exclusions in the mechanical stage
     - In `cli/orchestrate.ts` call `listEntries`, derive the build roots from the source and test globs, call `computeStrykerExclusions` and pass the result to the Stryker adapter.
     - Add examples to `test/cli/orchestrate-mechanical.test.ts` with a fake file system: the options passed to the fake runner list a non-build directory and a symlinked directory.
     - _Requirements: 3.7, 3.8_

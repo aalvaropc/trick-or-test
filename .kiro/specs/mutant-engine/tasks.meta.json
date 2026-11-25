@@ -1353,6 +1353,13 @@
         "chatSessionId": "sess_0cf704ee-b489-4636-8f63-2da6f378ac95",
         "timestamp": 1795645379754
       }
+    ],
+    "12.41 Pass the exclusions to StrykerJS in `buildStrykerOptions`": [
+      {
+        "executionId": "98877ef9-a488-4c76-8a61-0e6057316f7f",
+        "chatSessionId": "sess_b1bcf6fa-7f02-4e6c-91ac-0d53734a0d41",
+        "timestamp": 1795645531738
+      }
     ]
   }
 }

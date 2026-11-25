@@ -14,6 +14,7 @@ import {
 } from "../../src/cli/orchestrate.js";
 import { computeMutantId } from "../../src/core/mutant-id.js";
 import { err, ok, type Result } from "../../src/core/result.js";
+import type { ProjectEntry } from "../../src/core/sandbox-plan.js";
 
 const ROOT = "/proj";
 
@@ -328,5 +329,64 @@ describe("baseline file-level failure", () => {
     await runBaselineAndMechanical({ project: ROOT }, project, input, adapters);
 
     expect(adapters.calls.mechanical).toHaveLength(0);
+  });
+});
+
+describe("StrykerJS exclusions in the mechanical stage", () => {
+  const listing: ProjectEntry[] = [
+    { path: "src", kind: "dir" },
+    { path: "src/price.ts", kind: "file" },
+    { path: "test", kind: "dir" },
+    { path: "docs", kind: "dir" },
+    { path: "docs/guide.md", kind: "file" },
+    { path: "linked", kind: "symlink", target: "docs" },
+  ];
+
+  const withListing = (entries: ProjectEntry[]): Fakes => {
+    const adapters = fakes();
+    return {
+      ...adapters,
+      fs: { ...adapters.fs, listEntries: async () => entries },
+    };
+  };
+
+  it("3.7 the options passed to the runner list a non-build directory", async () => {
+    const adapters = withListing(listing);
+
+    await runBaselineAndMechanical({ project: ROOT }, project, input, adapters);
+
+    expect(adapters.calls.mechanical[0]?.exclusions?.nonBuildDirs).toEqual(["docs"]);
+  });
+
+  it("3.7 the options passed to the runner list a symlinked directory", async () => {
+    const adapters = withListing(listing);
+
+    await runBaselineAndMechanical({ project: ROOT }, project, input, adapters);
+
+    expect(adapters.calls.mechanical[0]?.exclusions?.symlinkedDirs).toEqual(["linked"]);
+  });
+
+  it("3.7 a build root from the source and test globs is not excluded", async () => {
+    const adapters = withListing(listing);
+
+    await runBaselineAndMechanical({ project: ROOT }, project, input, adapters);
+
+    const patterns = adapters.calls.mechanical[0]?.exclusions?.ignorePatterns ?? [];
+    expect(patterns).not.toContain("src/**");
+    expect(patterns).not.toContain("test/**");
+    expect(patterns).toContain("docs/**");
+    expect(patterns).toContain("reports/**");
+  });
+
+  it("3.7 a glob that starts with a wildcard excludes nothing", async () => {
+    const adapters = withListing(listing);
+    const wild: LoadedProject = {
+      ...project,
+      config: { ...project.config, sourceGlobs: ["**/*.ts"] },
+    };
+
+    await runBaselineAndMechanical({ project: ROOT }, wild, input, adapters);
+
+    expect(adapters.calls.mechanical[0]?.exclusions).toBeUndefined();
   });
 });

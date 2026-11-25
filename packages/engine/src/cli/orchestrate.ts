@@ -32,6 +32,7 @@ import {
 } from "../core/report.js";
 import { parseRequirements } from "../core/requirements.js";
 import { err, ok, type Result } from "../core/result.js";
+import type { ProjectEntry } from "../core/sandbox-plan.js";
 import {
   checkCrossFileRules,
   type LoadedSkipEntry,
@@ -40,6 +41,7 @@ import {
   validateSkipFile,
 } from "../core/spec-mutants.js";
 import { classifySpecies } from "../core/species.js";
+import { computeStrykerExclusions, type StrykerExclusions } from "../core/stryker-exclusions.js";
 import type { Location } from "../core/stryker-output.js";
 import { computeSuiteTimeLimit } from "../core/suite-time-limit.js";
 import { classifyTest, type TestKind } from "../core/test-classification.js";
@@ -271,7 +273,10 @@ async function loadSpec(
 
 /** The slice of the adapters the baseline and mechanical stage needs. */
 export interface MechanicalAdapters {
-  readonly fs: Pick<LoadFileSystem, "readFile">;
+  readonly fs: Pick<LoadFileSystem, "readFile"> & {
+    /** Project listing for the StrykerJS exclusions (3.7). Without it nothing is excluded. */
+    listEntries?(root: string): Promise<ProjectEntry[]>;
+  };
   readonly suite: {
     run(root: string, options: SuiteRunOptions): Promise<Result<SuiteResult, SuiteError>>;
   };
@@ -387,9 +392,12 @@ export async function runBaselineAndMechanical(
     }
   }
 
+  const exclusions = await listExclusions(options.project, config, adapters.fs);
+
   const run = await adapters.mechanical.run({
     typescriptVersion: input.typescriptVersion,
     cwd: options.project,
+    ...(exclusions === undefined ? {} : { exclusions }),
     ...(input.nonBuildDirs === undefined ? {} : { nonBuildDirs: input.nonBuildDirs }),
     ...(changedRanges === undefined ? {} : { changedRanges, since: true }),
   });
@@ -401,6 +409,39 @@ export async function runBaselineAndMechanical(
     mutants,
     ignoreStaticRetried: run.value.ignoreStaticRetried,
   });
+}
+
+/**
+ * Build roots: the first path segment of each source and test glob (3.7). A glob whose first
+ * segment holds a wildcard or points outside the project gives no answer, so nothing is excluded.
+ */
+const buildRootsOf = (root: string, config: EngineConfig): string[] | undefined => {
+  const roots = new Set<string>();
+  for (const glob of [...config.sourceGlobs, ...config.testGlobs]) {
+    const first = relativeToRoot(root, glob)
+      .split("/")
+      .find((segment) => segment !== "" && segment !== ".");
+    if (first === undefined || first === ".." || /[*?{}[\]!]/.test(first)) return undefined;
+    roots.add(first);
+  }
+  return [...roots];
+};
+
+async function listExclusions(
+  root: string,
+  config: EngineConfig,
+  fs: MechanicalAdapters["fs"],
+): Promise<StrykerExclusions | undefined> {
+  if (fs.listEntries === undefined) return undefined;
+  const buildRoots = buildRootsOf(root, config);
+  if (buildRoots === undefined) return undefined;
+  const entries = await fs.listEntries(root);
+  const outputDir = relativeToRoot(root, config.outputDir);
+  return computeStrykerExclusions(
+    entries,
+    buildRoots,
+    outputDir.startsWith("..") ? undefined : outputDir,
+  );
 }
 
 const toOutcome = (mutant: MechanicalMutant, result: MutantResult): MechanicalOutcome => ({
