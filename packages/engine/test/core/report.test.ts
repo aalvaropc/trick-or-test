@@ -133,6 +133,22 @@ describe("buildMutationReport", () => {
     expect(r).toHaveLength(2);
   });
 
+  it.each([true, false])("3.5 records ignoreStaticRetried=%s in the report config", (retried) => {
+    const report = buildMutationReport({
+      files: { "src/a.ts": { language: "typescript", source: "a + b" } },
+      mechanical: [mech("m1", "Killed")],
+      spec: [],
+      ignoreStaticRetried: retried,
+    });
+    expect(report.config).toEqual({ ignoreStaticRetried: retried });
+    const validate = new Ajv({ strict: false }).compile(schema);
+    expect(validate(report), JSON.stringify(validate.errors)).toBe(true);
+  });
+
+  it("3.5 records no retry when the flag is not given", () => {
+    expect(build([mech("m1", "Killed")]).config).toEqual({ ignoreStaticRetried: false });
+  });
+
   it("8.1 validates one built report against mutation-testing-report-schema", () => {
     const report = build(
       [

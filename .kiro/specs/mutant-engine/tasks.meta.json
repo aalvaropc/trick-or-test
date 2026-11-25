@@ -692,6 +692,18 @@
         "chatSessionId": "sess_41e3ec49-e6c7-45df-b23b-3662ccca5d34",
         "timestamp": 1795627761689
       }
+    ],
+    "3.35 Record the `ignoreStatic` retry in the Mutation_Report": [
+      {
+        "executionId": "de2cce36-5d01-4a11-8551-6c0fbe2fa85e",
+        "chatSessionId": "sess_41e3ec49-e6c7-45df-b23b-3662ccca5d34",
+        "timestamp": 1795627861016
+      },
+      {
+        "executionId": "de2cce36-5d01-4a11-8551-6c0fbe2fa85e",
+        "chatSessionId": "sess_41e3ec49-e6c7-45df-b23b-3662ccca5d34",
+        "timestamp": 1795627990029
+      }
     ]
   }
 }

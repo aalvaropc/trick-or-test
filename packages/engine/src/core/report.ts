@@ -170,6 +170,8 @@ export const reportFileSchema = z.strictObject({
 export const mutationReportSchema = z.strictObject({
   schemaVersion: z.string(),
   thresholds: z.strictObject({ high: z.number(), low: z.number() }),
+  /** Free-form run configuration of the schema. Holds `ignoreStaticRetried` (Requirement 3.5). */
+  config: z.record(z.string(), z.unknown()).optional(),
   files: z.record(z.string(), reportFileSchema),
 });
 
@@ -264,6 +266,8 @@ export type ReportInput = {
   mechanical: ReportMutantInput[];
   spec: SpecReportMutantInput[];
   thresholds?: { high: number; low: number };
+  /** Whether StrykerJS ran again with `ignoreStatic` (Requirement 3.5). Defaults to false. */
+  ignoreStaticRetried?: boolean;
 };
 
 export const REPORT_SCHEMA_VERSION = "2";
@@ -358,6 +362,7 @@ export const buildMutationReport = (input: ReportInput): MutationTestingReport =
   return {
     schemaVersion: REPORT_SCHEMA_VERSION,
     thresholds: { ...(input.thresholds ?? DEFAULT_THRESHOLDS) },
+    config: { ignoreStaticRetried: input.ignoreStaticRetried ?? false },
     files,
   };
 };

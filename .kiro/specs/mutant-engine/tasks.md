@@ -256,7 +256,7 @@ Conventions used in every task:
     - _Requirements: 8.13_
     - _Validation: npx vitest run --project engine packages/engine/test/core/mutant-id.property.test.ts passes_
 
-  - [ ] 3.35 Record the `ignoreStatic` retry in the Mutation_Report
+  - [x] 3.35 Record the `ignoreStatic` retry in the Mutation_Report
     - In `core/report.ts` make `buildMutationReport` put the retry flag in the schema's free-form `config` object (the Verdict keeps `ignoreStaticRetried`).
     - Add examples to `test/core/report.test.ts`: retry true, retry false.
     - _Requirements: 3.5_
