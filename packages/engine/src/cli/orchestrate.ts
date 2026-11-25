@@ -5,10 +5,18 @@ import type {
   MechanicalRunResult,
 } from "../adapters/stryker-adapter.js";
 import { extractTestBody } from "../adapters/test-body-extractor.js";
+import type { CompileError } from "../adapters/typecheck-adapter.js";
 import type { SuiteError, SuiteResult, SuiteRunOptions } from "../adapters/vitest-suite-runner.js";
+import type {
+  WitnessInput,
+  WitnessRunError,
+  WitnessRunOptions,
+  WitnessRunResult,
+} from "../adapters/vitest-witness-runner.js";
 import { CONFIG_FILE_NAME, resolveConfigPaths, validateConfig } from "../core/config.js";
 import { computeKillClass } from "../core/kill-classification.js";
 import { assignOccurrenceIndexes, computeMutantId } from "../core/mutant-id.js";
+import { applyMutation } from "../core/mutation.js";
 import { parseRequirements } from "../core/requirements.js";
 import { err, ok, type Result } from "../core/result.js";
 import {
@@ -19,8 +27,18 @@ import {
   validateSkipFile,
 } from "../core/spec-mutants.js";
 import { classifySpecies } from "../core/species.js";
+import { computeSuiteTimeLimit } from "../core/suite-time-limit.js";
 import { classifyTest, type TestKind } from "../core/test-classification.js";
-import type { Criterion, EngineConfig, MutantResult, MutantStatus, TestId } from "../core/types.js";
+import type {
+  Criterion,
+  EngineConfig,
+  MutantId,
+  MutantResult,
+  MutantStatus,
+  SpecMutant,
+  TestId,
+} from "../core/types.js";
+import { compareWitnessOutcome, type WitnessOutcome } from "../core/witness-compare.js";
 import type { CliOptions } from "./args.js";
 
 /** The slice of the file system adapter the load stage needs. */
@@ -416,4 +434,254 @@ async function toOutcomes(
     outcomes.push(toOutcome(mutant, result));
   }
   return outcomes;
+}
+
+/** The slice of the adapters the spec mutant stage needs. */
+export interface SpecMutantAdapters {
+  readonly fs: Pick<LoadFileSystem, "readFile"> & {
+    writeFile(path: string, content: string): Promise<Result<void, string>>;
+  };
+  readonly sandbox: {
+    create(projectRoot: string, id: string): Promise<Result<{ root: string }, string>>;
+    destroy(handle: { root: string }): Promise<Result<void, string>>;
+  };
+  readonly typecheck: {
+    run(sandboxRoot: string): Promise<Result<void, CompileError>>;
+  };
+  readonly witness: {
+    run(
+      sandboxRoot: string,
+      witnesses: readonly WitnessInput[],
+      options?: WitnessRunOptions,
+    ): Promise<Result<WitnessRunResult, WitnessRunError>>;
+  };
+  readonly suite: {
+    run(root: string, options: SuiteRunOptions): Promise<Result<SuiteResult, SuiteError>>;
+  };
+}
+
+export interface SpecMutantStageInput {
+  /** Duration of the Baseline_Run, from the mechanical stage. */
+  readonly baselineMs: number;
+}
+
+/** A Spec_Mutant with its engine result and what the witness saw (Requirement 5.6). */
+export interface SpecMutantOutcome {
+  readonly mutant: SpecMutant;
+  readonly result: MutantResult;
+  /** Outcome of the witness on the original code, when it produced one. */
+  readonly originalOutcome?: WitnessOutcome;
+  /** Outcome of the witness on the mutated code, when it produced one. */
+  readonly mutatedOutcome?: WitnessOutcome;
+  /** First compiler error line (CompileError) or the reason a witness produced no outcome. */
+  readonly message?: string;
+}
+
+/** Why the stage stopped. None of these writes a Verdict_File. */
+export type SpecMutantStageError =
+  | { readonly kind: "sandbox-error"; readonly message: string }
+  | { readonly kind: "witness-error"; readonly message: string }
+  | { readonly kind: "crash"; readonly mutant?: MutantId; readonly message: string };
+
+const messageOf = (error: unknown): string =>
+  error instanceof Error ? error.message : String(error);
+
+const witnessErrorMessage = (error: WitnessRunError): string =>
+  error.kind === "Timeout" ? `witness run exceeded ${error.limitMs} ms` : error.message;
+
+/** Result of one Spec_Mutant, before its status is final. */
+const specResult = (
+  mutant: SpecMutant,
+  status: MutantStatus,
+  killingTests: TestId[] = [],
+): MutantResult => ({
+  id: mutant.id,
+  species: "Oathbreaker",
+  status,
+  requirement: mutant.requirement,
+  killingTests,
+});
+
+/**
+ * Third stage of the orchestration: runs every Spec_Mutant. One pristine sandbox runs all
+ * witnesses on the original code; each mutant then gets its own sandbox, removed in a
+ * `finally`. Mutants run in id order and keep the id from their file (Requirements 4.5,
+ * 5.1-5.15, 6.2).
+ */
+export async function runSpecMutants(
+  options: Pick<CliOptions, "project">,
+  project: LoadedProject,
+  mutants: readonly SpecMutant[],
+  input: SpecMutantStageInput,
+  adapters: SpecMutantAdapters,
+): Promise<Result<SpecMutantOutcome[], SpecMutantStageError>> {
+  const { config } = project;
+  const ordered = [...mutants].sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
+  if (ordered.length === 0) return ok([]);
+
+  const timeLimitMs = computeSuiteTimeLimit(input.baselineMs, config.timeoutMs);
+
+  const pristine = await originalOutcomes(options.project, ordered, timeLimitMs, adapters);
+  if (!pristine.ok) return pristine;
+
+  const outcomes: SpecMutantOutcome[] = [];
+  for (const mutant of ordered) {
+    const sandbox = await adapters.sandbox.create(options.project, mutant.id);
+    if (!sandbox.ok) return err({ kind: "sandbox-error", message: sandbox.error });
+    try {
+      const outcome = await runOneSpecMutant(
+        mutant,
+        sandbox.value.root,
+        pristine.value[mutant.id],
+        timeLimitMs,
+        config,
+        adapters,
+      );
+      if (!outcome.ok) return outcome;
+      outcomes.push(outcome.value);
+    } catch (error) {
+      return err({ kind: "crash", mutant: mutant.id, message: messageOf(error) });
+    } finally {
+      await adapters.sandbox.destroy(sandbox.value);
+    }
+  }
+  return ok(outcomes);
+}
+
+type OriginalOutcome = Result<WitnessOutcome, { message: string }> | undefined;
+
+async function originalOutcomes(
+  projectRoot: string,
+  mutants: readonly SpecMutant[],
+  timeLimitMs: number,
+  adapters: SpecMutantAdapters,
+): Promise<Result<Record<string, OriginalOutcome>, SpecMutantStageError>> {
+  const sandbox = await adapters.sandbox.create(projectRoot, "pristine");
+  if (!sandbox.ok) return err({ kind: "sandbox-error", message: sandbox.error });
+  try {
+    const run = await adapters.witness.run(
+      sandbox.value.root,
+      mutants.map((m) => ({ id: m.id, witness: m.witness })),
+      { timeLimitMs },
+    );
+    if (!run.ok) return err({ kind: "witness-error", message: witnessErrorMessage(run.error) });
+    return ok(run.value as Record<string, OriginalOutcome>);
+  } catch (error) {
+    return err({ kind: "crash", message: messageOf(error) });
+  } finally {
+    await adapters.sandbox.destroy(sandbox.value);
+  }
+}
+
+async function runOneSpecMutant(
+  mutant: SpecMutant,
+  root: string,
+  original: OriginalOutcome,
+  timeLimitMs: number,
+  config: EngineConfig,
+  adapters: SpecMutantAdapters,
+): Promise<Result<SpecMutantOutcome, SpecMutantStageError>> {
+  const done = (
+    status: MutantStatus,
+    extra: Omit<SpecMutantOutcome, "mutant" | "result"> = {},
+    killingTests: TestId[] = [],
+    killClass?: MutantResult["killClass"],
+  ): Result<SpecMutantOutcome, SpecMutantStageError> => {
+    const result = specResult(mutant, status, killingTests);
+    if (killClass !== undefined) result.killClass = killClass;
+    return ok({ mutant, result, ...extra });
+  };
+
+  // 5.2: the original text must appear exactly once.
+  const path = joinPath(root, mutant.file);
+  const source = await adapters.fs.readFile(path);
+  if (!source.ok) return done("NotApplicable", { message: source.error });
+  const applied = applyMutation(source.value, mutant);
+  if (!applied.ok) {
+    return done("NotApplicable", {
+      message: `original text appears ${applied.error.occurrences} times in ${mutant.file}, expected 1`,
+    });
+  }
+  const written = await adapters.fs.writeFile(path, applied.value.mutated);
+  if (!written.ok) return err({ kind: "sandbox-error", message: written.error });
+
+  // 5.3: type-check the mutated sandbox.
+  const typed = await adapters.typecheck.run(root);
+  if (!typed.ok) return done("CompileError", { message: typed.error.firstError });
+
+  // 5.6: the original code must give the expected outcome.
+  if (original === undefined || !original.ok) {
+    return done("InvalidWitness", {
+      message: original === undefined ? "witness produced no outcome" : original.error.message,
+    });
+  }
+  if (compareWitnessOutcome(mutant.witness, original.value) === "mismatch") {
+    return done("InvalidWitness", { originalOutcome: original.value });
+  }
+
+  // 5.7: the mutated code must change the outcome.
+  const witnessRun = await adapters.witness.run(
+    root,
+    [{ id: mutant.id, witness: mutant.witness }],
+    { timeLimitMs },
+  );
+  if (!witnessRun.ok) {
+    if (witnessRun.error.kind === "Timeout") {
+      return done("Timeout", { originalOutcome: original.value });
+    }
+    return err({ kind: "witness-error", message: witnessRun.error.message });
+  }
+  const mutatedRun = witnessRun.value[mutant.id];
+  // A witness with no outcome on the mutated code (for example a failed import) is a change.
+  const mutatedOutcome = mutatedRun?.ok ? mutatedRun.value : undefined;
+  if (
+    mutatedOutcome !== undefined &&
+    compareWitnessOutcome(mutant.witness, mutatedOutcome) === "match"
+  ) {
+    return done("Ghost", { originalOutcome: original.value, mutatedOutcome });
+  }
+  const seen = {
+    originalOutcome: original.value,
+    ...(mutatedOutcome === undefined ? {} : { mutatedOutcome }),
+  };
+
+  // 5.8 - 5.11, 5.15: one suite run with the suite time limit.
+  const suite = await adapters.suite.run(root, { timeLimitMs });
+  if (!suite.ok) {
+    if (suite.error.kind === "Timeout") return done("Timeout", seen);
+    return err({ kind: "crash", mutant: mutant.id, message: suite.error.message });
+  }
+
+  const failing: { file: string; name: string; startLine: number }[] = [];
+  for (const file of suite.value.files) {
+    for (const t of file.tests) {
+      if (t.status === "failed")
+        failing.push({ file: file.path, name: t.name, startLine: t.startLine });
+    }
+  }
+  if (failing.length === 0) return done("Survived", seen);
+
+  // 6.2: kill class from the failing tests of this single run.
+  const texts = new Map<string, string>();
+  const kinds: { kind: TestKind }[] = [];
+  for (const t of failing) {
+    let text = texts.get(t.file);
+    if (text === undefined) {
+      const read = await adapters.fs.readFile(joinPath(root, t.file));
+      text = read.ok ? read.value : "";
+      texts.set(t.file, text);
+    }
+    kinds.push({
+      kind: classifyTest(
+        { filePath: t.file, bodySource: extractTestBody(text, t.startLine) },
+        config.propertyTestGlobs,
+      ),
+    });
+  }
+  return done(
+    "Killed",
+    seen,
+    failing.map((t) => testIdOf(t.file, t.name)),
+    computeKillClass(kinds),
+  );
 }

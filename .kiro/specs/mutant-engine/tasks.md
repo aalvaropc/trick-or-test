@@ -423,7 +423,7 @@ Conventions used in every task:
     - _Requirements: 3.6, 3.15, 6.1, 6.9, 9.1, 9.3_
     - _Validation: npx vitest run --project engine packages/engine/test/cli/orchestrate-mechanical.test.ts passes_
 
-  - [ ] 7.4 Implement the spec mutant stage of the orchestration with tests
+  - [x] 7.4 Implement the spec mutant stage of the orchestration with tests
     - In `orchestrate.ts` add the spec mutant pipeline: one pristine sandbox for the witnesses on the original code, then per mutant a sandbox, `applyMutation`, type-check, InvalidWitness check, mutated witness run, Ghost check, one suite run with the time limit from `computeSuiteTimeLimit`, status mapping (Killed, Survived, Timeout), kill class from the failing tests, and sandbox removal in a `finally`. Keep the order of mutants stable (by id). A Spec_Mutant keeps the id from its file; the pipeline never recomputes it.
     - Write `test/cli/orchestrate-spec-mutants.test.ts` with fake adapters, one example per path: NotApplicable, CompileError, InvalidWitness (reports both outcomes), Ghost, Killed, Survived, Timeout, a crash in the suite runner (sandbox still removed), and the same status on two runs.
     - _Requirements: 5.1, 5.2, 5.3, 5.6, 5.7, 5.8, 5.9, 5.10, 5.11, 5.13, 5.14, 5.15, 6.2_
