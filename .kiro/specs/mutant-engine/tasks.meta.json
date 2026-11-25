@@ -1091,6 +1091,13 @@
         "chatSessionId": "sess_6f9f882b-8c42-4664-ab41-2cbe3c8d412f",
         "timestamp": 1795638441441
       }
+    ],
+    "12.9 Run the suite when the witness times out on the mutated code": [
+      {
+        "executionId": "81e89f82-ed1b-4535-8f79-cf6911bb15be",
+        "chatSessionId": "sess_b8aa8720-9d9f-4b83-b6ae-442ad331f1fe",
+        "timestamp": 1795638621962
+      }
     ]
   }
 }

@@ -570,7 +570,7 @@ Conventions used in every task:
     - _Requirements: 5.6, 5.8, 5.16_
     - _Validation: npx vitest run --project engine packages/engine/test/cli/orchestrate-spec-mutants.test.ts passes_
 
-  - [ ] 12.10 Keep the StrykerJS mutant location in `core/stryker-output.ts`
+  - [x] 12.10 Keep the StrykerJS mutant location in `core/stryker-output.ts`
     - Create `core/stryker-output.ts` with `parseStrykerReport(raw): Result<StrykerReport, ParseError>`: a zod schema that keeps for each mutant `location` (start and end line and column), `mutatorName`, `replacement`, `status`, `killedBy` and `testFiles`.
     - Capture a real StrykerJS 10.1.1 JSON report from a small throwaway project and store it under `test/fixtures/stryker/`.
     - Write `test/core/stryker-output.test.ts`: the captured report parses and every mutant keeps its four location numbers, a report without `location` is an error that names the field, an unknown extra field is accepted.
