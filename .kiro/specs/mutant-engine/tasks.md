@@ -216,7 +216,7 @@ Conventions used in every task:
     - _Requirements: 8.5, 8.10, 8.12_
     - _Validation: npx vitest run --project engine packages/engine/test/core/verdict.property.test.ts passes_
 
-  - [ ] 3.29 Implement `buildHistoryRecord` with example tests
+  - [x] 3.29 Implement `buildHistoryRecord` with example tests
     - In `report.ts` implement `buildHistoryRecord(verdict, previousRecord)` with time, commit, seed, config, mutant ids and statuses, count per Mutant_Status, count per Coverage_Status and `newlyKilledIds`. Implement an `appendHistory(records, record)` pure function that returns the old records unchanged plus the new one. Validate with the zod schema.
     - Write `test/core/history.test.ts`: first record (no previous), a previous record with some ids already killed, a run that kills nothing new, and a record that fails the schema.
     - _Requirements: 8.8, 8.9, 8.10_

@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { err, ok, type Result } from "./result.js";
 import type {
+  CoverageStatus,
   CriterionCoverage,
   CriterionId,
   EngineConfig,
@@ -360,3 +361,69 @@ export const buildMutationReport = (input: ReportInput): MutationTestingReport =
     files,
   };
 };
+
+// ---------------------------------------------------------------------------
+// History (8.8, 8.9, 8.10)
+// ---------------------------------------------------------------------------
+
+const MUTANT_STATUSES: MutantStatus[] = [
+  "Killed",
+  "Survived",
+  "Timeout",
+  "Ghost",
+  "InvalidWitness",
+  "CompileError",
+  "NotApplicable",
+];
+const COVERAGE_STATUSES: CoverageStatus[] = ["guarded", "unguarded", "unattacked", "skipped"];
+
+/**
+ * Builds the history record of a run (8.8, 8.9). Time, commit and seed come from the Verdict
+ * metadata, so the output is a pure function of the inputs. `newlyKilledIds` lists the Killed
+ * mutants that the previous record did not list as Killed. Validates with the zod schema (8.10)
+ * and returns an error message instead of throwing.
+ */
+export const buildHistoryRecord = (
+  verdict: Verdict,
+  previousRecord: HistoryRecord | undefined,
+  config: EngineConfig,
+): Result<HistoryRecord, string> => {
+  const statusCounts = Object.fromEntries(MUTANT_STATUSES.map((s) => [s, 0])) as Record<
+    MutantStatus,
+    number
+  >;
+  for (const m of verdict.mutants) statusCounts[m.status] += 1;
+  const coverageCounts = Object.fromEntries(COVERAGE_STATUSES.map((s) => [s, 0])) as Record<
+    CoverageStatus,
+    number
+  >;
+  for (const c of verdict.coverage) coverageCounts[c.status] += 1;
+  const previouslyKilled = new Set(
+    (previousRecord?.mutants ?? []).filter((m) => m.status === "Killed").map((m) => m.id),
+  );
+  const candidate: HistoryRecord = {
+    time: verdict.metadata.timestamp,
+    gitCommit: verdict.metadata.gitCommit,
+    seed: verdict.metadata.seed,
+    config: { ...config },
+    mutants: verdict.mutants.map((m) => ({ id: m.id, status: m.status })),
+    statusCounts,
+    coverageCounts,
+    newlyKilledIds: verdict.mutants
+      .filter((m) => m.status === "Killed" && !previouslyKilled.has(m.id))
+      .map((m) => m.id),
+  };
+  const parsed = historyRecordSchema.safeParse(candidate);
+  if (!parsed.success) {
+    return err(
+      `Invalid history record: ${parsed.error.issues.map((i) => `${i.path.join(".")}: ${i.message}`).join("; ")}`,
+    );
+  }
+  return ok(parsed.data);
+};
+
+/** Returns the old records unchanged plus the new one. Pure. */
+export const appendHistory = (
+  records: readonly HistoryRecord[],
+  record: HistoryRecord,
+): HistoryRecord[] => [...records, record];

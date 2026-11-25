@@ -448,6 +448,18 @@
         "chatSessionId": "sess_388c3963-eb65-49a6-9d72-850dedb0e117",
         "timestamp": 1795621859884
       }
+    ],
+    "3.29 Implement `buildHistoryRecord` with example tests": [
+      {
+        "executionId": "254c8e11-fdfc-469b-aeef-e56fb269e35b",
+        "chatSessionId": "sess_d5d740a2-560f-4ae6-8a33-a1fe2ac25ebc",
+        "timestamp": 1795621912513
+      },
+      {
+        "executionId": "254c8e11-fdfc-469b-aeef-e56fb269e35b",
+        "chatSessionId": "sess_d5d740a2-560f-4ae6-8a33-a1fe2ac25ebc",
+        "timestamp": 1795622051906
+      }
     ]
   }
 }
