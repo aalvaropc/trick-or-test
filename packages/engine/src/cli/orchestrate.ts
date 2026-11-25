@@ -709,7 +709,11 @@ async function runOneSpecMutant(
     }
     kinds.push({
       kind: classifyTest(
-        { filePath: t.file, bodySource: extractTestBody(text, t.startLine) },
+        {
+          filePath: t.file,
+          // A file-level failure has no test body.
+          bodySource: t.name === t.file ? "" : extractTestBody(text, t.startLine),
+        },
         config.propertyTestGlobs,
       ),
     });
@@ -717,7 +721,8 @@ async function runOneSpecMutant(
   return done(
     "Killed",
     seen,
-    failing.map((t) => testIdOf(t.file, t.name)),
+    // A file-level failure is named after its file: the path alone is the killing test (5.9).
+    failing.map((t) => (t.name === t.file ? t.file : testIdOf(t.file, t.name)) as TestId),
     computeKillClass(kinds),
   );
 }

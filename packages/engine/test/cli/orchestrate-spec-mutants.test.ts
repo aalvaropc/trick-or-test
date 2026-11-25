@@ -237,3 +237,33 @@ describe("spec mutant stage", () => {
     expect(statuses(second)).toEqual(statuses(first));
   });
 });
+
+describe("spec mutant stage, file-level failures", () => {
+  const fileLevelFailure = (file: string): Result<SuiteResult, SuiteError> =>
+    ok({
+      durationMs: 5,
+      files: [
+        { path: file, tests: [{ name: file, status: "failed" as const, startLine: 0 }] },
+        {
+          path: "test/a.test.ts",
+          tests: [{ name: "example", status: "passed" as const, startLine: 1 }],
+        },
+      ],
+    });
+
+  it("5.9 Killed with the file path as killing test when a test file fails at import", async () => {
+    const f = fakes({ suite: fileLevelFailure("test/broken.test.ts") });
+    const result = await run([specMutant("oath-1.1-a")], f);
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.value[0]?.result.status).toBe("Killed");
+    expect(result.value[0]?.result.killingTests).toEqual(["test/broken.test.ts"]);
+  });
+
+  it("5.10 Survived when the suite run has no failure", async () => {
+    const f = fakes();
+    const result = await run([specMutant("oath-1.1-a")], f);
+    expect(result.ok && result.value[0]?.result.status).toBe("Survived");
+    expect(result.ok && result.value[0]?.result.killingTests).toEqual([]);
+  });
+});

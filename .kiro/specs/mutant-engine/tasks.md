@@ -540,7 +540,7 @@ Conventions used in every task:
     - _Requirements: 3.15_
     - _Validation: npx vitest run --project engine packages/engine/test/cli/orchestrate-mechanical.test.ts passes_
 
-  - [ ] 12.5 Kill a Spec_Mutant on a file-level failure
+  - [x] 12.5 Kill a Spec_Mutant on a file-level failure
     - In `cli/orchestrate.ts` (spec mutant stage) map a suite run with a file-level failure to the Mutant_Status Killed, with the file path as the killing test. A mutant that only breaks an import is Killed, not Survived.
     - Add examples to `test/cli/orchestrate-spec-mutants.test.ts`: a mutant that makes a test file fail at import is Killed with that file in its killing tests; a run with no failure is still Survived.
     - _Requirements: 5.9, 5.10, 6.2_
