@@ -101,7 +101,7 @@ Conventions for every task:
     - _Requirements: 1.6, 1.7, 1.12, 1.14_
     - _Validation: `npm test -w trick-or-test-viewer -- test/loader/recognise.test.ts` passes_
 
-  - [ ] 3.3 Implement `loader/parse.ts`
+  - [x] 3.3 Implement `loader/parse.ts`
     - Implement `parseFile(kind, text, fileName)` returning `Result<ParsedFile, LoadError>`. Use only `safeParse`. Report failing field paths (up to 10, then the count of further failures). Validate a History_File line by line: the first bad non-empty line rejects the whole file, and the error carries the 1-based line number counted over all lines including blank ones, plus the parse failure or the failing field paths.
     - Example tests in `test/loader/parse.test.ts`: JSON syntax error names the file (1.7), schema failure lists paths and truncates at 10 with the remaining count (1.8), history error line number with a blank line before the bad line (1.13), no throw on any fixture (12.14).
     - _Requirements: 1.7, 1.8, 1.13, 12.14_
