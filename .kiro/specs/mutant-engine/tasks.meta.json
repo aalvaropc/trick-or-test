@@ -495,6 +495,30 @@
         "chatSessionId": "sess_bd0c086d-dedd-4b3b-9147-74c2ff0ce902",
         "timestamp": 1795622309977
       }
+    ],
+    "4. Checkpoint - Core phase": [
+      {
+        "executionId": "090ed493-619d-4faf-a7c7-d91f96be590e",
+        "chatSessionId": "sess_c3f99329-28a3-49cc-a932-748f0c4d4820",
+        "timestamp": 1795622338892
+      },
+      {
+        "executionId": "090ed493-619d-4faf-a7c7-d91f96be590e",
+        "chatSessionId": "sess_c3f99329-28a3-49cc-a932-748f0c4d4820",
+        "timestamp": 1795622360906
+      }
+    ],
+    "5.1 Implement `file-system-adapter.ts` with tests": [
+      {
+        "executionId": "c1a75f56-4146-4aed-81cb-0a6d1fac4d12",
+        "chatSessionId": "sess_fe5bc8db-6ffa-4ce0-9ea9-254ca8c4473b",
+        "timestamp": 1795622430369
+      },
+      {
+        "executionId": "ad9bca88-010c-4358-9b49-50b6ba3b7d48",
+        "chatSessionId": "sess_fe5bc8db-6ffa-4ce0-9ea9-254ca8c4473b",
+        "timestamp": 1795622651897
+      }
     ]
   }
 }

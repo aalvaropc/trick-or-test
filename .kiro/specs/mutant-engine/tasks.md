@@ -234,12 +234,12 @@ Conventions used in every task:
     - _Requirements: 10.1, 10.4_
     - _Validation: npx vitest run --project engine packages/engine/test/report/no-node-imports.test.ts passes_
 
-- [ ] 4. Checkpoint - Core phase
+- [x] 4. Checkpoint - Core phase
   - Run `npm run check` from the repository root. Ensure all tests pass, ask the user if questions arise.
   - _Validation: npm run check passes_
 
 - [ ] 5. Implement the adapters (`packages/engine/src/adapters/`)
-  - [ ] 5.1 Implement `file-system-adapter.ts` with tests
+  - [x] 5.1 Implement `file-system-adapter.ts` with tests
     - Define the `FileSystem` interface (`readFile`, `writeFile`, `copyDir`, `removeDir`, `exists`) and implement it over `node:fs/promises`. Writes return a `Result` error that names the path when the path cannot be written.
     - Write `test/adapters/file-system-adapter.test.ts` on a temp directory: read, write, copy with an exclude list, remove, exists, and a write into a read-only directory that returns the error with the path.
     - _Requirements: 8.11, 10.2_
