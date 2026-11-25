@@ -148,11 +148,11 @@
   "ignoreStaticRetried": false,
   "metadata": {
     "engineVersion": "0.0.0",
-    "gitCommit": "5e830b8484e4474507a2cbc8adc816e4a8608d9c",
-    "nodeVersion": "v26.13.1",
+    "gitCommit": "17976be0a388744e06e585f0b410a4a5dbf29f10",
+    "nodeVersion": "v23.10.0",
     "seed": 0,
     "strykerVersion": "10.1.1",
-    "timestamp": "2026-11-25T23:10:46.679Z",
+    "timestamp": "2026-11-25T23:13:08.882Z",
     "typescriptVersion": "7.0.2",
     "vitestVersion": "5.1.0"
   },
