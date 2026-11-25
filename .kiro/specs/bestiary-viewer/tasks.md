@@ -326,7 +326,7 @@ Conventions for every task:
     - _Requirements: 10.7, 10.8_
     - _Validation: `npm test -w trick-or-test-viewer -- test/styles/motion.test.tsx` passes_
 
-  - [ ] 8.7 Add the run context and the hash-route hook
+  - [x] 8.7 Add the run context and the hash-route hook
     - Create `src/app/run-context.tsx` holding `RunModel | undefined` in memory only. Setting it happens only on a successful load, so a failed load keeps the previous Run. Create `src/app/use-hash-route.ts` with `useHashRoute()` over `useSyncExternalStore` and `hashchange`, calling `parseHashRoute` from `router/routes.ts`. Write nothing to local storage, session storage or cookies.
     - Example tests in `test/app/run-context.test.tsx`: a failed load keeps the previous Run (1.7), a hash change updates the route (11.3), a remount discards the Run on a non-demo route (11.8), `localStorage`, `sessionStorage` and `document.cookie` stay untouched after loading a fixture (11.9).
     - _Requirements: 1.7, 11.3, 11.8, 11.9_

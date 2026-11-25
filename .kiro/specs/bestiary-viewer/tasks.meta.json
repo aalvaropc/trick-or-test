@@ -549,6 +549,13 @@
         "chatSessionId": "sess_bae7a6b3-2c61-40a0-809a-ee63fe3d19a0",
         "timestamp": 1795649841881
       }
+    ],
+    "8.6 Add the killed animation and the reduced-motion hook": [
+      {
+        "executionId": "5f2e30a5-961b-4c05-8dd3-09ebb23656ae",
+        "chatSessionId": "sess_a7b3fc67-3449-4b3c-9486-7973182a3a3e",
+        "timestamp": 1795649985342
+      }
     ]
   }
 }
