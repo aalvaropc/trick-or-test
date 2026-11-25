@@ -137,7 +137,7 @@ Conventions used in every task:
     - _Requirements: 6.6, 6.7, 6.8, 6.9_
     - _Validation: npx vitest run --project engine packages/engine/test/core/kill-classification.test.ts passes_
 
-  - [ ] 3.16 Write Property 5: Attribution partition
+  - [x] 3.16 Write Property 5: Attribution partition
     - Write `test/core/kill-classification.property.test.ts` with **Property 5: Attribution partition**. Include Timeout mutants in the generated sets and check that they get no kill class and are not counted.
     - **Validates: Requirements 6.6, 6.7, 6.8, 6.9, 6.10**
     - _Requirements: 6.6, 6.7, 6.8, 6.9, 6.10_

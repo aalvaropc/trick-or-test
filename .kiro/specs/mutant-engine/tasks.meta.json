@@ -15,6 +15,10 @@
     "3.9 Write Property 2: Uniqueness": {
       "status": "passed",
       "lastRunTimestamp": 1795619430909
+    },
+    "3.16 Write Property 5: Attribution partition": {
+      "status": "passed",
+      "lastRunTimestamp": 1795620144598
     }
   },
   "executionHistory": {
@@ -249,6 +253,18 @@
         "executionId": "b7e1a129-63d5-4863-8c31-6f6834ccb2ef",
         "chatSessionId": "sess_9ebd3c79-f216-4ff5-8402-c813025685f8",
         "timestamp": 1795620074928
+      }
+    ],
+    "3.16 Write Property 5: Attribution partition": [
+      {
+        "executionId": "04d422d8-eeac-418e-9466-b2f9228c5453",
+        "chatSessionId": "sess_39910644-3044-411f-97cf-802fe62e18db",
+        "timestamp": 1795620107841
+      },
+      {
+        "executionId": "04d422d8-eeac-418e-9466-b2f9228c5453",
+        "chatSessionId": "sess_39910644-3044-411f-97cf-802fe62e18db",
+        "timestamp": 1795620151567
       }
     ]
   }
