@@ -245,7 +245,7 @@ Conventions used in every task:
     - _Requirements: 8.11, 10.2_
     - _Validation: npx vitest run --project engine packages/engine/test/adapters/file-system-adapter.test.ts passes_
 
-  - [ ] 5.2 Implement `sandbox.ts` with tests
+  - [x] 5.2 Implement `sandbox.ts` with tests
     - Implement `Sandbox.create(projectRoot, id)` that copies the project to `.trickortest/sandboxes/<id>/`, excluding `node_modules`, `.git`, `.trickortest`, `.stryker-tmp` and the output directory, writes `.trickortest/.gitignore` containing `*`, and `Sandbox.destroy(handle)`. Provide `withSandbox(projectRoot, id, fn)` that destroys in a `finally`.
     - Write `test/adapters/sandbox.test.ts`: the excluded folders are absent from the copy, `.trickortest/.gitignore` exists, destroy removes the folder, `withSandbox` removes it when `fn` throws.
     - _Requirements: 5.1, 5.13, 3.14_

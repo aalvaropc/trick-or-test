@@ -1,5 +1,15 @@
-import { access, cp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
-import { dirname, relative, sep } from "node:path";
+import {
+  access,
+  copyFile,
+  mkdir,
+  readdir,
+  readFile,
+  readlink,
+  rm,
+  symlink,
+  writeFile,
+} from "node:fs/promises";
+import { dirname, join, relative, sep } from "node:path";
 import { err, ok, type Result } from "../core/result.js";
 
 export interface FileSystem {
@@ -34,6 +44,32 @@ const buildCopyFilter = (src: string, exclude: readonly string[]) => {
   };
 };
 
+/**
+ * Recursive copy that allows the destination to live inside the source,
+ * which `fs.cp` rejects. The filter is applied to every entry before it is
+ * visited, so excluded directories (such as the sandbox root) are skipped.
+ */
+const copyTree = async (
+  src: string,
+  dest: string,
+  filter: (source: string) => boolean,
+): Promise<void> => {
+  await mkdir(dest, { recursive: true });
+  const entries = await readdir(src, { withFileTypes: true });
+  for (const entry of entries) {
+    const from = join(src, entry.name);
+    if (!filter(from)) continue;
+    const to = join(dest, entry.name);
+    if (entry.isSymbolicLink()) {
+      await symlink(await readlink(from), to);
+    } else if (entry.isDirectory()) {
+      await copyTree(from, to, filter);
+    } else if (entry.isFile()) {
+      await copyFile(from, to);
+    }
+  }
+};
+
 export const createFileSystem = (): FileSystem => ({
   async readFile(path) {
     try {
@@ -55,7 +91,7 @@ export const createFileSystem = (): FileSystem => ({
 
   async copyDir(src, dest, exclude = []) {
     try {
-      await cp(src, dest, { recursive: true, filter: buildCopyFilter(src, exclude) });
+      await copyTree(src, dest, buildCopyFilter(src, exclude));
       return ok(undefined);
     } catch (error) {
       return err(`Cannot copy ${src} to ${dest}: ${messageOf(error)}`);
