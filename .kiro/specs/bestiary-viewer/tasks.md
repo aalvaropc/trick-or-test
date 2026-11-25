@@ -217,7 +217,7 @@ Conventions for every task:
     - _Requirements: 5.1, 5.2, 5.4, 5.5, 5.6, 5.14, 5.15, 5.16, 5.17_
     - _Validation: `npm test -w trick-or-test-viewer -- test/bestiary/creature.test.ts` passes_
 
-  - [ ] 4.13 Add state styling to `bestiary/creature.ts`
+  - [x] 4.13 Add state styling to `bestiary/creature.ts`
     - Implement `stateStyle(state)` and apply it: survivor has full-ink stroke and fill with eyes in the lit-eye token; killed has bones only, stroke width at most half the survivor width, no fill, no eyes; in-the-dark has a single-colour filled silhouette and no eyes; ghost has a dashed outline, no fill, opacity exactly 0.4. Draw shade only as an SVG `<pattern>` of parallel lines at one angle. Emit no `linearGradient`, `radialGradient`, `filter` or drop shadow.
     - Example tests added to `test/bestiary/creature.states.test.ts`: one per criterion 5.7 to 5.10, shade pattern (5.13), forbidden elements absent in every species and state (5.12).
     - _Requirements: 5.7, 5.8, 5.9, 5.10, 5.12, 5.13_

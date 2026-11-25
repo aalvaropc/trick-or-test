@@ -408,6 +408,13 @@
         "chatSessionId": "sess_bb0af6ff-9fec-49da-91d4-8de1acfeb748",
         "timestamp": 1795634217479
       }
+    ],
+    "4.12 Implement the creature structure in `bestiary/creature.ts`": [
+      {
+        "executionId": "1e175f53-4344-4812-9c78-096417095927",
+        "chatSessionId": "sess_dc62a625-49b3-4792-818a-1f5a39433e39",
+        "timestamp": 1795634367795
+      }
     ]
   }
 }
