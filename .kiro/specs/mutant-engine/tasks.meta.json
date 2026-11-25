@@ -967,6 +967,13 @@
         "chatSessionId": "sess_66f1ee5a-a8ad-4017-980e-a085576290e8",
         "timestamp": 1795631998005
       }
+    ],
+    "7.8 Pin the exact Mechanical_Mutant id in a test": [
+      {
+        "executionId": "541e92e0-25b0-482b-a83b-aab520b912b5",
+        "chatSessionId": "sess_2c5797db-bc9b-49ce-a2a0-bff8c4c376ef",
+        "timestamp": 1795632097905
+      }
     ]
   }
 }

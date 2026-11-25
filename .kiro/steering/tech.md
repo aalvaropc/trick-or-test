@@ -32,6 +32,7 @@ Decisions behind this stack are recorded in `docs/decisions/`. Do not change a c
 | `npm run test:coverage`           | Runs all tests with coverage                                        |
 | `npm run build`                   | Builds every workspace                                              |
 | `npm run test:e2e -w trick-or-test` | Runs the engine end-to-end test (slow, about two minutes) |
+| `npm run measure`                 | Builds the engine and attacks `examples/pricing` with the `cart-pricing` spec, writing `reports/`. Files in `reports/` are generated only by this command and are never edited by hand |
 
 Workspaces add their own scripts (for example `attack`, `measure`, `dev`) when their spec creates them; add the matching row here in the same commit.
 

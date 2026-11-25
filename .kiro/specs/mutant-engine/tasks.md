@@ -453,7 +453,7 @@ Conventions used in every task:
     - _Requirements: 8.7_
     - _Validation: npx vitest run --project engine packages/engine/test/cli/mutant-id-pin.test.ts passes_
 
-  - [ ] 7.9 Add the root `measure` npm script
+  - [x] 7.9 Add the root `measure` npm script
     - In the root `package.json` add the script `measure` that builds the engine and runs the built CLI as `trick-or-test measure --project examples/pricing --spec cart-pricing --output reports`, so the output directory is `reports`.
     - Add `trick-or-test` as a workspace so the `trick-or-test` bin resolves from the root scripts (it is already a workspace through `packages/*`; run `npm install` if the link is missing).
     - Add the `measure` row to the commands table in `.kiro/steering/tech.md` in the same commit. State there that files in `reports/` are generated only by `npm run measure` and are never edited by hand.
