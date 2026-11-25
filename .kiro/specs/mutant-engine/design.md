@@ -100,7 +100,7 @@ sequenceDiagram
                 CLI->>FS: remove Sandbox
             end
             CLI->>Core: classifyTest, computeKillClass, computeCoverage, buildMutationReport, buildVerdict, buildHistoryRecord
-            CLI->>FS: write report, verdict, append history record
+            CLI->>FS: write report, verdict; append one line to history.jsonl
         end
     end
 ```
@@ -120,9 +120,9 @@ sequenceDiagram
 | `witness-compare.ts` | `compareWitnessOutcome(expected: WitnessExpectation, actual: WitnessOutcome): "match" \| "mismatch"` | Requirement 5.6, 5.12. Deep structural equality over the JSON form of the values (each value is serialized and parsed before comparison), so `-0` and `0` are equal. |
 | `test-classification.ts` | `classifyTest(test: { filePath: string; bodySource: string }, propertyTestGlobs: string[]): "property" \| "example"` | Requirement 6.3-6.5. Glob match on `filePath` (the matcher expands braces, so `test/**/*.{property,prop}.test.ts` matches `test/a.property.test.ts`), or a syntactic scan of `bodySource` for a call to `fc.assert`, `fc.check`, or `test.prop`. |
 | `kill-classification.ts` | `computeKillClass(killingTests: ClassifiedTest[]): KillClass` | Requirement 6.6-6.10. |
-| `mutant-id.ts` | `computeMutantId(file: string, original: string, replacement: string, occurrenceIndex: number): MutantId` | Requirement 8.7. Used for Mechanical_Mutants only. Content hash computed with `createHash('sha256')` from `node:crypto` (hex-truncated), never a hand-written hash, never a timestamp and never a line number. The `occurrenceIndex` is the Occurrence_Index: the 0-based position of the mutant among all Mechanical_Mutants with the same file, original text and replacement, ordered by location (line, then column). It keeps two mutants with the same file, original text and replacement at different locations apart. `computeMutantId` does not compute the index. The caller (the CLI) groups the Mechanical_Mutants by (file, original, replacement), sorts each group by line then column, and passes each mutant's position in its group. Because the index depends only on the order inside a group, ids stay stable when unrelated lines move. This is the only core module that imports from `node:`. Spec_Mutants do not pass through this function: a Spec_Mutant keeps the id from its file (`oath-<criterion>-<slug>`), which Requirement 4.5 makes unique. The CLI passes the ids to `report.ts` as data, so `report.ts` does not import `mutant-id.ts`. |
+| `mutant-id.ts` | `computeMutantId(file: string, original: string, replacement: string, occurrenceIndex: number): MutantId` | Requirement 8.7. Used for Mechanical_Mutants only. `test/core/mutant-id.test.ts` checks only the 32-character hex format of the id. One exact-id pin test for a fixed input lives with the CLI-phase tests. Content hash computed with `createHash('sha256')` from `node:crypto` (hex-truncated), never a hand-written hash, never a timestamp and never a line number. The `occurrenceIndex` is the Occurrence_Index: the 0-based position of the mutant among all Mechanical_Mutants with the same file, original text and replacement, ordered by location (line, then column). It keeps two mutants with the same file, original text and replacement at different locations apart. `computeMutantId` does not compute the index. The caller (the CLI) groups the Mechanical_Mutants by (file, original, replacement), sorts each group by line then column, and passes each mutant's position in its group. Because the index depends only on the order inside a group, ids stay stable when unrelated lines move. This is the only core module that imports from `node:`. Spec_Mutants do not pass through this function: a Spec_Mutant keeps the id from its file (`oath-<criterion>-<slug>`), which Requirement 4.5 makes unique. The CLI passes the ids to `report.ts` as data, so `report.ts` does not import `mutant-id.ts`. |
 | `coverage.ts` | `computeCoverage(criteria: Criterion[], mutantResults: MutantResult[], skipEntries: SkipEntry[]): CriterionCoverage[]` | Requirement 7. |
-| `report.ts` | `buildMutationReport(input): MutationTestingReport`, `buildVerdict(input): Verdict`, `buildHistoryRecord(verdict, previousRecord): HistoryRecord` | Requirement 8. `buildMutationReport` records whether the `ignoreStatic` retry happened in the schema's free-form `config` object (Requirement 3.5), and `buildVerdict` records it in `ignoreStaticRetried`. Takes mutant ids as input (Spec_Mutants keep their file ids, Mechanical_Mutants carry the hash computed by the CLI) and never computes them. Deduplicates same-change spec/mechanical pairs by comparing file, span and replacement, not ids (8.15), maps statuses (8.3-8.4), computes newly-killed ids (8.9) from the previous history record passed in as data. |
+| `report.ts` | `buildMutationReport(input): MutationTestingReport`, `buildVerdict(input): Verdict`, `buildHistoryRecord(verdict, previousRecord): HistoryRecord`, `serializeHistoryRecord(record): string`, `parseHistoryLines(text): Result<HistoryRecord[], HistoryError>` | Requirement 8. `serializeHistoryRecord` returns the record as a single-line JSON object with no embedded newline. `parseHistoryLines` parses each non-empty line as one complete JSON object, in order, and returns an error that names the line number for a malformed line. The History_File `history.jsonl` is JSON Lines: one HistoryRecord per line, and appending a run adds exactly one line and leaves earlier lines unchanged (8.8, 8.9, 8.16). Each record is validated with its zod schema before the line is appended (8.10). The viewer (bestiary-viewer spec) reads exactly this format through `trick-or-test/report`. `buildMutationReport` records whether the `ignoreStatic` retry happened in the schema's free-form `config` object (Requirement 3.5), and `buildVerdict` records it in `ignoreStaticRetried`. Takes mutant ids as input (Spec_Mutants keep their file ids, Mechanical_Mutants carry the hash computed by the CLI) and never computes them. Deduplicates same-change spec/mechanical pairs by comparing file, span and replacement, not ids (8.15), maps statuses (8.3-8.4), computes newly-killed ids (8.9) from the previous history record passed in as data. |
 | `result.ts` | `Result<T, E>` union, `ok`, `err` helpers | ADR 0005. Used by every fallible core function; exceptions are reserved for programming errors. |
 
 ### Adapters (imperative, `packages/engine/src/adapters/`)
@@ -140,7 +140,7 @@ sequenceDiagram
 
 ### CLI (`packages/engine/src/cli/`)
 
-Two commands, `run` and `measure`, parsed with a minimal, dependency-free argument parser (no new runtime dependency — ADR-driven restraint from `tech.md`). Both commands call the same orchestration function with a different output directory; `measure` always targets the configured output path meant for `reports/`. The CLI never changes its exit code based on survivors (Requirement 9.7-9.8): exit 0 for a completed run regardless of survivors, exit 1 for configuration, parsing, baseline, StrykerJS, or runtime errors, exit 1 with usage text for an unknown command or option.
+Two commands, `run` and `measure`, parsed with a minimal, dependency-free argument parser (no new runtime dependency — ADR-driven restraint from `tech.md`). Both commands call the same orchestration function with a different output directory; `measure` always targets the configured output path meant for `reports/`. The repository root `package.json` defines the npm script `measure`, which runs the built CLI as `trick-or-test measure --project examples/pricing --spec cart-pricing` with the output directory `reports` (Requirement 9.12). After it finishes, `reports/` holds the Mutation_Report, `verdict.json` and `history.jsonl` (9.13). Files in `reports/` are generated only through `measure` and are never edited by hand (9.14). The CLI never changes its exit code based on survivors (Requirement 9.7-9.8): exit 0 for a completed run regardless of survivors, exit 1 for configuration, parsing, baseline, StrykerJS, or runtime errors, exit 1 with usage text for an unknown command or option.
 
 ### Test bodies
 
@@ -157,6 +157,17 @@ TypeScript 7 has no JavaScript API, so the engine does not use the TypeScript co
 `trick-or-test/report` re-exports only the report types and zod schemas from `core/report.ts` and the other type and schema modules in `core/`. It does not import `core/mutant-id.ts`, because that module imports `node:crypto`. No `node:` import appears anywhere in the subpath's dependency graph (Requirement 10.4), so `apps/viewer` can import it directly.
 
 ## Data Models
+
+### File layout
+
+```
+<output dir>/            # `reports/` for the measure script
+  mutation-report.json   # Mutation_Report (mutation-testing-report-schema)
+  verdict.json           # Verdict_File, rewritten each run
+  history.jsonl          # History_File, JSON Lines, append-only, one HistoryRecord per line
+```
+
+Working files stay under `.trickortest/` (`sandboxes/`, `witnesses/`, Stryker incremental and temp files).
 
 ```ts
 // Branded ids (ADR 0005)
@@ -250,6 +261,7 @@ type Verdict = {
   metadata: RunMetadata;
 };
 
+// Serialized as one single-line JSON object per line of history.jsonl.
 type HistoryRecord = {
   time: string;
   gitCommit: string;
@@ -348,7 +360,7 @@ For any sequence of mutant runs, including runs that fail, time out, or crash pa
 
 ### Property 14: History is append-only
 
-For any sequence of runs, appending a new history record never changes the content of any earlier record, and the `newlyKilledIds` of a record is exactly the set of mutant ids killed in that run that the immediately preceding record did not already list as killed. This set comparison is only meaningful because ids are unique per mutant (Property 6): two mutants that shared an id would hide a newly killed mutant behind an earlier one. The generators therefore include runs with several mechanical mutants of the same file, original text and replacement.
+For any sequence of runs, appending a new history record adds exactly one line to `history.jsonl` and never changes the bytes of any earlier line, and the `newlyKilledIds` of a record is exactly the set of mutant ids killed in that run that the immediately preceding record did not already list as killed. This set comparison is only meaningful because ids are unique per mutant (Property 6): two mutants that shared an id would hide a newly killed mutant behind an earlier one. The generators therefore include runs with several mechanical mutants of the same file, original text and replacement.
 
 **Validates: Requirements 8.8, 8.9**
 
@@ -363,6 +375,12 @@ For any Spec_Mutant and any Mechanical_Mutant that make the same change (same fi
 For any valid Verdict value, writing it to a file, reading it back, and writing it again produces identical file content both times.
 
 **Validates: Requirements 8.5, 8.10, 8.12**
+
+### Property 17: History lines round trip
+
+For any sequence of HistoryRecord values, serializing each record to one line, appending the lines to `history.jsonl` and reading the file line by line returns the same records in the same order, and each line parses as one complete JSON object (no record spans two lines and no line holds two records).
+
+**Validates: Requirements 8.9, 8.10, 8.16**
 
 ## Error Handling
 
@@ -379,7 +397,7 @@ The feature mixes pure transformation logic (well suited to property-based testi
 
 ### Where PBT applies
 
-All sixteen correctness properties above describe pure, deterministic core functions (`applyMutation`, `classifySpecies`, `computeCoverage`, `computeKillClass`, `classifyTest`, `computeMutantId`, `buildMutationReport`, `buildVerdict`, `buildHistoryRecord`, `parseRequirements`) operating over plain data with a large or structured input space (arbitrary source text, arbitrary mutant lists, arbitrary generated requirements documents, arbitrary test-classification scenarios). Each gets exactly one property-based test, using **fast-check**, per Requirement 10.6 ("a property test for each correctness property in design.md").
+All seventeen correctness properties above describe pure, deterministic core functions (`applyMutation`, `classifySpecies`, `computeCoverage`, `computeKillClass`, `classifyTest`, `computeMutantId`, `buildMutationReport`, `buildVerdict`, `buildHistoryRecord`, `serializeHistoryRecord`, `parseHistoryLines`, `parseRequirements`) operating over plain data with a large or structured input space (arbitrary source text, arbitrary mutant lists, arbitrary generated requirements documents, arbitrary test-classification scenarios). Each gets exactly one property-based test, using **fast-check**, per Requirement 10.6 ("a property test for each correctness property in design.md").
 
 - Property tests live in `*.property.test.ts` files, never mixed with example tests in the same file (Requirement 10.5, `tech.md`).
 - fast-check is configured once in a Vitest setup file with a fixed `seed` and `numRuns` of at least 100 (Requirement 10.6's companion rule in `tech.md`); no test calls `fc.assert` with an ad-hoc seed.

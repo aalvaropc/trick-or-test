@@ -321,6 +321,20 @@ Conventions used in every task:
     - _Requirements: 8.15_
     - _Validation: npx vitest run --project engine packages/engine/test/core/report.dedup.property.test.ts passes_
 
+  - [ ] 3.46 Add the JSON Lines functions for `history.jsonl`
+    - Note: task 3.29 built `appendHistory(records, record)` over an in-memory list. This task adds the file format. `history.jsonl` is JSON Lines, one HistoryRecord per line, with no JSON array and no pretty-printing.
+    - In `core/report.ts` implement `serializeHistoryRecord(record): string` (a single-line JSON object with no embedded newline, validated with the zod schema first) and `parseHistoryLines(text): Result<HistoryRecord[], HistoryError>` (parses each non-empty line as one complete JSON object, in order, and returns an error that names the line number for a malformed or schema-invalid line).
+    - Export both functions and the HistoryRecord schema from `src/report/index.ts` so the viewer reads exactly this format through `trick-or-test/report`.
+    - Write `test/core/history-lines.test.ts`: one record gives one line without `\n`, a record whose string fields contain newlines stays on one line, an empty file gives an empty list, a trailing newline, a blank line between records, a malformed line (error names its line number), a line that holds a JSON array instead of an object, and a schema-invalid line.
+    - _Requirements: 8.8, 8.9, 8.10, 8.16_
+    - _Validation: npx vitest run --project engine packages/engine/test/core/history-lines.test.ts passes_
+
+  - [ ] 3.47 Write Property 17: History lines round trip
+    - Write `test/core/history-lines.property.test.ts` with **Property 17: History lines round trip**. Generate sequences of HistoryRecord values (including strings with newlines and quotes), serialize each record, join the lines as `history.jsonl` would hold them, parse with `parseHistoryLines`, and check that the same records come back in the same order, that each line is one complete JSON object, and that appending one more line leaves the earlier lines byte-identical.
+    - **Validates: Requirements 8.9, 8.10, 8.16**
+    - _Requirements: 8.9, 8.10, 8.16_
+    - _Validation: npx vitest run --project engine packages/engine/test/core/history-lines.property.test.ts passes_
+
 - [x] 4. Checkpoint - Core phase
   - Run `npm run check` from the repository root. Ensure all tests pass, ask the user if questions arise.
   - _Validation: npm run check passes_
@@ -392,7 +406,7 @@ Conventions used in every task:
 
 - [ ] 7. Implement the CLI (`packages/engine/src/cli/`)
   - [ ] 7.1 Implement the argument parser with tests
-    - Implement a dependency-free parser for the commands `run` and `measure` and the options `--since <ref>`, `--project <path>`, `--spec <name>` and the output directory option of `measure`. An unknown command or option returns a usage error. No option changes the exit code by survivor count.
+    - Implement a dependency-free parser for the commands `run` and `measure` and the options `--since <ref>`, `--project <path>`, `--spec <name>` and the option `--output <dir>` of `measure`. An unknown command or option returns a usage error. No option changes the exit code by survivor count.
     - Write `test/cli/args.test.ts`: each command and option, defaults (cwd as project), a missing option value, an unknown command, an unknown option.
     - _Requirements: 9.3, 9.4, 9.5, 9.8, 9.10_
     - _Validation: npx vitest run --project engine packages/engine/test/cli/args.test.ts passes_
@@ -416,9 +430,9 @@ Conventions used in every task:
     - _Validation: npx vitest run --project engine packages/engine/test/cli/orchestrate-spec-mutants.test.ts passes_
 
   - [ ] 7.5 Implement the reporting stage of the orchestration with tests
-    - In `orchestrate.ts` add the final stage: compute coverage, build the mutation report, the verdict and the history record (with the previous record read through the `FileSystem`), then write the report, the verdict and the appended history to the output directory. Pass the mutant ids to `report.ts` as data (file ids for Spec_Mutants, `computeMutantId` hashes from task 7.3 for Mechanical_Mutants). A write failure returns an error that names the path.
-    - Write `test/cli/orchestrate-report.test.ts` with a fake file system: the three outputs are written, the history keeps earlier records, a write failure names the path, two runs with the same inputs write identical report and verdict content except `metadata.timestamp`.
-    - _Requirements: 8.1, 8.5, 8.8, 8.11, 8.13, 9.1_
+    - In `orchestrate.ts` add the final stage: compute coverage, build the mutation report, the verdict and the history record, then write the report and the verdict to the output directory. Write `history.jsonl` as JSON Lines: read the existing file through the `FileSystem`, parse it with `parseHistoryLines` (task 3.46) to get the previous record, and append exactly one line made by `serializeHistoryRecord` (ending in `\n`), leaving every earlier line byte-identical. Never write the history as a JSON array. A history file that does not parse returns an error that names the path and the line. Pass the mutant ids to `report.ts` as data (file ids for Spec_Mutants, `computeMutantId` hashes from task 7.3 for Mechanical_Mutants). A write failure returns an error that names the path.
+    - Write `test/cli/orchestrate-report.test.ts` with a fake file system: the three outputs are written, `history.jsonl` is a first line for a first run and gains exactly one line per later run with earlier lines byte-identical, every line is one JSON object, a corrupt history line is an error, a write failure names the path, two runs with the same inputs write identical report and verdict content except `metadata.timestamp`.
+    - _Requirements: 8.1, 8.5, 8.8, 8.9, 8.11, 8.13, 8.16, 9.1_
     - _Validation: npx vitest run --project engine packages/engine/test/cli/orchestrate-report.test.ts passes_
 
   - [ ] 7.6 Implement the CLI entry point, summary and exit codes with tests
@@ -431,6 +445,21 @@ Conventions used in every task:
     - Write `test/cli/no-network.test.ts` that scans the files under `src/` and `package.json` for imports or dependencies of HTTP clients and LLM SDKs, for `fetch(`, `node:http`, `node:https` and `node:net`, and for any reference to an API key variable. The test fails with the file name.
     - _Requirements: 9.11_
     - _Validation: npx vitest run --project engine packages/engine/test/cli/no-network.test.ts passes_
+
+  - [ ] 7.8 Pin the exact Mechanical_Mutant id in a test
+    - Note: task 3.32 changed `test/core/mutant-id.test.ts` so that it only checks the 32-character hex format. Without a pinned value, a change to the hashing would pass every test.
+    - Create `test/cli/mutant-id-pin.test.ts`. It calls `computeMutantId` with one fixed input (file `src/price.ts`, original `a < b`, replacement `a <= b`, occurrence index `0`) and expects the exact 32-character id string, written as a literal in the test (compute it once with the final implementation and paste it in). Add a second case with occurrence index `1` that expects a different literal id.
+    - The test name states that a change to the hash input or the hash function must change the pinned values on purpose.
+    - _Requirements: 8.7_
+    - _Validation: npx vitest run --project engine packages/engine/test/cli/mutant-id-pin.test.ts passes_
+
+  - [ ] 7.9 Add the root `measure` npm script
+    - In the root `package.json` add the script `measure` that builds the engine and runs the built CLI as `trick-or-test measure --project examples/pricing --spec cart-pricing --output reports`, so the output directory is `reports`.
+    - Add `trick-or-test` as a workspace so the `trick-or-test` bin resolves from the root scripts (it is already a workspace through `packages/*`; run `npm install` if the link is missing).
+    - Add the `measure` row to the commands table in `.kiro/steering/tech.md` in the same commit. State there that files in `reports/` are generated only by `npm run measure` and are never edited by hand.
+    - Write `test/cli/measure-script.test.ts` that reads the root `package.json` and checks that the `measure` script contains `trick-or-test measure`, `--project examples/pricing`, `--spec cart-pricing` and `--output reports`.
+    - _Requirements: 9.2, 9.12, 9.14_
+    - _Validation: npx vitest run --project engine packages/engine/test/cli/measure-script.test.ts passes_
 
 - [ ] 8. Checkpoint - CLI phase
   - Run `npm run check` from the repository root. Ensure all tests pass, ask the user if questions arise.
@@ -446,6 +475,14 @@ Conventions used in every task:
     - _Requirements: 10.8, 10.9, 10.10_
     - _Validation: npm run test:e2e --workspace trick-or-test passes_
 
+  - [ ] 9.2 Run `npm run measure` once and commit `reports/`
+    - Run `npm run measure` from the repository root. The command writes the mutation report (`reports/mutation-report.json`), `reports/verdict.json` and `reports/history.jsonl` through the CLI. Nobody edits these files by hand. If the output is wrong, fix the engine and run the script again.
+    - Check that `reports/history.jsonl` has exactly one line for this first run, and that the line parses as one JSON object.
+    - Commit the three files in `reports/` with `git add reports` and a Conventional Commits message (for example `chore(reports): add first measure run`).
+    - Precondition: tasks 7.9 and 9.1 are done, and `examples/pricing/mutants/cart-pricing/` holds the spec mutants.
+    - _Requirements: 8.2, 9.2, 9.13, 9.14_
+    - _Validation: npm run measure && test -f reports/mutation-report.json && test -f reports/verdict.json && test -f reports/history.jsonl passes_
+
 - [ ] 10. Final checkpoint - Whole engine
   - Run `npm run check` from the repository root, then run the end-to-end test. Ensure all tests pass, ask the user if questions arise.
   - _Validation: npm run check passes_
@@ -453,7 +490,9 @@ Conventions used in every task:
 ## Notes
 
 - Every task is required. No task is optional.
-- Each of the 16 correctness properties in `design.md` has its own task: P1 (3.8), P2 (3.9), P3 (3.21), P4 (3.22), P5 (3.16), P6 (3.19), P7 (3.25), P8 (3.4), P9 (3.6), P10 (3.17), P11 (3.14), P12 (3.23), P13 (5.3), P14 (3.30), P15 (3.26), P16 (3.28).
+- Each of the 17 correctness properties in `design.md` has its own task: P1 (3.8), P2 (3.9), P3 (3.21), P4 (3.22), P5 (3.16), P6 (3.19), P7 (3.25), P8 (3.4), P9 (3.6), P10 (3.17), P11 (3.14), P12 (3.23), P13 (5.3), P14 (3.30), P15 (3.26), P16 (3.28), P17 (3.47).
+- `history.jsonl` is JSON Lines, one HistoryRecord per line. Tasks 3.46 and 3.47 add the line functions that task 7.5 uses, and the viewer reads the same format through `trick-or-test/report`.
+- The files in `reports/` are generated only by `npm run measure` (task 9.2) and are never edited by hand.
 - `computeSuiteTimeLimit` has no property test. Example tests at the boundaries in task 3.11 cover it.
 - Property tests and example tests are in separate files. The suffix `.property.test.ts` marks property tests.
 - `npm test` runs every engine test except `test/e2e/`. `npm run test:e2e --workspace trick-or-test` runs the end-to-end test.
@@ -478,8 +517,8 @@ Conventions used in every task:
     { "id": 5, "tasks": ["3.25", "3.26", "3.27"] },
     { "id": 6, "tasks": ["3.28", "3.29"] },
     { "id": 7, "tasks": ["3.30", "3.31"] },
-    { "id": 8, "tasks": ["5.1", "5.4", "5.5", "5.6", "5.7", "5.9"] },
-    { "id": 9, "tasks": ["5.2", "5.8", "5.10"] },
+    { "id": 8, "tasks": ["3.46", "5.1", "5.4", "5.5", "5.6", "5.7", "5.9"] },
+    { "id": 9, "tasks": ["3.47", "5.2", "5.8", "5.10"] },
     { "id": 10, "tasks": ["5.3", "7.1"] },
     { "id": 11, "tasks": ["7.2"] },
     { "id": 12, "tasks": ["7.3"] },
@@ -490,7 +529,9 @@ Conventions used in every task:
     { "id": 17, "tasks": ["9.1"] },
     { "id": 18, "tasks": ["3.32", "3.35", "3.37", "3.39", "3.40", "3.42", "3.43"] },
     { "id": 19, "tasks": ["3.33", "3.36", "3.38", "3.41", "3.44"] },
-    { "id": 20, "tasks": ["3.34", "3.45"] }
+    { "id": 20, "tasks": ["3.34", "3.45"] },
+    { "id": 21, "tasks": ["7.8", "7.9"] },
+    { "id": 22, "tasks": ["9.2"] }
   ]
 }
 ```

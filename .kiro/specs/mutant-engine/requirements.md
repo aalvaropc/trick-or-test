@@ -34,7 +34,8 @@ The engine makes no LLM calls (ADR 0004). The MCP server and the Kiro hook entry
 - **Skip_File**: The file `<mutants dir>/<spec name>/skipped.json` in which the agent records a non-empty reason for each Criterion that cannot be attacked.
 - **Mutation_Report**: The JSON file that conforms to `mutation-testing-report-schema`.
 - **Verdict_File**: The sidecar file `verdict.json` with requirement coverage, kill attribution, witnesses and run metadata.
-- **History_File**: The append-only file with one record per run. The viewer draws the hunt timeline from the records.
+- **History_File**: The append-only JSON Lines file `history.jsonl` in the output directory, with one HistoryRecord per line and one line per run. The viewer (bestiary-viewer spec) reads exactly this format and draws the hunt timeline from the records.
+- **HistoryRecord**: One JSON object on a single line of the History_File, describing one run.
 - **Reporter**: The Engine component that writes the Mutation_Report, the Verdict_File and the History_File.
 - **CLI**: The `trick-or-test` command-line program with the commands `run` and `measure`.
 - **Changed_Range**: A `file:start-end` line range that was changed since a given git ref.
@@ -178,14 +179,15 @@ The engine makes no LLM calls (ADR 0004). The MCP server and the Kiro hook entry
 5. WHEN a run completes, THE Reporter SHALL write a Verdict_File into the output directory with the Coverage_Status of each Criterion, the Mutant_Status of the Engine for each mutant, the Kill_Class of each killed mutant, each Witness, whether the `ignoreStatic` retry happened, and the run metadata.
 6. THE Reporter SHALL include in the run metadata the git commit, the seed, and the versions of the Engine, Node.js, StrykerJS, Vitest and TypeScript.
 7. THE Reporter SHALL use the `id` from the mutant file as the id of each Spec_Mutant, and SHALL build the id of each Mechanical_Mutant as a hash of the file, the original text, the replacement and the Occurrence_Index, with no timestamp in the hash and no line number in the hash, so that the id stays stable when unrelated lines move and two Mechanical_Mutants with the same file, original text and replacement at different locations receive different ids.
-8. WHEN a run completes, THE Reporter SHALL append exactly one record to the History_File and leave earlier records unchanged.
-9. THE Reporter SHALL write each history record with enough data to replay the run and to draw the hunt timeline: the time, the git commit, the seed, the configuration, the ids and Mutant_Status of the mutants, the count of mutants per Mutant_Status, the count of Criteria per Coverage_Status, and the ids of the mutants killed in this run that the previous record did not list as killed.
+8. WHEN a run completes, THE Reporter SHALL append exactly one line containing one HistoryRecord to `history.jsonl` and leave all earlier lines unchanged.
+9. THE Reporter SHALL write each HistoryRecord as a single-line JSON object with enough data to replay the run and to draw the hunt timeline: the time, the git commit, the seed, the configuration, the ids and Mutant_Status of the mutants, the count of mutants per Mutant_Status, the count of Criteria per Coverage_Status, and the ids of the mutants killed in this run that the previous record did not list as killed.
 10. THE Reporter SHALL validate the Verdict_File and every history record with a zod schema before the file is written.
 11. IF the output directory cannot be written, THEN THE Reporter SHALL return an error that names the path.
 12. FOR ALL valid Verdict_File values, writing then reading then writing SHALL produce identical file content (round-trip property).
 13. THE Reporter SHALL produce byte-identical Mutation_Report and Verdict_File content for two runs with the same inputs, except for the run metadata fields that record time.
 14. THE Reporter SHALL assign the species Oathbreaker to every Spec_Mutant.
 15. WHEN a Spec_Mutant and a Mechanical_Mutant make the same change (same file, same span, same replacement, compared without regard to mutant ids), THE Reporter SHALL include one mutant in the Mutation_Report: the Spec_Mutant, tied to its Criterion.
+16. FOR ALL sequences of HistoryRecord values, appending each record to `history.jsonl` then reading the file line by line SHALL return the same records in the same order, with each line parsed as one complete JSON object (round-trip property).
 
 ### Requirement 9: Command-line interface
 
@@ -204,6 +206,9 @@ The engine makes no LLM calls (ADR 0004). The MCP server and the Kiro hook entry
 9. IF a command ends with a configuration, parsing, Baseline_Run, StrykerJS or runtime error, THEN THE CLI SHALL print the error message to stderr and exit with code 1.
 10. IF the user passes an unknown command or option, THEN THE CLI SHALL print the usage text to stderr and exit with code 1.
 11. THE CLI SHALL make no network request to an LLM service and require no API key.
+12. THE Engine repository SHALL define at its root the npm script `measure`, which runs the built CLI as `trick-or-test measure --project examples/pricing --spec cart-pricing` with the output directory `reports`.
+13. WHEN the npm script `measure` finishes, THE CLI SHALL have written the Mutation_Report, `verdict.json` and `history.jsonl` into `reports/`.
+14. THE Engine repository SHALL generate the files in `reports/` only through the `measure` command, and no person SHALL edit them by hand.
 
 ### Requirement 10: Architecture and verification
 
