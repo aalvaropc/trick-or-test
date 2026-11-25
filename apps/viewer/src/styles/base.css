@@ -1,0 +1,51 @@
+:root {
+  --font-display: "IM Fell English", Georgia, serif;
+  --font-data: "JetBrains Mono", ui-monospace, monospace;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+}
+
+body {
+  margin: 0;
+  background: var(--ink);
+  color: var(--bone);
+  font-family: var(--font-display);
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+h1,
+h2,
+h3,
+.species-name,
+.headline {
+  font-family: "IM Fell English", Georgia, serif;
+  font-weight: 400;
+}
+
+code,
+pre,
+kbd,
+samp,
+table,
+.data {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+a {
+  color: var(--bone);
+}
+
+:focus-visible {
+  outline: 2px solid var(--amber);
+  outline-offset: 2px;
+}

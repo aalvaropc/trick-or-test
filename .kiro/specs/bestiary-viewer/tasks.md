@@ -290,7 +290,7 @@ Conventions for every task:
   - _Validation: `npm run check` passes_
 
 - [ ] 8. Components and shared UI
-  - [ ] 8.1 Add the design tokens and base styles
+  - [x] 8.1 Add the design tokens and base styles
     - Create `src/styles/tokens.css` defining `--ink`, `--bone`, `--amber`, `--verdigris`, `--mist` and `--ember` on `:root` with the exact values from `bestiary.md`. Create `src/styles/base.css` with the font stacks (`"IM Fell English", Georgia, serif` for titles, species names and the headline; `"JetBrains Mono", ui-monospace, monospace` with `font-variant-numeric: tabular-nums` for data and code), a base font size of at least 14px, a focus ring of at least 2px with 3:1 contrast, and no gradient, glow or box shadow. Import both from `main.tsx`.
     - Example tests in `test/styles/tokens.test.ts` parse the CSS and `bestiary.md`: token values match (10.1), no `gradient(`, `box-shadow` or `text-shadow` in any CSS (10.9), font stacks (10.2, 10.12), no `font-size` below 14px (10.4), focus outline width at least 2px (10.6).
     - _Requirements: 10.1, 10.2, 10.4, 10.6, 10.9, 10.12_
