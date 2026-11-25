@@ -156,7 +156,7 @@ Conventions for every task:
     - _Requirements: 4.1, 4.2, 4.3_
     - _Validation: `npm test -w trick-or-test-viewer -- test/bestiary/species.property.test.ts` passes_
 
-  - [ ] 4.3 Implement `bestiary/state.ts`
+  - [x] 4.3 Implement `bestiary/state.ts`
     - Implement `deriveState(input)` returning `CreatureState | "not-counted"`: Survived gives survivor, Killed or Timeout gives killed, NoCoverage gives in-the-dark, Ghost (from the Verdict_File, or from an Ignored mutant whose `statusReason` names Ghost when no Verdict_File exists) gives ghost, and everything else (including Ignored with InvalidWitness, NotApplicable, another status, or no reason) gives `"not-counted"`. Take the status from the Verdict_File entry when it exists, and fall back to the report status when it does not.
     - Example tests in `test/bestiary/state.test.ts`, one per criterion 4.4 to 4.10 and 4.12.
     - _Requirements: 4.4, 4.5, 4.6, 4.7, 4.8, 4.9, 4.10, 4.12_
