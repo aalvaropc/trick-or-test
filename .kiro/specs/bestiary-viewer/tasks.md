@@ -302,7 +302,7 @@ Conventions for every task:
     - _Requirements: 10.3, 10.12, 12.16_
     - _Validation: `npm test -w trick-or-test-viewer -- test/fonts/font-licences.test.tsx` passes_
 
-  - [ ] 8.3 Add the narrow-screen and desktop layout CSS
+  - [x] 8.3 Add the narrow-screen and desktop layout CSS
     - Create `src/styles/layout.css`: a desktop layout for viewport widths of 1024px and up, and for widths from 360px to 767px a single-column layout with no horizontal page overflow (`min-width: 0` on grid and flex children, long words wrapped) and a `.table-scroll` container with `overflow-x: auto` for wide tables. Import it from `main.tsx`.
     - Example tests in `test/styles/layout.test.ts` parse the CSS: a `max-width: 767px` rule exists, `.table-scroll` has `overflow-x: auto`, the page root has no fixed width above 360px (11.1, 11.2). Real scroll-width measurement is not possible in jsdom, so these checks inspect the rules only.
     - _Requirements: 11.1, 11.2_

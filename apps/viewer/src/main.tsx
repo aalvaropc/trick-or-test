@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client";
 import "./fonts/fonts";
 import "./styles/tokens.css";
 import "./styles/base.css";
+import "./styles/layout.css";
 
 function Placeholder() {
   return <p>Trick or Test</p>;

@@ -521,6 +521,13 @@
         "chatSessionId": "sess_bd09271e-fc54-42df-b1b2-19a5e14988b5",
         "timestamp": 1795649298793
       }
+    ],
+    "8.2 Bundle the fonts and show the licences": [
+      {
+        "executionId": "96698b00-4ac1-4bad-b72c-52c0545de45c",
+        "chatSessionId": "sess_b22cafb6-d903-4a7b-bbf0-8a9ccaf6b3c4",
+        "timestamp": 1795649425759
+      }
     ]
   }
 }
