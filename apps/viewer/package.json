@@ -4,7 +4,10 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "vitest run",
+    "dev": "npm run build -w trick-or-test && vite",
+    "build": "npm run build -w trick-or-test && tsc --noEmit && vite build",
+    "preview": "npm run build -w trick-or-test && vite preview",
+    "test": "npm run build -w trick-or-test && vitest run",
     "typecheck": "tsc --noEmit -p tsconfig.json"
   },
   "dependencies": {

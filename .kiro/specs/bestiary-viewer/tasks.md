@@ -57,7 +57,7 @@ Conventions for every task:
     - _Requirements: 12.6, 12.10_
     - _Validation: `npm test -w trick-or-test-viewer -- test/setup.test.ts` passes_
 
-  - [ ] 1.4 Add the engine-first scripts and the package checks
+  - [x] 1.4 Add the engine-first scripts and the package checks
     - In `apps/viewer/package.json`, set `dev` to `npm run build -w trick-or-test && vite`, `build` to `npm run build -w trick-or-test && tsc --noEmit && vite build`, `preview` to `npm run build -w trick-or-test && vite preview`, and `test` to `npm run build -w trick-or-test && vitest run`.
     - Add `apps/viewer/test/package.test.ts` with these checks:
       - 12.15: each of `dev`, `build`, `preview` and `test` starts with `npm run build -w trick-or-test`.

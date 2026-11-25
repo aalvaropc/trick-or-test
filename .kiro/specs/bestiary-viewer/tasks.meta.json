@@ -36,6 +36,18 @@
         "chatSessionId": "sess_eb98e9a8-f2df-4545-b738-0650838a4f98",
         "timestamp": 1795627590215
       }
+    ],
+    "1.4 Add the engine-first scripts and the package checks": [
+      {
+        "executionId": "7d0342c1-f1a3-489f-8e91-6b5af461e088",
+        "chatSessionId": "sess_7f74c9b6-79a4-4508-be32-235dc24ef4f3",
+        "timestamp": 1795627623939
+      },
+      {
+        "executionId": "7d0342c1-f1a3-489f-8e91-6b5af461e088",
+        "chatSessionId": "sess_7f74c9b6-79a4-4508-be32-235dc24ef4f3",
+        "timestamp": 1795627663616
+      }
     ]
   }
 }
