@@ -510,7 +510,7 @@ Conventions used in every task:
   - _Requirements: 3.14, 5.1, 5.13, 10.10_
   - _Validation: npx vitest run --project engine packages/engine/test/adapters/sandbox.property.test.ts passes_
 
-- [ ] 12. Fix the defects found in the independent review of the adapters and the CLI
+- [x] 12. Fix the defects found in the independent review of the adapters and the CLI
   - Source of the fixes: `requirements.md` criteria 3.5-3.7, 3.9, 3.15-3.20, 4.5, 4.11, 4.12, 5.6, 5.8-5.11, 5.16-5.21, 8.17, 9.5, 9.15, 9.16, 10.11-10.13, and properties 18-25 in `design.md`. The design decides that one run attacks exactly one spec, and that the Baseline_Run and the StrykerJS run happen once per run.
   - One fix per task. Each task writes its tests in the same task: examples in `*.test.ts`, properties in `*.property.test.ts` with the name `Property N: <title>`.
   - Completed tasks keep their status and text. Where an earlier task contradicts a rule below, it carries a short note that points to the fix task.
@@ -847,7 +847,7 @@ Conventions used in every task:
     - _Requirements: 8.17, 9.13, 9.14_
     - _Validation: npm run measure && test -f reports/mutation-report.json && test -f reports/verdict.json && test -f reports/history.jsonl passes_
 
-  - [ ] 12.56 Checkpoint - Review fixes
+  - [x] 12.56 Checkpoint - Review fixes
     - Run `npm run check` from the repository root. Ensure all tests pass, ask the user if questions arise.
     - _Validation: npm run check passes_
 
