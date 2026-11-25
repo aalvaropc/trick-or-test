@@ -475,12 +475,13 @@ Conventions used in every task:
     - _Requirements: 10.8, 10.9, 10.10_
     - _Validation: npm run test:e2e --workspace trick-or-test passes_
 
-  - [ ] 9.2 Run `npm run measure` once and commit `reports/`
+  - [-] 9.2 Run `npm run measure` once and commit `reports/`
     - Run `npm run measure` from the repository root. The command writes the mutation report (`reports/mutation-report.json`), `reports/verdict.json` and `reports/history.jsonl` through the CLI. Nobody edits these files by hand. If the output is wrong, fix the engine and run the script again.
     - Check that `reports/history.jsonl` has exactly one line for this first run, and that the line parses as one JSON object.
     - Commit the three files in `reports/` with `git add reports` and a Conventional Commits message (for example `chore(reports): add first measure run`).
+    - A first run stored resolved absolute paths in the configuration of the history record. Fix: `writeReports` records the configuration relative to the Target_Project root (Requirement 8.17). Test in `test/cli/orchestrate-report-paths.test.ts`. Delete the generated `reports/` files and run the script again, so history starts with one line.
     - Precondition: tasks 7.9 and 9.1 are done, and `examples/pricing/mutants/cart-pricing/` holds the spec mutants.
-    - _Requirements: 8.2, 9.2, 9.13, 9.14_
+    - _Requirements: 8.2, 8.17, 9.2, 9.13, 9.14_
     - _Validation: npm run measure && test -f reports/mutation-report.json && test -f reports/verdict.json && test -f reports/history.jsonl passes_
 
 - [ ] 10. Final checkpoint - Whole engine

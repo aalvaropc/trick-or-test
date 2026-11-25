@@ -266,13 +266,15 @@ type HistoryRecord = {
   time: string;
   gitCommit: string;
   seed: number;
-  config: EngineConfig;
+  config: EngineConfig; // paths relative to the Target_Project root, never resolved absolute paths (Requirement 8.17)
   mutants: { id: MutantId; status: MutantStatus }[];
   statusCounts: Record<MutantStatus, number>;
   coverageCounts: Record<CoverageStatus, number>;
   newlyKilledIds: MutantId[];
 };
 ```
+
+The resolved `EngineConfig` (absolute paths) exists only at run time. `writeReports` turns each path back into a path relative to the Target_Project root before it calls `buildHistoryRecord` (a path under the root loses the root prefix; a path outside it, such as the `measure` output directory, becomes a `../` path). The Verdict metadata holds no paths, and the Mutation_Report keys files by project-relative path (Requirement 8.17).
 
 In the Verdict, `kill class` entries exist only for mutants with status Killed. Coverage still counts Timeout as killed (Requirement 7.1). The `mutation-testing-report-schema` document type and all zod schemas live beside these types in `core/`. Every type that crosses an adapter boundary (config JSON, mutant JSON, Stryker JSON reporter output, Vitest JSON reporter output, witness outcome JSON, git diff output) is parsed with a zod schema at the adapter boundary per ADR 0005; the adapter never hands the core an unparsed `unknown`.
 

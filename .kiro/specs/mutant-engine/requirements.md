@@ -188,6 +188,7 @@ The engine makes no LLM calls (ADR 0004). The MCP server and the Kiro hook entry
 14. THE Reporter SHALL assign the species Oathbreaker to every Spec_Mutant.
 15. WHEN a Spec_Mutant and a Mechanical_Mutant make the same change (same file, same span, same replacement, compared without regard to mutant ids), THE Reporter SHALL include one mutant in the Mutation_Report: the Spec_Mutant, tied to its Criterion.
 16. FOR ALL sequences of HistoryRecord values, appending each record to `history.jsonl` then reading the file line by line SHALL return the same records in the same order, with each line parsed as one complete JSON object (round-trip property).
+17. THE Reporter SHALL write the configuration in each HistoryRecord as the configuration is written, with every path relative to the Target_Project root, and SHALL NOT write a resolved absolute path in the Mutation_Report, the Verdict_File or the History_File, so that the files do not depend on the machine that produced them. Absolute paths exist only at run time.
 
 ### Requirement 9: Command-line interface
 

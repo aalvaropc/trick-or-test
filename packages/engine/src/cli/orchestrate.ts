@@ -1,3 +1,4 @@
+import { isAbsolute, relative } from "node:path";
 import type { ChangedRange } from "../adapters/git-adapter.js";
 import type {
   MechanicalMutant,
@@ -92,6 +93,24 @@ export interface LoadedProject {
 
 export const REQUIREMENTS_FILE_NAME = "requirements.md";
 export const SKIP_FILE_NAME = "skipped.json";
+
+/** Turns a resolved absolute path back into a path relative to the project root (8.17). */
+const relativeToRoot = (root: string, path: string): string =>
+  isAbsolute(path) ? relative(root, path) : path;
+
+/** The configuration as written: no resolved absolute path leaves the process (8.17). */
+const configAsWritten = (config: EngineConfig, root: string): EngineConfig => {
+  const rel = (p: string) => relativeToRoot(root, p);
+  const out: EngineConfig = {
+    specDir: rel(config.specDir),
+    sourceGlobs: config.sourceGlobs.map(rel),
+    testGlobs: config.testGlobs.map(rel),
+    propertyTestGlobs: config.propertyTestGlobs.map(rel),
+    mutantsDir: rel(config.mutantsDir),
+    outputDir: rel(config.outputDir),
+  };
+  return config.timeoutMs === undefined ? out : { ...out, timeoutMs: config.timeoutMs };
+};
 
 const joinPath = (...parts: string[]): string =>
   parts.map((p, i) => (i === 0 ? p.replace(/\/+$/, "") : p.replace(/^\/+|\/+$/g, ""))).join("/");
@@ -849,7 +868,11 @@ export async function writeReports(
     }
     previousRecord = parsed.value.at(-1);
   }
-  const record = buildHistoryRecord(verdict.value, previousRecord, config);
+  const record = buildHistoryRecord(
+    verdict.value,
+    previousRecord,
+    configAsWritten(config, options.project),
+  );
   if (!record.ok) return err({ kind: "build-error", message: record.error });
   let line: string;
   try {
