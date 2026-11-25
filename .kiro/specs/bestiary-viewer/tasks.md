@@ -168,7 +168,7 @@ Conventions for every task:
     - _Requirements: 4.4, 4.5, 4.6, 4.7, 4.8, 4.9, 4.10, 4.12_
     - _Validation: `npm test -w trick-or-test-viewer -- test/bestiary/state.property.test.ts` passes_
 
-  - [ ] 4.5 Implement `loader/run-model.ts`
+  - [x] 4.5 Implement `loader/run-model.ts`
     - Implement `buildRunModel(raw)`. Derive `species` and `state` once per Mutant (species and status from the Verdict_File entry when present, otherwise from the report), derive `original` and `replacement` from the file source and location when available, keep `not-counted` mutants in the list, and never mutate the RawRun. A Plain_Stryker_Report gives species from the mutator name and no Criterion data.
     - Example tests in `test/loader/run-model.test.ts`: plain report species without criteria (1.5), Verdict_File species and status win (4.9), missing verdict entry falls back and does not throw (4.10), `not-counted` mutants stay in the list (4.8), two reads of one RunModel give identical values (4.11).
     - _Requirements: 1.5, 4.8, 4.9, 4.10, 4.11_
