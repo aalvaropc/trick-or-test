@@ -279,7 +279,7 @@ Conventions for every task:
     - _Validation: `npm test -w trick-or-test-viewer -- test/bestiary/counts.property.test.ts` passes_
 
 - [ ] 6. Router logic
-  - [ ] 6.1 Implement `router/routes.ts`
+  - [x] 6.1 Implement `router/routes.ts`
     - Implement the `Route` union and the pure `parseHashRoute(hash)`: `#/demo/before` and `#/demo/after`, `#/mutant/<id>` (decode the id safely), `#/hunt`, `#/plain`, `#/verdict`, and landing for `""`, `#/` and anything unknown. No `react` import. The `useSyncExternalStore` hook goes in `src/app/` in task 8.7, so `router/` stays free of React.
     - Example tests in `test/router/routes.test.ts`: each known route, unknown route gives landing (11.7), demo routes are known (2.7), mutant id with special characters (11.4), hash-only routing (11.3).
     - _Requirements: 2.7, 11.3, 11.4, 11.7_
