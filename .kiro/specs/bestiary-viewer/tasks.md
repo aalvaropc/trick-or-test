@@ -15,7 +15,7 @@ Conventions for every task:
 ## Tasks
 
 - [ ] 1. Workspace setup
-  - [ ] 1.1 Create the workspace package and install pinned dependencies
+  - [x] 1.1 Create the workspace package and install pinned dependencies
     - Create `apps/viewer/package.json` named `trick-or-test-viewer` (`private`, `type: module`), covered by the root `apps/*` workspace glob. Run `npm install` so `package-lock.json` updates.
     - Pin every entry to an exact version (no `^`, `~` or range). Publish dates below come from `npm view <pkg> time` on 2026-11-25. Every date is at least 14 days before 2026-11-25, so every version is old enough. Re-run `npm view <pkg> time` when adding each package, and if a version no longer qualifies or a peer conflict appears, take the newest older version that qualifies and update the list here.
     - `dependencies`:
