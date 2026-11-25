@@ -210,7 +210,7 @@ Conventions used in every task:
     - _Requirements: 8.5, 8.6, 8.10, 8.13_
     - _Validation: npx vitest run --project engine packages/engine/test/core/verdict.test.ts passes_
 
-  - [ ] 3.28 Write Property 16: Verdict round trip
+  - [x] 3.28 Write Property 16: Verdict round trip
     - Write `test/core/verdict.property.test.ts` with **Property 16: Verdict round trip**. Serialize, parse and serialize again with the engine's own serializer, and check that both contents are identical.
     - **Validates: Requirements 8.5, 8.10, 8.12**
     - _Requirements: 8.5, 8.10, 8.12_

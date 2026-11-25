@@ -43,6 +43,10 @@
     "3.26 Write Property 15: One creature per change": {
       "status": "passed",
       "lastRunTimestamp": 1795621457964
+    },
+    "3.28 Write Property 16: Verdict round trip": {
+      "status": "passed",
+      "lastRunTimestamp": 1795621848294
     }
   },
   "executionHistory": {
@@ -431,6 +435,18 @@
         "executionId": "09fe89b8-bbe6-4d98-a610-3ee9349c9081",
         "chatSessionId": "sess_1e76e65a-c4d2-4c14-9ed3-65024c29780f",
         "timestamp": 1795621548409
+      }
+    ],
+    "3.28 Write Property 16: Verdict round trip": [
+      {
+        "executionId": "a44530a9-078c-456e-88be-55f7399beb19",
+        "chatSessionId": "sess_388c3963-eb65-49a6-9d72-850dedb0e117",
+        "timestamp": 1795621578917
+      },
+      {
+        "executionId": "44886141-a030-4da9-84f2-b7f819e7d3a1",
+        "chatSessionId": "sess_388c3963-eb65-49a6-9d72-850dedb0e117",
+        "timestamp": 1795621859884
       }
     ]
   }

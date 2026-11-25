@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { buildVerdict, type VerdictInput } from "../../src/core/report.js";
-import type { CriterionId, MutantId, TestId } from "../../src/core/types.js";
+import { buildVerdict, serializeVerdict, type VerdictInput } from "../../src/core/report.js";
+import type { CriterionId, MutantId, TestId, Verdict } from "../../src/core/types.js";
 
 const mid = (s: string) => s as MutantId;
 const cid = (s: string) => s as CriterionId;
@@ -116,5 +116,30 @@ describe("buildVerdict", () => {
     if (!a.ok || !c.ok) throw new Error("expected ok");
     const strip = (v: typeof a.value) => ({ ...v, metadata: { ...v.metadata, timestamp: "" } });
     expect(strip(a.value)).toEqual(strip(c.value));
+  });
+});
+
+describe("serializeVerdict", () => {
+  it("8.12 gives identical text for the same verdict built with keys in a different order", () => {
+    const r = buildVerdict(base());
+    if (!r.ok) throw new Error("expected ok");
+    const v = r.value;
+    const reverse = <T extends object>(o: T): T =>
+      Object.fromEntries(Object.entries(o).reverse()) as T;
+    const reordered: Verdict = {
+      metadata: reverse(v.metadata),
+      ignoreStaticRetried: v.ignoreStaticRetried,
+      witnesses: Object.fromEntries(
+        Object.entries(v.witnesses).map(([k, w]) => [k, reverse(w)]),
+      ) as Verdict["witnesses"],
+      mutants: v.mutants.map(reverse),
+      coverage: v.coverage.map(reverse),
+    };
+    expect(Object.keys(reordered)).not.toEqual(Object.keys(v));
+    expect(Object.keys(reordered.metadata)).not.toEqual(Object.keys(v.metadata));
+    const text = serializeVerdict(v);
+    expect(serializeVerdict(reordered)).toBe(text);
+    expect(text.startsWith('{\n  "coverage": [')).toBe(true);
+    expect(text.endsWith("}\n")).toBe(true);
   });
 });

@@ -218,6 +218,26 @@ export const buildVerdict = (input: VerdictInput): Result<Verdict, string> => {
   return ok(parsed.data);
 };
 
+const sortKeysDeep = (value: unknown): unknown => {
+  if (Array.isArray(value)) return value.map(sortKeysDeep);
+  if (value !== null && typeof value === "object") {
+    return Object.fromEntries(
+      Object.keys(value)
+        .sort()
+        .map((k) => [k, sortKeysDeep((value as Record<string, unknown>)[k])]),
+    );
+  }
+  return value;
+};
+
+/**
+ * Serializes the Verdict as the text of verdict.json (8.12, 8.13). Object keys are sorted
+ * recursively, array order is kept, indentation is two spaces and the text ends with a newline.
+ * The same Verdict always gives the same text, whatever the key order of its objects. Pure.
+ */
+export const serializeVerdict = (verdict: Verdict): string =>
+  `${JSON.stringify(sortKeysDeep(verdict), null, 2)}\n`;
+
 // ---------------------------------------------------------------------------
 // buildMutationReport
 // ---------------------------------------------------------------------------
