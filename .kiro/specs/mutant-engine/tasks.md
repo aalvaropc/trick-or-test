@@ -435,7 +435,7 @@ Conventions used in every task:
     - _Requirements: 8.1, 8.5, 8.8, 8.9, 8.11, 8.13, 8.16, 9.1_
     - _Validation: npx vitest run --project engine packages/engine/test/cli/orchestrate-report.test.ts passes_
 
-  - [ ] 7.6 Implement the CLI entry point, summary and exit codes with tests
+  - [x] 7.6 Implement the CLI entry point, summary and exit codes with tests
     - Create `src/cli/main.ts` and the `bin` entry. `run` uses the configured output directory. `measure` writes into the output directory given for the command. Print the summary: surviving Spec_Mutants, count per Coverage_Status, strays and the paths written. Exit 0 on a completed run even when Spec_Mutants survive. On a configuration, parsing, baseline, StrykerJS or runtime error print the message to stderr and exit 1. An unknown command or option prints the usage to stderr and exits 1.
     - Write `test/cli/main.test.ts` with fake adapters: summary content, exit 0 with survivors, exit 1 for each error kind, usage on an unknown command and option, `measure` output directory.
     - _Requirements: 9.1, 9.2, 9.6, 9.7, 9.9, 9.10_
