@@ -1,7 +1,9 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import {
+  createStrykerProcess,
   MechanicalRunner,
+  type StrykerHost,
   type StrykerOptions,
   type StrykerProcess,
   type StrykerProcessResult,
@@ -181,5 +183,76 @@ describe("MechanicalRunner.run", () => {
       process,
     );
     expect(calls[0]?.mutate).toEqual(["src/a.ts:1-2"]);
+  });
+});
+
+describe("StrykerJS binary lookup", () => {
+  type Exec = { command: string; args: readonly string[]; cwd: string };
+  const host = (
+    present: readonly string[],
+    outcome: StrykerProcessResult,
+  ): { host: StrykerHost; execs: Exec[] } => {
+    const execs: Exec[] = [];
+    return {
+      execs,
+      host: {
+        exists: (path) => present.includes(path),
+        async writeConfig() {},
+        async exec(command, args, cwd) {
+          execs.push({ command, args, cwd });
+          return outcome;
+        },
+      },
+    };
+  };
+  const options = {} as StrykerOptions;
+
+  it("3.18 runs the local node_modules/.bin/stryker of the project", async () => {
+    const { host: h, execs } = host(["/project/node_modules/.bin/stryker"], { ok: true });
+    await createStrykerProcess(h).run(options, "/project");
+    expect(execs).toEqual([
+      {
+        command: "/project/node_modules/.bin/stryker",
+        args: ["run", "/project/.trickortest/stryker.config.json"],
+        cwd: "/project",
+      },
+    ]);
+  });
+
+  it("3.18 finds a binary hoisted to an ancestor directory", async () => {
+    const { host: h, execs } = host(["/repo/node_modules/.bin/stryker"], { ok: true });
+    await createStrykerProcess(h).run(options, "/repo/examples/pricing");
+    expect(execs[0]?.command).toBe("/repo/node_modules/.bin/stryker");
+  });
+
+  it("3.18 returns an error that names the missing binary when none is installed", async () => {
+    const { host: h } = host([], {
+      ok: false,
+      output: "npm error could not determine executable to run",
+      exitCode: 1,
+    });
+    const result = await createStrykerProcess(h).run(options, "/project");
+    expect(result.ok).toBe(false);
+    if (result.ok) throw new Error("expected failure");
+    expect(result.output).toContain("node_modules/.bin/stryker");
+    expect(result.output).toContain("not found");
+  });
+
+  it("3.18 falls back to npx with --no-install as the first argument", async () => {
+    const { host: h, execs } = host([], { ok: true });
+    await createStrykerProcess(h).run(options, "/project");
+    expect(execs).toHaveLength(1);
+    expect(execs[0]?.command).toBe("npx");
+    expect(execs[0]?.args[0]).toBe("--no-install");
+  });
+
+  it("3.18 never passes a bare npx to the process runner", async () => {
+    for (const present of [[], ["/project/node_modules/.bin/stryker"]]) {
+      const { host: h, execs } = host(present, { ok: true });
+      await createStrykerProcess(h).run(options, "/project");
+      for (const exec of execs) {
+        if (exec.command === "npx") expect(exec.args).toContain("--no-install");
+      }
+    }
   });
 });

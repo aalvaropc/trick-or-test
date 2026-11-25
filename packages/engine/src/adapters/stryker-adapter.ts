@@ -1,4 +1,5 @@
 import { spawn } from "node:child_process";
+import { existsSync } from "node:fs";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { err, ok, type Result } from "../core/result.js";
@@ -208,20 +209,103 @@ const runOnce = async (
 const isProcessFailure = (value: Awaited<ReturnType<typeof runOnce>>): value is ProcessFailure =>
   "output" in value;
 
-export const nodeStrykerProcess: StrykerProcess = {
+export const STRYKER_BIN_RELATIVE = "node_modules/.bin/stryker";
+
+export type StrykerCommand = {
+  readonly command: string;
+  readonly args: readonly string[];
+  /** True when no local binary was found and the package manager is asked to find it. */
+  readonly fallback: boolean;
+};
+
+/**
+ * Finds `node_modules/.bin/stryker` from the project root upward through its ancestors
+ * (npm workspaces hoist the binary to the repository root).
+ */
+export const findStrykerBinary = (
+  cwd: string,
+  exists: (path: string) => boolean,
+): string | undefined => {
+  let dir = cwd;
+  for (;;) {
+    const candidate = join(dir, STRYKER_BIN_RELATIVE);
+    if (exists(candidate)) return candidate;
+    const parent = dirname(dir);
+    if (parent === dir) return undefined;
+    dir = parent;
+  }
+};
+
+/**
+ * Builds the StrykerJS command. Uses the local binary when found; otherwise the package
+ * manager with `--no-install`, so a missing binary fails and is never downloaded (3.18).
+ */
+export const buildStrykerCommand = (
+  cwd: string,
+  configFile: string,
+  exists: (path: string) => boolean,
+): StrykerCommand => {
+  const binary = findStrykerBinary(cwd, exists);
+  if (binary !== undefined) return { command: binary, args: ["run", configFile], fallback: false };
+  return {
+    command: "npx",
+    args: ["--no-install", "stryker", "run", configFile],
+    fallback: true,
+  };
+};
+
+/** Process and file boundary of the StrykerJS adapter. */
+export interface StrykerHost {
+  exists(path: string): boolean;
+  writeConfig(file: string, text: string): Promise<void>;
+  /** Runs a command to completion; never rejects. */
+  exec(command: string, args: readonly string[], cwd: string): Promise<StrykerProcessResult>;
+}
+
+const MISSING_BINARY_OUTPUT =
+  /could not determine executable|canceled|not found|ENOENT|npm error code E404/i;
+
+export const missingBinaryError = (cwd: string): string =>
+  `StrykerJS binary not found: ${STRYKER_BIN_RELATIVE} in ${cwd} or any parent directory. ` +
+  "Install @stryker-mutator/core in the project; the engine never downloads it.";
+
+const readStrykerReport: StrykerProcess["readReport"] = async (cwd, reportFile) => {
+  try {
+    return ok(JSON.parse(await readFile(join(cwd, reportFile), "utf8")) as unknown);
+  } catch (error) {
+    return err(`Cannot read the StrykerJS report: ${(error as Error).message}`);
+  }
+};
+
+export const createStrykerProcess = (host: StrykerHost): StrykerProcess => ({
   async run(options, cwd) {
     const configFile = join(cwd, TRICKORTEST_DIR, "stryker.config.json");
     try {
-      await mkdir(dirname(configFile), { recursive: true });
-      await writeFile(configFile, JSON.stringify(options, null, 2), "utf8");
+      await host.writeConfig(configFile, JSON.stringify(options, null, 2));
     } catch (error) {
       return { ok: false, output: (error as Error).message };
     }
+    const { command, args, fallback } = buildStrykerCommand(cwd, configFile, (path) =>
+      host.exists(path),
+    );
+    const outcome = await host.exec(command, args, cwd);
+    if (!outcome.ok && fallback && MISSING_BINARY_OUTPUT.test(outcome.output)) {
+      return { ...outcome, output: missingBinaryError(cwd) };
+    }
+    return outcome;
+  },
+  readReport: readStrykerReport,
+});
+
+const nodeStrykerHost: StrykerHost = {
+  exists: (path) => existsSync(path),
+  async writeConfig(file, text) {
+    await mkdir(dirname(file), { recursive: true });
+    await writeFile(file, text, "utf8");
+  },
+  exec(command, args, cwd) {
     return new Promise((done) => {
-      const child = spawn("npx", ["stryker", "run", configFile], {
-        cwd,
-        stdio: ["ignore", "pipe", "pipe"],
-      });
+      const child = spawn(command, [...args], { cwd, stdio: ["ignore", "pipe", "pipe"] });
       let output = "";
       const collect = (chunk: string): void => {
         if (output.length < 256 * 1024) output += chunk;
@@ -234,13 +318,10 @@ export const nodeStrykerProcess: StrykerProcess = {
       );
     });
   },
-  async readReport(cwd, reportFile) {
-    try {
-      return ok(JSON.parse(await readFile(join(cwd, reportFile), "utf8")) as unknown);
-    } catch (error) {
-      return err(`Cannot read the StrykerJS report: ${(error as Error).message}`);
-    }
-  },
+};
+
+export const nodeStrykerProcess: StrykerProcess = {
+  ...createStrykerProcess(nodeStrykerHost),
 };
 
 export const MechanicalRunner = {

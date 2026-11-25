@@ -722,7 +722,7 @@ Conventions used in every task:
     - _Requirements: 5.17, 5.18_
     - _Validation: npx vitest run --project engine packages/engine/test/adapters/sandbox.test.ts passes_
 
-  - [ ] 12.35 Run the StrykerJS binary from `node_modules/.bin`
+  - [x] 12.35 Run the StrykerJS binary from `node_modules/.bin`
     - In `adapters/stryker-adapter.ts` build the command from `<project>/node_modules/.bin/stryker`, or from the package manager with `--no-install`, so that a missing binary is an error and never a download.
     - Add examples to `test/adapters/stryker-adapter.test.ts`: the fake process runner receives the local binary path, a project without the binary returns an error that names the missing binary, and no argument list contains a bare `npx` without `--no-install`. Add `test/cli/no-npx.test.ts` that scans `src/` for `npx` calls without `--no-install`.
     - _Requirements: 3.18_
