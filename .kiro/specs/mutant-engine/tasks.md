@@ -275,7 +275,7 @@ Conventions used in every task:
     - _Requirements: 5.3_
     - _Validation: npx vitest run --project engine packages/engine/test/adapters/typecheck-adapter.test.ts passes_
 
-  - [ ] 5.7 Implement `vitest-suite-runner.ts` with tests
+  - [x] 5.7 Implement `vitest-suite-runner.ts` with tests
     - Implement `SuiteRunner.run(root, options)` that runs the target's Vitest with the JSON reporter and `includeTaskLocation`, parses the output with a zod schema into `durationMs` and per-file tests (name, status, start line), and enforces the suite time limit as a process timeout that reports a Timeout result.
     - Write `test/adapters/vitest-suite-runner.test.ts` on a small fixture project under `packages/engine/test/fixtures/` (for example `suite-runner/`): all passing, one failing test with its start line, and a hanging test that hits a short time limit.
     - _Requirements: 5.8, 5.9, 5.10, 5.11, 6.2_
