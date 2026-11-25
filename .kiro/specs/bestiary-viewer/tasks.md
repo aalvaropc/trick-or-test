@@ -211,7 +211,7 @@ Conventions for every task:
     - _Requirements: 5.3, 5.4, 5.5, 5.12_
     - _Validation: `npm test -w trick-or-test-viewer -- test/bestiary/creature.config.test.ts` passes_
 
-  - [ ] 4.12 Implement the creature structure in `bestiary/creature.ts`
+  - [x] 4.12 Implement the creature structure in `bestiary/creature.ts`
     - Implement `creature(species, seed, state, mutant)`: one root `<svg role="img" viewBox=...>` with a `<title>` of `"<Species>, <state>: <file>:<line>"` or `"<Species>, <state>: unknown location"`, the body curves with seeded jitter of at most 8% of the viewBox width, the element-kind sequence fixed per species, and `escapeXml` applied to every text value. Missing file, line or glyph never throws and gives a valid SVG.
     - Example tests in `test/bestiary/creature.test.ts`: single SVG string (5.1), same arguments give the same string (5.2), title text with and without location (5.6, 5.15), jitter stays within 8% (5.4), two seeds give the same curve count and element-kind sequence (5.5, 5.17), escaping in title (5.14).
     - _Requirements: 5.1, 5.2, 5.4, 5.5, 5.6, 5.14, 5.15, 5.16, 5.17_

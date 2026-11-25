@@ -401,6 +401,13 @@
         "chatSessionId": "sess_7f0197a0-7363-4976-828f-ff2883f73cd2",
         "timestamp": 1795631286087
       }
+    ],
+    "4.11 Implement `bestiary/creature.config.ts` and the seeded generator": [
+      {
+        "executionId": "57afad89-7b86-495c-91d9-95d24fc49ecd",
+        "chatSessionId": "sess_bb0af6ff-9fec-49da-91d4-8de1acfeb748",
+        "timestamp": 1795634217479
+      }
     ]
   }
 }
