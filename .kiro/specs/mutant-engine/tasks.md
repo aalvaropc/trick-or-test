@@ -15,7 +15,7 @@ Conventions used in every task:
 
 ## Tasks
 
-- [ ] 1. Set up the `packages/engine` workspace
+- [x] 1. Set up the `packages/engine` workspace
   - [x] 1.1 Create the workspace package, TypeScript project and Vitest project
     - Create `packages/engine/package.json` with name `trick-or-test`, `"type": "module"`, `bin` for the CLI, `exports` for `.` and `./report`, and `engines.node` `>=22.12`.
     - Add exact-version dependencies: `zod` 4.6.7, `@stryker-mutator/core` 10.1.1, `@stryker-mutator/vitest-runner` 10.1.1, `mutation-testing-report-schema` 3.9.0. Add exact-version devDependencies: `fast-check` 4.10.2 (the version `examples/pricing` already uses), `vitest` 5.1.0, `typescript` 7.0.2, `@types/node` 26.6.6.
@@ -28,7 +28,7 @@ Conventions used in every task:
     - _Requirements: 10.9_
     - _Validation: npm run typecheck passes_
 
-  - [ ] 1.2 Add the fast-check Vitest setup file and test helpers folder
+  - [x] 1.2 Add the fast-check Vitest setup file and test helpers folder
     - Create `packages/engine/test/setup.ts` that calls `fc.configureGlobal({ seed: <fixed number>, numRuns: 100 })`, and register it in `vitest.config.ts` under `setupFiles`.
     - Create `packages/engine/test/helpers/` for generators (outside the published package; `package.json` `files` lists only `dist`).
     - Add one smoke test `packages/engine/test/setup.test.ts` that asserts `fc.readConfigureGlobal().numRuns` is at least 100 and the seed is set.

@@ -22,6 +22,25 @@
         "chatSessionId": "sess_edb9e02c-ab22-4a2f-91a4-5cf6d870f48d",
         "timestamp": 1795618207577
       }
+    ],
+    "1.2 Add the fast-check Vitest setup file and test helpers folder": [
+      {
+        "executionId": "db1b3ad5-3260-4163-b098-e043d7ed8e02",
+        "chatSessionId": "sess_3c6869d5-f7e3-480f-8911-5c3bd8fab8d4",
+        "timestamp": 1795618306684
+      },
+      {
+        "executionId": "db1b3ad5-3260-4163-b098-e043d7ed8e02",
+        "chatSessionId": "sess_3c6869d5-f7e3-480f-8911-5c3bd8fab8d4",
+        "timestamp": 1795618336412
+      }
+    ],
+    "1. Set up the `packages/engine` workspace": [
+      {
+        "executionId": "db1b3ad5-3260-4163-b098-e043d7ed8e02",
+        "chatSessionId": "sess_3c6869d5-f7e3-480f-8911-5c3bd8fab8d4",
+        "timestamp": 1795618336491
+      }
     ]
   }
 }
