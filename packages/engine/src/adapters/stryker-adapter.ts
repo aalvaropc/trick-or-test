@@ -3,6 +3,7 @@ import { existsSync } from "node:fs";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { err, ok, type Result } from "../core/result.js";
+import type { StrykerExclusions } from "../core/stryker-exclusions.js";
 import {
   extractStrykerError,
   type Location,
@@ -32,6 +33,11 @@ export type StrykerOptionsInput = {
    * the entry itself and as a subtree, since a symlink is not matched by `dir/**`.
    */
   readonly nonBuildDirs?: readonly string[];
+  /**
+   * Result of `computeStrykerExclusions` (3.7, 3.8). Its non-build directories, symlinked
+   * directories and ignore patterns are added to the sandbox exclusion and ignore options.
+   */
+  readonly exclusions?: StrykerExclusions;
   /** True only for the single retry after a static-mutant failure. */
   readonly ignoreStatic?: boolean;
 };
@@ -63,16 +69,27 @@ const normalizeDir = (dir: string): string => dir.replace(/^\.\//, "").replace(/
 /** Builds the StrykerJS options object. Pure: no file system or process access. */
 export const buildStrykerOptions = (input: StrykerOptionsInput): StrykerOptions => {
   const major = majorVersion(input.typescriptVersion);
-  const dirs = [...new Set((input.nonBuildDirs ?? []).map(normalizeDir))]
+  const dirs = [
+    ...new Set(
+      [
+        ...(input.nonBuildDirs ?? []),
+        ...(input.exclusions?.nonBuildDirs ?? []),
+        ...(input.exclusions?.symlinkedDirs ?? []),
+      ].map(normalizeDir),
+    ),
+  ]
     .filter((dir) => dir !== "")
     .sort();
   const ignorePatterns = [
-    TRICKORTEST_DIR,
-    `${TRICKORTEST_DIR}/**`,
-    STRYKER_TMP_DIR,
-    `${STRYKER_TMP_DIR}/**`,
-    `**/${STRYKER_TMP_DIR}/**`,
-    ...dirs.flatMap((dir) => [dir, `${dir}/**`]),
+    ...new Set([
+      TRICKORTEST_DIR,
+      `${TRICKORTEST_DIR}/**`,
+      STRYKER_TMP_DIR,
+      `${STRYKER_TMP_DIR}/**`,
+      `**/${STRYKER_TMP_DIR}/**`,
+      ...dirs.flatMap((dir) => [dir, `${dir}/**`]),
+      ...(input.exclusions?.ignorePatterns ?? []),
+    ]),
   ];
   return {
     plugins: [VITEST_RUNNER_PLUGIN],

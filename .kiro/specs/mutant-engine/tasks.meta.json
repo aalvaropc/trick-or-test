@@ -59,6 +59,10 @@
     "12.27 Write Property 20: No absolute path in any report field": {
       "status": "passed",
       "lastRunTimestamp": 1795643390702
+    },
+    "12.40 Write Property 24: Stryker exclusion list": {
+      "status": "passed",
+      "lastRunTimestamp": 1795645434899
     }
   },
   "executionHistory": {
@@ -1341,6 +1345,13 @@
         "executionId": "c41e495c-6762-400e-86e2-49c8ca791693",
         "chatSessionId": "sess_7c5ba58e-1033-4d88-88f6-4bdcf660c59d",
         "timestamp": 1795645187201
+      }
+    ],
+    "12.40 Write Property 24: Stryker exclusion list": [
+      {
+        "executionId": "58fbe360-4ca9-4952-9eeb-99191897ea35",
+        "chatSessionId": "sess_0cf704ee-b489-4636-8f63-2da6f378ac95",
+        "timestamp": 1795645379754
       }
     ]
   }

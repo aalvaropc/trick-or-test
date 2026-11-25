@@ -758,7 +758,7 @@ Conventions used in every task:
     - _Requirements: 3.7, 3.8_
     - _Validation: npx vitest run --project engine packages/engine/test/core/stryker-exclusions.property.test.ts passes_
 
-  - [ ] 12.41 Pass the exclusions to StrykerJS in `buildStrykerOptions`
+  - [x] 12.41 Pass the exclusions to StrykerJS in `buildStrykerOptions`
     - In `adapters/stryker-adapter.ts` take the result of `computeStrykerExclusions` as an input of `buildStrykerOptions` and pass `nonBuildDirs`, `symlinkedDirs` and `ignorePatterns` to the Stryker sandbox exclusion and ignore options.
     - Add examples to `test/adapters/stryker-options.test.ts`: a non-build directory and a symlinked directory appear in the options, a build root does not, `.stryker-tmp/**` is ignored.
     - _Requirements: 3.7, 3.8_
