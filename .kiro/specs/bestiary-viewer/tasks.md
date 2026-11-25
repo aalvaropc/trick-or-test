@@ -204,7 +204,7 @@ Conventions for every task:
     - _Requirements: 5.11, 5.15_
     - _Validation: `npm test -w trick-or-test-viewer -- test/bestiary/glyph.test.ts` passes_
 
-  - [ ] 4.11 Implement `bestiary/creature.config.ts` and the seeded generator
+  - [x] 4.11 Implement `bestiary/creature.config.ts` and the seeded generator
     - Create `src/bestiary/creature.config.ts` with the constant `VIEW_BOX`, a per-species table of element descriptors with fixed count and kind order (3 to 5 body curves each), and the colour tokens from `bestiary.md` (no other colour values).
     - Create `src/bestiary/prng.ts` with an inline 32-bit FNV-1a string hash and `mulberry32`. It reads no clock and no unseeded random source.
     - Example tests in `test/bestiary/creature.config.test.ts`: every species has 3 to 5 curves (5.4), same hash gives the same sequence (5.3), no `Math.random` or `Date` in the source (5.3), every colour in the config is a token from `bestiary.md` (5.12).

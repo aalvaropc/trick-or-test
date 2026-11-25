@@ -384,6 +384,23 @@
         "chatSessionId": "sess_f2adfafa-4d99-4862-8465-7fd96a8fe027",
         "timestamp": 1795631142729
       }
+    ],
+    "4.10 Implement `bestiary/glyph.ts`": [
+      {
+        "executionId": "2c3af111-20b1-46b1-b6bb-7a90aad78418",
+        "chatSessionId": "sess_7f0197a0-7363-4976-828f-ff2883f73cd2",
+        "timestamp": 1795631176855
+      },
+      {
+        "executionId": "2c3af111-20b1-46b1-b6bb-7a90aad78418",
+        "chatSessionId": "sess_7f0197a0-7363-4976-828f-ff2883f73cd2",
+        "timestamp": 1795631248841
+      },
+      {
+        "executionId": "819724bf-be41-427d-9b2a-3e8cb75eda44",
+        "chatSessionId": "sess_7f0197a0-7363-4976-828f-ff2883f73cd2",
+        "timestamp": 1795631286087
+      }
     ]
   }
 }
