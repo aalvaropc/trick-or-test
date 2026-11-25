@@ -446,7 +446,7 @@ Conventions used in every task:
     - _Requirements: 9.11_
     - _Validation: npx vitest run --project engine packages/engine/test/cli/no-network.test.ts passes_
 
-  - [ ] 7.8 Pin the exact Mechanical_Mutant id in a test
+  - [x] 7.8 Pin the exact Mechanical_Mutant id in a test
     - Note: task 3.32 changed `test/core/mutant-id.test.ts` so that it only checks the 32-character hex format. Without a pinned value, a change to the hashing would pass every test.
     - Create `test/cli/mutant-id-pin.test.ts`. It calls `computeMutantId` with one fixed input (file `src/price.ts`, original `a < b`, replacement `a <= b`, occurrence index `0`) and expects the exact 32-character id string, written as a literal in the test (compute it once with the final implementation and paste it in). Add a second case with occurrence index `1` that expects a different literal id.
     - The test name states that a change to the hash input or the hash function must change the pinned values on purpose.
