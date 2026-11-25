@@ -263,7 +263,7 @@ Conventions used in every task:
     - _Requirements: 3.9, 3.10_
     - _Validation: npx vitest run --project engine packages/engine/test/adapters/git-adapter.test.ts passes_
 
-  - [ ] 5.5 Implement `test-body-extractor.ts` with tests
+  - [x] 5.5 Implement `test-body-extractor.ts` with tests
     - Implement `extractTestBody(fileText, startLine)` as a bracket-matching scanner that skips string literals, template literals, regular expression literals and comments.
     - Write `test/adapters/test-body-extractor.test.ts`: a simple test, a body with braces inside strings, templates and comments, a regex literal containing a bracket, a nested `describe`, and a start line past the end of the file.
     - _Requirements: 6.2, 6.4_
