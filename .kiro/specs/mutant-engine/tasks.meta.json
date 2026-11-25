@@ -1321,6 +1321,13 @@
         "chatSessionId": "sess_79fa1ec2-9d7f-4adf-93b7-61b40d52746d",
         "timestamp": 1795644758820
       }
+    ],
+    "12.37 Write Property 19: Sandbox path containment": [
+      {
+        "executionId": "03fff7b4-f5f7-466e-80bd-34f66c6aa12c",
+        "chatSessionId": "sess_761fcfd6-5d35-4ddb-b4b9-72fe630b51d6",
+        "timestamp": 1795644889769
+      }
     ]
   }
 }

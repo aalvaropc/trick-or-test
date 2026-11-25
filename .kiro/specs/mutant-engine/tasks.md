@@ -740,7 +740,7 @@ Conventions used in every task:
     - _Requirements: 5.17, 5.18, 5.19_
     - _Validation: npx vitest run --project engine packages/engine/test/core/sandbox-plan.property.test.ts passes_
 
-  - [ ] 12.38 Apply the relative output directory rule in the Sandbox adapter
+  - [x] 12.38 Apply the relative output directory rule in the Sandbox adapter
     - In `adapters/sandbox.ts` pass the output directory relative to the project root to `planSandboxCopy`. Replace any exclusion by directory name.
     - Add examples to `test/adapters/sandbox.test.ts`: with the output directory `reports`, `reports/` is absent from the Sandbox and `src/reports/` is present.
     - _Requirements: 5.19_

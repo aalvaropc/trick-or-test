@@ -144,3 +144,23 @@ describe("Sandbox copy plan", () => {
     expect(await present(join(project, ".trickortest", "escaped.txt"))).toBe(false);
   });
 });
+
+describe("Sandbox output directory", () => {
+  it("5.19 with output directory reports, reports/ is absent from the Sandbox", async () => {
+    const created = await Sandbox.create(project, "o1", { outputDir: "reports" });
+    expect(created.ok).toBe(true);
+    if (!created.ok) return;
+    expect(await present(join(created.value.root, "reports"))).toBe(false);
+  });
+
+  it("5.19 with output directory reports, src/reports/ is present in the Sandbox", async () => {
+    await mkdir(join(project, "src", "reports"), { recursive: true });
+    await writeFile(join(project, "src", "reports", "f.txt"), "nested");
+    const created = await Sandbox.create(project, "o2", { outputDir: "reports" });
+    expect(created.ok).toBe(true);
+    if (!created.ok) return;
+    expect(await readFile(join(created.value.root, "src", "reports", "f.txt"), "utf8")).toBe(
+      "nested",
+    );
+  });
+});

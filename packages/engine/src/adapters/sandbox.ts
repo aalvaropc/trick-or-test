@@ -46,11 +46,6 @@ const copyPlanned = async (
   const made = await fs.makeDir(root);
   if (!made.ok) return made;
   for (const item of plan) {
-    const inOutputDir =
-      outputDir !== "" &&
-      outputDir !== "." &&
-      (item.path === outputDir || item.path.startsWith(`${outputDir}/`));
-    if (inOutputDir) continue;
     const kind = kinds.get(item.path);
     if (item.action === "skip") {
       if (kind === "symlink" && !item.path.split("/").some((s) => SKIPPED_NAMES.has(s))) {
