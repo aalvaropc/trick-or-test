@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import {
   MechanicalRunner,
@@ -101,6 +102,30 @@ describe("MechanicalRunner.run", () => {
     const result = await MechanicalRunner.run({ ...base, since: true, changedRanges: [] }, process);
     expect(calls).toHaveLength(0);
     expect(result).toEqual(ok({ mutants: [], testFiles: {}, ignoreStaticRetried: false }));
+  });
+
+  it("3.16 returns start line, start column, end line and end column of each mutant from a real StrykerJS report", async () => {
+    const real: unknown = JSON.parse(
+      readFileSync(new URL("../fixtures/stryker/mutation-report.json", import.meta.url), "utf8"),
+    );
+    const process: StrykerProcess = {
+      async run() {
+        return { ok: true };
+      },
+      async readReport() {
+        return ok(real);
+      },
+    };
+    const result = await MechanicalRunner.run(base, process);
+    if (!result.ok) throw new Error("expected ok");
+    const where = (id: string) => result.value.mutants.find((m) => m.id === id)?.location;
+    expect(result.value.mutants).toHaveLength(15);
+    // single-line mutant: `>=` in `if (subtotalCents >= 10000)`
+    expect(where("3")).toEqual({ start: { line: 2, column: 7 }, end: { line: 2, column: 29 } });
+    // multi-line mutant: the whole body of shippingCents
+    expect(where("0")).toEqual({ start: { line: 1, column: 62 }, end: { line: 6, column: 2 } });
+    // mutant on a later line
+    expect(where("14")).toEqual({ start: { line: 13, column: 10 }, end: { line: 13, column: 15 } });
   });
 
   it("6.1 passes the changed ranges as mutate patterns when --since has changes", async () => {

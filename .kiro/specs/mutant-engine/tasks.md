@@ -577,7 +577,7 @@ Conventions used in every task:
     - _Requirements: 3.16, 10.12_
     - _Validation: npx vitest run --project engine packages/engine/test/core/stryker-output.test.ts passes_
 
-  - [ ] 12.11 Return the location from `MechanicalRunner`
+  - [x] 12.11 Return the location from `MechanicalRunner`
     - In `adapters/stryker-adapter.ts` replace the local report parsing by `parseStrykerReport` and return the start and end line and column on each mechanical mutant.
     - Add examples to `test/adapters/stryker-adapter.test.ts`, with the captured report as the fake process output: each returned mutant has its start line, start column, end line and end column.
     - _Requirements: 3.16, 10.12_

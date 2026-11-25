@@ -40,6 +40,7 @@ const mutant = (id: string, over: Partial<MechanicalMutant> = {}): MechanicalMut
   mutatorName: "EqualityOperator",
   replacement: "<=",
   original: "<",
+  location: { start: { line: 10, column: 1 }, end: { line: 10, column: 2 } },
   startLine: 10,
   endLine: 10,
   status: "Killed",

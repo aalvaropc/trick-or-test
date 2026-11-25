@@ -1,8 +1,12 @@
 import { spawn } from "node:child_process";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
-import { z } from "zod";
 import { err, ok, type Result } from "../core/result.js";
+import {
+  type Location,
+  type Position,
+  parseStrykerReport as parseStrykerOutput,
+} from "../core/stryker-output.js";
 import { type ChangedRange, formatChangedRange } from "./git-adapter.js";
 
 export const VITEST_RUNNER_PLUGIN = "@stryker-mutator/vitest-runner";
@@ -100,6 +104,8 @@ export type MechanicalMutant = {
   readonly replacement: string;
   /** Source text covered by the mutant's location. */
   readonly original: string;
+  /** Start and end line and column, 1-based, as StrykerJS reports them. */
+  readonly location: Location;
   readonly startLine: number;
   readonly endLine: number;
   readonly status: string;
@@ -131,49 +137,7 @@ export interface StrykerProcess {
   readReport(cwd: string, reportFile: string): Promise<Result<unknown, string>>;
 }
 
-const locationSchema = z.object({
-  line: z.number().int().positive(),
-  column: z.number().int().nonnegative(),
-});
-
-const reportSchema = z.object({
-  files: z.record(
-    z.string(),
-    z.object({
-      source: z.string().optional(),
-      mutants: z.array(
-        z.object({
-          id: z.string(),
-          mutatorName: z.string(),
-          replacement: z.string().optional(),
-          status: z.string(),
-          killedBy: z.array(z.string()).optional(),
-          location: z.object({ start: locationSchema, end: locationSchema }),
-        }),
-      ),
-    }),
-  ),
-  testFiles: z
-    .record(
-      z.string(),
-      z.object({
-        tests: z.array(
-          z.object({
-            id: z.string(),
-            name: z.string(),
-            location: z.object({ start: locationSchema }).optional(),
-          }),
-        ),
-      }),
-    )
-    .optional(),
-});
-
-const sourceSlice = (
-  source: string,
-  start: z.infer<typeof locationSchema>,
-  end: z.infer<typeof locationSchema>,
-): string => {
+const sourceSlice = (source: string, start: Position, end: Position): string => {
   const lines = source.split("\n");
   if (start.line === end.line) {
     return (lines[start.line - 1] ?? "").slice(start.column - 1, end.column - 1);
@@ -188,33 +152,30 @@ const sourceSlice = (
 export const parseStrykerReport = (
   json: unknown,
 ): Result<Omit<MechanicalRunResult, "ignoreStaticRetried">, string> => {
-  const parsed = reportSchema.safeParse(json);
-  if (!parsed.success) {
-    return err(
-      `StrykerJS report does not match the expected shape: ${parsed.error.issues[0]?.message ?? "unknown"}`,
-    );
-  }
+  const parsed = parseStrykerOutput(json);
+  if (!parsed.ok) return err(parsed.error.message);
   const mutants: MechanicalMutant[] = [];
-  for (const [file, entry] of Object.entries(parsed.data.files)) {
+  for (const [file, entry] of Object.entries(parsed.value.files)) {
     for (const mutant of entry.mutants) {
       const { start, end } = mutant.location;
       mutants.push({
         id: mutant.id,
         file,
         mutatorName: mutant.mutatorName,
-        replacement: mutant.replacement ?? "",
+        replacement: mutant.replacement,
         original: sourceSlice(entry.source ?? "", start, end),
+        location: mutant.location,
         startLine: start.line,
         endLine: end.line,
         status: mutant.status,
-        killedBy: mutant.killedBy ?? [],
+        killedBy: mutant.killedBy,
       });
     }
   }
   const testFiles = Object.fromEntries(
-    Object.entries(parsed.data.testFiles ?? {}).map(([file, entry]) => [
+    Object.entries(parsed.value.testFiles).map(([file, tests]) => [
       file,
-      entry.tests.map((test) => ({
+      tests.map((test) => ({
         id: test.id,
         name: test.name,
         ...(test.location === undefined ? {} : { startLine: test.location.start.line }),

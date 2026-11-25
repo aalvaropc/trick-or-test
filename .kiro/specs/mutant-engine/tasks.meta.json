@@ -1098,6 +1098,18 @@
         "chatSessionId": "sess_b8aa8720-9d9f-4b83-b6ae-442ad331f1fe",
         "timestamp": 1795638621962
       }
+    ],
+    "12.10 Keep the StrykerJS mutant location in `core/stryker-output.ts`": [
+      {
+        "executionId": "8ac775d0-d067-4f19-868a-cd83262fe6ce",
+        "chatSessionId": "sess_e3f1b205-c757-4b6e-87f3-1ff13a3155e9",
+        "timestamp": 1795638784718
+      },
+      {
+        "executionId": "2a074690-b208-4c6f-906a-804c7c77228f",
+        "chatSessionId": "sess_e3f1b205-c757-4b6e-87f3-1ff13a3155e9",
+        "timestamp": 1795639007112
+      }
     ]
   }
 }
