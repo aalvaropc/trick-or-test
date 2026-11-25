@@ -156,7 +156,7 @@ Conventions used in every task:
     - _Requirements: 8.7, 10.4_
     - _Validation: npx vitest run --project engine packages/engine/test/core/mutant-id.test.ts passes_
 
-  - [ ] 3.19 Write Property 6: Deterministic ids
+  - [x] 3.19 Write Property 6: Deterministic ids
     - Write `test/core/mutant-id.property.test.ts` with **Property 6: Deterministic ids**. For lists of Mechanical_Mutants, check that each id depends only on file, original text and replacement. For lists that also contain Spec_Mutants, check that each Spec_Mutant keeps the id from its file. Shuffle the list and check that no id changes and that the report output order is the same.
     - **Validates: Requirements 4.5, 8.7**
     - _Requirements: 4.5, 8.7_
