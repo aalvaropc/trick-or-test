@@ -535,6 +535,20 @@
         "chatSessionId": "sess_fcac2443-3506-4ef5-bfa9-abb88d09f789",
         "timestamp": 1795649569162
       }
+    ],
+    "8.4 Implement `bestiary/Creature.tsx`": [
+      {
+        "executionId": "3e20027c-ca24-4837-8970-21a7ce6b9235",
+        "chatSessionId": "sess_7dcbe3ac-8aad-4048-97eb-c85c00598652",
+        "timestamp": 1795649703602
+      }
+    ],
+    "8.5 Implement the activatable creature with a state label": [
+      {
+        "executionId": "34bc3080-7518-4f46-9e43-0bbe58e043e6",
+        "chatSessionId": "sess_bae7a6b3-2c61-40a0-809a-ee63fe3d19a0",
+        "timestamp": 1795649841881
+      }
     ]
   }
 }

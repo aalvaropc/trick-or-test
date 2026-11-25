@@ -320,7 +320,7 @@ Conventions for every task:
     - _Requirements: 6.13, 10.5, 10.6_
     - _Validation: `npm test -w trick-or-test-viewer -- test/bestiary/CreatureLink.test.tsx` passes_
 
-  - [ ] 8.6 Add the killed animation and the reduced-motion hook
+  - [x] 8.6 Add the killed animation and the reduced-motion hook
     - Create `src/app/use-reduced-motion.ts` (a hook over `matchMedia("(prefers-reduced-motion: reduce)")`). Add the erase-to-bones animation to `src/styles/motion.css` (600ms or less, CSS only) and apply it from `Creature.tsx` when the state prop changes to killed, with a module-level guard so at most one animation runs at a time. Under reduced motion, add no animation class and show the final state at once. Add a `@media (prefers-reduced-motion: reduce)` rule that sets `animation: none` and `transition: none` globally.
     - Example tests in `test/styles/motion.test.tsx`: the declared duration is at most 600ms (10.8), a second killed change while one runs does not start a second animation (10.8), reduced motion gives no animation class (10.7), the global reduced-motion rule exists (10.7).
     - _Requirements: 10.7, 10.8_
