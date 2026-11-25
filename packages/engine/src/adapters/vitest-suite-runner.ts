@@ -5,6 +5,7 @@ import { tmpdir } from "node:os";
 import { dirname, join, relative, resolve } from "node:path";
 import { z } from "zod";
 import { err, ok, type Result } from "../core/result.js";
+import { extractFailingTests } from "../core/suite-result.js";
 
 export type SuiteTestStatus = "passed" | "failed" | "skipped";
 
@@ -42,6 +43,7 @@ const reportSchema = z.object({
   testResults: z.array(
     z.object({
       name: z.string(),
+      status: z.string(),
       assertionResults: z.array(
         z.object({
           fullName: z.string(),
@@ -167,14 +169,27 @@ export const SuiteRunner = {
           message: `vitest JSON report does not match the expected shape: ${parsed.error.issues[0]?.message ?? "unknown"}`,
         });
       }
-      const files = parsed.data.testResults.map((file) => ({
-        path: relative(root, file.name).split("\\").join("/"),
-        tests: file.assertionResults.map((test) => ({
-          name: test.fullName,
-          status: toStatus(test.status),
-          startLine: test.location?.line ?? 0,
-        })),
-      }));
+      // A file that failed without any assertion result (import or collection error)
+      // is reported as one failing test named after the file (Requirements 3.15, 5.9).
+      const fileLevelFailures = new Set(
+        extractFailingTests(parsed.data)
+          .filter((failing) => failing.name === failing.filePath)
+          .map((failing) => failing.filePath),
+      );
+      const files = parsed.data.testResults.map((file) => {
+        const path = relative(root, file.name).split("\\").join("/");
+        if (file.assertionResults.length === 0 && fileLevelFailures.has(file.name)) {
+          return { path, tests: [{ name: path, status: "failed" as const, startLine: 0 }] };
+        }
+        return {
+          path,
+          tests: file.assertionResults.map((test) => ({
+            name: test.fullName,
+            status: toStatus(test.status),
+            startLine: test.location?.line ?? 0,
+          })),
+        };
+      });
       return ok({ durationMs, files });
     } finally {
       await rm(outDir, { recursive: true, force: true });

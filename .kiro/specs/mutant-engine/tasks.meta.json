@@ -1033,6 +1033,13 @@
         "chatSessionId": "sess_67fa41ed-31d8-4b5c-8940-d06460b93068",
         "timestamp": 1795637489849
       }
+    ],
+    "12.2 Write Property 21: Failing tests include file-level failures": [
+      {
+        "executionId": "f2cfe576-5171-421a-93a1-0e5f2e508149",
+        "chatSessionId": "sess_561e2e90-ef31-4f3e-ac09-82af6dd87843",
+        "timestamp": 1795637612904
+      }
     ]
   }
 }

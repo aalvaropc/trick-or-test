@@ -528,7 +528,7 @@ Conventions used in every task:
     - _Requirements: 3.15, 5.9, 5.10_
     - _Validation: npx vitest run --project engine packages/engine/test/core/suite-result.property.test.ts passes_
 
-  - [ ] 12.3 Use `extractFailingTests` in the suite runner
+  - [x] 12.3 Use `extractFailingTests` in the suite runner
     - In `adapters/vitest-suite-runner.ts` build the list of failing tests with `extractFailingTests`, so a run with a file-level failure is not reported as passing. Add a fixture project under `test/fixtures/` whose test file throws at import; the Vitest JSON result for it is captured from a real run.
     - Add examples to `test/adapters/vitest-suite-runner.test.ts`: the import-error fixture returns one failing test named after the file, and a normal failing test still returns its start line.
     - _Requirements: 3.15, 5.9_
