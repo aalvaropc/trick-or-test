@@ -287,7 +287,7 @@ Conventions used in every task:
     - _Requirements: 5.4, 5.5, 5.6, 5.7_
     - _Validation: npx vitest run --project engine packages/engine/test/adapters/vitest-witness-runner.test.ts passes_
 
-  - [ ] 5.9 Implement the Stryker options builder in `stryker-adapter.ts` with tests
+  - [x] 5.9 Implement the Stryker options builder in `stryker-adapter.ts` with tests
     - Implement `buildStrykerOptions(input)` as a pure function: `plugins` lists the Vitest runner, incremental mode with `incrementalFile`, the JSON reporter with `fileName`, `tempDirName` and `disableBail`, all under `.trickortest/`; `tsconfigFile` set to a nonexistent path only when TypeScript is 7 or newer; `mutate` patterns as `file:start-end` from Changed_Ranges; exclusion of non-build folders including symlinked directories and every file under `.stryker-tmp`; `ignoreStatic` only on retry.
     - Write `test/adapters/stryker-options.test.ts`: TypeScript 6 versus 7 versus 8, the `plugins` entry, the `.trickortest/` paths, mutate patterns for one and several ranges, a symlinked directory, and `.stryker-tmp` exclusion.
     - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.7, 3.8, 3.9, 3.14_
