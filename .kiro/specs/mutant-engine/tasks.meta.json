@@ -634,6 +634,18 @@
         "chatSessionId": "sess_e03366cb-e77c-4336-ade1-2c7460fae163",
         "timestamp": 1795626187303
       }
+    ],
+    "6. Checkpoint - Adapters phase": [
+      {
+        "executionId": "4737ab2f-2ee6-4094-98c8-e7ed14103068",
+        "chatSessionId": "sess_7b8e8960-fca9-42a9-81a8-fbb14699710f",
+        "timestamp": 1795626214797
+      },
+      {
+        "executionId": "4737ab2f-2ee6-4094-98c8-e7ed14103068",
+        "chatSessionId": "sess_7b8e8960-fca9-42a9-81a8-fbb14699710f",
+        "timestamp": 1795626238760
+      }
     ]
   }
 }

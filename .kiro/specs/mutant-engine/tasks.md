@@ -152,12 +152,14 @@ Conventions used in every task:
   - [x] 3.18 Implement `mutant-id.ts` with example tests
     - Implement `computeMutantId(file, original, replacement)` for Mechanical_Mutants only, as a hex-truncated hash from `createHash('sha256')` of `node:crypto`. Do not hand-write a sha256. This is the only core module that imports from `node:`. Keep it out of the `trick-or-test/report` import graph.
     - Spec_Mutants do not pass through this function: a Spec_Mutant keeps the id from its file (`oath-<criterion>-<slug>`), unique per Requirement 4.5.
+    - Note: the Occurrence_Index added to the hash in Requirement 8.7 is implemented by task 3.32.
     - Write `test/core/mutant-id.test.ts`: a fixed known hash, a different file, a different original, a different replacement, and the empty string.
     - _Requirements: 8.7, 10.4_
     - _Validation: npx vitest run --project engine packages/engine/test/core/mutant-id.test.ts passes_
 
   - [x] 3.19 Write Property 6: Deterministic ids
     - Write `test/core/mutant-id.property.test.ts` with **Property 6: Deterministic ids**. For lists of Mechanical_Mutants, check that each id depends only on file, original text and replacement. For lists that also contain Spec_Mutants, check that each Spec_Mutant keeps the id from its file. Shuffle the list and check that no id changes and that the report output order is the same.
+    - Note: tasks 3.33 and 3.34 extend this property (Occurrence_Index, shuffled `buildMutationReport` input).
     - **Validates: Requirements 4.5, 8.7**
     - _Requirements: 4.5, 8.7_
     - _Validation: npx vitest run --project engine packages/engine/test/core/mutant-id.property.test.ts passes_
@@ -200,6 +202,7 @@ Conventions used in every task:
 
   - [x] 3.26 Write Property 15: One creature per change
     - Write `test/core/report.dedup.property.test.ts` with **Property 15: One creature per change**. Pairs are matched by file, span and replacement, and the generated ids differ between the two kinds.
+    - Note: task 3.45 adds Spec_Mutants without twins and span-end differences to this property.
     - **Validates: Requirements 8.15**
     - _Requirements: 8.15_
     - _Validation: npx vitest run --project engine packages/engine/test/core/report.dedup.property.test.ts passes_
@@ -233,6 +236,90 @@ Conventions used in every task:
     - Write `test/report/no-node-imports.test.ts` that walks the import graph of `src/report/index.ts` and fails on any `node:` import.
     - _Requirements: 10.1, 10.4_
     - _Validation: npx vitest run --project engine packages/engine/test/report/no-node-imports.test.ts passes_
+
+  - [ ] 3.32 Add the Occurrence_Index to `computeMutantId`
+    - In `core/mutant-id.ts` change the signature to `computeMutantId(file, original, replacement, occurrenceIndex)` and hash all four values (no timestamp, no line number).
+    - Add the pure helper `assignOccurrenceIndexes(mutants)` that groups Mechanical_Mutants by (file, original, replacement), sorts each group by line then column, and returns each mutant's 0-based position in its group. The CLI (task 7.3) calls it.
+    - Update `test/core/mutant-id.test.ts`: two identical changes on different lines get different ids, the same change keeps its id when unrelated lines above it move, index 0 versus index 1, and `assignOccurrenceIndexes` on a group of three with unordered input.
+    - _Requirements: 8.7, 4.5, 8.13_
+    - _Validation: npx vitest run --project engine packages/engine/test/core/mutant-id.test.ts passes_
+
+  - [ ] 3.33 Extend Property 6 for the Occurrence_Index
+    - In `test/core/mutant-id.property.test.ts` add the clause: two mutants with the same file, original text and replacement but different locations get different ids, and moving unrelated lines (without changing the order inside a group) changes no id. The generators include groups of mutants that share file, original text and replacement.
+    - **Validates: Requirements 8.7, 4.5, 8.13**
+    - _Requirements: 8.7, 4.5, 8.13_
+    - _Validation: npx vitest run --project engine packages/engine/test/core/mutant-id.property.test.ts passes_
+
+  - [ ] 3.34 Fix the report-order clause of Property 6
+    - In `test/core/mutant-id.property.test.ts` replace the comparison against a sorted stand-in: shuffle the input list of `buildMutationReport` itself and check that the two outputs are equal.
+    - **Validates: Requirements 8.13**
+    - _Requirements: 8.13_
+    - _Validation: npx vitest run --project engine packages/engine/test/core/mutant-id.property.test.ts passes_
+
+  - [ ] 3.35 Record the `ignoreStatic` retry in the Mutation_Report
+    - In `core/report.ts` make `buildMutationReport` put the retry flag in the schema's free-form `config` object (the Verdict keeps `ignoreStaticRetried`).
+    - Add examples to `test/core/report.test.ts`: retry true, retry false.
+    - _Requirements: 3.5_
+    - _Validation: npx vitest run --project engine packages/engine/test/core/report.test.ts passes_
+
+  - [ ] 3.36 Extend Property 7 with the retry flag
+    - In `test/core/report.validity.property.test.ts` generate the retry flag, check that every generated report validates against `mutation-testing-report-schema` with it, and that the report's `config` records the flag.
+    - **Validates: Requirements 3.5, 8.1**
+    - _Requirements: 3.5, 8.1_
+    - _Validation: npx vitest run --project engine packages/engine/test/core/report.validity.property.test.ts passes_
+
+  - [ ] 3.37 Expand braces in the property-test glob matcher
+    - In `core/test-classification.ts` expand brace groups before matching, so `test/**/*.{property,prop}.test.ts` matches `test/a.property.test.ts` and `test/a.prop.test.ts`.
+    - Add examples to `test/core/test-classification.test.ts`: each expansion of a brace group matches, a name outside the group does not, and a glob without braces still works.
+    - _Requirements: 6.3_
+    - _Validation: npx vitest run --project engine packages/engine/test/core/test-classification.test.ts passes_
+
+  - [ ] 3.38 Extend Property 11 with brace globs
+    - In `test/core/test-classification.property.test.ts` add generated globs with brace groups and check that a file path matching any expansion is a Property_Test.
+    - **Validates: Requirements 6.3, 6.4, 6.5**
+    - _Requirements: 6.3_
+    - _Validation: npx vitest run --project engine packages/engine/test/core/test-classification.property.test.ts passes_
+
+  - [ ] 3.39 Fix regular expression detection in the test-body scanner
+    - In `src/adapters/test-body-extractor.ts` treat `/` as the start of a regular expression when the previous token is an operator, an opening bracket, or one of `return`, `typeof`, `case`, `in`, `of`, `delete`, `void`, `throw`, `new`, `instanceof`, `yield`, `await`; otherwise treat it as division.
+    - Add one example per keyword to `test/adapters/test-body-extractor.test.ts`, each with a regex that holds a quote or a bracket, for instance `const f = (s) => { return /"/.test(s) }; fc.assert(p);` is classified as a property body. Add a division example (`a / b`) that is still division.
+    - _Requirements: 6.4_
+    - _Validation: npx vitest run --project engine packages/engine/test/adapters/test-body-extractor.test.ts passes_
+
+  - [ ] 3.40 Ignore fenced code blocks in the requirements parser
+    - In `core/requirements.ts` treat lines inside a fence (opened by ``` or ~~~, closed by a fence of the same character) as neither headings nor criteria.
+    - Add examples to `test/core/requirements.test.ts`: a `#` line inside a fence does not end the criteria section, a numbered line inside a fence is not a criterion, a `~~~` fence, a ``` fence containing `~~~`, and an unclosed fence.
+    - _Requirements: 2.1_
+    - _Validation: npx vitest run --project engine packages/engine/test/core/requirements.test.ts passes_
+
+  - [ ] 3.41 Extend the Property 8 generator with fenced blocks
+    - In `test/helpers/requirements-generator.ts` insert fenced blocks whose lines look like requirement headings, criteria headings or numbered items. `test/core/requirements.property.test.ts` still expects exactly the ids `n.k`.
+    - **Validates: Requirements 2.1, 2.2, 2.8**
+    - _Requirements: 2.1, 2.8_
+    - _Validation: npx vitest run --project engine packages/engine/test/core/requirements.property.test.ts passes_
+
+  - [ ] 3.42 Compare witness values by their JSON form
+    - In `core/witness-compare.ts` serialize and parse each value before the deep comparison, so `-0` and `0` are equal.
+    - Add examples to `test/core/witness-compare.test.ts`: `-0` versus `0`, `-0` inside an array and an object, `undefined` object members dropped by the JSON form.
+    - _Requirements: 5.12_
+    - _Validation: npx vitest run --project engine packages/engine/test/core/witness-compare.test.ts passes_
+
+  - [ ] 3.43 Make `validateConfig(null)` an error
+    - In `core/config.ts` return an error that names `trickortest.config.json` for `null` and for every other non-object value (array, string, number). Only a missing file gives defaults, and the caller decides that without calling `validateConfig`.
+    - Add examples to `test/core/config.test.ts`: `null`, an array, a string, a number, and `{}` (still all defaults).
+    - _Requirements: 1.3, 1.5_
+    - _Validation: npx vitest run --project engine packages/engine/test/core/config.test.ts passes_
+
+  - [ ] 3.44 Add a span-end example for the same-change check
+    - In `test/core/report.test.ts` add an example where a Spec_Mutant and a Mechanical_Mutant have the same file, span start and replacement and differ only in the span end. Both mutants stay in the report. Add the mirror example with an identical span, where only the Spec_Mutant stays.
+    - _Requirements: 8.15_
+    - _Validation: npx vitest run --project engine packages/engine/test/core/report.test.ts passes_
+
+  - [ ] 3.45 Generate Spec_Mutants without twins in Property 15
+    - In `test/core/report.dedup.property.test.ts` generate Spec_Mutants with a mechanical twin and Spec_Mutants without one, plus Mechanical_Mutants that differ from a Spec_Mutant only in the span end, the span start, the file or the replacement. Check that a Spec_Mutant without a twin is always kept and that a differing Mechanical_Mutant is always kept.
+    - **Validates: Requirements 8.15**
+    - _Requirements: 8.15_
+    - _Validation: npx vitest run --project engine packages/engine/test/core/report.dedup.property.test.ts passes_
 
 - [x] 4. Checkpoint - Core phase
   - Run `npm run check` from the repository root. Ensure all tests pass, ask the user if questions arise.
@@ -299,7 +386,7 @@ Conventions used in every task:
     - _Requirements: 3.5, 3.6, 3.10, 6.1_
     - _Validation: npx vitest run --project engine packages/engine/test/adapters/stryker-adapter.test.ts passes_
 
-- [ ] 6. Checkpoint - Adapters phase
+- [x] 6. Checkpoint - Adapters phase
   - Run `npm run check` from the repository root. Ensure all tests pass, ask the user if questions arise.
   - _Validation: npm run check passes_
 
@@ -317,7 +404,7 @@ Conventions used in every task:
     - _Validation: npx vitest run --project engine packages/engine/test/cli/orchestrate-load.test.ts passes_
 
   - [ ] 7.3 Implement the baseline and mechanical stage of the orchestration with tests
-    - In `orchestrate.ts` add the baseline run (record its duration) and the mechanical run through `MechanicalRunner`, with `--since` ranges from `Git`. A failing baseline returns the failing tests and a StrykerJS error returns its first error line. Neither writes a Verdict_File. Compute the id of each mechanical mutant here with `computeMutantId(file, original, replacement)`. Classify the species and the kill class of each mechanical mutant from `killedBy`, the extracted test bodies and the property-test globs.
+    - In `orchestrate.ts` add the baseline run (record its duration) and the mechanical run through `MechanicalRunner`, with `--since` ranges from `Git`. A failing baseline returns the failing tests and a StrykerJS error returns its first error line. Neither writes a Verdict_File. Compute the id of each mechanical mutant here with `assignOccurrenceIndexes` and `computeMutantId(file, original, replacement, occurrenceIndex)` from task 3.32. Classify the species and the kill class of each mechanical mutant from `killedBy`, the extracted test bodies and the property-test globs.
     - Write `test/cli/orchestrate-mechanical.test.ts` with fake adapters: baseline failure, StrykerJS error, a normal run with killed and survived mutants, `--since` with no changes (zero mechanical mutants), a killed mutant whose killing tests are unknown (`unattributed`), and the same mechanical mutant getting the same hash id on two runs.
     - _Requirements: 3.6, 3.15, 6.1, 6.9, 9.1, 9.3_
     - _Validation: npx vitest run --project engine packages/engine/test/cli/orchestrate-mechanical.test.ts passes_
@@ -400,7 +487,10 @@ Conventions used in every task:
     { "id": 14, "tasks": ["7.5"] },
     { "id": 15, "tasks": ["7.6"] },
     { "id": 16, "tasks": ["7.7"] },
-    { "id": 17, "tasks": ["9.1"] }
+    { "id": 17, "tasks": ["9.1"] },
+    { "id": 18, "tasks": ["3.32", "3.35", "3.37", "3.39", "3.40", "3.42", "3.43"] },
+    { "id": 19, "tasks": ["3.33", "3.36", "3.38", "3.41", "3.44"] },
+    { "id": 20, "tasks": ["3.34", "3.45"] }
   ]
 }
 ```
