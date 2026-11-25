@@ -39,7 +39,7 @@ Conventions used in every task:
   - Run `npm run check` from the repository root. Ensure all tests pass, ask the user if questions arise.
   - _Validation: npm run check passes_
 
-- [ ] 3. Implement the pure core (`packages/engine/src/core/`)
+- [x] 3. Implement the pure core (`packages/engine/src/core/`)
   - [x] 3.1 Implement `result.ts` and shared types
     - Create `result.ts` with the `Result<T, E>` union and `ok` and `err` helpers.
     - Create `types.ts` with the branded ids (`MutantId`, `CriterionId`, `TestId`), `Criterion`, `Species`, `MutantStatus`, `KillClass`, `CoverageStatus`, `Witness`, `SpecMutant`, `SkipEntry`, `MutantResult`, `EngineConfig`, `CriterionCoverage`, `RunMetadata`, `Verdict` and `HistoryRecord` from `design.md`.
@@ -228,7 +228,7 @@ Conventions used in every task:
     - _Requirements: 8.8, 8.9_
     - _Validation: npx vitest run --project engine packages/engine/test/core/history.property.test.ts passes_
 
-  - [ ] 3.31 Add the `trick-or-test/report` subpath and its no-`node:` test
+  - [x] 3.31 Add the `trick-or-test/report` subpath and its no-`node:` test
     - Create `src/report/index.ts` that re-exports only the report types and schemas. Check that `package.json` `exports["./report"]` points to its build output.
     - Write `test/report/no-node-imports.test.ts` that walks the import graph of `src/report/index.ts` and fails on any `node:` import.
     - _Requirements: 10.1, 10.4_

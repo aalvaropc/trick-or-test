@@ -476,6 +476,25 @@
         "chatSessionId": "sess_bd82912d-b30a-423e-9e55-8ee0612aee81",
         "timestamp": 1795622119171
       }
+    ],
+    "3.31 Add the `trick-or-test/report` subpath and its no-`node:` test": [
+      {
+        "executionId": "d56b3e5b-43d6-485d-ae68-3ca3bd4bad2b",
+        "chatSessionId": "sess_bd0c086d-dedd-4b3b-9147-74c2ff0ce902",
+        "timestamp": 1795622150273
+      },
+      {
+        "executionId": "d2279323-c661-4a75-aeb2-b51876a4e8c7",
+        "chatSessionId": "sess_bd0c086d-dedd-4b3b-9147-74c2ff0ce902",
+        "timestamp": 1795622309796
+      }
+    ],
+    "3. Implement the pure core (`packages/engine/src/core/`)": [
+      {
+        "executionId": "d2279323-c661-4a75-aeb2-b51876a4e8c7",
+        "chatSessionId": "sess_bd0c086d-dedd-4b3b-9147-74c2ff0ce902",
+        "timestamp": 1795622309977
+      }
     ]
   }
 }
