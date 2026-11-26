@@ -67,6 +67,10 @@
     "15.4 Write Property 29: One set of mutant ids and agreeing totals": {
       "status": "passed",
       "lastRunTimestamp": 1795676704340
+    },
+    "15.5 Write Property 30: Stryker counts come from the produced mutants": {
+      "status": "passed",
+      "lastRunTimestamp": 1795676882782
     }
   },
   "executionHistory": {
@@ -1607,6 +1611,13 @@
         "executionId": "3d7ea99d-f0a6-4c74-9377-546a5d632a3b",
         "chatSessionId": "sess_5dec2e3f-1ace-450a-9c90-e60a969e3e76",
         "timestamp": 1795676648631
+      }
+    ],
+    "15.5 Write Property 30: Stryker counts come from the produced mutants": [
+      {
+        "executionId": "d145a91d-c69d-4c00-a8f1-9a4bedf931ef",
+        "chatSessionId": "sess_ee886b88-32b5-4b6f-bcd7-dc094892a5c4",
+        "timestamp": 1795676844251
       }
     ]
   }

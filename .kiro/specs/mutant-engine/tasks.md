@@ -942,7 +942,7 @@ Conventions used in every task:
     - **Validates: Requirements 8.22, 8.23, 8.24**
     - _Requirements: 8.22, 8.23, 8.24_
     - _Validation: npx vitest run --project engine packages/engine/test/core/totals.property.test.ts passes_
-  - [ ] 15.6 Pass the raw list from the pipeline and read the files back
+  - [x] 15.6 Pass the raw list from the pipeline and read the files back
     - In `cli/orchestrate.ts` pass the whole list of Mechanical_Mutants that StrykerJS produced to the builders (no earlier filtering). Write `test/cli/orchestrate-totals.test.ts` with fake adapters, one Twin among the Mechanical_Mutants: read the three written files, parse them with the zod schemas, and check that the id sets are equal, that `mutantCounts` agrees with the ids listed, and that `strykerCounts` counts the Twin.
     - _Requirements: 8.21, 8.22, 8.23, 10.13_
     - _Validation: npx vitest run --project engine packages/engine/test/cli/orchestrate-totals.test.ts passes_

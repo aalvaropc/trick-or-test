@@ -24,6 +24,7 @@ import {
   buildHistoryRecord,
   buildMutationReport,
   buildVerdict,
+  type MutantChange,
   parseHistoryLines,
   type ReportMutantInput,
   type SpecReportMutantInput,
@@ -879,16 +880,6 @@ export async function writeReports(
         : { ...m.mutant.witness, mutatedOutcome: m.mutatedOutcome };
   }
 
-  const verdict = buildVerdict({
-    coverage: coverageWithText,
-    mutants: results,
-    witnesses,
-    ignoreStaticRetried: input.ignoreStaticRetried,
-    metadata: input.metadata,
-    projectRoot: options.project,
-  });
-  if (!verdict.ok) return err({ kind: "build-error", message: verdict.error });
-
   // Sources of every file the report mentions.
   const paths = [
     ...new Set([
@@ -931,6 +922,23 @@ export async function writeReports(
       killedBy: [...result.killingTests],
     };
   });
+  // 8.21 - 8.23: the builders get the raw list and the change each mutant makes, so they find
+  // the Twins and count before and after dropping them.
+  const changes: Record<MutantId, MutantChange> = {};
+  for (const m of [...mechanical, ...spec]) {
+    changes[m.id] = { file: m.file, location: m.location, replacement: m.replacement };
+  }
+  const verdict = buildVerdict({
+    coverage: coverageWithText,
+    mutants: results,
+    witnesses,
+    ignoreStaticRetried: input.ignoreStaticRetried,
+    metadata: input.metadata,
+    projectRoot: options.project,
+    changes,
+  });
+  if (!verdict.ok) return err({ kind: "build-error", message: verdict.error });
+
   const report = buildMutationReport({
     files: Object.fromEntries(
       paths.map((p) => [p, { language: "typescript", source: sources.get(p) ?? "" }]),
@@ -971,6 +979,7 @@ export async function writeReports(
     previousRecord,
     configAsWritten(config, options.project),
     options.project,
+    changes,
   );
   if (!record.ok) return err({ kind: "build-error", message: record.error });
   let line: string;
