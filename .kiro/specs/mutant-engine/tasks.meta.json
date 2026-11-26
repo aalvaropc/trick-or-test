@@ -1665,6 +1665,32 @@
         "chatSessionId": "sess_02df1dc5-39a9-47e9-a95d-274d15402373",
         "timestamp": 1795677856760
       }
+    ],
+    "16.5 Checkpoint - Baseline tests": [
+      {
+        "executionId": "aa09f0ca-0554-430c-bed4-30a674c91063",
+        "chatSessionId": "sess_41811d81-88a7-4386-a876-e702786ef220",
+        "timestamp": 1795678152069
+      },
+      {
+        "executionId": "aa09f0ca-0554-430c-bed4-30a674c91063",
+        "chatSessionId": "sess_41811d81-88a7-4386-a876-e702786ef220",
+        "timestamp": 1795678186737
+      }
+    ],
+    "16. Keep the tests of the Baseline_Run (Gap 2)": [
+      {
+        "executionId": "aa09f0ca-0554-430c-bed4-30a674c91063",
+        "chatSessionId": "sess_41811d81-88a7-4386-a876-e702786ef220",
+        "timestamp": 1795678187086
+      }
+    ],
+    "17.1 Add the types and the schemas": [
+      {
+        "executionId": "1a2f5cc8-f85c-42ec-9a9e-6a01e26a0b13",
+        "chatSessionId": "sess_9bed08c1-b9a3-43b2-948a-6624a88ce41c",
+        "timestamp": 1795678246914
+      }
     ]
   }
 }

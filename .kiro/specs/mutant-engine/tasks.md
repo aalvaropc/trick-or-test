@@ -985,7 +985,7 @@ Conventions used in every task:
     - Write `test/core/claims-schema.test.ts`: a verdict without `claims` and `claimCounts` parses; each of the four outcomes parses; `otherTestsKilledAll` on `held` is rejected; `not-held` without it is rejected; an unknown outcome and an unknown key are rejected; a negative count is rejected.
     - _Requirements: 8.29, 11.11, 11.12_
     - _Validation: npx vitest run --project engine packages/engine/test/core/claims-schema.test.ts passes_
-  - [ ] 17.2 Read the comment lines above a test
+  - [x] 17.2 Read the comment lines above a test
     - Create `core/claims.ts` with `extractLeadingComments`, pure, no `node:` import.
     - Write `test/core/claims-comments.test.ts`: `//` lines directly above the start line are returned in file order with the markers removed; a `/* ... */` block and a ` * ` JSDoc block are read; a blank line ends the run (comment lines above the blank line are not returned); a line of code ends the run; a start line of 1, 0 and beyond the end of the text give an empty list; lines of a comment above a `describe` are not returned for a test inside the block (start line is inside the block); a comment above an `it.each` call is returned for the start line of that call; other comment lines between the annotation and the call are returned with the rest; `\r\n` line ends work.
     - _Requirements: 11.1, 11.7, 11.8, 11.9_
