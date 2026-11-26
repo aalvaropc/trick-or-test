@@ -5,7 +5,7 @@ import { readFixture } from "../fixtures/load.js";
 const BASE = "/trick-or-test/";
 
 const bodies: Record<string, string> = {
-  "report.json": readFixture("report.json"),
+  "mutation-report.json": readFixture("report.json"),
   "verdict.json": readFixture("verdict.json"),
   "history.jsonl": readFixture("history.jsonl"),
 };
@@ -92,7 +92,7 @@ describe("fetch-demo-run", () => {
     stubFetch(
       (url, init) =>
         new Promise<Response>((resolve, reject) => {
-          if (fileOf(url) !== "report.json") {
+          if (fileOf(url) !== "mutation-report.json") {
             resolve(new Response("", { status: 200 }));
             return;
           }
@@ -113,21 +113,21 @@ describe("fetch-demo-run", () => {
     const result = await pending;
     expect(result.ok).toBe(false);
     if (result.ok) return;
-    expect(result.error.fileName).toContain("report.json");
-    expect(result.error.message).toContain("report.json");
+    expect(result.error.fileName).toContain("mutation-report.json");
+    expect(result.error.message).toContain("mutation-report.json");
   });
 
   it("2.4 invalid content names the file and says it is invalid", async () => {
     stubFetch(async (url) =>
-      fileOf(url) === "report.json"
+      fileOf(url) === "mutation-report.json"
         ? new Response("{ not json", { status: 200 })
         : serveFixtures(url, {}),
     );
     const result = await fetchDemoRun("before", BASE);
     expect(result.ok).toBe(false);
     if (result.ok) return;
-    expect(result.error.fileName).toContain("report.json");
-    expect(result.error.message).toContain("report.json");
+    expect(result.error.fileName).toContain("mutation-report.json");
+    expect(result.error.message).toContain("mutation-report.json");
     expect(result.error.message).toMatch(/invalid/i);
   });
 });

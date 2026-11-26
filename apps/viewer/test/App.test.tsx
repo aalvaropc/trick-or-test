@@ -19,7 +19,7 @@ vi.mock("../src/screens/Verdict.js", async (importOriginal) => {
 const fileOf = (url: string): string => url.slice(url.lastIndexOf("/") + 1);
 
 const bodies = (): Record<string, string> => ({
-  "report.json": readFixture("report.json"),
+  "mutation-report.json": readFixture("report.json"),
   "verdict.json": readFixture("verdict.json"),
   "history.jsonl": readFixture("history.jsonl"),
 });
@@ -66,7 +66,7 @@ describe("App", () => {
     const fetchMock = stubFetch();
     await openDemo();
     const urls = fetchMock.mock.calls.map((call) => String(call[0]));
-    expect(urls.some((url) => url.includes("demo/before/report.json"))).toBe(true);
+    expect(urls.some((url) => url.includes("demo/before/mutation-report.json"))).toBe(true);
   });
 
   it("2.7 #/demo/after fetches the after run and opens the Verdict", async () => {
@@ -76,7 +76,7 @@ describe("App", () => {
     await waitFor(() => expect(window.location.hash).toBe("#/verdict"));
     await waitFor(() => expect(heading()).toBe("verdict"));
     const urls = fetchMock.mock.calls.map((call) => String(call[0]));
-    expect(urls.some((url) => url.includes("demo/after/report.json"))).toBe(true);
+    expect(urls.some((url) => url.includes("demo/after/mutation-report.json"))).toBe(true);
   });
 
   it("2.8 a remount on the demo route fetches the demo run again", async () => {
@@ -84,8 +84,9 @@ describe("App", () => {
     const first = await openDemo();
     first.unmount();
     const countOf = () =>
-      fetchMock.mock.calls.filter((call) => String(call[0]).endsWith("demo/before/report.json"))
-        .length;
+      fetchMock.mock.calls.filter((call) =>
+        String(call[0]).endsWith("demo/before/mutation-report.json"),
+      ).length;
     const before = countOf();
     window.location.hash = "#/demo/before";
     render(<App />);
@@ -101,7 +102,7 @@ describe("App", () => {
     window.location.hash = "#/demo/after";
     render(<App />);
     const alert = await screen.findByRole("alert");
-    expect(alert.textContent).toContain("demo/after/report.json");
+    expect(alert.textContent).toContain("demo/after/mutation-report.json");
     expect(heading()).toBe("landing");
     expect(window.location.hash).toBe("#/demo/after");
     expect(screen.getByRole("link", { name: "before the hunt" }).getAttribute("href")).toBe(

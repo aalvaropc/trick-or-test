@@ -22,7 +22,7 @@ const verdictWithThreeUnguarded = (): string => {
 };
 
 const bodies = (): Record<string, string> => ({
-  "report.json": readFixture("report.json"),
+  "mutation-report.json": readFixture("report.json"),
   "verdict.json": verdictWithThreeUnguarded(),
   "history.jsonl": readFixture("history.jsonl"),
 });
@@ -68,7 +68,7 @@ describe("Landing", () => {
 
   it("3.2 a failed fetch shows the pitch without numbers and no 0", async () => {
     stubFetch(async (url) => {
-      if (fileOf(url) === "report.json") throw new TypeError("Failed to fetch");
+      if (fileOf(url) === "mutation-report.json") throw new TypeError("Failed to fetch");
       return serve()(url);
     });
     setup();
@@ -166,10 +166,10 @@ describe("Landing", () => {
   });
 
   it("2.4 invalid content names the file and states it is invalid", async () => {
-    stubFetch(serve({ "report.json": "{ not json" }));
+    stubFetch(serve({ "mutation-report.json": "{ not json" }));
     setup();
     const alert = await screen.findByRole("alert");
-    expect(within(alert).getByText("demo/before/report.json")).toBeTruthy();
+    expect(within(alert).getByText("demo/before/mutation-report.json")).toBeTruthy();
     expect(alert.textContent).toMatch(/invalid/i);
     expect(screen.getAllByRole("link", { name: /the hunt$/ })).toHaveLength(2);
   });

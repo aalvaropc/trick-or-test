@@ -51,7 +51,7 @@ const fetchCalls: string[] = [];
 
 const stubFetch = () => {
   const bodies: Record<string, string> = {
-    "report.json": readFixture("report.json"),
+    "mutation-report.json": readFixture("report.json"),
     "verdict.json": readFixture("verdict.json"),
     "history.jsonl": readFixture("history.jsonl"),
   };
