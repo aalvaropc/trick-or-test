@@ -789,6 +789,30 @@
         "chatSessionId": "sess_7e58f071-2481-41a6-b7e5-e3fb4789800f",
         "timestamp": 1795665647059
       }
+    ],
+    "13.7 Style the Hunt screen and the Plain view": [
+      {
+        "executionId": "4fa5cb54-3a5d-4166-bb2b-a19b40682ef0",
+        "chatSessionId": "sess_f5cdfde5-3da7-4627-bbdc-3da97f9222b6",
+        "timestamp": 1795665995666
+      }
+    ],
+    "13.8 Add the static and DOM design checks": [
+      {
+        "executionId": "f84a393d-a863-4d7f-a1ca-089ef30c5d7f",
+        "chatSessionId": "sess_056bf57a-3e97-409d-9cce-59b9926d1bd2",
+        "timestamp": 1795666170399
+      },
+      {
+        "executionId": "710b261f-00e2-4522-9dad-ef96ee780f08",
+        "chatSessionId": "sess_056bf57a-3e97-409d-9cce-59b9926d1bd2",
+        "timestamp": 1795666520123
+      },
+      {
+        "executionId": "1cf7c91c-75d0-4a1d-9f72-7819ab49becb",
+        "chatSessionId": "sess_056bf57a-3e97-409d-9cce-59b9926d1bd2",
+        "timestamp": 1795666640430
+      }
     ]
   }
 }

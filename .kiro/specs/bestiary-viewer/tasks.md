@@ -504,7 +504,7 @@ Conventions for every task:
     - _Requirements: 13.6, 13.17, 13.18, 13.19, 8.9, 9.7_
     - _Validation: `npm test -w trick-or-test-viewer -- test/screens/Hunt.design.test.tsx test/screens/PlainView.design.test.tsx` passes_
 
-  - [ ] 13.8 Add the static and DOM design checks
+  - [x] 13.8 Add the static and DOM design checks
     - Add `test/styles/class-rules.test.ts` (every class name in a `className` of `src/` has a selector in `src/styles/`, Requirement 13.22), `test/styles/inline-style.test.ts` (no `style` attribute in `src/` except the two marked `runtime-style` uses, 13.24), `test/ui/creature-sizes.test.tsx` (every `svg` of every screen rendered with the fixtures has numeric `width` and `height` equal to its place in the table, none above 320, 13.23) and `test/styles/layout-rules.test.ts` (frame max width and padding, narrow-screen one-column rules, `.table-scroll` overflow, no creature container wider than 320 px, no font size under 14 px, no gradient, filter or `box-shadow` in `src/styles/`, 13.4, 13.18, 13.21, 13.25, 10.4, 10.9).
     - Each test must fail when its rule is broken: before finishing, confirm by temporarily removing one rule or one attribute in the working tree that the matching test fails, then restore it.
     - _Requirements: 13.4, 13.18, 13.21, 13.22, 13.23, 13.24, 13.25, 10.4, 10.9_

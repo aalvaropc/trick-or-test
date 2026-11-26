@@ -96,7 +96,6 @@ export function Hunt({ lockLog = [] }: { lockLog?: readonly LockLogEntry[] }) {
                 // biome-ignore lint/suspicious/noArrayIndexKey: a static list that is never reordered
                 key={`${index}-blocked-${item.entry.time}`}
                 className="hunt__blocked"
-                style={{ color: "var(--amber)" }}
               >
                 <time dateTime={item.entry.time}>{item.entry.time}</time> <strong>blocked</strong>{" "}
                 <code>{item.entry.file}</code>

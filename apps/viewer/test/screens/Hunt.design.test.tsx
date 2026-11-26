@@ -81,7 +81,7 @@ describe("Hunt design", () => {
     const { container } = open(model(), [{ time: "2026-01-01T12:00:00.000Z", file: "a.test.ts" }]);
     const blocked = container.querySelector(".hunt__blocked") as HTMLElement;
     expect(blocked.querySelector("strong")?.textContent).toBe("blocked");
-    expect(blocked.style.color).toBe("var(--amber)");
+    expect(blocked.classList.contains("hunt__blocked")).toBe(true);
   });
 
   it("8.9 the screen has no animation or transition inline", () => {

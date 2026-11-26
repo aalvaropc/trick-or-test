@@ -530,3 +530,47 @@
   max-width: 100%;
   height: auto;
 }
+/* Classes that had no rule (13.22) */
+.load-error {
+  padding: 1rem;
+  border: 1px solid var(--ember);
+  border-radius: 4px;
+  background: var(--panel);
+}
+.creature-link {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+}
+.creature-link__shape {
+  flex: none;
+}
+.creature-link__label {
+  font-size: var(--text-small);
+  color: var(--mist);
+}
+.run-bar__fact {
+  white-space: nowrap;
+}
+.strays-strip,
+.species-legend {
+  display: grid;
+  gap: 1rem;
+}
+.strays-strip__more,
+.species-legend__count {
+  color: var(--mist);
+}
+.hunt__survivors {
+  color: var(--bone-dim);
+}
+.specimen__outcome {
+  color: var(--mist);
+}
+.specimen__criterion-id {
+  color: var(--mist);
+}
+.specimen__kill-class {
+  color: var(--verdigris);
+}

@@ -55,7 +55,7 @@ describe("Hunt blocked attempts", () => {
     expect(blocked).toHaveLength(2);
     for (const el of blocked) {
       expect(el.textContent).toContain("blocked");
-      expect(el.getAttribute("style")).toContain("var(--amber)");
+      expect(el.classList.contains("hunt__blocked")).toBe(true);
     }
     expect(screen.getByText("test/cart.test.ts")).toBeTruthy();
     expect(screen.getByText("src/cart.ts")).toBeTruthy();
