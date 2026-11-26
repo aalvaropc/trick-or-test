@@ -1626,6 +1626,20 @@
         "chatSessionId": "sess_94c334f4-6707-4575-b8d2-7257656fc37b",
         "timestamp": 1795677002257
       }
+    ],
+    "15.7 Checkpoint - Totals": [
+      {
+        "executionId": "47836f69-7731-4485-a09f-c15fedf0864f",
+        "chatSessionId": "sess_43f12c99-012d-4f68-a531-7092e3efc52c",
+        "timestamp": 1795677175400
+      }
+    ],
+    "16.1 Add the types and the schema": [
+      {
+        "executionId": "d1b38c07-cfa8-4a78-8b0a-35e9644db6dc",
+        "chatSessionId": "sess_08162348-9f3f-4310-9582-89a90643afc4",
+        "timestamp": 1795677309577
+      }
     ]
   }
 }

@@ -13,6 +13,7 @@ import type {
   WitnessRunOptions,
   WitnessRunResult,
 } from "../adapters/vitest-witness-runner.js";
+import { toTestId } from "../core/baseline-tests.js";
 import { type ChangedRange, parseChangedRanges } from "../core/changed-ranges.js";
 import { CONFIG_FILE_NAME, resolveConfigPaths, validateConfig } from "../core/config.js";
 import { computeCoverage } from "../core/coverage.js";
@@ -330,7 +331,7 @@ export interface MechanicalStageResult {
 /** Upper bound for the baseline run, which has no baseline duration to derive a limit from. */
 export const BASELINE_TIME_LIMIT_MS = 10 * 60 * 1000;
 
-const testIdOf = (file: string, name: string): TestId => `${file}::${name}` as TestId;
+const testIdOf = toTestId;
 
 /** StrykerJS status to engine status. Ignored and pending mutants never ran and are dropped. */
 const toEngineStatus = (status: string): MutantStatus | undefined => {
