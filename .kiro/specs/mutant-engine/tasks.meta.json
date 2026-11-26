@@ -1498,6 +1498,20 @@
         "chatSessionId": "sess_be327c94-3306-48cc-820c-017e6ffda095",
         "timestamp": 1795652563098
       }
+    ],
+    "13.4 Write Property 26: Verdict carries criterion text and mutated outcome": [
+      {
+        "executionId": "34a0cec7-0928-4425-8d03-177529a77e63",
+        "chatSessionId": "sess_81a17323-c44a-4e3b-9320-d29152635768",
+        "timestamp": 1795652697720
+      }
+    ],
+    "13.5 Carry the text and the outcome from the pipeline to the Verdict": [
+      {
+        "executionId": "aaaba889-1c64-4052-90be-c639ac3955cc",
+        "chatSessionId": "sess_d1006acb-1afd-4846-9467-793d534e413d",
+        "timestamp": 1795652868474
+      }
     ]
   }
 }

@@ -876,7 +876,7 @@ Conventions used in every task:
     - **Validates: Requirements 8.12, 8.17, 8.18, 8.19, 8.20**
     - _Requirements: 8.12, 8.17, 8.18, 8.19, 8.20_
     - _Validation: npx vitest run --project engine packages/engine/test/core/verdict.fields.property.test.ts passes_
-  - [ ] 13.5 Carry the text and the outcome from the pipeline to the Verdict
+  - [x] 13.5 Carry the text and the outcome from the pipeline to the Verdict
     - In `cli/orchestrate.ts` fill `text` in each coverage entry from the matching `Criterion` of `parseRequirements`, and `mutatedOutcome` in the `witnesses` entry of each Spec_Mutant whose `SpecMutantOutcome.mutatedOutcome` is set (Killed, Survived, Timeout and Ghost mutants whose witness ran on the mutated code). An InvalidWitness, CompileError or NotApplicable mutant, whose witness never ran on the mutated code, gets none.
     - Write `test/cli/orchestrate-verdict-fields.test.ts` with fake adapters: take the content that the Reporter writes to the fake file system, parse `verdict.json` with the zod schema, and check in the parsed file the text of each criterion (every criterion of the parsed spec has one), the `mutatedOutcome` of a Survived, a Killed and a Ghost mutant, and no `mutatedOutcome` for an InvalidWitness and a CompileError mutant.
     - _Requirements: 8.18, 8.19, 10.13_
