@@ -492,7 +492,7 @@ Conventions for every task:
     - _Requirements: 13.6, 13.9, 13.10, 13.11, 13.12, 13.13, 13.14, 13.19, 13.20, 6.10_
     - _Validation: `npm test -w trick-or-test-viewer -- test/screens/Verdict.design.test.tsx` passes_
 
-  - [ ] 13.6 Style the Specimen screen
+  - [x] 13.6 Style the Specimen screen
     - Update `src/screens/Specimen.tsx` and `src/screens/specimen/specimen-view.ts` to Requirements 13.15 and 13.16: breadcrumb, `.specimen__plate` with the creature at the plate size and a caption (Species name and state label), `.specimen__promise` as a blockquote, `.specimen__change` as a `pre` with the `-` and `+` lines, `.specimen__witness` as three cards, `.specimen__tests` as a list. The Specimen title is "The <Species>". Mark the eye rotation `style` with a `runtime-style` comment. Fill the rules in `screens.css`. Keep every behaviour of Requirement 7, including the omission rules for a missing witness, Criterion or source.
     - Example tests in new file `test/screens/Specimen.design.test.tsx`: breadcrumb with the requirement part only for a Spec_Mutant (13.15); the three witness cards with the labels "The spec demands" and "The mutant gives" (13.15); a missing witness or Criterion omits only that section (13.15, 7.4, 7.12); the title is "The Oathbreaker" for the Spec_Mutant fixture and "Specimen not found" for an unknown id (13.6, 7.10); the creature is at the plate size (13.18).
     - _Requirements: 13.6, 13.15, 13.16, 13.18, 7.4, 7.10, 7.12_

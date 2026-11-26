@@ -40,6 +40,20 @@ function Tests({ list, id }: { list: TestList; id: string }) {
   );
 }
 
+function Breadcrumb({ parts }: { parts: SpecimenView["breadcrumb"] }) {
+  return (
+    <nav className="specimen__breadcrumb" aria-label="Breadcrumb">
+      <ol>
+        {parts.map((part, i) => (
+          <li key={part.label} aria-current={i === parts.length - 1 ? "page" : undefined}>
+            {part.href === undefined ? part.label : <a href={part.href}>{part.label}</a>}
+          </li>
+        ))}
+      </ol>
+    </nav>
+  );
+}
+
 function Outcome({ outcome }: { outcome: OutcomeView }) {
   return (
     <span className="specimen__outcome" data-outcome-kind={outcome.kind}>
@@ -52,7 +66,17 @@ function Details({ view }: { view: SpecimenView }) {
   const { change, criterion, witness, killedBy, coveredBy, noTestRuns } = view;
   return (
     <>
-      <section aria-labelledby="specimen-change">
+      {criterion === undefined ? null : (
+        <section className="specimen__section" aria-labelledby="specimen-criterion">
+          <h2 id="specimen-criterion">Criterion</h2>
+          <p>
+            <span className="specimen__criterion-id">{criterion.id}</span>
+          </p>
+          <blockquote className="specimen__promise">{criterion.text}</blockquote>
+        </section>
+      )}
+
+      <section className="specimen__section" aria-labelledby="specimen-change">
         <h2 id="specimen-change">Code change</h2>
         <p className="specimen__where">
           <code>{change.file}</code> line <span>{change.line}</span>
@@ -67,55 +91,67 @@ function Details({ view }: { view: SpecimenView }) {
             )}
           </>
         ) : (
-          <>
-            <p>original</p>
-            <pre data-line="original">{change.original}</pre>
-            <p>mutated</p>
+          <div className="specimen__change">
+            <div className="specimen__line">
+              <span className="specimen__mark" aria-hidden="true">
+                -
+              </span>
+              <pre data-line="original">{change.original}</pre>
+            </div>
             {change.mutated === undefined ? (
               <p>mutated line unavailable</p>
             ) : (
-              <pre data-line="mutated">{change.mutated}</pre>
+              <div className="specimen__line">
+                <span className="specimen__mark" aria-hidden="true">
+                  +
+                </span>
+                <pre data-line="mutated">{change.mutated}</pre>
+              </div>
             )}
-          </>
+          </div>
         )}
       </section>
 
-      {criterion === undefined ? null : (
-        <section aria-labelledby="specimen-criterion">
-          <h2 id="specimen-criterion">Criterion</h2>
-          <p>
-            <span className="specimen__criterion-id">{criterion.id}</span>
-          </p>
-          <p>{criterion.text}</p>
-        </section>
-      )}
-
       {witness === undefined ? null : (
-        <section aria-labelledby="specimen-witness">
+        <section className="specimen__section" aria-labelledby="specimen-witness">
           <h2 id="specimen-witness">Witness</h2>
-          <dl>
-            <dt>input</dt>
-            <dd>
-              <code>{witness.input}</code>
-            </dd>
-            <dt>{witness.expected.kind === "error" ? "expected error" : "expected value"}</dt>
-            <dd>
-              <code>{witness.expected.text}</code>
-            </dd>
-            {witness.mutated === undefined ? null : (
-              <>
-                <dt>mutant gives</dt>
+          <div className="specimen__witness">
+            <div className="specimen__card">
+              <dl>
+                <dt>input</dt>
                 <dd>
-                  <Outcome outcome={witness.mutated} />
+                  <code>{witness.input}</code>
                 </dd>
-              </>
+              </dl>
+            </div>
+            <div className="specimen__card specimen__card--demands">
+              <p className="specimen__card-title">The spec demands</p>
+              <dl>
+                <dt className="visually-hidden">
+                  {witness.expected.kind === "error" ? "expected error" : "expected value"}
+                </dt>
+                <dd>
+                  <code>{witness.expected.text}</code>
+                </dd>
+              </dl>
+            </div>
+            {witness.mutated === undefined ? null : (
+              <div className="specimen__card specimen__card--gives">
+                <p className="specimen__card-title">The mutant gives</p>
+                <dl>
+                  <dt className="visually-hidden">mutant gives</dt>
+                  <dd>
+                    <Outcome outcome={witness.mutated} />
+                  </dd>
+                </dl>
+              </div>
             )}
-          </dl>
+          </div>
         </section>
       )}
 
       {killedBy === undefined ? null : (
-        <section aria-labelledby="specimen-killers">
+        <section className="specimen__section" aria-labelledby="specimen-killers">
           <h2 id="specimen-killers">Killed by</h2>
           {killedBy.tests.names.length > 0 ? (
             <Tests list={killedBy.tests} id="specimen-killers" />
@@ -135,7 +171,7 @@ function Details({ view }: { view: SpecimenView }) {
       )}
 
       {coveredBy === undefined ? null : (
-        <section aria-labelledby="specimen-covered">
+        <section className="specimen__section" aria-labelledby="specimen-covered">
           <h2 id="specimen-covered">Ran this code without failing</h2>
           <Tests list={coveredBy} id="specimen-covered" />
         </section>
@@ -146,7 +182,7 @@ function Details({ view }: { view: SpecimenView }) {
   );
 }
 
-/** Specimen screen: one Mutant in detail (7.1 to 7.12). */
+/** Specimen screen: one Mutant in detail (7.1 to 7.12, 13.15). */
 export function Specimen({ mutantId }: { mutantId: string }) {
   const { run } = useRun();
   const view = run === undefined ? undefined : buildSpecimenView(run, mutantId);
@@ -166,7 +202,11 @@ export function Specimen({ mutantId }: { mutantId: string }) {
   }, [reduced, hasCreature]);
 
   return (
-    <ScreenFrame screen="specimen" title={screenTitle("specimen", { run, mutantId })}>
+    <ScreenFrame
+      screen="specimen"
+      title={screenTitle("specimen", { run, mutantId })}
+      intro={view === undefined ? undefined : <Breadcrumb parts={view.breadcrumb} />}
+    >
       {view === undefined ? (
         <>
           <p>
@@ -179,30 +219,28 @@ export function Specimen({ mutantId }: { mutantId: string }) {
           </p>
         </>
       ) : (
-        <>
-          <div className="specimen__creature" ref={creatureBox}>
-            {view.creatureState === undefined ? null : (
-              <Creature
-                species={view.mutant.species}
-                seed={view.mutant.id}
-                state={view.creatureState}
-                mutant={view.mutant}
-                place="specimenPlate"
-              />
-            )}
+        <div className="specimen">
+          <figure className="specimen__plate">
+            <div className="specimen__creature" ref={creatureBox}>
+              {view.creatureState === undefined ? null : (
+                <Creature
+                  species={view.mutant.species}
+                  seed={view.mutant.id}
+                  state={view.creatureState}
+                  mutant={view.mutant}
+                  place="specimenPlate"
+                />
+              )}
+            </div>
+            <figcaption>
+              <span className="specimen__species">{view.mutant.species}</span>
+              <span className="specimen__state">{view.stateLabel}</span>
+            </figcaption>
+          </figure>
+          <div className="specimen__details">
+            <Details view={view} />
           </div>
-          <dl className="specimen__facts">
-            <dt>species</dt>
-            <dd className="specimen__species">{view.mutant.species}</dd>
-            <dt>state</dt>
-            <dd className="specimen__state">{view.stateLabel}</dd>
-            <dt>mutant id</dt>
-            <dd>
-              <code>{view.mutant.id}</code>
-            </dd>
-          </dl>
-          <Details view={view} />
-        </>
+        </div>
       )}
     </ScreenFrame>
   );

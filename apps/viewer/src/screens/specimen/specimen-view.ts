@@ -34,8 +34,12 @@ export type CodeChange = {
   replacement: string | undefined;
 };
 
+export type BreadcrumbPart = { label: string; href?: string };
+
 export type SpecimenView = {
   mutant: Mutant;
+  /** "Verdict / requirement <n> / <mutant id>"; the requirement part only for a Spec_Mutant (13.15). */
+  breadcrumb: BreadcrumbPart[];
   /** Undefined for a not-counted mutant: no creature is drawn (4.8). */
   creatureState: CreatureState | undefined;
   stateLabel: string;
@@ -139,6 +143,11 @@ export const buildSpecimenView = (run: RunModel, mutantId: string): SpecimenView
 
   return {
     mutant,
+    breadcrumb: [
+      { label: "Verdict", href: "#/verdict" },
+      ...(mutant.requirement === undefined ? [] : [{ label: `requirement ${mutant.requirement}` }]),
+      { label: mutant.id },
+    ],
     creatureState: mutant.state === "not-counted" ? undefined : mutant.state,
     stateLabel: STATE_LABEL[mutant.state],
     change: codeChange(run, mutant),

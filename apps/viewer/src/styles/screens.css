@@ -237,7 +237,172 @@
   }
 }
 
-/* Specimen */
+/* Specimen (13.15, 13.16) */
+.specimen__breadcrumb {
+  flex: 1 1 100%;
+  font-family: var(--font-data);
+  font-size: var(--text-small);
+  color: var(--mist);
+}
+
+.specimen__breadcrumb ol {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.specimen__breadcrumb li + li::before {
+  content: "/";
+  margin-right: 0.5rem;
+}
+
+.specimen__breadcrumb li[aria-current="page"] {
+  color: var(--bone);
+  overflow-wrap: anywhere;
+}
+
+.specimen {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2.5rem;
+}
+
+.specimen__plate {
+  flex: 1 1 380px;
+  min-width: 0;
+  align-self: flex-start;
+  margin: 0;
+  padding: 1.5rem;
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  background: var(--plate);
+  text-align: center;
+}
+
+.specimen__plate figcaption {
+  display: grid;
+  gap: 0.25rem;
+  margin-top: 1rem;
+}
+
+.specimen__species {
+  font-family: var(--font-display);
+  font-size: var(--text-h2);
+}
+
+.specimen__state {
+  color: var(--mist);
+  font-family: var(--font-data);
+  font-size: var(--text-small);
+}
+
+.specimen__details {
+  flex: 999 1 560px;
+  min-width: 0;
+  display: grid;
+  gap: var(--section-gap);
+  align-content: start;
+}
+
+.specimen__section h2 {
+  margin: 0 0 0.75rem;
+  font-family: var(--font-data);
+  font-size: var(--text-small);
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--mist);
+}
+
+.specimen__promise {
+  margin: 0.5rem 0 0;
+  padding-left: 1rem;
+  border-left: 2px solid var(--verdigris);
+  font-family: var(--font-display);
+  font-size: 26px;
+}
+
+.specimen__change {
+  padding: 1rem;
+  border: 1px solid var(--rule);
+  background: var(--plate);
+  overflow-x: auto;
+}
+
+.specimen__line {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.specimen__line pre {
+  margin: 0;
+  white-space: pre;
+  overflow-wrap: normal;
+}
+
+.specimen__mark {
+  font-family: var(--font-data);
+  color: var(--mist);
+}
+
+.specimen__line + .specimen__line .specimen__mark {
+  color: var(--ember);
+}
+
+.specimen__witness {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1rem;
+}
+
+.specimen__card {
+  padding: 1rem;
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  overflow-wrap: anywhere;
+}
+
+.specimen__card--demands {
+  border-color: var(--verdigris);
+}
+
+.specimen__card--gives {
+  border-color: var(--ember);
+}
+
+.specimen__card dl,
+.specimen__card dd {
+  margin: 0;
+}
+
+.specimen__card dt {
+  color: var(--mist);
+  font-size: var(--text-small);
+}
+
+.specimen__card-title {
+  margin: 0 0 0.5rem;
+  color: var(--mist);
+  font-size: var(--text-small);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+}
+
+@media (min-width: 768px) {
+  .specimen__witness {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .specimen__plate {
+    flex: 1 1 380px;
+    max-width: 28rem;
+  }
+}
 
 /* Hunt */
 
