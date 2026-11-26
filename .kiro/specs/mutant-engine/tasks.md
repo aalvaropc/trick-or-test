@@ -1329,7 +1329,7 @@ Conventions used in every task:
     - Write `test/core/seed-description.test.ts` (new file): the `seed` field of the verdict schema (through its metadata object) and of the history-record schema carry a description, the two descriptions are equal, the text names the engine, says the value is 0 today and says it is not the seed of the property tests of the project; a verdict and a history record with `seed: 0` still parse; the output of `buildVerdict` and `buildHistoryRecord` still has `seed: 0`. Do not edit the committed schema tests.
     - _Requirements: 8.6, 8.9_
     - _Validation: npx vitest run --project engine packages/engine/test/core/seed-description.test.ts passes_
-  - [ ] 23.4 Fix text outside the spec that says the seed repeats the project's property tests
+  - [x] 23.4 Fix text outside the spec that says the seed repeats the project's property tests
     - Start by searching, with the search tools and not the shell, for text outside `.kiro/specs/` that says the seed (or the history record) can repeat or reproduce the property tests of the target project: `README.md`, `docs/`, `docs/decisions/`, `packages/engine/README.md` if present, the `power/` folder, the `.kiro/steering/` files and comments in `packages/engine/src/` and `apps/viewer/src/` (search `seed`, `reproduce`, `repeat`, `replay`). Do not search or edit `reports/` or `apps/viewer/public/demo/`.
     - If nothing is found, record in the commit message of 23.3 (or in the final report) that nothing was found, and change nothing. If text is found, change only that sentence, so that it says what 8.6 says. If the text is in a sealed test or in a generated file, name it and stop.
     - _Requirements: 8.6, 8.9_
