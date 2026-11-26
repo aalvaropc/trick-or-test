@@ -329,6 +329,8 @@ export type VerdictInput = {
   scope?: RunScope;
   /** Passed tests of the Baseline_Run (6.11). When absent, the Verdict has no `baselineTests`. */
   baselineTests?: BaselineTest[];
+  /** Number of Claims in total and per outcome (11.12). Written as `claimCounts` when present. */
+  claimCounts?: ClaimCounts;
 };
 
 /** What a mutant changes: the fields that rule 8.15 compares. */
@@ -449,6 +451,7 @@ export const buildVerdict = (input: VerdictInput): Result<Verdict, string> => {
     ...(input.baselineTests === undefined
       ? {}
       : { baselineTests: input.baselineTests.map((t) => ({ ...t, id: scrubTestId(t.id, root) })) }),
+    ...(input.claimCounts === undefined ? {} : { claimCounts: { ...input.claimCounts } }),
   };
   const parsed = verdictSchema.safeParse(candidate);
   if (!parsed.success) {

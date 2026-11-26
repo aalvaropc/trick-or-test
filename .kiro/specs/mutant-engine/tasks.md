@@ -1010,7 +1010,7 @@ Conventions used in every task:
     - **Validates: Requirements 7.6, 11.11, 11.12, 11.15**
     - _Requirements: 7.6, 11.11, 11.12, 11.15_
     - _Validation: npx vitest run --project engine packages/engine/test/core/claims.outcome.property.test.ts passes_
-  - [ ] 17.7 Read the claims in the pipeline
+  - [x] 17.7 Read the claims in the pipeline
     - In `cli/orchestrate.ts`, after the Spec_Mutants have run, read each distinct test file of the Baseline_Run once through the file system adapter, call `extractLeadingComments`, `parseClaimComments` (with the attacked spec name) and `resolveClaimRefs` for each Baseline_Test, call `attachClaims`, and give `baselineTests` and `claimCounts` to `buildVerdict`. A file that cannot be read gives no claims for its tests and no error (11.14). The code does not depend on the Run_Scope (11.15).
     - Write `test/cli/orchestrate-claims.test.ts` with fake adapters: read the written `verdict.json`; a test file with `Feature: cart-pricing` and `Validates:` lines gives the claims in the entry of its tests; a file that names another spec gives none; an unreadable file gives none and the run still writes the three files; `claimCounts.total` equals the number of claims in `baselineTests`.
     - _Requirements: 11.12, 11.14, 11.15, 10.13_

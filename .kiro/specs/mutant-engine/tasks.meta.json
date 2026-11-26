@@ -79,6 +79,10 @@
     "17.5 Write Property 27: Claim parsing": {
       "status": "passed",
       "lastRunTimestamp": 1795679189989
+    },
+    "17.6 Write Property 28: Claim outcomes and counts": {
+      "status": "passed",
+      "lastRunTimestamp": 1795679380867
     }
   },
   "executionHistory": {
@@ -1727,6 +1731,13 @@
         "executionId": "5c594a2c-bdd6-4c25-97bb-925bb15e69bf",
         "chatSessionId": "sess_2b695397-3b30-4613-b840-8da1fc56d14c",
         "timestamp": 1795679103176
+      }
+    ],
+    "17.6 Write Property 28: Claim outcomes and counts": [
+      {
+        "executionId": "1c9d3794-4737-4a7c-85d2-49a32cb0c485",
+        "chatSessionId": "sess_587deaaf-d9d8-4525-bdc5-ef233f640b38",
+        "timestamp": 1795679333125
       }
     ]
   }

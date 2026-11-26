@@ -160,6 +160,7 @@ export async function runCli(argv: readonly string[], deps: CliDeps): Promise<nu
         ignoreStaticRetried: mechanical.value.ignoreStaticRetried,
         metadata,
         baselineTests: mechanical.value.baselineTests,
+        baselineSources: mechanical.value.baselineSources,
       },
       { fs: deps.fs },
     );
