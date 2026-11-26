@@ -17,12 +17,13 @@ function parseIds(rest: string): ClaimRef[] {
   const refs: ClaimRef[] = [];
   for (const token of rest.split(/[\s,]+/)) {
     if (token === "" || token.toLowerCase() === "and") continue;
-    if (!TOKEN.test(token)) break;
+    const marked = /^(.*\.\d+)[.;:)\]]+$/.exec(token);
+    const id = marked?.[1] ?? token;
+    if (!TOKEN.test(id)) break;
     refs.push(
-      token.includes(".")
-        ? { kind: "criterion", id: token }
-        : { kind: "requirement", number: Number(token) },
+      id.includes(".") ? { kind: "criterion", id } : { kind: "requirement", number: Number(id) },
     );
+    if (marked) break;
   }
   return refs;
 }
