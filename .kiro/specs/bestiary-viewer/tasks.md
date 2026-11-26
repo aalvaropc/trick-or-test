@@ -528,7 +528,7 @@ Conventions for every task:
     - _Requirements: 14.3, 14.4, 14.9, 14.10_
     - _Validation: `npm run demo` completes, and running it a second time leaves `git status` clean_
 
-  - [ ] 14.4 Test the committed demo files
+  - [x] 14.4 Test the committed demo files
     - Add `test/demo/demo-files.test.ts` in the viewer: each run has the three engine-named files and each parses with its schema from `trick-or-test/report` (14.1); the "after" `history.jsonl` has two lines, the first byte-identical to the only line of the "before" file (14.7); `oath-7.4-negative-discount-allowed` is a survivor in the "before" verdict, killed in the "after" verdict and listed in `newlyKilledIds` of the second "after" record (14.9); no file contains `/home/`, `/Users/`, `/tmp/`, a drive letter path, the repository root path or `.trickortest` (14.10). It asserts ids and names, never counts (14.11). Add a second test that loads both runs through `fetchDemoRun` with `fetch` reading the files from disk, and checks the "after" Run_Model has two timeline entries (14.9, 8.1).
     - _Requirements: 14.1, 14.7, 14.9, 14.10, 14.11_
     - _Validation: `npm test -w trick-or-test-viewer -- test/demo/demo-files.test.ts` passes_
