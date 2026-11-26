@@ -486,9 +486,9 @@ Conventions for every task:
     - _Requirements: 13.6, 13.7, 13.8, 13.19, 2.1, 3.3, 3.5_
     - _Validation: `npm test -w trick-or-test-viewer -- test/screens/Landing.design.test.tsx` passes_
 
-  - [ ] 13.5 Style the Verdict screen
+  - [x] 13.5 Style the Verdict screen
     - Update `src/screens/Verdict.tsx` and the five parts under `src/screens/verdict/` to Requirements 13.9 to 13.14 and 13.20: the run bar (only the facts the Verdict_File holds), the lead paragraph, `Headline` as four `.count` figures in a grid (the ember and verdigris figures), `.verdict__columns` with the seal rows and the who-killed-them panel with its 10 px bars (width computed at run time, with a `runtime-style` comment), `.verdict__actions` with "Release the hunt" (primary, `#/hunt`) and "Plain table view" (secondary, `#/plain`), the strays strip and the species legend grid. Fill the rules in `screens.css`.
-    - Example tests in new files under `test/screens/verdict/` and `test/screens/Verdict.design.test.tsx`: the `<h1>` is "N monsters disagree" with N from the fixture (13.6); the four counts are in a `dl` or grid of four `.count` items, each with number and label (13.10); an unguarded Seal row has the Criterion id, the text and an "Open specimen" `.button` link (13.12); the bar width of each group equals its share (13.13); the actions are two `.button` links, primary and secondary (13.20); no run-bar fact is shown when the Verdict_File lacks it (13.9); the strays strip holds at most 60 creatures, each in the strays place (13.14, 6.10).
+    - Example tests in new files under `test/screens/verdict/` and `test/screens/Verdict.design.test.tsx`: the `<h1>` is "N monsters disagree" with N from the fixture (13.6); the four counts are in a `dl` or grid of four `.count` items, each with number and label (13.10); an unguarded Seal row has the Criterion id and the text, and no "Open specimen" button (13.12); the bar width of each group equals its share (13.13); the actions are two `.button` links, primary and secondary (13.20); no run-bar fact is shown when the Verdict_File lacks it (13.9); the strays strip holds at most 60 creatures, each in the strays place (13.14, 6.10).
     - _Requirements: 13.6, 13.9, 13.10, 13.11, 13.12, 13.13, 13.14, 13.19, 13.20, 6.10_
     - _Validation: `npm test -w trick-or-test-viewer -- test/screens/Verdict.design.test.tsx` passes_
 

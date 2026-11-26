@@ -24,11 +24,13 @@ export function Headline({ model }: { model: RunModel }) {
     );
   }
   return (
-    <dl className="headline">
+    <dl className="headline headline__counts">
       {items.map((item) => (
-        <div key={item.id}>
-          <dt>{item.label}</dt>
-          <dd data-testid={item.id}>{item.value}</dd>
+        <div key={item.id} className={`count count--${item.id.replace("headline-", "")}`}>
+          <dt className="count__label">{item.label}</dt>
+          <dd className="count__number" data-testid={item.id}>
+            {item.value}
+          </dd>
         </div>
       ))}
     </dl>

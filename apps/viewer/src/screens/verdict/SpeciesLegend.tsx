@@ -1,3 +1,4 @@
+import { Creature } from "../../bestiary/Creature.js";
 import { computeSpeciesLegend } from "../../bestiary/counts.js";
 import type { RunModel } from "../../loader/run-model.js";
 
@@ -13,6 +14,13 @@ export function SpeciesLegend({ model }: { model: RunModel }) {
         <ul className="species-legend__list">
           {entries.map((e) => (
             <li key={e.species} className="species-legend__entry">
+              <Creature
+                species={e.species}
+                seed={e.species}
+                state="survivor"
+                mutant={{}}
+                place="speciesLegend"
+              />
               <h3>{e.species}</h3>
               <p>{e.bodyDescription}</p>
               <p>{e.mutationType}</p>

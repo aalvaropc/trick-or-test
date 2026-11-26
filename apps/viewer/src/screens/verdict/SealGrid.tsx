@@ -130,8 +130,11 @@ export function SealGrid({ model }: { model: RunModel }) {
             data-seal={data}
           >
             <SealDrawing kind={kind} />
-            <h3 className="seal__criterion">{entry.criterion}</h3>
-            <SealBody entry={entry} />
+            <div className="seal__body">
+              <h3 className="seal__criterion">{entry.criterion}</h3>
+              {entry.text === undefined ? null : <p className="seal__text">{entry.text}</p>}
+              <SealBody entry={entry} />
+            </div>
           </li>
         );
       })}

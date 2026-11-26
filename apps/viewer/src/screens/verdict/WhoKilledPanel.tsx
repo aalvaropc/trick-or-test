@@ -17,6 +17,9 @@ const membersOf = (model: RunModel, killClass: KillClass): Mutant[] =>
 /** Who killed them (6.8, 6.9, 6.15): four groups, each with a count and a list of its Mutants. */
 export function WhoKilledPanel({ model }: { model: RunModel }) {
   const counts = computeKillClassCounts(model);
+  const total = GROUPS.reduce((sum, g) => sum + counts[g.killClass], 0);
+  const share = (killClass: KillClass): number =>
+    total === 0 ? 0 : Math.round((counts[killClass] / total) * 10000) / 100;
   return (
     <section className="who-killed" aria-labelledby="who-killed-title">
       <h2 id="who-killed-title">Who killed them</h2>
@@ -30,7 +33,13 @@ export function WhoKilledPanel({ model }: { model: RunModel }) {
               data-testid={`kill-group-${killClass}`}
             >
               <summary>
-                <span>{label}</span> <span data-testid="kill-count">{counts[killClass]}</span>
+                <span className="who-killed__line">
+                  <span>{label}</span> <span data-testid="kill-count">{counts[killClass]}</span>
+                </span>
+                <span className="who-killed__bar" aria-hidden="true">
+                  {/* runtime-style: the width is the group's share of the killed mutants, known only at run time */}
+                  <span className="who-killed__fill" style={{ width: `${share(killClass)}%` }} />
+                </span>
               </summary>
               {members.length === 0 ? (
                 <p>no mutants in this group</p>
