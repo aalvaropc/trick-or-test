@@ -910,7 +910,7 @@ Conventions used in every task:
     - Edit the committed file `test/adapters/git-adapter.test.ts` so that its own git calls (the `execFileSync("git", ...)` helper that runs `init`, `config`, `add` and `commit` in the throwaway repository) pass `env: withoutGitLocation(process.env)`. This is the one edit of a committed test file in this task, and it is allowed because the file ran `git init`, `config` and `commit` against the real repository when a hook exported `GIT_DIR`. No test name and no assertion changes. Check with `git diff` that the change in that file is only the import and the `env` option.
     - _Requirements: 3.9, 3.21_
     - _Validation: npx vitest run --project engine packages/engine/test/adapters/git-adapter-env.test.ts packages/engine/test/adapters/git-adapter.test.ts passes_
-  - [ ] 14.4 Checkpoint - Git environment
+  - [x] 14.4 Checkpoint - Git environment
     - Run `GIT_DIR=$(git rev-parse --absolute-git-dir) npm run check` from the repository root, so the variable is set as in a hook, then `npm run check` without it. Ensure all tests pass and that `git status`, `git log -1` and `git config --local --list` of the repository are the same before and after. Ask the user if questions arise.
     - _Validation: npm run check passes_
 
