@@ -86,8 +86,9 @@ describe("planDemo", () => {
     expect(before.project).toBe("examples/pricing");
     expect(before.spec).toBe("cart-pricing");
     expect(before.output).toBe("apps/viewer/public/demo/before");
+    expect(before.command).toBe(process.execPath);
     expect(before.args).toEqual([
-      "trick-or-test",
+      "packages/engine/dist/cli/main.js",
       "measure",
       "--project",
       "examples/pricing",
@@ -103,8 +104,9 @@ describe("planDemo", () => {
     expect(after.project).toBe(".trickortest/demo-after");
     expect(after.spec).toBe("cart-pricing");
     expect(after.output).toBe("apps/viewer/public/demo/after");
+    expect(after.command).toBe(process.execPath);
     expect(after.args).toEqual([
-      "trick-or-test",
+      "packages/engine/dist/cli/main.js",
       "measure",
       "--project",
       ".trickortest/demo-after",
@@ -113,6 +115,14 @@ describe("planDemo", () => {
       "--output",
       "apps/viewer/public/demo/after",
     ]);
+  });
+
+  it("14.5 no step runs npx", () => {
+    for (const step of steps) {
+      if (step.kind !== "build" && step.kind !== "measure") continue;
+      expect(step.command).not.toBe("npx");
+      expect(step.args).not.toContain("npx");
+    }
   });
 
   it("14.6 the copy is made from examples/pricing into .trickortest/demo-after", () => {

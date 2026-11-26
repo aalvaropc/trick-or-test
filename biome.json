@@ -13,6 +13,7 @@
       "!**/dist",
       "!**/coverage",
       "!reports",
+      "!apps/viewer/public/demo",
       "!**/package-lock.json",
       "!**/*.md",
       "!examples/pricing",

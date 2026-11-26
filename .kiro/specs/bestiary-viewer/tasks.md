@@ -523,7 +523,7 @@ Conventions for every task:
     - _Requirements: 14.2, 14.3, 14.4, 14.5, 14.6, 14.7, 14.8_
     - _Validation: `npm test -- scripts/demo.test.ts` passes_
 
-  - [ ] 14.3 Generate and commit the demo runs
+  - [x] 14.3 Generate and commit the demo runs
     - Run `npm run demo` once (it takes several minutes). Do not edit any generated file. Check with `git status` that only `apps/viewer/public/demo/before/` and `apps/viewer/public/demo/after/` changed, and that `examples/pricing/` and `reports/` did not. Commit the six files together.
     - _Requirements: 14.3, 14.4, 14.9, 14.10_
     - _Validation: `npm run demo` completes, and running it a second time leaves `git status` clean_

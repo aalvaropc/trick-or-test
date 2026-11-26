@@ -54,14 +54,16 @@ const SPEC = "cart-pricing";
 const BEFORE = "apps/viewer/public/demo/before";
 const AFTER = "apps/viewer/public/demo/after";
 const COPY = ".trickortest/demo-after";
+/** The CLI the build step just produced. Run with node, never through npx. */
+const ENGINE_CLI = "packages/engine/dist/cli/main.js";
 const OUTPUT_FILES = ["mutation-report.json", "verdict.json", "history.jsonl"] as const;
 
 function measureStep(run: "before" | "after", root: string, project: string, output: string): Step {
   return {
     kind: "measure",
     run,
-    command: "npx",
-    args: ["trick-or-test", "measure", "--project", project, "--spec", SPEC, "--output", output],
+    command: process.execPath,
+    args: [ENGINE_CLI, "measure", "--project", project, "--spec", SPEC, "--output", output],
     cwd: root,
     project,
     spec: SPEC,

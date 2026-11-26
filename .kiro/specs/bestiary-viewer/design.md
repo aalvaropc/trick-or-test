@@ -416,7 +416,7 @@ Older tests that stub `fetch` by the file name `report.json` (`test/loader/fetch
 
 ### The script
 
-`npm run demo` runs `scripts/demo.ts` (`node scripts/demo.ts`, like `npm run guard`). The script is an imperative shell around one pure planner:
+`npm run demo` runs `scripts/demo.ts` (`node scripts/demo.ts`, like `npm run guard`). The generator runs the built CLI (`packages/engine/dist/cli/main.js`) with node, never through npx, so it cannot resolve a package from the npm registry. The script is an imperative shell around one pure planner:
 
 ```mermaid
 flowchart LR
