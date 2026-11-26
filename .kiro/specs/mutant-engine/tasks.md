@@ -1031,7 +1031,7 @@ Conventions used in every task:
     - Write `test/core/requirement-titles.test.ts`: `### Requirement 2: Requirements parser` gives `{ requirement: 2, title: "Requirements parser" }`; leading and trailing spaces are trimmed; a colon inside the title is kept; a heading inside a fenced code block is ignored; the order is document order; a repeated number is an error that names the file, the number and both lines; an empty title is an error that names the file and the line; a document with no heading gives an empty list; `parseRequirements` returns the same value as before for the same text (compare with the output on this spec's own `requirements.md`).
     - _Requirements: 2.9, 2.10_
     - _Validation: npx vitest run --project engine packages/engine/test/core/requirement-titles.test.ts passes_
-  - [ ] 18.2 Write Property 33: Requirement titles
+  - [x] 18.2 Write Property 33: Requirement titles
     - Write `test/core/requirement-titles.property.test.ts` with **Property 33** as stated in `design.md`.
     - **Validates: Requirements 2.2, 2.9, 2.10, 8.26**
     - _Requirements: 2.9, 2.10, 8.26_

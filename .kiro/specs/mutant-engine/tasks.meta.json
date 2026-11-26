@@ -1758,6 +1758,20 @@
         "chatSessionId": "sess_827dd484-fb8b-4983-a23d-f18c130a0853",
         "timestamp": 1795679834612
       }
+    ],
+    "17.9 Checkpoint - Claims": [
+      {
+        "executionId": "0d5abf65-5c8d-4716-a1b4-59c5d3c44475",
+        "chatSessionId": "sess_e1d3c79c-b3e4-4e02-b835-7e1c8e38b41e",
+        "timestamp": 1795680176181
+      }
+    ],
+    "18.1 Parse the requirement titles": [
+      {
+        "executionId": "b0e524b8-7fa2-4fa0-a96c-e5ad60ec027d",
+        "chatSessionId": "sess_cd551a2d-493b-4678-a793-1080dc390476",
+        "timestamp": 1795680275853
+      }
     ]
   }
 }
