@@ -26,6 +26,11 @@ export type SuiteResult = {
   /** Wall-clock duration of the whole Vitest process. */
   readonly durationMs: number;
   readonly files: readonly SuiteFile[];
+  /**
+   * Parallel to `files`: `testTitles[k][i]` is `ancestorTitles` followed by `title` of
+   * `files[k].tests[i]`; empty for a file-level failure. Always set by the real runner.
+   */
+  readonly testTitles?: readonly (readonly (readonly string[])[])[];
 };
 
 export type SuiteRunOptions = {
@@ -47,6 +52,8 @@ const reportSchema = z.object({
       assertionResults: z.array(
         z.object({
           fullName: z.string(),
+          ancestorTitles: z.array(z.string()),
+          title: z.string(),
           status: z.string(),
           location: z.object({ line: z.number().int().positive() }).optional(),
         }),
@@ -177,7 +184,12 @@ export const SuiteRunner = {
           })),
         };
       });
-      return ok({ durationMs, files });
+      const testTitles = parsed.data.testResults.map((file) =>
+        file.assertionResults.length === 0 && fileLevelFailures.has(file.name)
+          ? [[]]
+          : file.assertionResults.map((test) => [...test.ancestorTitles, test.title]),
+      );
+      return ok({ durationMs, files, testTitles });
     } finally {
       await rm(outDir, { recursive: true, force: true });
     }
