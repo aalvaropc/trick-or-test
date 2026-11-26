@@ -1538,6 +1538,13 @@
         "chatSessionId": "sess_e6fb8006-116a-4ab4-be3c-1f24b13538df",
         "timestamp": 1795653498906
       }
+    ],
+    "14.1 Add the pure helper `withoutGitLocation`": [
+      {
+        "executionId": "7b50b715-97cc-44a7-a796-c201e9bf16dc",
+        "chatSessionId": "sess_5361a87a-95b4-4a94-9ccb-e2e7f96010ab",
+        "timestamp": 1795660610080
+      }
     ]
   }
 }
