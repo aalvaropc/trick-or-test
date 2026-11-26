@@ -98,6 +98,7 @@ The engine makes no LLM calls (ADR 0004). The MCP server and the Kiro hook entry
 18. THE Stryker_Adapter SHALL run the StrykerJS binary from the `node_modules/.bin` directory of the Target_Project, or with the `--no-install` option, so that the Engine never lets `npx` download a package.
 19. WHEN a StrykerJS run ends, THE Stryker_Adapter SHALL remove the temporary directory of StrykerJS, including WHEN the run fails.
 20. THE Engine SHALL exclude `.trickortest/**` from the Baseline_Run and SHALL NOT run a StrykerJS sandbox in the Baseline_Run.
+21. THE Engine SHALL run every git command, including the diff of criterion 9 and the commit read for the run metadata of Requirement 8.6, with an environment that has none of the variables `GIT_DIR`, `GIT_WORK_TREE`, `GIT_INDEX_FILE`, `GIT_OBJECT_DIRECTORY`, `GIT_ALTERNATE_OBJECT_DIRECTORIES`, `GIT_COMMON_DIR`, `GIT_NAMESPACE`, `GIT_CEILING_DIRECTORIES` and `GIT_DISCOVERY_ACROSS_FILESYSTEM`, so that git locates the repository only from the working directory of the command, including WHEN the Engine runs inside a git hook or in a shell that exports those variables, and SHALL pass every other environment variable to git unchanged.
 
 ### Requirement 4: Spec mutant loading
 
