@@ -449,7 +449,7 @@ Conventions for every task:
     - _Requirements: 12.3, 12.6_
     - _Validation: `npm run build -w trick-or-test-viewer` passes_
 
-  - [ ] 11.3 Add the GitHub Pages workflow
+  - [x] 11.3 Add the GitHub Pages workflow
     - Create `.github/workflows/pages.yml` that runs on push to `main` and on manual dispatch. Follow `ci.yml`: `permissions` of `contents: read` at the top, `pages: write` and `id-token: write` only on the deploy job, actions pinned by commit SHA with a version comment, `persist-credentials: false`, `npm ci`, then `npm run build -w trick-or-test-viewer`, upload `apps/viewer/dist` with `actions/upload-pages-artifact`, and deploy with `actions/deploy-pages` in the `github-pages` environment. The base path `/trick-or-test/` comes from `vite.config.ts` and is not repeated in the workflow. Look up each action's current SHA from its release before pinning. The zizmor job in `ci.yml` lints the new file.
     - _Requirements: 12.3, 11.3_
     - _Validation: `npm run build -w trick-or-test-viewer` passes_

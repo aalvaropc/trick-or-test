@@ -706,6 +706,13 @@
         "chatSessionId": "sess_1477ec95-061b-413a-abc0-597a36f1b039",
         "timestamp": 1795658982324
       }
+    ],
+    "11.2 Build the viewer in CI": [
+      {
+        "executionId": "9b41eda5-ee3f-44a4-b2ff-ad041657a57a",
+        "chatSessionId": "sess_cc21a42f-d557-480b-9b4f-9e048802dc78",
+        "timestamp": 1795659178502
+      }
     ]
   }
 }
