@@ -1335,7 +1335,7 @@ Conventions used in every task:
     - _Requirements: 8.6, 8.9_
     - _Validation: npx biome check . passes, and a repeat of the search finds no remaining sentence that says the seed repeats the property tests of the project_
   - Correction 3: one definition of `TestKind` (no behaviour change).
-  - [ ] 23.5 Keep one `TestKind`
+  - [x] 23.5 Keep one `TestKind`
     - `TestKind` is defined in `core/types.ts` and again in `core/test-classification.ts`. Keep the one in `core/types.ts`. In `core/test-classification.ts` remove the second definition, add `import type { TestKind } from "./types.js";`, and keep `export type { TestKind };` there so that `cli/orchestrate.ts` and `core/kill-classification.ts` still compile unchanged. Do not change any function, any value or any other file.
     - Do not edit `test/core/test-classification*.test.ts`: they must pass unchanged.
     - _Requirements: 6.3, 6.4, 6.5_

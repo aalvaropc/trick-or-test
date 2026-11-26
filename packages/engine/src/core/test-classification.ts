@@ -5,7 +5,9 @@
  * Example_Test (6.5). A test that reaches fast-check only through a helper has
  * no such call in its body, so it is classified by its file glob alone.
  */
-export type TestKind = "property" | "example";
+import type { TestKind } from "./types.js";
+
+export type { TestKind };
 
 /** Characters after which a `/` starts a regular expression literal, not a division. */
 const REGEX_PRECEDERS = "(,=:[!&|?{};+-*%<>~^";
