@@ -1874,6 +1874,13 @@
         "chatSessionId": "sess_f83e87a6-8451-41d4-855c-ec52839126aa",
         "timestamp": 1795688451878
       }
+    ],
+    "19.8 Run a spec-only run end to end": [
+      {
+        "executionId": "e3058368-6ffd-4f19-9f00-b3341ff64b6b",
+        "chatSessionId": "sess_ccf683a3-5cfd-4911-90a0-1ca3e1a8c6c9",
+        "timestamp": 1795688752298
+      }
     ]
   }
 }

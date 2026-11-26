@@ -65,3 +65,5 @@ export type {
   VerdictWitness,
   Witness,
 } from "../core/types.js";
+export type { WitnessTestError } from "../core/witness-test.js";
+export { buildWitnessTest } from "../core/witness-test.js";

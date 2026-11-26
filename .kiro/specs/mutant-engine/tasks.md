@@ -1055,7 +1055,7 @@ Conventions used in every task:
     - Run `npm run check` from the repository root. Ensure all tests pass, ask the user if questions arise.
     - _Validation: npm run check passes_
 
-- [ ] 19. Add the spec-only run scope (Gap 5)
+- [x] 19. Add the spec-only run scope (Gap 5)
   - Source: requirements 8.28 to 8.31, 9.17 to 9.22, 11.15, Properties 32 and 34 in `design.md`. An agent that hunts one surviving Spec_Mutant needs a run of seconds. `--scope spec-only` runs the Baseline_Run and the Spec_Mutants and never StrykerJS. A spec-only run has no strays and no StrykerJS score, and says so in its three files.
   - Decision on history: a `full` run compares with the latest earlier `full` record; a `spec-only` run compares with the latest earlier record of any scope on Spec_Mutant ids only (requirement 8.30).
   - Every test below goes in a new file.
@@ -1099,13 +1099,13 @@ Conventions used in every task:
     - Write `test/e2e/pricing-spec-only.test.ts`: run the built CLI with `--scope spec-only` on `examples/pricing` into an output directory under `.trickortest/`, and check that the run takes less time than the full run of the e2e test (print both times, assert only that no StrykerJS temporary directory was created), that the three files carry the scope, hold no stray, no `strykerCounts`, and no absolute path, and that `git status --porcelain` of the project shows no change outside `.trickortest/`. Remove the output directory afterwards.
     - _Requirements: 9.18, 9.21, 10.8, 10.11_
     - _Validation: npm run test:e2e -w trick-or-test passes_
-  - [ ] 19.9 Checkpoint - Run scope
+  - [x] 19.9 Checkpoint - Run scope
     - Run `npm run check` from the repository root, then `npm run test:e2e --workspace trick-or-test`. Ensure all tests pass, ask the user if questions arise.
     - _Validation: npm run check passes_
 
 - [ ] 20. Build the source of the test that would catch a survivor (Gap 6)
   - Source: requirement 12 and Property 35 in `design.md`. A Witness is one input and the answer the spec demands. `buildWitnessTest` turns it into the source of one Vitest test. The engine calls no LLM (ADR 0004). Every test below goes in a new file.
-  - [ ] 20.1 Add `buildWitnessTest`
+  - [x] 20.1 Add `buildWitnessTest`
     - Create `core/witness-test.ts` as in `design.md` and re-export it and `WitnessTestError` from `trick-or-test/report`. The module imports nothing from `node:`; it computes the relative import path on `/`-separated strings.
     - Write `test/core/witness-test.test.ts`: the example of `design.md` (`testFile` `test/hunt/oath-5.5.test.ts`, `from` `src/index.ts`) gives the import path `../../src/index`; a test file in the same directory as the module gives `./index`; a `from` with `.tsx` loses the extension; a Witness with `expected` gives `toEqual` and no `toThrow`; one with `expectedError` gives `toThrow`, imports the class from the same module, and has no `toEqual`; the test name starts with the Criterion id and a space; the output has the shape of `design.md` (readable, two-space indented JSON text after `const args = ` and `const expected: unknown = `, `] as unknown as Parameters<typeof priceCart>;`, `expect(priceCart(...args)).toEqual(expected);`, and `toThrow(ValidationError)` for `expectedError`) and no `JSON.parse` call; an `expected` of `null`, of `0`, of a nested object and of a string with quotes and a backslash, and an `args` list with nested arrays, are the text of `JSON.stringify(value, null, 2)` re-indented, and parse back with `JSON.parse` once the indent is removed; an empty `args` list prints `[]`; keys keep the order of the Witness object; a key `__proto__` in `args` (at the top level and nested) switches only `args` to the `JSON.parse("...")` form and the parsed value has an own `__proto__` property; a key `__proto__` in `expected` switches only `expected`; with the key in both, both use the form; an export name `a-b`, an error class `1X`, a `from` with `..`, an absolute `from` and an absolute `testFile` each return an error that names the field and no source; two calls with equal input give equal strings.
     - _Requirements: 12.1, 12.2, 12.3, 12.4, 12.5, 12.6, 12.7_
