@@ -1147,7 +1147,7 @@ Conventions used in every task:
     - `packages/engine/test/e2e/pricing.test.ts` asserts `expect(expectedMutantIds).toHaveLength(24)` in the test `10.10 all 24 spec mutants are present and valid`. If task 21.1 to 21.3 added Spec_Mutants, this sealed test fails. Do not edit it. Report the test name and the new count to the user and wait for the decision on a spec change (requirement 10.14 and the spec of `examples/pricing`). If no Spec_Mutant was added, state that in the report.
     - _Requirements: 10.14_
     - _Validation: npm run test:e2e -w trick-or-test passes, or the user has decided on the test named above_
-  - [ ] 21.6 Checkpoint - Example mutants
+  - [x] 21.6 Checkpoint - Example mutants
     - Run `npm run check` from the repository root. Ensure all tests pass, ask the user if questions arise.
     - _Validation: npm run check passes_
 
@@ -1157,7 +1157,7 @@ Conventions used in every task:
     - Write `scripts/run-agreement.test.ts`: for `reports/` and for `apps/viewer/public/demo/before` and `.../after`, parse the three files with the schemas of `trick-or-test/report` and check that the id sets of `verdict.json` `mutants`, of `mutation-report.json` and of the last line of `history.jsonl` are equal; that `mutantCounts` agrees with the ids listed (per kind and status) and `twinsMerged` plus the mechanical count equals `strykerCounts.total`; that `strykerCounts.detected` and `undetected` are not more than `total`; that `baselineTests` is not empty, that every killing-test id of a mutant is in it, and that the sum of `claimCounts` equals its total and the number of claims in `baselineTests`; that the last history record's `coverageByCriterion` equals `coverage` of the verdict; that `metadata.specName` is `cart-pricing`, `requirements` holds one entry for each requirement of the spec, and `scope` is `full` or absent; and that no string holds an absolute path. The test fails with a message that names the file and the field.
     - _Requirements: 8.17, 8.21, 8.22, 8.23, 6.12, 11.12_
     - _Validation: npm run build -w trick-or-test && npx vitest run --project scripts scripts/run-agreement.test.ts passes, run after 22.2 and 22.3 (it reads the committed files, so it fails before they are regenerated)_
-  - [ ] 22.2 Regenerate `reports/`
+  - [x] 22.2 Regenerate `reports/`
     - Run `npm run measure` once from the repository root and commit the changed files in `reports/`. This appends one line to `reports/history.jsonl`; the earlier lines stay unchanged.
     - _Requirements: 9.12, 9.13, 9.14_
     - _Validation: npm run measure && test -f reports/mutation-report.json && test -f reports/verdict.json && test -f reports/history.jsonl passes_

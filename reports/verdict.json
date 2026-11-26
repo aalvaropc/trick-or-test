@@ -1,28 +1,357 @@
 {
+  "baselineTests": [
+    {
+      "id": "test/api.test.ts::public API accepts typed carts and returns a typed Breakdown",
+      "kind": "example"
+    },
+    {
+      "id": "test/api.test.ts::public API exports priceCart, percentOf and ValidationError",
+      "kind": "example"
+    },
+    {
+      "id": "test/api.test.ts::public API throws ValidationError carrying the field name",
+      "kind": "example"
+    },
+    {
+      "id": "test/percent.test.ts::percentOf examples does not throw for bps above 10000",
+      "kind": "example"
+    },
+    {
+      "id": "test/percent.test.ts::percentOf examples percentOf(0, 10000) = 0",
+      "kind": "example"
+    },
+    {
+      "id": "test/percent.test.ts::percentOf examples percentOf(1, 4999) = 0",
+      "kind": "example"
+    },
+    {
+      "id": "test/percent.test.ts::percentOf examples percentOf(1, 5000) = 1",
+      "kind": "example"
+    },
+    {
+      "id": "test/percent.test.ts::percentOf examples percentOf(14, 1000) = 1",
+      "kind": "example"
+    },
+    {
+      "id": "test/percent.test.ts::percentOf examples percentOf(15, 1000) = 2",
+      "kind": "example"
+    },
+    {
+      "id": "test/percent.test.ts::percentOf examples percentOf(5, 1000) = 1",
+      "kind": "example"
+    },
+    {
+      "claims": [
+        {
+          "criterion": "2.1",
+          "otherTestsKilledAll": true,
+          "outcome": "not-held"
+        },
+        {
+          "criterion": "2.2",
+          "outcome": "held"
+        }
+      ],
+      "id": "test/percent.test.ts::percentOf matches the BigInt Round_Half_Up reference for safe non-negative integers",
+      "kind": "property"
+    },
+    {
+      "claims": [
+        {
+          "criterion": "5.5",
+          "otherTestsKilledAll": true,
+          "outcome": "not-held"
+        },
+        {
+          "criterion": "7.3",
+          "outcome": "held"
+        },
+        {
+          "criterion": "7.4",
+          "otherTestsKilledAll": false,
+          "outcome": "not-held"
+        }
+      ],
+      "id": "test/price.test.ts::priceCart breakdown invariants fields are non-negative integers, discount <= subtotal, and total identity holds",
+      "kind": "property"
+    },
+    {
+      "claims": [
+        {
+          "criterion": "5.1",
+          "otherTestsKilledAll": true,
+          "outcome": "not-held"
+        },
+        {
+          "criterion": "5.2",
+          "outcome": "held"
+        },
+        {
+          "criterion": "5.3",
+          "outcome": "held"
+        },
+        {
+          "criterion": "5.4",
+          "outcome": "held"
+        },
+        {
+          "criterion": "5.5",
+          "otherTestsKilledAll": true,
+          "outcome": "not-held"
+        },
+        {
+          "criterion": "5.6",
+          "outcome": "held"
+        }
+      ],
+      "id": "test/price.test.ts::priceCart coupon discount discountCents follows the coupon rules and is clamped to the subtotal",
+      "kind": "property"
+    },
+    {
+      "claims": [
+        {
+          "criterion": "4.4",
+          "outcome": "held"
+        },
+        {
+          "criterion": "6.1",
+          "outcome": "held"
+        }
+      ],
+      "id": "test/price.test.ts::priceCart properties empty carts price to all zeros",
+      "kind": "property"
+    },
+    {
+      "claims": [
+        {
+          "criterion": "4.1",
+          "outcome": "held"
+        },
+        {
+          "criterion": "4.2",
+          "outcome": "held"
+        },
+        {
+          "criterion": "4.3",
+          "outcome": "held"
+        }
+      ],
+      "id": "test/price.test.ts::priceCart properties subtotalCents is the sum of line totals with bulk discount",
+      "kind": "property"
+    },
+    {
+      "claims": [
+        {
+          "criterion": "6.2",
+          "otherTestsKilledAll": true,
+          "outcome": "not-held"
+        },
+        {
+          "criterion": "6.3",
+          "otherTestsKilledAll": true,
+          "outcome": "not-held"
+        },
+        {
+          "criterion": "6.4",
+          "outcome": "held"
+        }
+      ],
+      "id": "test/price.test.ts::priceCart shipping shippingCents follows method and the discounted subtotal threshold",
+      "kind": "property"
+    },
+    {
+      "claims": [
+        {
+          "criterion": "7.1",
+          "outcome": "held"
+        },
+        {
+          "criterion": "7.2",
+          "outcome": "held"
+        }
+      ],
+      "id": "test/price.test.ts::priceCart tax taxCents is percentOf the discounted subtotal and ignores shipping method",
+      "kind": "property"
+    },
+    {
+      "id": "test/price.test.ts::priceCart unit tests bulk discount boundary exact-half bulk discount: quantity 11 at unit price 5 gives 49",
+      "kind": "example"
+    },
+    {
+      "id": "test/price.test.ts::priceCart unit tests bulk discount boundary quantity 10 at unit price 1 has line total 9",
+      "kind": "example"
+    },
+    {
+      "id": "test/price.test.ts::priceCart unit tests bulk discount boundary quantity 10 at unit price 5 has line total 45",
+      "kind": "example"
+    },
+    {
+      "id": "test/price.test.ts::priceCart unit tests bulk discount boundary quantity 9 at unit price 5 has line total 45",
+      "kind": "example"
+    },
+    {
+      "id": "test/price.test.ts::priceCart unit tests coupon minimum subtotal applies when minSubtotalCents equals the subtotal",
+      "kind": "example"
+    },
+    {
+      "id": "test/price.test.ts::priceCart unit tests coupon minimum subtotal fixed coupon below minimum gives 0 and at minimum applies",
+      "kind": "example"
+    },
+    {
+      "id": "test/price.test.ts::priceCart unit tests coupon minimum subtotal gives discount 0 when subtotal is below minSubtotalCents",
+      "kind": "example"
+    },
+    {
+      "id": "test/price.test.ts::priceCart unit tests empty cart yields all zeros with coupon, express shipping, and nonzero taxBps",
+      "kind": "example"
+    },
+    {
+      "id": "test/price.test.ts::priceCart unit tests shipping thresholds express shipping is 1499 at discounted subtotal 10000",
+      "kind": "example"
+    },
+    {
+      "id": "test/price.test.ts::priceCart unit tests shipping thresholds standard shipping is 799 when discounted subtotal is 9999",
+      "kind": "example"
+    },
+    {
+      "id": "test/price.test.ts::priceCart unit tests shipping thresholds standard shipping is free when discounted subtotal is 10000",
+      "kind": "example"
+    },
+    {
+      "id": "test/price.test.ts::priceCart unit tests shipping thresholds uses the discounted subtotal for the free-shipping threshold",
+      "kind": "example"
+    },
+    {
+      "claims": [
+        {
+          "criterion": "3.1",
+          "outcome": "held"
+        },
+        {
+          "criterion": "3.2",
+          "outcome": "held"
+        },
+        {
+          "criterion": "3.3",
+          "outcome": "held"
+        }
+      ],
+      "id": "test/validation.test.ts::validation properties reports a single invalid field by name",
+      "kind": "property"
+    },
+    {
+      "claims": [
+        {
+          "criterion": "3.4",
+          "outcome": "unchecked"
+        }
+      ],
+      "id": "test/validation.test.ts::validation properties: multiple invalid fields throws a ValidationError naming one of the invalid fields",
+      "kind": "property"
+    },
+    {
+      "id": "test/validation.test.ts::validation unit tests does not throw ValidationError for unusual coupon values",
+      "kind": "example"
+    },
+    {
+      "id": "test/validation.test.ts::validation unit tests names lines[0].quantity",
+      "kind": "example"
+    },
+    {
+      "id": "test/validation.test.ts::validation unit tests names lines[2].unitPriceCents",
+      "kind": "example"
+    },
+    {
+      "id": "test/validation.test.ts::validation unit tests names taxBps",
+      "kind": "example"
+    },
+    {
+      "id": "test/validation.test.ts::validation unit tests quantity 0 valid=false",
+      "kind": "example"
+    },
+    {
+      "id": "test/validation.test.ts::validation unit tests quantity 1 valid=true",
+      "kind": "example"
+    },
+    {
+      "id": "test/validation.test.ts::validation unit tests quantity 1000 valid=false",
+      "kind": "example"
+    },
+    {
+      "id": "test/validation.test.ts::validation unit tests quantity 999 valid=true",
+      "kind": "example"
+    },
+    {
+      "id": "test/validation.test.ts::validation unit tests reports one of several invalid fields",
+      "kind": "example"
+    },
+    {
+      "id": "test/validation.test.ts::validation unit tests taxBps -1 valid=false",
+      "kind": "example"
+    },
+    {
+      "id": "test/validation.test.ts::validation unit tests taxBps 0 valid=true",
+      "kind": "example"
+    },
+    {
+      "id": "test/validation.test.ts::validation unit tests taxBps 10000 valid=true",
+      "kind": "example"
+    },
+    {
+      "id": "test/validation.test.ts::validation unit tests taxBps 10001 valid=false",
+      "kind": "example"
+    },
+    {
+      "id": "test/validation.test.ts::validation unit tests unit price 0 valid=true",
+      "kind": "example"
+    },
+    {
+      "id": "test/validation.test.ts::validation unit tests unit price 1000000 valid=true",
+      "kind": "example"
+    },
+    {
+      "id": "test/validation.test.ts::validation unit tests unit price 1000001 valid=false",
+      "kind": "example"
+    }
+  ],
+  "claimCounts": {
+    "held": 17,
+    "notHeld": 7,
+    "notHeldOthersDidNot": 1,
+    "notHeldOthersKilledAll": 6,
+    "total": 25,
+    "unchecked": 1,
+    "unknownCriterion": 0
+  },
   "coverage": [
     {
       "criterion": "1.1",
-      "status": "unattacked",
+      "reason": "The criterion is about which names src/index.ts exports. Breaking it means removing an export, which a witness calling an exported function cannot show, and mutants must not change exports.",
+      "status": "skipped",
       "text": "THE Cart_Pricing_Library SHALL export `priceCart`, `percentOf`, and `ValidationError` as values from `src/index.ts`."
     },
     {
       "criterion": "1.2",
-      "status": "unattacked",
+      "reason": "The exported types Cart, Line, Coupon and Breakdown are erased at runtime, so no exported function can show their absence.",
+      "status": "skipped",
       "text": "THE Cart_Pricing_Library SHALL export the types `Cart`, `Line`, `Coupon`, and `Breakdown` from `src/index.ts`."
     },
     {
       "criterion": "1.3",
-      "status": "unattacked",
+      "reason": "The Coupon union shape is a type-level definition erased at runtime, so no exported function output can differ.",
+      "status": "skipped",
       "text": "THE Cart_Pricing_Library SHALL define the Coupon type as a union of a percent variant with `bps`, `maxDiscountCents`, and `minSubtotalCents`, and a fixed variant with `amountCents` and `minSubtotalCents`."
     },
     {
       "criterion": "1.4",
-      "status": "unattacked",
+      "reason": "The Breakdown field list is a type-level definition erased at runtime, and mutants must not change types.",
+      "status": "skipped",
       "text": "THE Cart_Pricing_Library SHALL define the Breakdown type with the fields `subtotalCents`, `discountCents`, `shippingCents`, `taxCents`, and `totalCents`."
     },
     {
       "criterion": "1.5",
-      "status": "unattacked",
+      "reason": "Erasable-syntax-only is a property of the source text and compiler settings, not of any value an exported function returns.",
+      "status": "skipped",
       "text": "THE Cart_Pricing_Library SHALL use only erasable TypeScript syntax, excluding enums and namespaces."
     },
     {
@@ -32,7 +361,7 @@
     },
     {
       "criterion": "2.2",
-      "status": "unattacked",
+      "status": "guarded",
       "text": "THE Percent_Calculator SHALL compute results using integer arithmetic only."
     },
     {
@@ -57,7 +386,8 @@
     },
     {
       "criterion": "3.4",
-      "status": "unattacked",
+      "reason": "The criterion is about which invalid field the ValidationError names when several are invalid. A witness compares only the error class (expectedError), so it cannot show that the wrong or a valid field was named, and any input with several invalid fields is already rejected by the single-field criteria 3.1 to 3.3.",
+      "status": "skipped",
       "text": "WHEN a Cart contains multiple invalid fields, THE Validator SHALL throw a ValidationError naming one of the invalid fields."
     },
     {
@@ -157,40 +487,67 @@
     },
     {
       "criterion": "8.1",
-      "status": "unattacked",
+      "reason": "The criterion requires that test files exist under test/ and use property tests. It is about the test suite, not about the output of any exported function, so no witness can show a violation.",
+      "status": "skipped",
       "text": "THE Cart_Pricing_Library SHALL include Vitest tests under `test/` that use fast-check property tests for the Breakdown invariants: non-negative integer fields, `discountCents` not exceeding `subtotalCents`, and `totalCents` equal to the Discounted_Subtotal plus `shippingCents` plus `taxCents`."
     },
     {
       "criterion": "8.2",
-      "status": "unattacked",
+      "reason": "The criterion requires that tests assert the field of each ValidationError. It is about the content of the test suite, not about the behaviour of any exported function.",
+      "status": "skipped",
       "text": "THE Cart_Pricing_Library SHALL include tests that assert the `field` value of each ValidationError case in Requirement 3."
     },
     {
       "criterion": "8.3",
-      "status": "unattacked",
+      "reason": "The criterion requires that tests cover Round_Half_Up at exact-half boundaries. It is about the content of the test suite, not about the behaviour of any exported function. The rounding itself is attacked by criterion 2.1.",
+      "status": "skipped",
       "text": "THE Cart_Pricing_Library SHALL include tests for Round_Half_Up behavior at exact-half boundaries of `percentOf`."
     },
     {
       "criterion": "8.4",
-      "status": "unattacked",
+      "reason": "The criterion requires that tests avoid asserting which ValidationError is thrown first. It is a constraint on how tests are written, not on any exported function.",
+      "status": "skipped",
       "text": "THE Cart_Pricing_Library SHALL include tests that avoid asserting which ValidationError is thrown first when multiple fields are invalid."
     },
     {
       "criterion": "8.5",
-      "status": "unattacked",
+      "reason": "The criterion requires that package.json, tsconfig.json, vitest.config.ts and test/setup.ts stay unchanged. It is about project files outside src/ and no exported function can show a change to them.",
+      "status": "skipped",
       "text": "THE Cart_Pricing_Library SHALL leave `package.json`, `tsconfig.json`, `vitest.config.ts`, and `test/setup.ts` unchanged."
     }
   ],
   "ignoreStaticRetried": false,
   "metadata": {
     "engineVersion": "0.0.0",
-    "gitCommit": "8cadeafff1663d716ca0c8cd1fa3b8752c70ff95",
+    "gitCommit": "e07913467a476bd0b96ca2c8d90536ef9ed92d6c",
     "nodeVersion": "v26.13.1",
     "seed": 0,
+    "specName": "cart-pricing",
     "strykerVersion": "10.1.1",
-    "timestamp": "2026-11-26T00:32:29.950Z",
+    "timestamp": "2026-11-26T12:02:37.786Z",
     "typescriptVersion": "7.0.2",
     "vitestVersion": "5.1.0"
+  },
+  "mutantCounts": {
+    "mechanical": {
+      "CompileError": 0,
+      "Ghost": 0,
+      "InvalidWitness": 0,
+      "Killed": 82,
+      "NotApplicable": 0,
+      "Survived": 4,
+      "Timeout": 0
+    },
+    "spec": {
+      "CompileError": 0,
+      "Ghost": 0,
+      "InvalidWitness": 0,
+      "Killed": 24,
+      "NotApplicable": 0,
+      "Survived": 1,
+      "Timeout": 0
+    },
+    "twinsMerged": 2
   },
   "mutants": [
     {
@@ -566,16 +923,6 @@
       "status": "Killed"
     },
     {
-      "id": "e436181957d1ed7b97132bb419db43dc",
-      "killClass": "examples-only",
-      "killingTests": [
-        "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > applies when minSubtotalCents equals the subtotal",
-        "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > fixed coupon below minimum gives 0 and at minimum applies"
-      ],
-      "species": "Borderling",
-      "status": "Killed"
-    },
-    {
       "id": "e429427c68eb7983b2715914b1e1162a",
       "killClass": "both",
       "killingTests": [
@@ -802,15 +1149,6 @@
         "test/price.test.ts::priceCart unit tests > shipping thresholds > standard shipping is free when discounted subtotal is 10000"
       ],
       "species": "Two-Face",
-      "status": "Killed"
-    },
-    {
-      "id": "942882389aefa2433e89baacccfc31bb",
-      "killClass": "examples-only",
-      "killingTests": [
-        "test/price.test.ts::priceCart unit tests > shipping thresholds > standard shipping is free when discounted subtotal is 10000"
-      ],
-      "species": "Borderling",
       "status": "Killed"
     },
     {
@@ -1894,6 +2232,27 @@
       "status": "Killed"
     },
     {
+      "id": "oath-2.2-percent-fractional-result",
+      "killClass": "both",
+      "killingTests": [
+        "test/api.test.ts::public API accepts typed carts and returns a typed Breakdown",
+        "test/percent.test.ts::percentOf matches the BigInt Round_Half_Up reference for safe non-negative integers",
+        "test/percent.test.ts::percentOf examples percentOf(14, 1000) = 1",
+        "test/percent.test.ts::percentOf examples percentOf(0, 10000) = 0",
+        "test/percent.test.ts::percentOf examples percentOf(1, 4999) = 0",
+        "test/price.test.ts::priceCart properties subtotalCents is the sum of line totals with bulk discount",
+        "test/price.test.ts::priceCart properties empty carts price to all zeros",
+        "test/price.test.ts::priceCart breakdown invariants fields are non-negative integers, discount <= subtotal, and total identity holds",
+        "test/price.test.ts::priceCart unit tests bulk discount boundary quantity 10 at unit price 5 has line total 45",
+        "test/price.test.ts::priceCart unit tests bulk discount boundary quantity 10 at unit price 1 has line total 9",
+        "test/price.test.ts::priceCart unit tests coupon minimum subtotal applies when minSubtotalCents equals the subtotal",
+        "test/price.test.ts::priceCart unit tests empty cart yields all zeros with coupon, express shipping, and nonzero taxBps"
+      ],
+      "requirement": "2.2",
+      "species": "Oathbreaker",
+      "status": "Killed"
+    },
+    {
       "id": "oath-2.3-percent-validates-bps",
       "killClass": "both",
       "killingTests": [
@@ -2146,6 +2505,45 @@
       "status": "Survived"
     }
   ],
+  "requirements": [
+    {
+      "requirement": 1,
+      "title": "Public API Surface"
+    },
+    {
+      "requirement": 2,
+      "title": "Percentage Calculation"
+    },
+    {
+      "requirement": 3,
+      "title": "Input Validation"
+    },
+    {
+      "requirement": 4,
+      "title": "Subtotal and Bulk Discount"
+    },
+    {
+      "requirement": 5,
+      "title": "Coupon Discount"
+    },
+    {
+      "requirement": 6,
+      "title": "Shipping"
+    },
+    {
+      "requirement": 7,
+      "title": "Tax and Total"
+    },
+    {
+      "requirement": 8,
+      "title": "Test Coverage"
+    }
+  ],
+  "strykerCounts": {
+    "detected": 84,
+    "total": 88,
+    "undetected": 4
+  },
   "witnesses": {
     "oath-2.1-half-rounds-down": {
       "args": [
@@ -2158,6 +2556,19 @@
       "mutatedOutcome": {
         "kind": "value",
         "value": 0
+      }
+    },
+    "oath-2.2-percent-fractional-result": {
+      "args": [
+        1,
+        1
+      ],
+      "expected": 0,
+      "export": "percentOf",
+      "from": "src/index.ts",
+      "mutatedOutcome": {
+        "kind": "value",
+        "value": 0.5001
       }
     },
     "oath-2.3-percent-validates-bps": {
