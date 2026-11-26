@@ -932,7 +932,7 @@ Conventions used in every task:
     - Write `test/core/report-one-set.test.ts`, with one input that has one Twin: the three outputs list the same ids; the Twin id is in none; `verdict.mutantCounts.twinsMerged` is 1; `verdict.strykerCounts.total` is one more than the number of mechanical mutants in `mutantCounts`; a Twin that StrykerJS killed counts in `strykerCounts.detected` and not in `mutantCounts`; an input without Twins gives `twinsMerged` 0 and equal totals.
     - _Requirements: 8.21, 8.22, 8.23_
     - _Validation: npx vitest run --project engine packages/engine/test/core/report-one-set.test.ts passes_
-  - [ ] 15.4 Write Property 29: One set of mutant ids and agreeing totals
+  - [x] 15.4 Write Property 29: One set of mutant ids and agreeing totals
     - Write `test/core/report.one-set.property.test.ts` with **Property 29** as stated in `design.md`. The generator includes Spec_Mutants with Twins and without, Twins whose status differs from the Spec_Mutant's, and raw lists in a shuffled order.
     - **Validates: Requirements 8.15, 8.21, 8.22, 8.28, 9.18**
     - _Requirements: 8.15, 8.21, 8.22_
