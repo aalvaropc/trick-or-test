@@ -640,6 +640,13 @@
         "chatSessionId": "sess_a9faba02-5bb5-451d-86b4-4581355ce51d",
         "timestamp": 1795651963386
       }
+    ],
+    "9.10 Add the eye tracking to the Specimen screen": [
+      {
+        "executionId": "29924bb0-3f88-4497-93c5-b0ea95d67e69",
+        "chatSessionId": "sess_519c9fd4-f7da-4cce-b0f9-130111da79d1",
+        "timestamp": 1795657304757
+      }
     ]
   }
 }

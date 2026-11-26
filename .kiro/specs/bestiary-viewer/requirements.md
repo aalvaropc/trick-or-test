@@ -193,9 +193,9 @@ Out of scope: the format of the lock log (owned by the agent-guard spec), the en
 5. IF a mutant id in `newlyKilledIds` is absent from the current Run_Model, THEN THE Hunt_Screen SHALL show the id as text without a creature, and the id SHALL NOT be activatable.
 6. WHERE a Lock_Log is loaded, THE Hunt_Screen SHALL show each blocked write attempt on the timeline in `--amber`, with the text label "blocked".
 7. WHILE no Lock_Log is loaded, THE Hunt_Screen SHALL show the timeline without blocked attempts and without an error.
-8. IF no History_File is loaded, THEN THE Hunt_Screen SHALL show a message stating that no history was loaded, and SHALL show no timeline entries.
+8. IF no History_File is loaded, THEN THE Hunt_Screen SHALL show a message stating that no history was loaded, and SHALL show no timeline entries. The Loader gives such a Run_Model an empty history list.
 9. THE Hunt_Screen SHALL present the timeline as a static ordered list, and SHALL show all entries and their content with animation disabled.
-10. IF the Run_Model holds a history list with zero records (the Loader builds none from a file, by Requirement 1 criterion 14), THEN THE Hunt_Screen SHALL show a message stating that the history has no records, and SHALL show no timeline entries.
+10. IF the Run_Model holds a history list with zero records (the Loader builds none from a file, by Requirement 1 criterion 14), THEN THE Hunt_Screen SHALL show the same message as in criterion 8, stating that no history was loaded, and SHALL show no timeline entries. A Run_Model cannot tell an absent History_File from an empty list, and a loaded History_File always holds at least one record.
 11. FOR ALL History_Files, the number of timeline entries SHALL equal the number of records (invariant property).
 12. FOR ALL history records, the survivor count shown SHALL equal `statusCounts.Survived` of the record (invariant property).
 

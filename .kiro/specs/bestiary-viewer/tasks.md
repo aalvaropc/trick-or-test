@@ -405,9 +405,9 @@ Conventions for every task:
     - _Requirements: 7.8, 7.9_
     - _Validation: `npm test -w trick-or-test-viewer -- test/screens/specimen/eye-tracking.test.tsx` passes_
 
-  - [ ] 9.11 Implement the Hunt screen
-    - Create `src/screens/Hunt.tsx`: a static ordered list from `buildTimeline`, one entry per record, with the run time, git commit, the creatures in `newlyKilledIds` as activatable creatures that open the Specimen, and the survivor count. An id missing from the current Run_Model shows as plain text, not activatable. With no History_File, show "no history was loaded" and no entries. With an empty history list, show "the history has no records". No animation anywhere in this screen.
-    - Example tests in `test/screens/Hunt.test.tsx`: entry per record and order (8.1), fields shown (8.2), survivor equals `statusCounts.Survived` (8.3, 8.12), activating a creature opens the Specimen (8.4), missing id is text and not a link (8.5), no history message (8.8), empty list message (8.10), ordered list with no animation class (8.9), entry count equals record count (8.11).
+  - [x] 9.11 Implement the Hunt screen
+    - Create `src/screens/Hunt.tsx`: a static ordered list from `buildTimeline`, one entry per record, with the run time, git commit, the creatures in `newlyKilledIds` as activatable creatures that open the Specimen, and the survivor count. An id missing from the current Run_Model shows as plain text, not activatable. With an empty history list (no History_File was loaded), show "no history was loaded" and no entries. No animation anywhere in this screen.
+    - Example tests in `test/screens/Hunt.test.tsx`: entry per record and order (8.1), fields shown (8.2), survivor equals `statusCounts.Survived` (8.3, 8.12), activating a creature opens the Specimen (8.4), missing id is text and not a link (8.5), no history message for a Run_Model from a load without a History_File (8.8), the same message for an explicit empty list (8.10), ordered list with no animation class (8.9), entry count equals record count (8.11).
     - _Requirements: 8.1, 8.2, 8.3, 8.4, 8.5, 8.8, 8.9, 8.10, 8.11, 8.12_
     - _Validation: `npm test -w trick-or-test-viewer -- test/screens/Hunt.test.tsx` passes_
 

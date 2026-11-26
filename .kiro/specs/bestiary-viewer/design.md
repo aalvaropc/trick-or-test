@@ -262,7 +262,7 @@ Rule 2 is looser than "every non-empty line validates" on purpose. If recognitio
 
 **Parse rules** (`loader/parse.ts`): every non-empty line must parse as JSON and validate with `historyRecordSchema`. The first line that fails rejects the whole file. The error names the file, the 1-based line number counted over all lines including blank ones, and either the JSON parse failure or the failing field paths of that line (up to 10, then the count of further failures), as in Requirement 1.8. The previous Run_Model stays unchanged (Requirement 1.13). No partial history is ever kept.
 
-Consequence for the Hunt_Screen: a History_File always holds at least one record, so the "history has no records" message (Requirement 8.10) is reachable only when a Run_Model is built with an empty history list, not from a loaded file. It stays as a defensive branch, and it is covered by a unit test on the screen with an empty list.
+Consequence for the Hunt_Screen: a History_File always holds at least one record, so an empty history list in the Run_Model always means that no History_File was loaded. The Hunt_Screen shows one message, "no history was loaded", for both Requirement 8.8 and 8.10, and each criterion has its own unit test on the screen.
 
 If the engine later changes the format, only `loader/recognise.ts` and `loader/parse.ts` change; `join-run.ts` and everything downstream consume `HistoryRecord[]`.
 
