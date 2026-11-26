@@ -381,7 +381,7 @@ Conventions for every task:
     - _Requirements: 6.10, 6.11_
     - _Validation: `npm test -w trick-or-test-viewer -- test/screens/verdict/StraysStrip.test.tsx` passes_
 
-  - [ ] 9.7 Implement the species legend
+  - [x] 9.7 Implement the species legend
     - Create `src/screens/verdict/SpeciesLegend.tsx`: for each Species present in the Run, the name, body description, mutation type and Mutant count from `computeSpeciesLegend`. Omit Species with 0 Mutants.
     - Example tests in `test/screens/verdict/SpeciesLegend.test.tsx`: absent species are omitted, counts match the fixture (6.12).
     - _Requirements: 6.12_
