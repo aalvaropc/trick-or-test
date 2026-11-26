@@ -18,6 +18,18 @@ Three findings from exploratory runs against `examples/pricing` shape this desig
 - **Paths in outputs are project-relative, produced in the core.** The core receives the project root as plain data and relativizes at report construction (Requirement 8.17). Absolute paths exist only in the shell and at run time.
 - **Symlinks in a Sandbox.** A symbolic link whose target resolves inside the Target_Project is recreated in the Sandbox as a relative link to the corresponding location inside the Sandbox. A symbolic link whose target resolves outside the Target_Project is skipped (not copied) and a warning is logged. Skipping is chosen over rewriting because a link that leaves the project has no meaningful counterpart inside the Sandbox (Requirements 5.17, 5.18).
 
+### Design decisions added for the viewer and the MCP server
+
+The viewer and the coming MCP server read the three files and derive nothing. Seven decisions follow from that.
+
+- **One set of mutant ids per run (Requirement 8.21).** `buildMutationReport`, `buildVerdict` and `buildHistoryRecord` all take the same list of mutants after the Twin removal. The function that removes Twins (today inside `buildMutationReport`) becomes one exported pure function, `dropTwins(mutants): { kept; twinsMerged }` in `core/twins.ts`. Each of the three builders calls it on the raw list it receives, so the three outputs agree whatever the caller passes, and `dropTwins` is idempotent (a list without Twins comes back unchanged), which keeps the committed tests of the Mutation_Report valid. `buildVerdict` gets the raw list, so it computes `twinsMerged` and `strykerCounts` from the list *before* `dropTwins` itself, as data in the file, and no reader subtracts. Rule 8.15 itself does not change.
+- **Two totals with two names (Requirements 8.22 to 8.24).** `mutantCounts` describes the files: kind by status, Twins excluded, plus `twinsMerged`. `strykerCounts` describes the StrykerJS run: `detected` (Killed plus Timeout), `undetected` (Survived), `total` (every produced Mechanical_Mutant, Twins and CompileError ones included). `total` is not the denominator of the StrykerJS score (that is `detected + undetected`); the schema description says so. The two fields share no key name.
+- **The Baseline_Run keeps its tests (Requirements 6.11 to 6.13).** `SuiteResult` already holds every test with name, file, status and start line. The CLI keeps the passed ones as `BaselineTest[]`, classifies each with `classifyTest` (the body comes from `extractTestBody`, as for killing tests), and `buildVerdict` writes them as `baselineTests`. The id is built by the same function that builds the id of a killing test, `toTestId(file, fullName)`, so the two formats cannot drift.
+- **Claims are read above the call, not inside it (Requirement 11).** `extractTestBody` starts at the start line and never sees the lines above. A second pure function, `extractLeadingComments(fileText, startLine)`, reads upward from `startLine - 1` while the lines are comment lines. Everything after that is pure functions over strings (`parseClaimComments`, `resolveClaimRefs`, `computeClaimOutcome`), so the parsing has property tests and no adapter. A comment above a `describe` is not inherited, because the reader only looks above the test's own start line. `it.each` and `test.each` need no special case: Vitest reports one start line for every generated test, so every generated test reads the same lines.
+- **Scope is data on every output (Requirements 8.28, 9.17 to 9.22).** `RunScope` is `"full" | "spec-only"`. The CLI passes it to the three builders, which write it in `metadata.scope`, in `HistoryRecord.scope` and in the Mutation_Report `config`. A spec-only run never calls the Stryker adapter or git, and builds no Mechanical_Mutant list, so `mutantCounts.mechanical`, `strykerCounts` and strays are absent, not zero. An absent `scope` means `full`.
+- **History comparison across scopes (Requirement 8.30).** `selectComparisonRecord(records, scope)` is pure. A `full` run compares with the latest earlier `full` record, so the mechanical ids a spec-only record lacks are never reported as newly killed by the next full run. A `spec-only` run compares with the latest earlier record of any scope, on Spec_Mutant ids only, so a hunt that starts after a full run reports only what the hunt killed. A Spec_Mutant that a spec-only run killed is therefore newly killed again in the next full run, relative to the last full record. That is the meaning "since the last full run".
+- **A test for a Witness is a string function (Requirement 12).** `buildWitnessTest` lives in `core/witness-test.ts`, is re-exported from `trick-or-test/report`, uses no `node:` import (it computes the relative import path itself, on `/`-separated strings), and prints the arguments and the expected value as readable JSON text, two-space indented, placed directly in the source as a JavaScript expression. Only a value that holds the key `__proto__` at some depth falls back to the `JSON.parse("...")` form, because a literal would set a prototype instead of an own property, as the mutant file does not.
+
 ## Architecture
 
 The engine follows ADR 0005 (functional core, imperative shell). The core is deterministic, synchronous, and free of file system, process, and network access. The core imports nothing from `node:` except `node:crypto` in `core/mutant-id.ts`, where `createHash('sha256')` is a pure function of its input. Everything that touches the outside world (the file system, child processes, StrykerJS, Vitest, git and operating-system signals) is an adapter or shell code behind a small interface that the core depends on through a parameter, never an import.
@@ -156,6 +168,13 @@ sequenceDiagram
 | `coverage.ts` | `computeCoverage(criteria: Criterion[], mutantResults: MutantResult[], skipEntries: SkipEntry[]): CriterionCoverage[]` | Requirement 7. Called once per run with the criteria, results and skip entries of the one spec under attack. |
 | `paths.ts` | `relativizePath(projectRoot: string, p: string): string`, `scrubAbsolutePaths(text: string, projectRoot: string): string`, `containsAbsolutePath(text: string): boolean` | Requirement 8.17. `relativizePath` turns a path under the root into a project-relative path with `/` separators and turns any other absolute path into `<outside-project>/<basename>`. `scrubAbsolutePaths` applies the same rule to every absolute path found inside free text (error messages, mutant descriptions, NotApplicable read errors, NoOutcome messages). `containsAbsolutePath` is the detector the property test and the e2e test use (a POSIX path starting with `/` that is not part of a URL, or a Windows drive or UNC path). |
 | `report.ts` | `buildMutationReport(input): MutationTestingReport`, `buildVerdict(input): Verdict`, `buildHistoryRecord(verdict, previousRecord): HistoryRecord`, `serializeHistoryRecord(record): string`, `parseHistoryLines(text): Result<HistoryRecord[], HistoryError>` | Requirement 8. The `input` of the builders includes `projectRoot` as plain data and every builder relativizes every path and scrubs every free-text field through `paths.ts` before it creates a field, so no builder can emit an absolute path (8.17). `serializeHistoryRecord` returns the record as a single-line JSON object with no embedded newline. `parseHistoryLines` parses each non-empty line as one complete JSON object, in order, and returns an error that names the line number for a malformed line. The History_File `history.jsonl` is JSON Lines: one HistoryRecord per line, and appending a run adds exactly one line and leaves earlier lines unchanged (8.8, 8.9, 8.16). Each record is validated with its zod schema before the line is appended (8.10). The viewer (bestiary-viewer spec) reads exactly this format through `trick-or-test/report`. `buildMutationReport` records whether the `ignoreStatic` retry happened in the schema's free-form `config` object (Requirement 3.5), and `buildVerdict` records it in `ignoreStaticRetried`. It writes the start and end line and column of each Mechanical_Mutant from the Stryker data into the schema `location` (3.16), and the span's location for each Spec_Mutant. Takes mutant ids as input (Spec_Mutants keep their file ids, Mechanical_Mutants carry the hash computed by the CLI) and never computes them. Deduplicates same-change spec/mechanical pairs by comparing file, start and end location and replacement, not ids (8.15), maps statuses (8.3-8.4), computes newly-killed ids (8.9) from the previous history record passed in as data. For an InvalidWitness mutant it writes `originalOutcome` and `expected` into the Verdict (5.6). It also writes the criterion text and the mutated witness outcome (8.18-8.20), both taken from plain input data: `VerdictInput.coverage[i].text` holds the `text` of the matching `Criterion` returned by `parseRequirements`, and `VerdictInput.witnesses[id].mutatedOutcome` holds the `mutatedOutcome` of the matching `SpecMutantOutcome` that `cli/orchestrate.ts` already computes. The builder trims the text and passes it through `scrubAbsolutePaths`; it passes `mutatedOutcome` through the same scrubbing function as `originalOutcome`; it omits the field when the input has none. The builder reads no file and runs no witness. |
+| `requirement-titles.ts` | `parseRequirementTitles(text: string, filePath: string): Result<RequirementTitle[], ParseError>` | Requirements 2.9, 2.10. Same line scan and fence rule as `parseRequirements`, but reads only `### Requirement N: <title>` headings. The title is trimmed. A repeated number or an empty title is an error that names the file, the number and the lines. It is a new module so that `parseRequirements` and the type `Criterion` stay as they are. |
+| `twins.ts` | `dropTwins(mutants: ReportableMutant[]): { kept: ReportableMutant[]; twinsMerged: number }` | Requirements 8.15, 8.21. The 8.15 same-change comparison (file, start and end location, replacement, never ids), moved out of `buildMutationReport` so that the CLI removes Twins once and the three builders receive the same list. Pure; the order of `kept` is stable. |
+| `totals.ts` | `computeMutantCounts(kept, twinsMerged, scope): MutantCounts`, `computeStrykerCounts(produced: { status: MutantStatus }[]): StrykerCounts` | Requirements 8.22, 8.23. `computeMutantCounts` counts the kept mutants per kind and per status (all seven statuses always present, zero when none) and omits `mechanical` for the scope `spec-only`. `computeStrykerCounts` takes every Mechanical_Mutant that StrykerJS produced, before `dropTwins`: `detected` is Killed plus Timeout, `undetected` is Survived, `total` is the length of the input. |
+| `baseline-tests.ts` | `toTestId(file: string, fullName: string): TestId`, `buildBaselineTests(tests: PassedTestInput[], propertyTestGlobs: string[]): BaselineTest[]` | Requirements 6.11 to 6.13. `PassedTestInput` is `{ filePath, fullName, startLine, bodySource, status }`. It keeps the tests with status passed, classifies each with `classifyTest`, builds the id with `toTestId` (the function that also builds killing-test ids), and sorts by id and then by start line. |
+| `claims.ts` | `extractLeadingComments(fileText: string, startLine: number): string[]`, `parseClaimComments(lines: string[], specName: string): ClaimRef[]`, `resolveClaimRefs(refs: ClaimRef[], criteria: Criterion[]): string[]`, `computeClaimOutcome(testId: TestId, criterionId: string, criteria: Criterion[], results: MutantResult[]): Claim`, `attachClaims(tests: BaselineTest[], claimIdsByTest: Map<TestId, string[]>, criteria: Criterion[], results: MutantResult[]): { baselineTests: BaselineTest[]; claimCounts: ClaimCounts }` | Requirement 11. See "Claims" below. All pure; none reads a file. The CLI builds `claimIdsByTest` by calling the first three functions for each Baseline_Test. |
+| `run-scope.ts` | `selectComparisonRecord(records: HistoryRecord[], scope: RunScope): HistoryRecord \| undefined`, `scopeOf(record): RunScope` | Requirement 8.30. `scopeOf` returns `full` for a record with no `scope`. `selectComparisonRecord` implements the two rules of 8.30. `buildHistoryRecord(verdict, previousRecord)` keeps its signature; the CLI calls `selectComparisonRecord` and passes the result as `previousRecord`, and for a `spec-only` run `buildHistoryRecord` compares only Spec_Mutant ids. |
+| `witness-test.ts` | `buildWitnessTest(input: { witness: Witness; criterion: CriterionId; testFile: string }): Result<string, WitnessTestError>` | Requirement 12. See "Witness test source" below. Re-exported from `trick-or-test/report`; no `node:` import. |
 | `result.ts` | `Result<T, E>` union, `ok`, `err` helpers | ADR 0005. Used by every fallible core function; exceptions are reserved for programming errors. |
 
 ### Adapters (imperative, `packages/engine/src/adapters/`)
@@ -176,6 +195,8 @@ sequenceDiagram
 
 Two commands, `run` and `measure`, parsed with a minimal, dependency-free argument parser (no new runtime dependency, per `tech.md`). Both commands call the same orchestration function with a different output directory; `measure` always targets the configured output path meant for `reports/`. The repository root `package.json` defines the npm script `measure`, which runs the built CLI as `trick-or-test measure --project examples/pricing --spec cart-pricing` with the output directory `reports` (Requirement 9.12). After it finishes, `reports/` holds the Mutation_Report, `verdict.json` and `history.jsonl` (9.13). Files in `reports/` are generated only through `measure` and are never edited by hand (9.14). The CLI never changes its exit code based on survivors (Requirement 9.7-9.8): exit 0 for a completed run regardless of survivors, exit 1 for configuration, parsing, baseline, StrykerJS, or runtime errors, exit 1 with usage text for an unknown command or option.
 
+**Run scope (Requirements 9.17 to 9.22).** `--scope <full|spec-only>` is parsed by the same argument parser, with `full` as the default, and is accepted by `run` and `measure`. A value other than the two prints the usage text and exits with code 1, and `--scope spec-only` with `--since` is an error that names both options, also exit 1. For `spec-only` the orchestration function skips the stages "git diff", "list project directories", "computeStrykerExclusions" and "Stryker run" of the run sequence, and goes from the Baseline_Run to the pristine Sandbox. It passes `scope` to the builders, passes no Mechanical_Mutants (so no strays, no `strykerCounts`, no `mechanical` counts), and the summary prints `scope: spec-only`, `strays: not run` and no StrykerJS figure. Everything else (InvalidWitness, Ghost and suite run per Spec_Mutant, and the writing of the three files) is the same. The root npm scripts `measure` and `demo` do not pass `--scope`. The purpose is a run of seconds for an agent that hunts one surviving Spec_Mutant; the baseline still runs, so the cost is the suite plus one suite run per Spec_Mutant. A reader tells the run apart by `metadata.scope`, `HistoryRecord.scope` and the Mutation_Report `config.scope`; none of the three states a mutation score as if it were a full one, because a spec-only report holds Spec_Mutants only.
+
 **Signal handling (Requirement 9.15).** The shell module `cli/shutdown.ts` installs one handler for `SIGINT` and `SIGTERM` at the start of `run` and `measure`. On a signal it (1) calls `ProcessRunner.killAll(signal)` so every Vitest, StrykerJS, tsc and git process group stops, (2) removes the Sandboxes the run created and the StrykerJS temp dir, through the same `Sandbox.removeLeftovers` and temp-dir removal used at normal exit, (3) exits with code 130 for `SIGINT` and 143 for `SIGTERM`. The handler is idempotent, so a second signal during cleanup does not start a second cleanup. The orchestration function does not catch the resulting rejection as a runtime error (which would exit 1). Nothing of this lives in the core. Writing the Verdict_File and the History_File is the last step of a run, so an interrupted run writes neither.
 
 ### Test bodies
@@ -188,9 +209,79 @@ Two commands, `run` and `measure`, parsed with a minimal, dependency-free argume
 
 TypeScript 7 has no JavaScript API, so the engine does not use the TypeScript compiler for this. Limit: a test that reaches fast-check only through a helper function has no `fc.assert`, `fc.check` or `test.prop` in its own body, so it is classified by its file glob alone.
 
+### Claims
+
+A test says in a comment which Criterion it validates. In the committed example the comment looks like this, above the test call:
+
+```ts
+  // Feature: cart-pricing, Property 9: Breakdown invariants
+  // **Validates: Requirements 5.5, 7.3, 7.4**
+```
+
+The engine reads these lines in four steps. Steps 1 to 3 are pure functions in `core/claims.ts`; the shell only supplies the file text.
+
+1. `extractLeadingComments(fileText, startLine)` splits the text into lines and walks upward from line `startLine - 1`, collecting lines that are comment lines (`//`, or a line inside a `/* ... */` block, including ` * ` and ` */`), and stops at the first blank line or line of code. It returns the collected lines in file order with the comment markers and surrounding `*` characters removed. A `startLine` of 1 or less returns an empty list. Because it reads only above the start line, a comment above a `describe` is not seen by the tests inside it (11.8), and every test that `it.each` generates, which Vitest reports at the same start line, reads the same lines (11.9).
+2. `parseClaimComments(lines, specName)` looks for a `Feature:` line and `Validates:` lines in the collected lines. Other lines are ignored, wherever they stand (11.7). If a `Feature:` line names a spec other than `specName`, it returns an empty list (11.2). Without a `Feature:` line the claims count (11.10). It returns `ClaimRef[]`: `{ kind: "criterion"; id: string }` for `N.M` and `{ kind: "requirement"; number: number }` for `N`. The id list is read with one regular expression per token (`^\d+(\.\d+)?$`) after splitting on commas, spaces and the word `and`; reading stops at the first token that is none of those (11.3). Leading zeros and signs make a token invalid.
+3. `resolveClaimRefs(refs, criteria)` turns the refs into a list of criterion id strings. A requirement ref expands to the ids of all Criteria of that requirement in document order (11.4). An id or requirement number that the spec lacks stays as written, so it can become `unknown-criterion` (11.5). Duplicates collapse to the first occurrence (11.6).
+4. `computeClaimOutcome` applies 11.11 to one test and one criterion id. It reads the valid Spec_Mutants of the criterion from the `MutantResult` list (a mutant is valid by 7.6) and their `killingTests`. It does not use the criterion's Coverage_Status. A Timeout mutant has no killing test, so the test does not hold on it, and for `otherTestsKilledAll` a Timeout counts as killed. `attachClaims` applies this step to every claim id of every Baseline_Test, adds the claims to the entry, and sums `ClaimCounts`.
+
+The CLI reads each distinct test file once through the file system adapter and calls `extractLeadingComments` for every Baseline_Test of that file. A file that cannot be read gives no claims for its tests and no error (11.14). The number of claims depends on the Baseline_Run and the Spec_Mutants only, so a spec-only run gives the same claims as a full run (11.15).
+
+`startLine` for a call split over lines: Vitest reports the line of the call expression. For `it.each([...])("name", fn)` written over several lines this is the line of `it.each`, which is the line the author puts the comment above. The extractor needs nothing else.
+
+User-facing wording (11.17): the CLI summary and the schema descriptions say that a claim "held" or "did not hold". The enum values are `held`, `not-held`, `unchecked`, `unknown-criterion`.
+
+### Witness test source
+
+`buildWitnessTest({ witness, criterion, testFile })` returns `Result<string, WitnessTestError>`. `WitnessTestError` is `{ field: "export" | "expectedError" | "from" | "testFile"; message: string }`. It checks first:
+
+- `witness.export` and, when present, `witness.expectedError` match `^[A-Za-z_$][A-Za-z0-9_$]*$`;
+- `witness.from` and `testFile` are project-relative, with `/` separators, with no `..` segment, no leading `/` and no drive letter, as `isSafeRelativePath` decides (4.11).
+
+The import specifier is computed on strings: split the directory of `testFile` and the `from` path (extension `.ts` or `.tsx` removed) on `/`, drop the common prefix, and join one `..` for each remaining directory of the test file with the rest of `from`. A result that does not start with `.` gets a `./` prefix. For `testFile = "test/hunt/oath-5.5.test.ts"` and `from = "src/index.ts"` the specifier is `../../src/index`.
+
+The output, for a Witness with `expected`, is (the format is fixed, so the text is easy to read, to review and to parse back):
+
+```ts
+import { expect, it } from "vitest";
+import { priceCart } from "../../src/index";
+
+it("7.4 priceCart returns the value the criterion demands", () => {
+  const args = [
+    {
+      "coupon": { ... },
+      "lines": [ ... ]
+    }
+  ] as unknown as Parameters<typeof priceCart>;
+  const expected: unknown = {
+    "discountCents": 0,
+    ...
+  };
+  expect(priceCart(...args)).toEqual(expected);
+});
+```
+
+(The real output prints every object as `JSON.stringify(value, null, 2)` prints it, one key per line; `...` stands for the rest of the value.) For a Witness with `expectedError` there is no `expected` block, the assertion changes, and the import gains the class:
+
+```ts
+import { expect, it } from "vitest";
+import { priceCart, ValidationError } from "../../src/index";
+
+it("3.1 priceCart throws ValidationError", () => {
+  const args = [
+    ...
+  ] as unknown as Parameters<typeof priceCart>;
+  expect(() => priceCart(...args)).toThrow(ValidationError);
+});
+```
+
+The text of `args` is `JSON.stringify(witness.args, null, 2)` and the text of `expected` is `JSON.stringify(witness.expected, null, 2)`. Each is printed with every line after the first indented by two more spaces (the indent of the test body), after the marker `const args = ` or `const expected: unknown = `, and followed by ` as unknown as Parameters<typeof <export>>;` or by `;`. The printed text is deterministic for equal input, and keys keep the order of the Witness object, because `JSON.stringify` does. Removing the indent from the lines after the first and parsing the text between the markers with `JSON.parse` returns the Witness value. JSON text is a valid JavaScript expression (U+2028 and U+2029 are valid in string literals since ES2019), and the cast through `unknown` keeps the test compiling in a strict TypeScript project whatever the Witness holds.
+
+One value differs when read as a literal: an object key `"__proto__"`, which a literal turns into a prototype setter. `containsProtoKey(value)` walks the value at any depth (objects and arrays). When `args` holds the key, `args` is printed as `const args = JSON.parse("<JSON.stringify(args) as a string literal>") as unknown as Parameters<typeof <export>>;`. When `expected` holds it, `expected` is printed as `const expected: unknown = JSON.parse("<JSON.stringify(expected) as a string literal>");`. The two values are decided separately. The fallback text parses back with `JSON.parse` applied twice. Requirement 12.6 states both forms. The test name is `JSON.stringify` of `"<criterion> <export> ..."`, so a Criterion id such as `5.5` starts the name. The error class is imported from the same module as the export, which is how the example project exports `ValidationError` from `src/index.ts`; when the Target_Project exports it elsewhere, the agent edits the import. The function adds no `describe`, so one Witness gives one test, and an agent can append several to one file only by merging imports by hand (out of scope).
+
 ### Report subpath
 
-`trick-or-test/report` re-exports only the report types and zod schemas from `core/report.ts` and the other type and schema modules in `core/`. It does not import `core/mutant-id.ts`, because that module imports `node:crypto`. No `node:` import appears anywhere in the subpath's dependency graph (Requirement 10.4), so `apps/viewer` can import it directly.
+`trick-or-test/report` re-exports only the report types and zod schemas from `core/report.ts` and the other type and schema modules in `core/`. It does not import `core/mutant-id.ts`, because that module imports `node:crypto`. No `node:` import appears anywhere in the subpath's dependency graph (Requirement 10.4), so `apps/viewer` can import it directly. It also re-exports `buildWitnessTest` and `WitnessTestError` from `core/witness-test.ts` (Requirement 12.1), and the new types and schemas (`BaselineTest`, `Claim`, `ClaimCounts`, `MutantCounts`, `StrykerCounts`, `RequirementTitle`, `RunScope`). `core/witness-test.ts` imports only `core/spec-mutants.ts` for `isSafeRelativePath`, and that module has no `node:` import.
 
 ## Data Models
 
@@ -327,7 +418,53 @@ type RunMetadata = {
   vitestVersion: string;
   typescriptVersion: string;
   timestamp: string; // excluded from byte-identity comparisons (Requirement 8.13)
+  // Optional: absent in a file written before these fields existed (Requirement 8.29)
+  specName?: string; // the attacked spec (Requirement 8.25)
+  scope?: RunScope; // absent means "full" (Requirement 8.28)
 };
+
+type RunScope = "full" | "spec-only";
+type TestKind = "property" | "example";
+
+// Requirement 11. `criterion` is the id as written in the test: a Criterion id, or an id the spec lacks.
+type ClaimOutcome = "held" | "not-held" | "unchecked" | "unknown-criterion";
+type Claim = {
+  criterion: string;
+  outcome: ClaimOutcome;
+  otherTestsKilledAll?: boolean; // present only when outcome is "not-held" (Requirement 11.11)
+};
+type ClaimCounts = {
+  total: number;
+  held: number;
+  notHeld: number;
+  unchecked: number;
+  unknownCriterion: number;
+  notHeldOthersKilledAll: number; // not-held claims with otherTestsKilledAll true
+  notHeldOthersDidNot: number;    // not-held claims with otherTestsKilledAll false
+};
+
+// Requirements 6.11 to 6.13. One entry per test that the Baseline_Run ran and that passed.
+type BaselineTest = {
+  id: TestId; // "<file>::<full name>", the format of the killing tests
+  kind: TestKind;
+  claims?: Claim[]; // no key when the test has no claim
+};
+
+// Requirements 8.22 to 8.24. Two totals, two names, no shared key.
+type StatusCounts = Record<MutantStatus, number>; // all seven statuses present
+type MutantCounts = {
+  spec: StatusCounts;       // spec mutants listed in the three files
+  mechanical?: StatusCounts; // absent when the scope is "spec-only"
+  twinsMerged: number;      // Twins dropped by rule 8.15; they are in no file
+};
+type StrykerCounts = {
+  detected: number;   // Killed + Timeout, over every mechanical mutant StrykerJS produced
+  undetected: number; // Survived, same population
+  total: number;      // every mechanical mutant StrykerJS produced, Twins and CompileError ones included.
+                      // Not the denominator of the StrykerJS score, which is detected + undetected.
+};
+
+type RequirementTitle = { requirement: number; title: string }; // Requirements 2.9, 8.26
 
 // A Witness as the Verdict stores it. `Witness` itself stays the type of the mutant file (Requirement 4),
 // so the mutant-file schema does not change.
@@ -340,6 +477,12 @@ type Verdict = {
   witnesses: Record<MutantId, VerdictWitness>;
   ignoreStaticRetried: boolean;
   metadata: RunMetadata;
+  // Optional, Requirement 8.29. The same ids as the Mutation_Report and the HistoryRecord (Requirement 8.21).
+  mutantCounts?: MutantCounts;
+  strykerCounts?: StrykerCounts; // absent in a spec-only run
+  baselineTests?: BaselineTest[];
+  claimCounts?: ClaimCounts;
+  requirements?: RequirementTitle[];
 };
 
 // Serialized as one single-line JSON object per line of history.jsonl.
@@ -351,11 +494,16 @@ type HistoryRecord = {
   mutants: { id: MutantId; status: MutantStatus }[];
   statusCounts: Record<MutantStatus, number>;
   coverageCounts: Record<CoverageStatus, number>;
-  newlyKilledIds: MutantId[];
+  newlyKilledIds: MutantId[]; // compared with the Comparison_Record of Requirement 8.30
+  // Optional, Requirement 8.29
+  scope?: RunScope; // absent means "full"
+  coverageByCriterion?: { criterion: CriterionId; status: CoverageStatus }[]; // document order, one row of seals
 };
 ```
 
 The resolved `EngineConfig` (absolute paths) exists only at run time. The CLI passes the resolved config and the `projectRoot` to the core builders as data; `buildHistoryRecord` and the other builders turn each path back into a path relative to the Target_Project root through `relativizePath` (a path under the root loses the root prefix; a path outside it, such as the `measure` output directory, becomes a `../` path in the config and `<outside-project>/<basename>` anywhere else). The Verdict metadata holds no paths. The Mutation_Report keys files by project-relative path. Free-text fields (`message`, error text, mutant descriptions, `statusReason`) go through `scrubAbsolutePaths` (Requirement 8.17).
+
+Each of the three builders applies `dropTwins` to the raw mutant list, so `Verdict.mutants`, the Mutation_Report mutants and `HistoryRecord.mutants` hold one set of ids (Requirement 8.21). `buildVerdict` computes `twinsMerged`, `mutantCounts` and `strykerCounts` from the raw list with `core/totals.ts`. It also takes the `BaselineTest[]` and `ClaimCounts` (from `core/baseline-tests.ts` and `core/claims.ts`), the `RequirementTitle[]`, `specName` and `scope` as plain input, and writes them after scrubbing the free-text fields. `buildHistoryRecord` writes `coverageByCriterion` from `verdict.coverage` (document order) and `scope` from `verdict.metadata.scope`. `buildMutationReport` writes `scope` in the schema's free-form `config` object, next to `ignoreStatic`.
 
 In the Verdict, `kill class` entries exist only for mutants with status Killed. Coverage still counts Timeout as killed (Requirement 7.1). The `mutation-testing-report-schema` document type and all zod schemas live beside these types in `core/`. Every type that crosses an adapter boundary (config JSON, mutant JSON, Stryker JSON reporter output with locations, Vitest JSON reporter output, witness outcome JSON, git diff output) is parsed with a zod schema at the adapter boundary per ADR 0005; the adapter never hands the core an unparsed `unknown`.
 
@@ -529,6 +677,89 @@ The generator covers criteria with plain text, with leading and trailing whitesp
 
 **Validates: Requirements 8.12, 8.17, 8.18, 8.19, 8.20**
 
+Properties 27 to 35 are new. Each lives in its own new `*.property.test.ts` file, because the files of Properties 1 to 26 are sealed.
+
+### Property 27: Claim parsing
+
+For any generated test file text and any start line, and any spec name:
+
+- `extractLeadingComments` returns only lines that are comment lines of the text, in file order, all inside the unbroken run of comment lines that ends on line `startLine - 1`; it returns an empty list when line `startLine - 1` is blank or code, when `startLine <= 1`, and for a comment that stands above a `describe` it returns nothing for a test inside the block;
+- `parseClaimComments` returns an empty list whenever a `Feature:` line names a spec other than the given one, and the same refs whatever other comment lines stand between, above or below the `Feature:` and `Validates:` lines;
+- `resolveClaimRefs` expands a whole-requirement ref `N` to exactly the ids of the Criteria of Requirement N in document order, keeps an id or number that the spec lacks as written, returns no duplicate, and returns the same ids for the same refs in any generated spacing, comma, `and` and `**` variant;
+- two tests generated by one `it.each` or `test.each` call (the same start line) get the same ids.
+
+The generator produces files with a `Feature:` line naming this spec, another spec and none; `Validates:` lines with `Requirement` and `Requirements`, single ids, lists, whole requirements, a repeated id, an id the spec lacks, a malformed token that ends the list; comment lines between the annotation and the call; blank lines that break the run; `//` runs and `/* */` blocks; and calls on one line and `.each` calls.
+
+**Validates: Requirements 11.1, 11.2, 11.3, 11.4, 11.5, 11.6, 11.7, 11.8, 11.9, 11.10, 11.13**
+
+### Property 28: Claim outcomes and counts
+
+For any generated criteria, mutant results and baseline tests with claims:
+
+- every claim has exactly one outcome, and the counts of `held`, `notHeld`, `unchecked` and `unknownCriterion` sum to `claimCounts.total`, which equals the number of claims in `baselineTests`; `notHeldOthersKilledAll` plus `notHeldOthersDidNot` equals `notHeld`;
+- a claim is `held` if and only if its criterion has at least one valid Spec_Mutant and the test is among the killing tests of every valid Spec_Mutant of it; it is `unchecked` if and only if the criterion exists and has no valid Spec_Mutant; it is `unknown-criterion` if and only if the id is not a Criterion of the spec;
+- `otherTestsKilledAll` exists only on `not-held` claims, and is true if and only if every valid Spec_Mutant of the criterion has status Timeout, or status Killed with a killing test other than this test;
+- Ghost, InvalidWitness, CompileError and NotApplicable mutants and strays never change an outcome;
+- a test with no claim has no `claims` key.
+
+The generator includes criteria with no mutant, with only invalid mutants, with a Timeout mutant, with a survivor, with a mutant killed by this test only, and a test that kills all mutants of a criterion but one.
+
+**Validates: Requirements 7.6, 11.11, 11.12, 11.15**
+
+### Property 29: One set of mutant ids and agreeing totals
+
+For any generated run input with Spec_Mutants, Mechanical_Mutants and Twins, the Mutation_Report, the Verdict and the HistoryRecord built from it list the same set of mutant ids, and no Twin id is in any of them. In the Verdict, the sum of `mutantCounts.spec` equals the number of Spec_Mutants listed, the sum of `mutantCounts.mechanical` equals the number of Mechanical_Mutants listed, each per-status count equals the number of listed mutants of that kind and status, and `twinsMerged` equals the number of dropped Twins. For a `spec-only` input, `mutantCounts.mechanical` and `strykerCounts` are absent and no stray is listed. `dropTwins` keeps every Spec_Mutant, keeps a Mechanical_Mutant that differs in file, start line, start column, end line, end column or replacement, and does not depend on ids.
+
+**Validates: Requirements 8.15, 8.21, 8.22, 8.28, 9.18**
+
+### Property 30: Stryker counts come from the produced mutants
+
+For any generated list of Mechanical_Mutant statuses (every Mutant_Status a Mechanical_Mutant can have, including Killed, Timeout, Survived and CompileError) and any set of Twins inside it, `computeStrykerCounts` returns `detected` equal to the number of Killed plus Timeout, `undetected` equal to the number of Survived, and `total` equal to the length of the list; `detected + undetected <= total`; the result is the same for the same list in any order; and it does not change when the Twins are removed afterwards, because `dropTwins` runs after it. `strykerCounts.total` can exceed the number of Mechanical_Mutants in `mutantCounts` by exactly `twinsMerged`.
+
+**Validates: Requirements 8.22, 8.23, 8.24**
+
+### Property 31: Baseline tests
+
+For any generated Vitest JSON result of a Baseline_Run (files with passed, skipped and todo tests, tests with equal full names in one file, tests in files that match a property glob, tests whose body calls `fc.assert`), `buildBaselineTests` returns one entry for each passed test and none for a skipped or todo test, so the length equals the number of passed tests. Each id is `<file>::<full name>`, built by the same function as the id of a killing test, so for any generated killing test the id appears in the list (except a file-level failure). Each `kind` equals the result of `classifyTest`. The order is sorted by id and then by start line, and the same input in another order gives the same list.
+
+**Validates: Requirements 6.3, 6.4, 6.5, 6.11, 6.12, 6.13**
+
+### Property 32: New fields are optional, strict and clean
+
+For any generated Verdict and HistoryRecord that carry any subset of the new fields (`baselineTests` with and without `claims`, `claimCounts`, `mutantCounts`, `strykerCounts`, `requirements`, `specName`, `scope`, `coverageByCriterion`):
+
+- `verdictSchema` and `historyRecordSchema` accept the value, and accept it with every new field removed (a file written before these fields existed);
+- an unknown field next to a new field, inside a new field, or at the top level is rejected, and so are an unknown outcome value, an unknown scope and a negative count;
+- writing, reading and writing again gives identical content;
+- no string anywhere satisfies `containsAbsolutePath`, whatever absolute paths the generated titles, spec names, criterion ids of claims and test ids contain, and the output is byte-identical for equal input.
+
+**Validates: Requirements 8.12, 8.13, 8.17, 8.22, 8.25, 8.26, 8.27, 8.28, 8.29, 8.31**
+
+### Property 33: Requirement titles
+
+For any generated requirements document with N requirements, each with a title (with leading and trailing spaces, a colon inside the title, Unicode) and with fenced code blocks that hold lines that look like `### Requirement N:` headings, `parseRequirementTitles` returns exactly N entries `{ requirement: n, title }` for n from 1 to N in document order with each title trimmed, and `parseRequirements` returns the same value as it does for the same document without the fenced lines. A repeated number or an empty title is an error that names the file.
+
+**Validates: Requirements 2.2, 2.9, 2.10, 8.26**
+
+### Property 34: History comparison across scopes
+
+For any generated sequence of HistoryRecords of both scopes (a record with no `scope` counts as `full`) and any new run, `selectComparisonRecord` returns, for a `full` run, the latest earlier `full` record, or none; and for a `spec-only` run, the latest earlier record of any scope. For a `full` run that follows a `spec-only` record, `newlyKilledIds` never lists a Mechanical_Mutant that the latest `full` record already listed as killed, and never depends on the spec-only record. For a `spec-only` run, `newlyKilledIds` holds only Spec_Mutant ids, and none that the Comparison_Record listed as killed. For two runs of the same scope, the result equals the rule of Property 14.
+
+**Validates: Requirements 8.9, 8.28, 8.30**
+
+### Property 35: Witness test source
+
+For any generated Witness (with `expected` of any JSON value, including nested objects, arrays, unicode strings, numbers and `null`, or with `expectedError`), any Criterion id and any safe project-relative `testFile`:
+
+- `buildWitnessTest` is deterministic: two calls with equal input return equal strings;
+- the output contains the export name, the Criterion id, and (with `expectedError`) the error class name; the test name starts with the Criterion id; with `expected` the output contains `toEqual` and no `toThrow`, and with `expectedError` it contains `toThrow` and no `toEqual`;
+- the printed values parse back, in both forms of Requirement 12.6. When neither value holds a `__proto__` key at any depth, the text between the markers `const args = ` and ` as unknown as Parameters<typeof <export>>;` equals `JSON.stringify(witness.args, null, 2)` once the two-space indent of the lines after the first is removed, and `JSON.parse` of it equals `witness.args`; the same holds for the text between `const expected: unknown = ` and `;`; the output holds no `JSON.parse` call; keys appear in the order of the Witness object. When `args` or `expected` holds a `__proto__` key at any depth, that value is printed in the `JSON.parse("...")` form and goes through `JSON.parse` twice to equal the Witness value, and the other value keeps the plain form. Strings with quotes, backslashes, newlines and `</script>` survive in both forms;
+- the arguments are always cast through `unknown` to `Parameters<typeof <export>>` (that the result compiles in strict mode is checked by the integration test of task 20.3, not by this pure property);
+- the import path resolves, from the directory of `testFile`, to the same file as `witness.from` without its extension, and starts with `./` or `../`;
+- an export name or error class name that is not an identifier, an absolute path, and a `..` segment each give an error that names the field, and no source.
+
+**Validates: Requirements 12.1, 12.2, 12.3, 12.4, 12.5, 12.6, 12.7**
+
 ## Error Handling
 
 - Every function in `core/` returns `Result<T, E>` for an expected failure (invalid config, malformed mutant file, unsafe path, witness mismatch, parse error) and throws only when an internal invariant is violated (a programming error). Adapters catch adapter-specific exceptions (a failed `fs` call, a non-zero StrykerJS exit, a git command failure) at the boundary and convert them into the same `Result` error shapes before handing control back to the CLI.
@@ -539,6 +770,7 @@ The generator covers criteria with plain text, with leading and trailing whitesp
 - A sandbox is always torn down through a `try/finally` in `sandbox.ts`, so a crash inside mutation, type-check, witness execution, or the suite run still reaches `Sandbox.destroy`. Leftover sandboxes of an earlier killed run are removed at startup (Requirement 5.20). A write that would leave the Sandbox is a bug-class failure: `resolveInside` returns an error, the copy stops, the Sandbox is destroyed and the run ends with exit code 1.
 - A witness that exceeds its time limit yields the outcome `timeout`. On the original code it makes the mutant InvalidWitness (the original did not match the expectation), and the Verdict_File keeps `expected` and `originalOutcome`. On the mutated code it is a difference, so the suite runs (Requirement 5.16). A missing or unreadable outcome file yields `no-outcome` with a message, scrubbed of absolute paths before it reaches any output (Requirement 8.17).
 - `CompileError` and `InvalidWitness` are terminal statuses for a single mutant: they stop that mutant's pipeline (no suite run follows) but do not abort the overall run; they are recorded and reported like any other status, subject to Property 3's exclusion from killed/survived counts.
+- A test file that cannot be read for its claims gives no claims and no error (Requirement 11.14). A claim whose criterion is unknown is data (`unknown-criterion`), never an error. `parseRequirementTitles` fails the load stage, before the baseline, with the same structured error as `parseRequirements` (Requirement 2.10). `--scope` errors are usage or option errors with exit code 1 and run nothing (Requirements 9.19, 9.20). `buildWitnessTest` returns a `Result` error for an unsafe name or path and never throws.
 - On SIGINT or SIGTERM the shell kills every child process group, removes Sandboxes and the StrykerJS temp dir, writes no report, and exits 130 or 143 (Requirement 9.15). This path is not a runtime error and does not exit 1.
 - A git failure (unknown ref, not a repository) with `--since` returns an error that names the ref and ends the run with exit code 1; it never falls back to mutating the whole project.
 
@@ -548,7 +780,7 @@ The feature mixes pure transformation logic (well suited to property-based testi
 
 ### Where PBT applies
 
-All twenty-five correctness properties above describe pure, deterministic core functions (`applyMutation`, `validateSpecMutant`, `planSandboxCopy`, `resolveInside`, `computeStrykerExclusions`, `parseChangedRanges`, `extractStrykerError`, `shouldRetryWithIgnoreStatic`, `extractFailingTests`, `compareOutcomes`, `relativizePath`, `classifySpecies`, `computeCoverage`, `computeKillClass`, `classifyTest`, `computeMutantId`, `assignOccurrenceIndexes`, `buildMutationReport`, `buildVerdict`, `buildHistoryRecord`, `serializeHistoryRecord`, `parseHistoryLines`, `parseRequirements`) operating over plain data with a large or structured input space. Each gets exactly one property-based test, using **fast-check**, per Requirement 10.6 ("a property test for each correctness property in design.md"). Properties 18 to 25 are new: each lives in its own `*.property.test.ts` file under `packages/engine/test/core/`.
+All thirty-five correctness properties above describe pure, deterministic core functions (`extractLeadingComments`, `parseClaimComments`, `resolveClaimRefs`, `computeClaimOutcome`, `buildBaselineTests`, `dropTwins`, `computeMutantCounts`, `computeStrykerCounts`, `parseRequirementTitles`, `selectComparisonRecord`, `buildWitnessTest`, `applyMutation`, `validateSpecMutant`, `planSandboxCopy`, `resolveInside`, `computeStrykerExclusions`, `parseChangedRanges`, `extractStrykerError`, `shouldRetryWithIgnoreStatic`, `extractFailingTests`, `compareOutcomes`, `relativizePath`, `classifySpecies`, `computeCoverage`, `computeKillClass`, `classifyTest`, `computeMutantId`, `assignOccurrenceIndexes`, `buildMutationReport`, `buildVerdict`, `buildHistoryRecord`, `serializeHistoryRecord`, `parseHistoryLines`, `parseRequirements`) operating over plain data with a large or structured input space. Each gets exactly one property-based test, using **fast-check**, per Requirement 10.6 ("a property test for each correctness property in design.md"). Properties 18 to 25 are new: each lives in its own `*.property.test.ts` file under `packages/engine/test/core/`.
 
 - Property tests live in `*.property.test.ts` files, never mixed with example tests in the same file (Requirement 10.5, `tech.md`).
 - fast-check is configured once in a Vitest setup file with a fixed `seed` and `numRuns` of at least 100 (Requirement 10.6's companion rule in `tech.md`); no test calls `fc.assert` with an ad-hoc seed.
@@ -571,6 +803,9 @@ The following are infrastructure wiring, external-service behavior, or CLI contr
 - **Suite excludes** (Requirements 3.20, 5.21) are covered by an example test that inspects the arguments the suite runner passes (`--exclude '.trickortest/**'` present for the baseline and for every sandbox run) and by the e2e test (no `.trickortest` file appears among the executed test files).
 - **Config defaults and invalid-input messages** (Requirements 1.2-1.6), **loader ordering and per-file error reporting** (Requirements 4.1, 4.3, 4.10), **specific status transitions** (CompileError on type-check failure, Ghost on witness non-difference, Killed/Survived/Timeout from a mocked suite result) are covered by example and edge-case unit tests at the three boundary points each (just below, at, just above) per `no-fake-tests.md`.
 - **Output-directory write failure** (Requirement 8.11) and **StrykerJS/baseline error short-circuiting** (Requirements 3.6, 3.15) are edge-case unit tests using a fake `FileSystem`/`SuiteRunner` adapter that is told to fail.
+- **Claims on the committed example** (Requirement 11.16) are covered by one example test that reads the real test files of `examples/pricing/test/` and a captured copy of the mutant results of the run that had 24 Spec_Mutants (`packages/engine/test/fixtures/cart-pricing-24/`, with the command and commit that produced it recorded, as the Stryker fixtures do). It asserts 25 claims, 16 held, 7 not held, 2 unchecked, 0 unknown, the seven named pairs, and `otherTestsKilledAll` true for six and false for 7.4 of Property 9. The fixture keeps the test independent of task 21.
+- **Run scope** (Requirements 9.17 to 9.22) is covered by CLI example tests with fake adapters: a spec-only run calls neither the Stryker adapter nor git, writes the scope in the three files, prints the scope and no stray count; `--scope` with a bad value and with `--since` exit 1 with the stated message; the default is `full`. The e2e test runs one spec-only run and checks the files.
+- **Witness test source compiles** (Requirement 12) is covered by one integration test that writes the output of `buildWitnessTest` for one `expected` Witness and one `expectedError` Witness into `.trickortest/` of a copy of `examples/pricing`, runs Vitest on it and sees both pass on the original code, and fail on the code of the matching Spec_Mutant applied in a Sandbox. The pure properties cannot show this.
 - **Spec selection** (Requirements 9.5, 9.16) is covered by example tests of the pure `selectSpec` at its boundaries: `--spec` names a listed spec, `--spec` names an unlisted spec, no `--spec` with exactly one spec, no `--spec` with two specs (the error lists both names and asks for `--spec <name>`), and an empty list. One CLI example test with two spec directories and no `--spec` asserts that stderr lists the names, the exit code is 1, and neither the baseline nor StrykerJS ran.
 
 ### End-to-end test
