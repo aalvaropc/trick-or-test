@@ -1807,6 +1807,13 @@
         "chatSessionId": "sess_bc26c256-2ddc-48e3-b689-ed3596d14cc0",
         "timestamp": 1795686221248
       }
+    ],
+    "18.5 Carry the fields from the pipeline": [
+      {
+        "executionId": "84498d4b-b87b-466b-aeda-931446d815cb",
+        "chatSessionId": "sess_f154308b-3958-4f12-952b-9e8afb439b3a",
+        "timestamp": 1795686332464
+      }
     ]
   }
 }

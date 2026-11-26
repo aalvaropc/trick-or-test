@@ -1051,7 +1051,7 @@ Conventions used in every task:
     - Write `test/cli/orchestrate-small-fields.test.ts` with fake adapters: read the written files; `metadata.specName` equals the chosen spec; `requirements` has one entry per `### Requirement N:` heading; the last line of `history.jsonl` has `coverageByCriterion` equal to the `coverage` of `verdict.json` (criterion and status); a duplicate requirement number stops the run before the baseline with exit code 1.
     - _Requirements: 2.10, 8.25, 8.26, 8.27, 10.13_
     - _Validation: npx vitest run --project engine packages/engine/test/cli/orchestrate-small-fields.test.ts passes_
-  - [ ] 18.6 Checkpoint - Small fields
+  - [x] 18.6 Checkpoint - Small fields
     - Run `npm run check` from the repository root. Ensure all tests pass, ask the user if questions arise.
     - _Validation: npm run check passes_
 
