@@ -881,7 +881,7 @@ Conventions used in every task:
     - Write `test/cli/orchestrate-verdict-fields.test.ts` with fake adapters: take the content that the Reporter writes to the fake file system, parse `verdict.json` with the zod schema, and check in the parsed file the text of each criterion (every criterion of the parsed spec has one), the `mutatedOutcome` of a Survived, a Killed and a Ghost mutant, and no `mutatedOutcome` for an InvalidWitness and a CompileError mutant.
     - _Requirements: 8.18, 8.19, 10.13_
     - _Validation: npx vitest run --project engine packages/engine/test/cli/orchestrate-verdict-fields.test.ts passes_
-  - [ ] 13.6 Regenerate `reports/` with `npm run measure`
+  - [x] 13.6 Regenerate `reports/` with `npm run measure`
     - Note: the committed `reports/verdict.json` lacks the new fields. Kiro runs `npm run measure` once from the repository root and commits the changed files in `reports/`. This appends one line to `reports/history.jsonl`, which is expected: the earlier lines stay unchanged. Nobody edits the files by hand, and ids and the history format do not change.
     - Check that `reports/history.jsonl` has exactly one more line than before, that every coverage entry of `reports/verdict.json` has a non-empty `text`, that every Spec_Mutant with a `mutatedOutcome` has a status in Killed, Survived, Timeout or Ghost, and that no string in the three files holds an absolute path.
     - _Requirements: 8.17, 8.18, 8.19, 9.13, 9.14_
