@@ -1085,7 +1085,7 @@ Conventions used in every task:
     - The property found that `buildVerdict` copied `specName` (into `metadata.specName`) and each claim's `criterion` (in `baselineTests[].claims[]`) unchanged. Fix `buildVerdict` so both pass through `scrubAbsolutePaths`, as the other free-text fields do (8.17, 8.31). The HistoryRecord builder copies neither field, so it needs no change. Add `test/core/verdict-scrub-new-fields.test.ts` with example tests for a spec name under the project root, one outside it, and a claim criterion with an absolute path.
     - _Requirements: 8.12, 8.13, 8.17, 8.29, 8.31_
     - _Validation: npx vitest run --project engine packages/engine/test/core/verdict.new-fields.property.test.ts passes_
-  - [ ] 19.6 Parse the option
+  - [x] 19.6 Parse the option
     - In `cli/` add `--scope <full|spec-only>` to the argument parser of `run` and `measure`, with `full` as default, a usage line, and the errors of 9.19 and 9.20 (exit code 1, message on stderr).
     - Write `test/cli/args-scope.test.ts`: no option gives `full`; both values are accepted by `run` and `measure`; a third value prints the usage text and exits 1; `--scope spec-only --since main` prints an error that names both options and exits 1; `--scope full --since main` is accepted; a missing value is a usage error.
     - _Requirements: 9.17, 9.19, 9.20_
