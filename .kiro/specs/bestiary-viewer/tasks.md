@@ -434,12 +434,12 @@ Conventions for every task:
     - _Requirements: 3.6, 10.4, 10.5, 10.6, 10.9, 10.10, 10.11, 11.9, 12.11, 12.13, 12.14_
     - _Validation: `npm test -w trick-or-test-viewer -- test/ui/cross-cutting.test.tsx` passes_
 
-- [ ] 10. Checkpoint - components and screens
+- [x] 10. Checkpoint - components and screens
   - Ensure all tests pass, ask the user if questions arise.
   - _Validation: `npm run check` passes_
 
 - [ ] 11. Build for GitHub Pages
-  - [ ] 11.1 Add the production build test
+  - [x] 11.1 Add the production build test
     - Add `test/build/build-output.test.ts` that runs Vite's JS `build()` into a temporary directory under `/tmp` and asserts: `index.html` references assets under `/trick-or-test/` (12.3), the `.woff2` files of both fonts are emitted and no URL points to a font CDN or another origin (10.3, 12.11), the OFL text of both fonts is in the bundle (10.3), and `public/fonts/` does not exist (12.16). The build must succeed when `public/demo/` does not exist.
     - _Requirements: 10.3, 12.3, 12.11, 12.16_
     - _Validation: `npm test -w trick-or-test-viewer -- test/build/build-output.test.ts` passes_
