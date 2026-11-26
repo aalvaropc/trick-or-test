@@ -1161,7 +1161,7 @@ Conventions used in every task:
     - Run `npm run measure` once from the repository root and commit the changed files in `reports/`. This appends one line to `reports/history.jsonl`; the earlier lines stay unchanged.
     - _Requirements: 9.12, 9.13, 9.14_
     - _Validation: npm run measure && test -f reports/mutation-report.json && test -f reports/verdict.json && test -f reports/history.jsonl passes_
-  - [ ] 22.3 Regenerate the demo runs
+  - [x] 22.3 Regenerate the demo runs
     - Run `npm run demo` and commit the changed files in `apps/viewer/public/demo/`. Check that the `after` history still extends the `before` line, and that the Oathbreaker of 7.4 goes from survivor to killed.
     - _Requirements: 9.14, 9.22_
     - _Validation: npm run demo passes_

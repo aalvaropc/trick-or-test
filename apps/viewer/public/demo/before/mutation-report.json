@@ -161,6 +161,39 @@
           ]
         },
         {
+          "id": "oath-2.2-percent-fractional-result",
+          "mutatorName": "Oathbreaker",
+          "location": {
+            "start": {
+              "line": 14,
+              "column": 3
+            },
+            "end": {
+              "line": 14,
+              "column": 62
+            }
+          },
+          "status": "Killed",
+          "replacement": "return (amount * bps + HALF) / BPS_DENOMINATOR;",
+          "description": "percentOf divides with floating-point arithmetic and returns a fraction instead of computing with integer arithmetic only.",
+          "killedBy": [
+            "test/api.test.ts::public API accepts typed carts and returns a typed Breakdown",
+            "test/percent.test.ts::percentOf matches the BigInt Round_Half_Up reference for safe non-negative integers",
+            "test/percent.test.ts::percentOf examples percentOf(14, 1000) = 1",
+            "test/percent.test.ts::percentOf examples percentOf(0, 10000) = 0",
+            "test/percent.test.ts::percentOf examples percentOf(1, 4999) = 0",
+            "test/price.test.ts::priceCart properties subtotalCents is the sum of line totals with bulk discount",
+            "test/price.test.ts::priceCart properties empty carts price to all zeros",
+            "test/price.test.ts::priceCart breakdown invariants fields are non-negative integers, discount <= subtotal, and total identity holds",
+            "test/price.test.ts::priceCart unit tests bulk discount boundary quantity 10 at unit price 5 has line total 45",
+            "test/price.test.ts::priceCart unit tests bulk discount boundary quantity 10 at unit price 1 has line total 9",
+            "test/price.test.ts::priceCart unit tests coupon minimum subtotal applies when minSubtotalCents equals the subtotal",
+            "test/price.test.ts::priceCart unit tests empty cart yields all zeros with coupon, express shipping, and nonzero taxBps"
+          ],
+          "species": "Oathbreaker",
+          "requirement": "2.2"
+        },
+        {
           "id": "oath-2.3-percent-validates-bps",
           "mutatorName": "Oathbreaker",
           "location": {
@@ -1430,8 +1463,6 @@
             "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > applies when minSubtotalCents equals the subtotal",
             "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > fixed coupon below minimum gives 0 and at minimum applies",
             "test/price.test.ts::priceCart unit tests > empty cart > yields all zeros with coupon, express shipping, and nonzero taxBps",
-            "test/api.test.ts::public API > accepts typed carts and returns a typed Breakdown",
-            "test/api.test.ts::public API > throws ValidationError carrying the field name",
             "test/validation.test.ts::validation properties > reports a single invalid field by name",
             "test/validation.test.ts::validation properties: multiple invalid fields > throws a ValidationError naming one of the invalid fields",
             "test/validation.test.ts::validation unit tests > names lines[0].quantity",
@@ -1442,7 +1473,9 @@
             "test/validation.test.ts::validation unit tests > unit price 1000001 valid=false",
             "test/validation.test.ts::validation unit tests > taxBps -1 valid=false",
             "test/validation.test.ts::validation unit tests > taxBps 10001 valid=false",
-            "test/validation.test.ts::validation unit tests > reports one of several invalid fields"
+            "test/validation.test.ts::validation unit tests > reports one of several invalid fields",
+            "test/api.test.ts::public API > accepts typed carts and returns a typed Breakdown",
+            "test/api.test.ts::public API > throws ValidationError carrying the field name"
           ]
         },
         {
@@ -1461,7 +1494,6 @@
           "status": "Killed",
           "replacement": ";",
           "killedBy": [
-            "test/api.test.ts::public API > throws ValidationError carrying the field name",
             "test/validation.test.ts::validation properties > reports a single invalid field by name",
             "test/validation.test.ts::validation properties: multiple invalid fields > throws a ValidationError naming one of the invalid fields",
             "test/validation.test.ts::validation unit tests > names lines[0].quantity",
@@ -1472,7 +1504,8 @@
             "test/validation.test.ts::validation unit tests > unit price 1000001 valid=false",
             "test/validation.test.ts::validation unit tests > taxBps -1 valid=false",
             "test/validation.test.ts::validation unit tests > taxBps 10001 valid=false",
-            "test/validation.test.ts::validation unit tests > reports one of several invalid fields"
+            "test/validation.test.ts::validation unit tests > reports one of several invalid fields",
+            "test/api.test.ts::public API > throws ValidationError carrying the field name"
           ]
         },
         {
@@ -1789,6 +1822,7 @@
           "status": "Killed",
           "replacement": "true",
           "killedBy": [
+            "test/api.test.ts::public API > throws ValidationError carrying the field name",
             "test/validation.test.ts::validation properties > reports a single invalid field by name",
             "test/validation.test.ts::validation properties: multiple invalid fields > throws a ValidationError naming one of the invalid fields",
             "test/validation.test.ts::validation unit tests > names lines[0].quantity",
@@ -1799,8 +1833,7 @@
             "test/validation.test.ts::validation unit tests > unit price 1000001 valid=false",
             "test/validation.test.ts::validation unit tests > taxBps -1 valid=false",
             "test/validation.test.ts::validation unit tests > taxBps 10001 valid=false",
-            "test/validation.test.ts::validation unit tests > reports one of several invalid fields",
-            "test/api.test.ts::public API > throws ValidationError carrying the field name"
+            "test/validation.test.ts::validation unit tests > reports one of several invalid fields"
           ]
         },
         {
@@ -1897,6 +1930,7 @@
           "status": "Killed",
           "replacement": "typeof v === 'number' && Number.isInteger(v) && v >= min || v <= max",
           "killedBy": [
+            "test/api.test.ts::public API > throws ValidationError carrying the field name",
             "test/validation.test.ts::validation properties > reports a single invalid field by name",
             "test/validation.test.ts::validation properties: multiple invalid fields > throws a ValidationError naming one of the invalid fields",
             "test/validation.test.ts::validation unit tests > names lines[0].quantity",
@@ -1907,8 +1941,7 @@
             "test/validation.test.ts::validation unit tests > unit price 1000001 valid=false",
             "test/validation.test.ts::validation unit tests > taxBps -1 valid=false",
             "test/validation.test.ts::validation unit tests > taxBps 10001 valid=false",
-            "test/validation.test.ts::validation unit tests > reports one of several invalid fields",
-            "test/api.test.ts::public API > throws ValidationError carrying the field name"
+            "test/validation.test.ts::validation unit tests > reports one of several invalid fields"
           ]
         },
         {
@@ -1946,14 +1979,14 @@
           "status": "Killed",
           "replacement": "typeof v === 'number' && Number.isInteger(v) || v >= min",
           "killedBy": [
-            "test/api.test.ts::public API > throws ValidationError carrying the field name",
             "test/validation.test.ts::validation properties > reports a single invalid field by name",
             "test/validation.test.ts::validation properties: multiple invalid fields > throws a ValidationError naming one of the invalid fields",
             "test/validation.test.ts::validation unit tests > names lines[0].quantity",
             "test/validation.test.ts::validation unit tests > names lines[2].unitPriceCents",
             "test/validation.test.ts::validation unit tests > names taxBps",
             "test/validation.test.ts::validation unit tests > quantity 0 valid=false",
-            "test/validation.test.ts::validation unit tests > taxBps -1 valid=false"
+            "test/validation.test.ts::validation unit tests > taxBps -1 valid=false",
+            "test/api.test.ts::public API > throws ValidationError carrying the field name"
           ]
         },
         {
@@ -2308,8 +2341,6 @@
             "test/validation.test.ts::validation unit tests > taxBps 10000 valid=true",
             "test/validation.test.ts::validation unit tests > taxBps 10001 valid=false",
             "test/validation.test.ts::validation unit tests > does not throw ValidationError for unusual coupon values",
-            "test/api.test.ts::public API > accepts typed carts and returns a typed Breakdown",
-            "test/api.test.ts::public API > throws ValidationError carrying the field name",
             "test/price.test.ts::priceCart properties > subtotalCents is the sum of line totals with bulk discount",
             "test/price.test.ts::priceCart properties > empty carts price to all zeros",
             "test/price.test.ts::priceCart coupon discount > discountCents follows the coupon rules and is clamped to the subtotal",
@@ -2327,7 +2358,9 @@
             "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > gives discount 0 when subtotal is below minSubtotalCents",
             "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > applies when minSubtotalCents equals the subtotal",
             "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > fixed coupon below minimum gives 0 and at minimum applies",
-            "test/price.test.ts::priceCart unit tests > empty cart > yields all zeros with coupon, express shipping, and nonzero taxBps"
+            "test/price.test.ts::priceCart unit tests > empty cart > yields all zeros with coupon, express shipping, and nonzero taxBps",
+            "test/api.test.ts::public API > accepts typed carts and returns a typed Breakdown",
+            "test/api.test.ts::public API > throws ValidationError carrying the field name"
           ]
         },
         {
@@ -2475,22 +2508,6 @@
           "status": "Killed",
           "replacement": "true",
           "killedBy": [
-            "test/validation.test.ts::validation properties > reports a single invalid field by name",
-            "test/validation.test.ts::validation properties: multiple invalid fields > throws a ValidationError naming one of the invalid fields",
-            "test/validation.test.ts::validation unit tests > names lines[0].quantity",
-            "test/validation.test.ts::validation unit tests > names lines[2].unitPriceCents",
-            "test/validation.test.ts::validation unit tests > quantity 0 valid=false",
-            "test/validation.test.ts::validation unit tests > quantity 1 valid=true",
-            "test/validation.test.ts::validation unit tests > quantity 999 valid=true",
-            "test/validation.test.ts::validation unit tests > quantity 1000 valid=false",
-            "test/validation.test.ts::validation unit tests > unit price 0 valid=true",
-            "test/validation.test.ts::validation unit tests > unit price 1000000 valid=true",
-            "test/validation.test.ts::validation unit tests > unit price 1000001 valid=false",
-            "test/validation.test.ts::validation unit tests > taxBps 0 valid=true",
-            "test/validation.test.ts::validation unit tests > taxBps 10000 valid=true",
-            "test/validation.test.ts::validation unit tests > does not throw ValidationError for unusual coupon values",
-            "test/api.test.ts::public API > accepts typed carts and returns a typed Breakdown",
-            "test/api.test.ts::public API > throws ValidationError carrying the field name",
             "test/price.test.ts::priceCart properties > subtotalCents is the sum of line totals with bulk discount",
             "test/price.test.ts::priceCart properties > empty carts price to all zeros",
             "test/price.test.ts::priceCart coupon discount > discountCents follows the coupon rules and is clamped to the subtotal",
@@ -2508,7 +2525,23 @@
             "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > gives discount 0 when subtotal is below minSubtotalCents",
             "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > applies when minSubtotalCents equals the subtotal",
             "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > fixed coupon below minimum gives 0 and at minimum applies",
-            "test/price.test.ts::priceCart unit tests > empty cart > yields all zeros with coupon, express shipping, and nonzero taxBps"
+            "test/price.test.ts::priceCart unit tests > empty cart > yields all zeros with coupon, express shipping, and nonzero taxBps",
+            "test/validation.test.ts::validation properties > reports a single invalid field by name",
+            "test/validation.test.ts::validation properties: multiple invalid fields > throws a ValidationError naming one of the invalid fields",
+            "test/validation.test.ts::validation unit tests > names lines[0].quantity",
+            "test/validation.test.ts::validation unit tests > names lines[2].unitPriceCents",
+            "test/validation.test.ts::validation unit tests > quantity 0 valid=false",
+            "test/validation.test.ts::validation unit tests > quantity 1 valid=true",
+            "test/validation.test.ts::validation unit tests > quantity 999 valid=true",
+            "test/validation.test.ts::validation unit tests > quantity 1000 valid=false",
+            "test/validation.test.ts::validation unit tests > unit price 0 valid=true",
+            "test/validation.test.ts::validation unit tests > unit price 1000000 valid=true",
+            "test/validation.test.ts::validation unit tests > unit price 1000001 valid=false",
+            "test/validation.test.ts::validation unit tests > taxBps 0 valid=true",
+            "test/validation.test.ts::validation unit tests > taxBps 10000 valid=true",
+            "test/validation.test.ts::validation unit tests > does not throw ValidationError for unusual coupon values",
+            "test/api.test.ts::public API > accepts typed carts and returns a typed Breakdown",
+            "test/api.test.ts::public API > throws ValidationError carrying the field name"
           ]
         },
         {
@@ -2829,6 +2862,18 @@
           "status": "Killed",
           "replacement": "true",
           "killedBy": [
+            "test/validation.test.ts::validation properties > reports a single invalid field by name",
+            "test/validation.test.ts::validation properties: multiple invalid fields > throws a ValidationError naming one of the invalid fields",
+            "test/validation.test.ts::validation unit tests > names lines[2].unitPriceCents",
+            "test/validation.test.ts::validation unit tests > quantity 1 valid=true",
+            "test/validation.test.ts::validation unit tests > quantity 999 valid=true",
+            "test/validation.test.ts::validation unit tests > unit price 0 valid=true",
+            "test/validation.test.ts::validation unit tests > unit price 1000000 valid=true",
+            "test/validation.test.ts::validation unit tests > unit price 1000001 valid=false",
+            "test/validation.test.ts::validation unit tests > taxBps 0 valid=true",
+            "test/validation.test.ts::validation unit tests > taxBps 10000 valid=true",
+            "test/validation.test.ts::validation unit tests > does not throw ValidationError for unusual coupon values",
+            "test/api.test.ts::public API > accepts typed carts and returns a typed Breakdown",
             "test/price.test.ts::priceCart properties > subtotalCents is the sum of line totals with bulk discount",
             "test/price.test.ts::priceCart coupon discount > discountCents follows the coupon rules and is clamped to the subtotal",
             "test/price.test.ts::priceCart shipping > shippingCents follows method and the discounted subtotal threshold",
@@ -2844,19 +2889,7 @@
             "test/price.test.ts::priceCart unit tests > bulk discount boundary > exact-half bulk discount: quantity 11 at unit price 5 gives 49",
             "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > gives discount 0 when subtotal is below minSubtotalCents",
             "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > applies when minSubtotalCents equals the subtotal",
-            "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > fixed coupon below minimum gives 0 and at minimum applies",
-            "test/validation.test.ts::validation properties > reports a single invalid field by name",
-            "test/validation.test.ts::validation properties: multiple invalid fields > throws a ValidationError naming one of the invalid fields",
-            "test/validation.test.ts::validation unit tests > names lines[2].unitPriceCents",
-            "test/validation.test.ts::validation unit tests > quantity 1 valid=true",
-            "test/validation.test.ts::validation unit tests > quantity 999 valid=true",
-            "test/validation.test.ts::validation unit tests > unit price 0 valid=true",
-            "test/validation.test.ts::validation unit tests > unit price 1000000 valid=true",
-            "test/validation.test.ts::validation unit tests > unit price 1000001 valid=false",
-            "test/validation.test.ts::validation unit tests > taxBps 0 valid=true",
-            "test/validation.test.ts::validation unit tests > taxBps 10000 valid=true",
-            "test/validation.test.ts::validation unit tests > does not throw ValidationError for unusual coupon values",
-            "test/api.test.ts::public API > accepts typed carts and returns a typed Breakdown"
+            "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > fixed coupon below minimum gives 0 and at minimum applies"
           ]
         },
         {
@@ -2947,17 +2980,6 @@
           "status": "Killed",
           "replacement": "isIntInRange(line.unitPriceCents, 0, 1_000_000)",
           "killedBy": [
-            "test/validation.test.ts::validation properties > reports a single invalid field by name",
-            "test/validation.test.ts::validation properties: multiple invalid fields > throws a ValidationError naming one of the invalid fields",
-            "test/validation.test.ts::validation unit tests > names lines[2].unitPriceCents",
-            "test/validation.test.ts::validation unit tests > quantity 1 valid=true",
-            "test/validation.test.ts::validation unit tests > quantity 999 valid=true",
-            "test/validation.test.ts::validation unit tests > unit price 0 valid=true",
-            "test/validation.test.ts::validation unit tests > unit price 1000000 valid=true",
-            "test/validation.test.ts::validation unit tests > unit price 1000001 valid=false",
-            "test/validation.test.ts::validation unit tests > taxBps 0 valid=true",
-            "test/validation.test.ts::validation unit tests > taxBps 10000 valid=true",
-            "test/validation.test.ts::validation unit tests > does not throw ValidationError for unusual coupon values",
             "test/price.test.ts::priceCart properties > subtotalCents is the sum of line totals with bulk discount",
             "test/price.test.ts::priceCart coupon discount > discountCents follows the coupon rules and is clamped to the subtotal",
             "test/price.test.ts::priceCart shipping > shippingCents follows method and the discounted subtotal threshold",
@@ -2974,6 +2996,17 @@
             "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > gives discount 0 when subtotal is below minSubtotalCents",
             "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > applies when minSubtotalCents equals the subtotal",
             "test/price.test.ts::priceCart unit tests > coupon minimum subtotal > fixed coupon below minimum gives 0 and at minimum applies",
+            "test/validation.test.ts::validation properties > reports a single invalid field by name",
+            "test/validation.test.ts::validation properties: multiple invalid fields > throws a ValidationError naming one of the invalid fields",
+            "test/validation.test.ts::validation unit tests > names lines[2].unitPriceCents",
+            "test/validation.test.ts::validation unit tests > quantity 1 valid=true",
+            "test/validation.test.ts::validation unit tests > quantity 999 valid=true",
+            "test/validation.test.ts::validation unit tests > unit price 0 valid=true",
+            "test/validation.test.ts::validation unit tests > unit price 1000000 valid=true",
+            "test/validation.test.ts::validation unit tests > unit price 1000001 valid=false",
+            "test/validation.test.ts::validation unit tests > taxBps 0 valid=true",
+            "test/validation.test.ts::validation unit tests > taxBps 10000 valid=true",
+            "test/validation.test.ts::validation unit tests > does not throw ValidationError for unusual coupon values",
             "test/api.test.ts::public API > accepts typed carts and returns a typed Breakdown"
           ]
         },
