@@ -159,6 +159,7 @@ export async function runCli(argv: readonly string[], deps: CliDeps): Promise<nu
         specMutants: specMutants.value,
         ignoreStaticRetried: mechanical.value.ignoreStaticRetried,
         metadata,
+        baselineTests: mechanical.value.baselineTests,
       },
       { fs: deps.fs },
     );

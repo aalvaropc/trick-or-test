@@ -968,7 +968,7 @@ Conventions used in every task:
     - **Validates: Requirements 6.3, 6.4, 6.5, 6.11, 6.12, 6.13**
     - _Requirements: 6.11, 6.12, 6.13_
     - _Validation: npx vitest run --project engine packages/engine/test/core/baseline-tests.property.test.ts passes_
-  - [ ] 16.4 Carry the tests from the Baseline_Run to the Verdict
+  - [x] 16.4 Carry the tests from the Baseline_Run to the Verdict
     - In `cli/orchestrate.ts` keep the passed tests of the Baseline_Run `SuiteResult` (file, full name, start line, status), read each test body with `extractTestBody`, call `buildBaselineTests`, and give the list to `buildVerdict`, which writes `baselineTests`.
     - Write `test/cli/orchestrate-baseline-tests.test.ts` with fake adapters: read the written `verdict.json`; its `baselineTests` length equals the number of passed tests of the fake Baseline_Run; a skipped test is absent; every killing-test id of every mutant in the file is in the list (except a file-level failure, whose id is a file path).
     - _Requirements: 6.11, 6.12, 6.13, 10.13_

@@ -278,6 +278,8 @@ export type VerdictInput = {
   changes?: Record<MutantId, MutantChange>;
   /** Run_Scope (8.28). Defaults to `full`. */
   scope?: RunScope;
+  /** Passed tests of the Baseline_Run (6.11). When absent, the Verdict has no `baselineTests`. */
+  baselineTests?: BaselineTest[];
 };
 
 /** What a mutant changes: the fields that rule 8.15 compares. */
@@ -395,6 +397,9 @@ export const buildVerdict = (input: VerdictInput): Result<Verdict, string> => {
     // list. Without it the totals would describe a list that may still hold Twins.
     ...(input.changes === undefined ? {} : { mutantCounts }),
     ...(input.changes === undefined || scope === "spec-only" ? {} : { strykerCounts }),
+    ...(input.baselineTests === undefined
+      ? {}
+      : { baselineTests: input.baselineTests.map((t) => ({ ...t, id: scrubTestId(t.id, root) })) }),
   };
   const parsed = verdictSchema.safeParse(candidate);
   if (!parsed.success) {

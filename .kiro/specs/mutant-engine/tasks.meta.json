@@ -71,6 +71,10 @@
     "15.5 Write Property 30: Stryker counts come from the produced mutants": {
       "status": "passed",
       "lastRunTimestamp": 1795676882782
+    },
+    "16.3 Write Property 31: Baseline tests": {
+      "status": "passed",
+      "lastRunTimestamp": 1795677715428
     }
   },
   "executionHistory": {
@@ -1646,6 +1650,13 @@
         "executionId": "22465550-e7f8-4412-adb0-a070838af556",
         "chatSessionId": "sess_45bac95b-103e-49d2-8080-24833ef07f0b",
         "timestamp": 1795677485101
+      }
+    ],
+    "16.3 Write Property 31: Baseline tests": [
+      {
+        "executionId": "f7d8afb0-8e0b-4278-ada8-a3ec2ef46969",
+        "chatSessionId": "sess_94c9fb8c-198b-4e21-b62c-f62bcf23aa7f",
+        "timestamp": 1795677677694
       }
     ]
   }

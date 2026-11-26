@@ -13,7 +13,7 @@ import type {
   WitnessRunOptions,
   WitnessRunResult,
 } from "../adapters/vitest-witness-runner.js";
-import { toTestId } from "../core/baseline-tests.js";
+import { buildBaselineTests, type PassedTestInput, toTestId } from "../core/baseline-tests.js";
 import { type ChangedRange, parseChangedRanges } from "../core/changed-ranges.js";
 import { CONFIG_FILE_NAME, resolveConfigPaths, validateConfig } from "../core/config.js";
 import { computeCoverage } from "../core/coverage.js";
@@ -49,6 +49,7 @@ import type { Location } from "../core/stryker-output.js";
 import { computeSuiteTimeLimit } from "../core/suite-time-limit.js";
 import { classifyTest, type TestKind } from "../core/test-classification.js";
 import type {
+  BaselineTest,
   Criterion,
   EngineConfig,
   HistoryRecord,
@@ -326,6 +327,8 @@ export interface MechanicalStageResult {
   readonly baselineMs: number;
   readonly mutants: readonly MechanicalOutcome[];
   readonly ignoreStaticRetried: boolean;
+  /** The passed tests of the Baseline_Run (6.11). */
+  readonly baselineTests: BaselineTest[];
 }
 
 /** Upper bound for the baseline run, which has no baseline duration to derive a limit from. */
@@ -383,6 +386,12 @@ export async function runBaselineAndMechanical(
       .map((t) => (t.name === file.path ? file.path : testIdOf(file.path, t.name))),
   );
   if (failingTests.length > 0) return err({ kind: "baseline-failed", failingTests });
+  const baselineTests = await baselineTestsOf(
+    baseline.value,
+    options.project,
+    config.propertyTestGlobs,
+    adapters.fs,
+  );
 
   let changedRanges: ChangedRange[] | undefined;
   if (options.since !== undefined) {
@@ -394,7 +403,12 @@ export async function runBaselineAndMechanical(
     );
     // 3.10: no changed line in a source file gives zero mutants and no StrykerJS run.
     if (changedRanges.length === 0) {
-      return ok({ baselineMs: baseline.value.durationMs, mutants: [], ignoreStaticRetried: false });
+      return ok({
+        baselineMs: baseline.value.durationMs,
+        mutants: [],
+        ignoreStaticRetried: false,
+        baselineTests,
+      });
     }
   }
 
@@ -414,7 +428,39 @@ export async function runBaselineAndMechanical(
     baselineMs: baseline.value.durationMs,
     mutants,
     ignoreStaticRetried: run.value.ignoreStaticRetried,
+    baselineTests,
   });
+}
+
+/**
+ * The passed tests of the Baseline_Run as Baseline_Tests (6.11, 6.12). A file that cannot be
+ * read gives its tests an empty body, so they count as examples unless the file is a property file.
+ */
+async function baselineTestsOf(
+  suite: SuiteResult,
+  projectRoot: string,
+  propertyTestGlobs: string[],
+  fs: Pick<LoadFileSystem, "readFile">,
+): Promise<BaselineTest[]> {
+  const inputs: PassedTestInput[] = [];
+  for (const file of suite.files) {
+    const passed = file.tests.filter((t) => t.status === "passed");
+    if (passed.length === 0) continue;
+    const read = await fs.readFile(joinPath(projectRoot, file.path));
+    const text = read.ok ? read.value : undefined;
+    for (const t of passed) {
+      inputs.push({
+        filePath: file.path,
+        fullName: t.name,
+        startLine: t.startLine,
+        // A file-level result is named after its file and has no test body.
+        bodySource:
+          text === undefined || t.name === file.path ? "" : extractTestBody(text, t.startLine),
+        status: t.status,
+      });
+    }
+  }
+  return buildBaselineTests(inputs, propertyTestGlobs);
 }
 
 /**
@@ -816,6 +862,8 @@ export interface ReportStageInput {
   readonly specMutants: readonly SpecMutantOutcome[];
   readonly ignoreStaticRetried: boolean;
   readonly metadata: RunMetadata;
+  /** Passed tests of the Baseline_Run; written as `baselineTests` when present (6.11). */
+  readonly baselineTests?: readonly BaselineTest[];
 }
 
 export const REPORT_FILE_NAME = "mutation-report.json";
@@ -937,6 +985,7 @@ export async function writeReports(
     metadata: input.metadata,
     projectRoot: options.project,
     changes,
+    ...(input.baselineTests === undefined ? {} : { baselineTests: [...input.baselineTests] }),
   });
   if (!verdict.ok) return err({ kind: "build-error", message: verdict.error });
 
