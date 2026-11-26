@@ -155,7 +155,7 @@ sequenceDiagram
 | `mutant-id.ts` | `computeMutantId(file: string, original: string, replacement: string, occurrenceIndex: number): MutantId` | Requirement 8.7. Used for Mechanical_Mutants only. `test/core/mutant-id.test.ts` checks only the 32-character hex format of the id. One exact-id pin test for a fixed input lives with the CLI-phase tests. Content hash computed with `createHash('sha256')` from `node:crypto` (hex-truncated), never a hand-written hash, never a timestamp and never a line number. The `occurrenceIndex` is the Occurrence_Index: the 0-based position of the mutant among all Mechanical_Mutants with the same file, original text and replacement, ordered by location (start line, then start column, using the real location StrykerJS reports). It keeps two mutants with the same file, original text and replacement at different locations apart. `computeMutantId` does not compute the index. The pure helper `assignOccurrenceIndexes(mutants): Map<…, number>` in `core/occurrence.ts` (no `node:` import) groups the Mechanical_Mutants by (file, original, replacement), sorts each group by line then column, and returns each mutant's position in its group; the CLI passes the positions in. Because the index depends only on the order inside a group, ids stay stable when unrelated lines move. `core/mutant-id.ts` is the only core module that imports from `node:`. Spec_Mutants do not pass through this function: a Spec_Mutant keeps the id from its file (`oath-<criterion>-<slug>`), which Requirement 4.5 makes unique. The CLI passes the ids to `report.ts` as data, so `report.ts` does not import `mutant-id.ts`. |
 | `coverage.ts` | `computeCoverage(criteria: Criterion[], mutantResults: MutantResult[], skipEntries: SkipEntry[]): CriterionCoverage[]` | Requirement 7. Called once per run with the criteria, results and skip entries of the one spec under attack. |
 | `paths.ts` | `relativizePath(projectRoot: string, p: string): string`, `scrubAbsolutePaths(text: string, projectRoot: string): string`, `containsAbsolutePath(text: string): boolean` | Requirement 8.17. `relativizePath` turns a path under the root into a project-relative path with `/` separators and turns any other absolute path into `<outside-project>/<basename>`. `scrubAbsolutePaths` applies the same rule to every absolute path found inside free text (error messages, mutant descriptions, NotApplicable read errors, NoOutcome messages). `containsAbsolutePath` is the detector the property test and the e2e test use (a POSIX path starting with `/` that is not part of a URL, or a Windows drive or UNC path). |
-| `report.ts` | `buildMutationReport(input): MutationTestingReport`, `buildVerdict(input): Verdict`, `buildHistoryRecord(verdict, previousRecord): HistoryRecord`, `serializeHistoryRecord(record): string`, `parseHistoryLines(text): Result<HistoryRecord[], HistoryError>` | Requirement 8. The `input` of the builders includes `projectRoot` as plain data and every builder relativizes every path and scrubs every free-text field through `paths.ts` before it creates a field, so no builder can emit an absolute path (8.17). `serializeHistoryRecord` returns the record as a single-line JSON object with no embedded newline. `parseHistoryLines` parses each non-empty line as one complete JSON object, in order, and returns an error that names the line number for a malformed line. The History_File `history.jsonl` is JSON Lines: one HistoryRecord per line, and appending a run adds exactly one line and leaves earlier lines unchanged (8.8, 8.9, 8.16). Each record is validated with its zod schema before the line is appended (8.10). The viewer (bestiary-viewer spec) reads exactly this format through `trick-or-test/report`. `buildMutationReport` records whether the `ignoreStatic` retry happened in the schema's free-form `config` object (Requirement 3.5), and `buildVerdict` records it in `ignoreStaticRetried`. It writes the start and end line and column of each Mechanical_Mutant from the Stryker data into the schema `location` (3.16), and the span's location for each Spec_Mutant. Takes mutant ids as input (Spec_Mutants keep their file ids, Mechanical_Mutants carry the hash computed by the CLI) and never computes them. Deduplicates same-change spec/mechanical pairs by comparing file, start and end location and replacement, not ids (8.15), maps statuses (8.3-8.4), computes newly-killed ids (8.9) from the previous history record passed in as data. For an InvalidWitness mutant it writes `originalOutcome` and `expected` into the Verdict (5.6). |
+| `report.ts` | `buildMutationReport(input): MutationTestingReport`, `buildVerdict(input): Verdict`, `buildHistoryRecord(verdict, previousRecord): HistoryRecord`, `serializeHistoryRecord(record): string`, `parseHistoryLines(text): Result<HistoryRecord[], HistoryError>` | Requirement 8. The `input` of the builders includes `projectRoot` as plain data and every builder relativizes every path and scrubs every free-text field through `paths.ts` before it creates a field, so no builder can emit an absolute path (8.17). `serializeHistoryRecord` returns the record as a single-line JSON object with no embedded newline. `parseHistoryLines` parses each non-empty line as one complete JSON object, in order, and returns an error that names the line number for a malformed line. The History_File `history.jsonl` is JSON Lines: one HistoryRecord per line, and appending a run adds exactly one line and leaves earlier lines unchanged (8.8, 8.9, 8.16). Each record is validated with its zod schema before the line is appended (8.10). The viewer (bestiary-viewer spec) reads exactly this format through `trick-or-test/report`. `buildMutationReport` records whether the `ignoreStatic` retry happened in the schema's free-form `config` object (Requirement 3.5), and `buildVerdict` records it in `ignoreStaticRetried`. It writes the start and end line and column of each Mechanical_Mutant from the Stryker data into the schema `location` (3.16), and the span's location for each Spec_Mutant. Takes mutant ids as input (Spec_Mutants keep their file ids, Mechanical_Mutants carry the hash computed by the CLI) and never computes them. Deduplicates same-change spec/mechanical pairs by comparing file, start and end location and replacement, not ids (8.15), maps statuses (8.3-8.4), computes newly-killed ids (8.9) from the previous history record passed in as data. For an InvalidWitness mutant it writes `originalOutcome` and `expected` into the Verdict (5.6). It also writes the criterion text and the mutated witness outcome (8.18-8.20), both taken from plain input data: `VerdictInput.coverage[i].text` holds the `text` of the matching `Criterion` returned by `parseRequirements`, and `VerdictInput.witnesses[id].mutatedOutcome` holds the `mutatedOutcome` of the matching `SpecMutantOutcome` that `cli/orchestrate.ts` already computes. The builder trims the text and passes it through `scrubAbsolutePaths`; it passes `mutatedOutcome` through the same scrubbing function as `originalOutcome`; it omits the field when the input has none. The builder reads no file and runs no witness. |
 | `result.ts` | `Result<T, E>` union, `ok`, `err` helpers | ADR 0005. Used by every fallible core function; exceptions are reserved for programming errors. |
 
 ### Adapters (imperative, `packages/engine/src/adapters/`)
@@ -313,6 +313,9 @@ type CriterionCoverage = {
   criterion: CriterionId;
   status: CoverageStatus;
   reason?: string; // present only when status is "skipped"
+  // Full text of the criterion from requirements.md, trimmed and scrubbed of absolute paths (Requirements 8.18, 8.20).
+  // Optional in the schema so that a verdict written before this field existed still parses.
+  text?: string;
 };
 
 type RunMetadata = {
@@ -326,10 +329,15 @@ type RunMetadata = {
   timestamp: string; // excluded from byte-identity comparisons (Requirement 8.13)
 };
 
+// A Witness as the Verdict stores it. `Witness` itself stays the type of the mutant file (Requirement 4),
+// so the mutant-file schema does not change.
+// `mutatedOutcome` is present only when the witness ran against the mutated code (Requirements 8.19, 8.20).
+type VerdictWitness = Witness & { mutatedOutcome?: WitnessOutcome };
+
 type Verdict = {
   coverage: CriterionCoverage[];       // one entry per criterion
   mutants: MutantResult[];             // the spec mutants and the strays
-  witnesses: Record<MutantId, Witness>;
+  witnesses: Record<MutantId, VerdictWitness>;
   ignoreStaticRetried: boolean;
   metadata: RunMetadata;
 };
@@ -507,6 +515,20 @@ For any generated `git diff --relative --unified=0` text, `parseChangedRanges` r
 
 **Validates: Requirements 3.9, 3.10**
 
+### Property 26: Verdict carries criterion text and mutated outcome
+
+This property is new. It does not extend Property 16 or Property 20, because their test files are committed and therefore sealed. It adds to the same guarantees for the two new fields. For any generated verdict input:
+
+- every coverage entry whose input has a `text` carries that text trimmed, with no absolute path in it, and an entry whose input has no text has no `text` field;
+- every spec mutant whose input has a `mutatedOutcome` (of kind `value`, `error`, `timeout` or `no-outcome`) has that outcome next to its witness in `witnesses`, and every spec mutant whose input has none has no `mutatedOutcome` key;
+- the verdict passes `verdictSchema`; the same verdict with both fields removed also passes (a verdict written before this change still parses); and an unknown field next to either of them is rejected;
+- writing, reading and writing again produces identical content, as in Property 16;
+- no string in the verdict satisfies `containsAbsolutePath`, as in Property 20.
+
+The generator covers criteria with plain text, with leading and trailing whitespace, and with an absolute path under the root and outside it; and spec mutants with and without a mutated outcome, in every outcome kind, with absolute paths in `message` and `className`.
+
+**Validates: Requirements 8.12, 8.17, 8.18, 8.19, 8.20**
+
 ## Error Handling
 
 - Every function in `core/` returns `Result<T, E>` for an expected failure (invalid config, malformed mutant file, unsafe path, witness mismatch, parse error) and throws only when an internal invariant is violated (a programming error). Adapters catch adapter-specific exceptions (a failed `fs` call, a non-zero StrykerJS exit, a git command failure) at the boundary and convert them into the same `Result` error shapes before handing control back to the CLI.
@@ -532,7 +554,7 @@ All twenty-five correctness properties above describe pure, deterministic core f
 - fast-check is configured once in a Vitest setup file with a fixed `seed` and `numRuns` of at least 100 (Requirement 10.6's companion rule in `tech.md`); no test calls `fc.assert` with an ad-hoc seed.
 - Each property test opens with the tag comment: `// Property <n>: <title>. Validates: Requirements <ids>`, matching the property's own heading and requirement references above.
 - The requirements-document generator used for Property 8 lives in test helpers (`packages/engine/test/helpers/`), outside the published package (Requirement 10.7). The generators for listings (Properties 19 and 24), diffs (Property 25), Vitest JSON (Property 21) and StrykerJS output (Property 23) live there too.
-- Generators are built to reach documented boundaries on purpose (per `no-fake-tests.md`): e.g., Property 2's generator produces source texts with the original text occurring exactly 0, exactly 2, and many times, not just "some random count"; Property 9's generator includes the literal operator pairs `<`/`<=` and `>`/`>=` among its replacement samples, not only arbitrary strings; Property 6's generator produces mutants on the same line that differ only in column.
+- Generators are built to reach documented boundaries on purpose (per `no-fake-tests.md`): e.g., Property 2's generator produces source texts with the original text occurring exactly 0, exactly 2, and many times, not just "some random count"; Property 9's generator includes the literal operator pairs `<`/`<=` and `>`/`>=` among its replacement samples, not only arbitrary strings; Property 6's generator produces mutants on the same line that differ only in column; Property 26's generator produces criteria with and without text and Spec_Mutants with and without a mutated outcome.
 
 ### Where PBT does not apply
 
