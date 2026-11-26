@@ -1881,6 +1881,32 @@
         "chatSessionId": "sess_ccf683a3-5cfd-4911-90a0-1ca3e1a8c6c9",
         "timestamp": 1795688752298
       }
+    ],
+    "19.9 Checkpoint - Run scope": [
+      {
+        "executionId": "6bffe914-319e-4649-b9a7-f0aadef909e6",
+        "chatSessionId": "sess_26a7b459-d753-480b-9dc3-cb274bcaf96e",
+        "timestamp": 1795689436664
+      },
+      {
+        "executionId": "6bffe914-319e-4649-b9a7-f0aadef909e6",
+        "chatSessionId": "sess_26a7b459-d753-480b-9dc3-cb274bcaf96e",
+        "timestamp": 1795689669891
+      }
+    ],
+    "19. Add the spec-only run scope (Gap 5)": [
+      {
+        "executionId": "6bffe914-319e-4649-b9a7-f0aadef909e6",
+        "chatSessionId": "sess_26a7b459-d753-480b-9dc3-cb274bcaf96e",
+        "timestamp": 1795689670047
+      }
+    ],
+    "20.1 Add `buildWitnessTest`": [
+      {
+        "executionId": "bf6aaecb-83ae-4faa-afa5-e9ee7caacad3",
+        "chatSessionId": "sess_69dc7be6-6d7d-4036-a048-24233c674e54",
+        "timestamp": 1795689754216
+      }
     ]
   }
 }
