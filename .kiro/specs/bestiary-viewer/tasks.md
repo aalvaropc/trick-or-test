@@ -475,7 +475,7 @@ Conventions for every task:
     - _Requirements: 13.18, 13.23, 13.26, 5.2_
     - _Validation: `npm test -w trick-or-test-viewer -- test/bestiary/with-size.test.ts test/bestiary/creature-sizes.test.ts` passes_
 
-  - [ ] 13.3 Property test: sizing keeps the creature intact (V12)
+  - [x] 13.3 Property test: sizing keeps the creature intact (V12)
     - Add `test/bestiary/with-size.property.test.ts` with the header `// Feature: bestiary-viewer, Property V12: Sizing keeps the creature intact` and one `fc.assert(fc.property(...))` over species, seed, state, mutant (including missing file, line and glyph) and a size drawn from `Object.values(CREATURE_SIZES)`: well-formed XML with one root, `width` and `height` equal to the size, and the string minus those two attributes equal to the `creature()` output.
     - _Requirements: 13.18, 13.26_
     - _Validation: `npm test -w trick-or-test-viewer -- test/bestiary/with-size.property.test.ts` passes_
