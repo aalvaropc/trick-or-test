@@ -454,7 +454,7 @@ Conventions for every task:
     - _Requirements: 12.3, 11.3_
     - _Validation: `npm run build -w trick-or-test-viewer` passes_
 
-- [ ] 12. Final checkpoint - viewer complete
+- [x] 12. Final checkpoint - viewer complete
   - Ensure all tests pass, ask the user if questions arise.
   - _Validation: `npm run check` passes_
 
