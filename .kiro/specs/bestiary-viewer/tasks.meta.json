@@ -654,6 +654,13 @@
         "chatSessionId": "sess_3666a4fc-f3c9-4bab-b6d5-a734a35f1913",
         "timestamp": 1795657566948
       }
+    ],
+    "9.12 Add blocked attempts to the Hunt screen": [
+      {
+        "executionId": "9895f4db-cc12-40e6-9779-35c3b103665e",
+        "chatSessionId": "sess_36016b3f-4562-457c-a7d6-39e7a599afed",
+        "timestamp": 1795657838467
+      }
     ]
   }
 }

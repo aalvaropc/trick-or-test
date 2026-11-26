@@ -39,6 +39,27 @@ export function computeHeadlineCounts(model: RunModel): HeadlineCounts {
   return { survivingSpecMutants, killedSpecMutants, guardedCriteria, unguardedCriteria };
 }
 
+export type StateCounts = {
+  survivor: number;
+  killed: number;
+  "in-the-dark": number;
+  ghost: number;
+  "not-counted": number;
+};
+
+/** Number of Mutants in each state. Not-counted Mutants are reported apart, never in the others. */
+export function computeStateCounts(model: RunModel): StateCounts {
+  const result: StateCounts = {
+    survivor: 0,
+    killed: 0,
+    "in-the-dark": 0,
+    ghost: 0,
+    "not-counted": 0,
+  };
+  for (const m of model.mutants) result[m.state] += 1;
+  return result;
+}
+
 export type KillClassCounts = Record<KillClass, number>;
 
 /** Counts killed Mutants per Kill_Class. All four groups are present, 0 when empty. */

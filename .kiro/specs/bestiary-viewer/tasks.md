@@ -417,7 +417,7 @@ Conventions for every task:
     - _Requirements: 8.6, 8.7_
     - _Validation: `npm test -w trick-or-test-viewer -- test/screens/Hunt.blocked.test.tsx` passes_
 
-  - [ ] 9.13 Implement the Plain view screen
+  - [x] 9.13 Implement the Plain view screen
     - Create `src/screens/PlainView.tsx`: a table of `buildRows` rows inside `.table-scroll`, with sortable column headers that are buttons (Tab, Enter and Space), visible "ascending" or "descending" text, `aria-sort` on the sorted header and none or `"none"` on the others, a per-state count line that matches the Verdict screen, a "run has no mutants" message with the headers still operable for an empty Run, and no creature, animation or transition.
     - Example tests in `test/screens/PlainView.test.tsx`: one row per Mutant and the seven columns (9.2), header click sorts and shows "ascending" (9.3), second click shows "descending" (9.4), `aria-sort` values (9.10), keyboard Enter and Space (9.9), `not counted` row kept (9.6), no svg and no animation (9.7), state counts equal the Verdict counts (9.8), empty Run message (9.11), link to the Plain view exists on every screen (9.1).
     - _Requirements: 9.1, 9.2, 9.3, 9.4, 9.6, 9.7, 9.8, 9.9, 9.10, 9.11_
