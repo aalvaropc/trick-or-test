@@ -871,7 +871,7 @@ Conventions used in every task:
     - Write `test/core/verdict-mutated-outcome.test.ts`: one example for each outcome kind; an absolute path in a `no-outcome` message and in an error class name is scrubbed; a witness with `expectedError` and one with `expected` both keep the field; an entry without the field has no `mutatedOutcome` key (check with `Object.hasOwn`, not with `=== undefined`).
     - _Requirements: 8.17, 8.19_
     - _Validation: npx vitest run --project engine packages/engine/test/core/verdict-mutated-outcome.test.ts passes_
-  - [ ] 13.4 Write Property 26: Verdict carries criterion text and mutated outcome
+  - [x] 13.4 Write Property 26: Verdict carries criterion text and mutated outcome
     - Write `test/core/verdict.fields.property.test.ts` with **Property 26: Verdict carries criterion text and mutated outcome**. The generator produces criteria with plain text, with surrounding whitespace, and with absolute paths under and outside the root; and Spec_Mutants with and without a `mutatedOutcome`, in every outcome kind, with absolute paths in `message` and `className`. Check every bullet of the property, including the round trip and `containsAbsolutePath`. Generators reach the documented boundaries on purpose (per `no-fake-tests.md`): the no-text and no-outcome cases must occur in every run set.
     - **Validates: Requirements 8.12, 8.17, 8.18, 8.19, 8.20**
     - _Requirements: 8.12, 8.17, 8.18, 8.19, 8.20_
