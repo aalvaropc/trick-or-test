@@ -375,7 +375,7 @@ Conventions for every task:
     - _Requirements: 6.8, 6.9, 6.15_
     - _Validation: `npm test -w trick-or-test-viewer -- test/screens/verdict/WhoKilledPanel.test.tsx` passes_
 
-  - [ ] 9.6 Implement the strays strip
+  - [x] 9.6 Implement the strays strip
     - Create `src/screens/verdict/StraysStrip.tsx`: one creature per Stray from `selectStrays`, at most 60, and the count of remaining Strays with a link to `#/plain` when there are more than 60.
     - Example tests in `test/screens/verdict/StraysStrip.test.tsx`: 60 Strays shows 60 creatures and no link, 61 Strays shows 60, "1 more" and the link (6.10, 6.11), draw order by status, file, line (6.11).
     - _Requirements: 6.10, 6.11_
