@@ -393,7 +393,7 @@ Conventions for every task:
     - _Requirements: 6.13, 6.14, 10.11_
     - _Validation: `npm test -w trick-or-test-viewer -- test/screens/Verdict.test.tsx` passes_
 
-  - [ ] 9.9 Implement the Specimen screen
+  - [x] 9.9 Implement the Specimen screen
     - Create `src/screens/Specimen.tsx`: the large creature, the Species name, the state label and the mutant id; the original and mutated lines with file path and 1-based line (or the replacement, path, line and "original line unavailable" when no source exists); the Criterion id and full text when the Mutant is a Spec_Mutant and the Criterion is in the Verdict_File; the witness input, expected value and mutant value when present; for a killed Mutant, up to 50 killing test names and the Kill_Class; for a survivor with `coveredBy`, up to 50 test names that ran the code without failing; "no test runs this code" for an in-the-dark Mutant. An unknown id shows a message with the id and a link to the Verdict screen, with no creature and no code change. A missing Criterion omits only that section.
     - Example tests in `test/screens/Specimen.test.tsx`: one per criterion 7.1 to 7.7, 7.10, 7.11 and 7.12, and 51 killing tests show 50.
     - _Requirements: 7.1, 7.2, 7.3, 7.4, 7.5, 7.6, 7.7, 7.10, 7.11, 7.12_

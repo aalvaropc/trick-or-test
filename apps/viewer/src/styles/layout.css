@@ -150,3 +150,19 @@ code {
   flex-wrap: wrap;
   gap: 0.5rem;
 }
+
+.specimen__creature svg {
+  width: min(100%, 20rem);
+  height: auto;
+}
+
+.specimen__tests {
+  padding-left: 1.25rem;
+  overflow-wrap: anywhere;
+}
+
+.specimen__where,
+.screen-frame pre {
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}

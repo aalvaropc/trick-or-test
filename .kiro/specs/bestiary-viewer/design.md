@@ -181,7 +181,9 @@ Vite's `base` is set to `/trick-or-test/` in `vite.config.ts` (Requirement 12.3)
 
 ## Data Models
 
-All domain types and zod schemas are imported, not redefined: `ReportMutant`, `MutationTestingReport`, `Verdict`, `CriterionCoverage`, `HistoryRecord`, `MutantId`, `CriterionId`, `Species`, `MutantStatus` (report-level: `ReportStatus`), `CoverageStatus`, `KillClass`, `Witness` from `trick-or-test/report` (`packages/engine/src/report/index.ts`).
+All domain types and zod schemas are imported, not redefined: `ReportMutant`, `MutationTestingReport`, `Verdict`, `CriterionCoverage`, `HistoryRecord`, `MutantId`, `CriterionId`, `Species`, `MutantStatus` (report-level: `ReportStatus`), `CoverageStatus`, `KillClass`, `VerdictWitness` from `trick-or-test/report` (`packages/engine/src/report/index.ts`).
+
+Sources of the Specimen_Screen data (Requirements 7.3, 7.4, 7.12): the Criterion text is the optional `text` of the `CriterionCoverage` entry whose `criterion` equals the Mutant's `requirement`. The witness input and expected value come from `verdict.witnesses[mutantId]` (`args`, and `expected` or `expectedError`). The Mutant's value is the optional `mutatedOutcome` of that same `VerdictWitness`, a `WitnessOutcome` of kind `value`, `error`, `timeout` or `no-outcome`. All three fields are optional, so older verdicts parse. When the Criterion, its `text` or `mutatedOutcome` is absent, the screen omits that part and invents nothing. The pure view model lives in `src/screens/specimen/specimen-view.ts`; `Specimen.tsx` only renders it.
 
 Viewer-local types, defined in `apps/viewer/src/loader/run-model.ts` and `src/bestiary/`:
 
