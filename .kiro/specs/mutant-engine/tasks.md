@@ -1036,7 +1036,7 @@ Conventions used in every task:
     - **Validates: Requirements 2.2, 2.9, 2.10, 8.26**
     - _Requirements: 2.9, 2.10, 8.26_
     - _Validation: npx vitest run --project engine packages/engine/test/core/requirement-titles.property.test.ts passes_
-  - [ ] 18.3 Add the types and the schemas
+  - [x] 18.3 Add the types and the schemas
     - In `core/types.ts` and `core/report.ts` add `RequirementTitle`, `specName` in `runMetadataSchema`, `requirements` in `verdictSchema` and `coverageByCriterion` in `historyRecordSchema`, all optional and strict. Export from `trick-or-test/report`. (`scope` is added by task 19.)
     - Write `test/core/small-fields-schema.test.ts`: a verdict and a history record without the fields parse; with the fields they parse; an unknown key inside `requirements` and inside `coverageByCriterion` is rejected; an empty title and a non-integer requirement number are rejected; an unknown Coverage_Status is rejected.
     - _Requirements: 8.25, 8.26, 8.27, 8.29_

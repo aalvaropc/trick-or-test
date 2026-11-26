@@ -16,6 +16,7 @@ import type {
   MutantId,
   MutantResult,
   MutantStatus,
+  RequirementTitle,
   RunMetadata,
   RunScope,
   Species,
@@ -121,7 +122,14 @@ export const runMetadataSchema = z.strictObject({
   vitestVersion: z.string(),
   typescriptVersion: z.string(),
   timestamp: z.string(),
+  specName: z.string().optional(),
 });
+
+/** One Requirement title of the Verdict (8.26). */
+export const requirementTitleSchema: z.ZodType<RequirementTitle> = z.strictObject({
+  requirement: z.number().int().positive(),
+  title: z.string().min(1),
+}) as unknown as z.ZodType<RequirementTitle>;
 
 const count = (): z.ZodNumber => z.number().int().nonnegative();
 
@@ -220,6 +228,7 @@ export const verdictSchema: z.ZodType<Verdict> = z.strictObject({
   strykerCounts: strykerCountsSchema.optional(),
   baselineTests: z.array(baselineTestSchema).optional(),
   claimCounts: claimCountsSchema.optional(),
+  requirements: z.array(requirementTitleSchema).optional(),
 }) as unknown as z.ZodType<Verdict>;
 
 const engineConfigSchema: z.ZodType<EngineConfig> = z.strictObject({
@@ -248,6 +257,9 @@ export const historyRecordSchema: z.ZodType<HistoryRecord> = z.strictObject({
   statusCounts: statusCountsSchema,
   coverageCounts: coverageCountsSchema,
   newlyKilledIds: z.array(mutantIdSchema),
+  coverageByCriterion: z
+    .array(z.strictObject({ criterion: criterionIdSchema, status: coverageStatusSchema }))
+    .optional(),
 }) as unknown as z.ZodType<HistoryRecord>;
 
 // Mutation report (subset of mutation-testing-report-schema 3.x plus two extension fields).

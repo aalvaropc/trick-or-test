@@ -1,10 +1,8 @@
 import type { ParseError } from "./requirements.js";
 import { err, ok, type Result } from "./result.js";
+import type { RequirementTitle } from "./types.js";
 
-export interface RequirementTitle {
-  readonly requirement: number;
-  readonly title: string;
-}
+export type { RequirementTitle };
 
 const TITLE_HEADING = /^###\s+Requirement\s+(\d+)\s*:(.*)$/;
 // Same fence rule as `parseRequirements` (CommonMark fenced code blocks).

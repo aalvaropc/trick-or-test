@@ -83,6 +83,10 @@
     "17.6 Write Property 28: Claim outcomes and counts": {
       "status": "passed",
       "lastRunTimestamp": 1795679380867
+    },
+    "18.2 Write Property 33: Requirement titles": {
+      "status": "passed",
+      "lastRunTimestamp": 1795680560871
     }
   },
   "executionHistory": {
@@ -1771,6 +1775,13 @@
         "executionId": "b0e524b8-7fa2-4fa0-a96c-e5ad60ec027d",
         "chatSessionId": "sess_cd551a2d-493b-4678-a793-1080dc390476",
         "timestamp": 1795680275853
+      }
+    ],
+    "18.2 Write Property 33: Requirement titles": [
+      {
+        "executionId": "820cf1bc-b17a-4ba6-a29e-996e343be16c",
+        "chatSessionId": "sess_ab89d2d4-2c17-47ea-8700-df8764023d0f",
+        "timestamp": 1795680514853
       }
     ]
   }
