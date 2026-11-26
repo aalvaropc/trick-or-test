@@ -23,7 +23,8 @@
     "build": "tsc -b",
     "check": "npm run lint && npm run typecheck && npm test",
     "measure": "npm run build -w trick-or-test && trick-or-test measure --project examples/pricing --spec cart-pricing --output reports",
-    "guard": "node scripts/guard.ts"
+    "guard": "node scripts/guard.ts",
+    "demo": "node scripts/demo.ts"
   },
   "devDependencies": {
     "@biomejs/biome": "2.6.7",

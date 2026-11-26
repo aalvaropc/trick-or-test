@@ -517,7 +517,7 @@ Conventions for every task:
     - _Requirements: 14.1, 2.2, 2.3, 2.4_
     - _Validation: `npm test -w trick-or-test-viewer -- test/loader/fetch-demo-run.names.test.ts` passes_
 
-  - [ ] 14.2 Write the demo script and the Guard_Test
+  - [x] 14.2 Write the demo script and the Guard_Test
     - Create `scripts/demo.ts` with a pure `planDemo(root)` and a shell that runs its steps (design, "The script"), the committed `scripts/demo/after/guard-7.4.test.ts` and `scripts/demo/after/vitest.config.ts`, the root script `"demo": "node scripts/demo.ts"` in `package.json`, and the root Vitest exclusion of `scripts/demo/after/**`. The guard test follows `no-fake-tests.md`: names start with `7.4`, literals worked out from requirement 7.4 of `cart-pricing`, boundary cases just below, at and just above zero. Add the `npm run demo` row to the commands table of `.kiro/steering/tech.md` in the same commit.
     - Example tests in new file `scripts/demo.test.ts`: the plan order is build, clean, measure before, copy, copy history, measure after, remove (14.3, 14.4); the "before" measure targets `examples/pricing` and `apps/viewer/public/demo/before` (14.5); the "after" measure targets the copy under `.trickortest/` and `apps/viewer/public/demo/after` (14.6); the copy excludes `node_modules`, `reports`, `.stryker-tmp` and `.trickortest` and receives the Guard_Test outside its `test/` folder (14.6, 14.8); the history copy comes before the "after" measure (14.7); no step writes a report, verdict or history file except that copy (14.3); every path in the plan is relative (14.10); no step touches `reports/` or `examples/pricing/` (14.4); the copy is removed even when a step fails (14.6).
     - _Requirements: 14.2, 14.3, 14.4, 14.5, 14.6, 14.7, 14.8_

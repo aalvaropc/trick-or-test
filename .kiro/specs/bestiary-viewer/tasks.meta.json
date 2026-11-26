@@ -813,6 +813,28 @@
         "chatSessionId": "sess_056bf57a-3e97-409d-9cce-59b9926d1bd2",
         "timestamp": 1795666640430
       }
+    ],
+    "14.1 Read the engine's file names in the viewer": [
+      {
+        "executionId": "8f09f3c6-3ece-4f22-b879-ec3f5d31f231",
+        "chatSessionId": "sess_f3bb6be9-a659-4404-81e4-7c854ac48c10",
+        "timestamp": 1795666869364
+      },
+      {
+        "executionId": "7c19522d-571e-4825-8875-5bffdf274f75",
+        "chatSessionId": "sess_f3bb6be9-a659-4404-81e4-7c854ac48c10",
+        "timestamp": 1795667063250
+      },
+      {
+        "executionId": "744f9998-5344-417c-97b9-260987f2dee4",
+        "chatSessionId": "sess_f3bb6be9-a659-4404-81e4-7c854ac48c10",
+        "timestamp": 1795667444522
+      },
+      {
+        "executionId": "744f9998-5344-417c-97b9-260987f2dee4",
+        "chatSessionId": "sess_f3bb6be9-a659-4404-81e4-7c854ac48c10",
+        "timestamp": 1795667531024
+      }
     ]
   }
 }
