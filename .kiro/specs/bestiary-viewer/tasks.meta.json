@@ -687,6 +687,25 @@
         "chatSessionId": "sess_c5e3a632-6131-4255-93ce-6923aa8c6012",
         "timestamp": 1795658693275
       }
+    ],
+    "10. Checkpoint - components and screens": [
+      {
+        "executionId": "6f50e59e-c58f-4948-9edc-62a45933623d",
+        "chatSessionId": "sess_2579f7d6-bf48-4e0a-b54a-73790d0c99b1",
+        "timestamp": 1795658832005
+      },
+      {
+        "executionId": "6f50e59e-c58f-4948-9edc-62a45933623d",
+        "chatSessionId": "sess_2579f7d6-bf48-4e0a-b54a-73790d0c99b1",
+        "timestamp": 1795658869060
+      }
+    ],
+    "11.1 Add the production build test": [
+      {
+        "executionId": "4a7bb19b-b0e8-487a-948f-36b294b2bd57",
+        "chatSessionId": "sess_1477ec95-061b-413a-abc0-597a36f1b039",
+        "timestamp": 1795658982324
+      }
     ]
   }
 }

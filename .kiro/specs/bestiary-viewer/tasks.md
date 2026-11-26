@@ -444,7 +444,7 @@ Conventions for every task:
     - _Requirements: 10.3, 12.3, 12.11, 12.16_
     - _Validation: `npm test -w trick-or-test-viewer -- test/build/build-output.test.ts` passes_
 
-  - [ ] 11.2 Build the viewer in CI
+  - [x] 11.2 Build the viewer in CI
     - Add a step "Build viewer" after "Build" in the `quality` job of `.github/workflows/ci.yml` that runs `npm run build -w trick-or-test-viewer`. The viewer tests already run through the root `npm test`.
     - _Requirements: 12.3, 12.6_
     - _Validation: `npm run build -w trick-or-test-viewer` passes_
