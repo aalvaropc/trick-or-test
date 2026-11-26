@@ -1304,3 +1304,42 @@ Conventions used in every task:
   ]
 }
 ```
+
+- [ ] 23. Correct the claim id list, describe the seed, remove a duplicate type (Corrections 1 to 3)
+  - NOTE: group 23 is run BEFORE groups 21 and 22, so that the committed evidence is regenerated once, in group 22, after these corrections. It is numbered 23 only so that no existing task is renumbered. The dependency graph above is not changed; run 23.1 to 23.6 in order, then 21 and 22.
+  - Source: requirements 11.3, 8.6 and 8.9, Property 27 and the notes on `metadata.seed`, `HistoryRecord.seed` and `TestKind` in `design.md`.
+  - Rules for every sub-task: one commit per task, with the author suffix `(Kiro)` as `AGENTS.md` says; a committed (sealed) test file is never edited, and if a correction would break one, the task names that file and stops; new tests go in new files; example tests in `*.test.ts` and property tests in `*.property.test.ts`, never mixed; no repository file is written through a shell command; no absolute machine path in code, tests or documents (when a test needs an absolute path, use one under `/proj` or `/srv`, because the commit guard refuses a made-up example under `/home/` or `/Users/`); `git config --global` is never read; no new dependency; generated files (`reports/`, `apps/viewer/public/demo/`) are never edited by hand.
+  - Correction 1: the last id of a claim is lost when a sentence mark follows it.
+  - [ ] 23.1 Guard and fix the end of an id list
+    - Write `test/core/claims-id-list.test.ts` (new file, example tests, names start with `11.3`): `// Validates: Requirements 7.3, 7.4.` gives 7.3 and 7.4; `(Requirements 5.1, 5.2)` gives 5.1 and 5.2; an id followed by `;`, `:` or `]` counts and ends the list (ids after the mark are not read); an id followed by several marks (`7.4.)`, `7.4.;`) counts and ends the list; `7.4.1` and `7.4x` are not ids and end the list, and the ids before them are kept; a whole requirement followed by a mark (`Requirements 5.`) gives the whole-requirement ref; `Validates:` followed only by a mark gives none. Do not edit `test/core/claims-parse.test.ts`.
+    - Write `test/core/claims-id-list.property.test.ts` (new file, property test) for **Property 27** as amended in `design.md`: for a generated list of ids and a generated tail of zero or more of the marks `.`, `;`, `:`, `)`, `]` after the last id, the parsed refs equal the generated ids in order; a malformed token placed after the ids ends the list. It uses the fast-check setup already configured in the Vitest setup file, with no ad-hoc `seed` and no `numRuns` passed to `fc.assert`.
+    - Run both files before changing any source. The example file must fail on the cases of the lost id, to show that it guards the defect.
+    - Then, in `core/claims.ts` make the smallest change to the id-list reader of `parseClaimComments` so that an id followed directly by one or more of `.`, `;`, `:`, `)` or `]` counts as that id and the list ends after it, while `7.4.1` and `7.4x` stay no id and end the list. Do not change `extractLeadingComments`, `resolveClaimRefs`, the types or any other function. Keep the module pure, with no `node:` import.
+    - The committed tests `claims-parse.test.ts` and `claims.parse.property.test.ts` must still pass, unchanged. If one fails, do not edit it: name the file and the test, and stop.
+    - **Validates: Requirements 11.3**
+    - _Requirements: 11.3, 11.13_
+    - _Validation: npx vitest run --project engine packages/engine/test/core/claims-id-list.test.ts packages/engine/test/core/claims-id-list.property.test.ts packages/engine/test/core/claims-parse.test.ts packages/engine/test/core/claims.parse.property.test.ts passes_
+  - [ ] 23.2 Check that the committed example count does not change
+    - Run the existing `test/core/claims-example.test.ts` without editing it. It asserts 25 claims, 16 `held`, 7 `not-held`, 2 `unchecked` and 0 `unknown-criterion`. If it passes, state in the commit message of 23.1 or in the report that the count is unchanged. If the new rule changes the count, STOP and report the old and the new numbers; do not edit the committed test or the fixture `test/fixtures/cart-pricing-24/`.
+    - _Requirements: 11.3, 11.16_
+    - _Validation: npx vitest run --project engine packages/engine/test/core/claims-example.test.ts passes_
+  - Correction 2: say what `metadata.seed` is. The value and the type do not change.
+  - [ ] 23.3 Describe the seed in both schemas
+    - In `core/report.ts` give the `seed` field of the run metadata schema (used by the verdict schema) and the `seed` field of the history-record schema the same `.describe(...)` text, one shared constant: the seed is the own seed of the engine, always 0 today because the engine uses no random source, and it is not the seed of the property tests of the target project. Do not change the type (`number`), the default, the value written by the builders or any other field. Both schemas are exported from `trick-or-test/report`.
+    - Write `test/core/seed-description.test.ts` (new file): the `seed` field of the verdict schema (through its metadata object) and of the history-record schema carry a description, the two descriptions are equal, the text names the engine, says the value is 0 today and says it is not the seed of the property tests of the project; a verdict and a history record with `seed: 0` still parse; the output of `buildVerdict` and `buildHistoryRecord` still has `seed: 0`. Do not edit the committed schema tests.
+    - _Requirements: 8.6, 8.9_
+    - _Validation: npx vitest run --project engine packages/engine/test/core/seed-description.test.ts passes_
+  - [ ] 23.4 Fix text outside the spec that says the seed repeats the project's property tests
+    - Start by searching, with the search tools and not the shell, for text outside `.kiro/specs/` that says the seed (or the history record) can repeat or reproduce the property tests of the target project: `README.md`, `docs/`, `docs/decisions/`, `packages/engine/README.md` if present, the `power/` folder, the `.kiro/steering/` files and comments in `packages/engine/src/` and `apps/viewer/src/` (search `seed`, `reproduce`, `repeat`, `replay`). Do not search or edit `reports/` or `apps/viewer/public/demo/`.
+    - If nothing is found, record in the commit message of 23.3 (or in the final report) that nothing was found, and change nothing. If text is found, change only that sentence, so that it says what 8.6 says. If the text is in a sealed test or in a generated file, name it and stop.
+    - _Requirements: 8.6, 8.9_
+    - _Validation: npx biome check . passes, and a repeat of the search finds no remaining sentence that says the seed repeats the property tests of the project_
+  - Correction 3: one definition of `TestKind` (no behaviour change).
+  - [ ] 23.5 Keep one `TestKind`
+    - `TestKind` is defined in `core/types.ts` and again in `core/test-classification.ts`. Keep the one in `core/types.ts`. In `core/test-classification.ts` remove the second definition, add `import type { TestKind } from "./types.js";`, and keep `export type { TestKind };` there so that `cli/orchestrate.ts` and `core/kill-classification.ts` still compile unchanged. Do not change any function, any value or any other file.
+    - Do not edit `test/core/test-classification*.test.ts`: they must pass unchanged.
+    - _Requirements: 6.3, 6.4, 6.5_
+    - _Validation: npm run typecheck && npx vitest run --project engine packages/engine/test/core --testNamePattern "classif" passes (run `npx vitest run --project engine packages/engine/test/core` if no pattern matches)_
+  - [ ] 23.6 Checkpoint - Corrections
+    - Run `npm run check` from the repository root. Ensure all tests pass, ask the user if questions arise.
+    - _Validation: npm run check passes_
