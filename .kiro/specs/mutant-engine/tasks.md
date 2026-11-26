@@ -1000,7 +1000,7 @@ Conventions used in every task:
     - Write `test/core/claims-outcome.test.ts`: `held` when the test is among the killing tests of every valid Spec_Mutant of the criterion; `not-held` when it is missing from one, with `otherTestsKilledAll` true when another test killed every valid Spec_Mutant, and false when one survives; a Timeout mutant counts as killed by others and not as killed by this test; `unchecked` for a criterion with no Spec_Mutant, for a skipped criterion, and for a criterion whose Spec_Mutants are all Ghost, InvalidWitness, CompileError or NotApplicable; `unknown-criterion` for an id the spec lacks; strays change nothing; `claimCounts` sums to the total and the two `notHeld` sub-counts sum to `notHeld`; a test with no claim has no `claims` key.
     - _Requirements: 7.6, 11.11, 11.12_
     - _Validation: npx vitest run --project engine packages/engine/test/core/claims-outcome.test.ts passes_
-  - [ ] 17.5 Write Property 27: Claim parsing
+  - [x] 17.5 Write Property 27: Claim parsing
     - Write `test/core/claims.parse.property.test.ts` with **Property 27** as stated in `design.md`.
     - **Validates: Requirements 11.1, 11.2, 11.3, 11.4, 11.5, 11.6, 11.7, 11.8, 11.9, 11.10, 11.13**
     - _Requirements: 11.1, 11.2, 11.3, 11.4, 11.5, 11.6, 11.7, 11.8, 11.9, 11.10, 11.13_
