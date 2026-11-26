@@ -4,6 +4,7 @@ import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { Git } from "../../src/adapters/git-adapter.js";
+import { withoutGitLocation } from "../../src/core/git-env.js";
 
 const SCRATCH_ROOT = join(fileURLToPath(new URL("../../../../", import.meta.url)), ".trickortest");
 
@@ -12,7 +13,11 @@ let repo: string;
 let project: string;
 
 const git = (...args: string[]): string =>
-  execFileSync("git", args, { cwd: repo, encoding: "utf8" });
+  execFileSync("git", args, {
+    cwd: repo,
+    encoding: "utf8",
+    env: withoutGitLocation(process.env),
+  });
 
 const lines = (count: number): string =>
   `${Array.from({ length: count }, (_, i) => `line ${i + 1}`).join("\n")}\n`;
