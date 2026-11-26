@@ -21,6 +21,8 @@ export type RunOptions = {
   readonly timeoutMs?: number;
   /** Cap per captured stream and for the combined output. Defaults to 256 KiB. */
   readonly maxOutputBytes?: number;
+  /** Environment of the child. When absent the child inherits `process.env`. */
+  readonly env?: Readonly<Record<string, string | undefined>>;
 };
 
 export type ProcessRunnerOptions = {
@@ -106,6 +108,7 @@ export const createProcessRunner = (config: ProcessRunnerOptions = {}): ProcessR
 
         const child = spawn(command, [...args], {
           cwd: options.cwd,
+          ...(options.env !== undefined ? { env: options.env } : {}),
           detached: true,
           stdio: ["ignore", "pipe", "pipe"],
         });

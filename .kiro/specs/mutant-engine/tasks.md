@@ -899,7 +899,7 @@ Conventions used in every task:
     - Write `test/core/git-env.test.ts`: each of the nine variables is removed (one example per variable); `PATH`, `HOME`, `GIT_AUTHOR_NAME` and `GIT_CONFIG_GLOBAL` are kept with their values; a variable with an undefined value is handled; a lower-case `git_dir` is kept (names are case-sensitive); an empty environment gives an empty result; the argument object is unchanged after the call and the result is a different object.
     - _Requirements: 3.21_
     - _Validation: npx vitest run --project engine packages/engine/test/core/git-env.test.ts passes_
-  - [ ] 14.2 Let `ProcessRunner` take an environment
+  - [x] 14.2 Let `ProcessRunner` take an environment
     - In `adapters/process-runner.ts` add `readonly env?: Readonly<Record<string, string | undefined>>` to `RunOptions` and pass it to `spawn`. When `env` is absent the child inherits `process.env` as before, so no other caller changes.
     - Write `test/adapters/process-runner-env.test.ts`: a child started with `env` set to `{ PATH, MARKER: "x" }` prints `MARKER` and does not see a variable that exists only in the parent's `process.env`; a child started without `env` still sees the parent's variables.
     - _Requirements: 3.21_
