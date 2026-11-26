@@ -363,7 +363,7 @@ Conventions for every task:
     - _Requirements: 6.1_
     - _Validation: `npm test -w trick-or-test-viewer -- test/screens/verdict/Headline.test.tsx` passes_
 
-  - [ ] 9.4 Implement the seal grid
+  - [x] 9.4 Implement the seal grid
     - Create `src/screens/verdict/SealGrid.tsx` and the seal drawings: one Seal per entry of `computeCoverageView`, labelled with the Criterion id, a closed seal labelled "guarded", a cracked seal labelled "unguarded" with each surviving Spec_Mutant drawn as an activatable creature, an empty seal labelled "no mutant bred", a skipped mark with the skip reason, and an "unrecognised status" indication that does not stop the other seals.
     - Example tests in `test/screens/verdict/SealGrid.test.tsx`: one test per criterion 6.2 to 6.7, and seal count equals coverage list length (6.16).
     - _Requirements: 6.2, 6.3, 6.4, 6.5, 6.6, 6.7, 6.16_
