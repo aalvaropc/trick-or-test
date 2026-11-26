@@ -224,7 +224,7 @@ export type MutationTestingReport = z.infer<typeof mutationReportSchema>;
 export type VerdictInput = {
   coverage: CriterionCoverage[];
   mutants: MutantResult[];
-  witnesses: Record<MutantId, Witness>;
+  witnesses: Record<MutantId, VerdictWitness>;
   ignoreStaticRetried: boolean;
   metadata: RunMetadata;
   /** Root of the Target_Project, as data. Every path and free-text field is made relative to it (8.17). */
@@ -233,26 +233,31 @@ export type VerdictInput = {
 
 const scrubTestId = (id: TestId, root: string): TestId => scrubAbsolutePaths(id, root) as TestId;
 
+const scrubOutcome = (o: WitnessOutcome, root: string): WitnessOutcome =>
+  o.kind === "timeout" || o.kind === "no-outcome"
+    ? { kind: o.kind, message: scrubAbsolutePaths(o.message, root) }
+    : o.kind === "error"
+      ? { kind: "error", className: scrubAbsolutePaths(o.className, root) }
+      : o;
+
 const scrubInvalidWitness = (record: InvalidWitnessRecord, root: string): InvalidWitnessRecord => {
   const expected =
     "expectedError" in record.expected
       ? { expectedError: scrubAbsolutePaths(record.expected.expectedError, root) }
       : record.expected;
-  const o = record.originalOutcome;
-  const originalOutcome: WitnessOutcome =
-    o.kind === "timeout" || o.kind === "no-outcome"
-      ? { kind: o.kind, message: scrubAbsolutePaths(o.message, root) }
-      : o.kind === "error"
-        ? { kind: "error", className: scrubAbsolutePaths(o.className, root) }
-        : o;
-  return { expected, originalOutcome };
+  return { expected, originalOutcome: scrubOutcome(record.originalOutcome, root) };
 };
 
-const scrubWitness = (w: Witness, root: string): Witness => {
-  const from = relativizePath(root, w.from);
-  return "expectedError" in w
-    ? { ...w, from, expectedError: scrubAbsolutePaths(w.expectedError, root) }
-    : { ...w, from };
+const scrubWitness = (w: VerdictWitness, root: string): VerdictWitness => {
+  const { mutatedOutcome, ...rest } = w;
+  const from = relativizePath(root, rest.from);
+  const scrubbed: VerdictWitness =
+    "expectedError" in rest
+      ? { ...rest, from, expectedError: scrubAbsolutePaths(rest.expectedError, root) }
+      : { ...rest, from };
+  return mutatedOutcome === undefined
+    ? scrubbed
+    : { ...scrubbed, mutatedOutcome: scrubOutcome(mutatedOutcome, root) };
 };
 
 /**
@@ -288,7 +293,7 @@ export const buildVerdict = (input: VerdictInput): Result<Verdict, string> => {
     mutants,
     witnesses: Object.fromEntries(
       Object.entries(input.witnesses).map(([id, w]) => [id, scrubWitness(w, root)]),
-    ) as Record<MutantId, Witness>,
+    ) as Record<MutantId, VerdictWitness>,
     ignoreStaticRetried: input.ignoreStaticRetried,
     metadata: { ...input.metadata },
   };

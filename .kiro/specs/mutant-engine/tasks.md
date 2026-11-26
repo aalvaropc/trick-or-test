@@ -866,7 +866,7 @@ Conventions used in every task:
     - Write `test/core/verdict-text.test.ts`: plain text is kept, leading and trailing whitespace and newlines are trimmed, inner whitespace is kept, an absolute path under the root becomes the relative path, a path outside the root becomes `<outside-project>/<basename>`, an entry without text has no `text` key, and `skipped` entries keep `reason` and gain `text`.
     - _Requirements: 8.17, 8.18_
     - _Validation: npx vitest run --project engine packages/engine/test/core/verdict-text.test.ts passes_
-  - [ ] 13.3 Write the mutated witness outcome in `buildVerdict`
+  - [x] 13.3 Write the mutated witness outcome in `buildVerdict`
     - In `core/report.ts` let `buildVerdict` copy `mutatedOutcome` from each `VerdictInput.witnesses` entry, through the same scrubbing function as `originalOutcome` (`message` of `timeout` and `no-outcome`, `className` of `error`). An entry with no `mutatedOutcome` gets no such key.
     - Write `test/core/verdict-mutated-outcome.test.ts`: one example for each outcome kind; an absolute path in a `no-outcome` message and in an error class name is scrubbed; a witness with `expectedError` and one with `expected` both keep the field; an entry without the field has no `mutatedOutcome` key (check with `Object.hasOwn`, not with `=== undefined`).
     - _Requirements: 8.17, 8.19_

@@ -1484,6 +1484,13 @@
         "chatSessionId": "sess_250ed8bc-8cf6-4bac-a2c6-73052ce080a5",
         "timestamp": 1795652309618
       }
+    ],
+    "13.2 Write the criterion text in `buildVerdict`": [
+      {
+        "executionId": "f8a9b89d-36d7-4f5a-957f-eb0e4b0f037a",
+        "chatSessionId": "sess_687138d1-a2f3-4006-b04f-079ba71e0768",
+        "timestamp": 1795652444490
+      }
     ]
   }
 }
