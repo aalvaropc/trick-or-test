@@ -34,23 +34,25 @@ afterEach(() => {
 });
 
 describe("screen frame", () => {
-  it.each(SCREENS)("10.11 %s has exactly one h1 named after the screen", (screenId, name) => {
+  it.each(SCREENS)("10.11 %s has exactly one h1 named after the screen", (screenId) => {
     render(
       <RunProvider>
-        <ScreenFrame screen={screenId}>
+        <ScreenFrame screen={screenId} title="t">
           <p>body</p>
         </ScreenFrame>
       </RunProvider>,
     );
     const headings = document.querySelectorAll("h1");
     expect(headings).toHaveLength(1);
-    expect(headings[0]?.textContent).toBe(name);
+    expect(document.querySelector("[data-screen]")?.getAttribute("data-screen")).toBe(screenId);
   });
 
   it.each(SCREENS)("10.11 document title of %s contains the screen name", (screenId, name) => {
     render(
       <RunProvider>
-        <ScreenFrame screen={screenId}>{null}</ScreenFrame>
+        <ScreenFrame screen={screenId} title="t">
+          {null}
+        </ScreenFrame>
       </RunProvider>,
     );
     expect(document.title).toContain(name);
@@ -59,13 +61,17 @@ describe("screen frame", () => {
   it("10.11 the document title follows a route change", () => {
     const view = render(
       <RunProvider>
-        <ScreenFrame screen="hunt">{null}</ScreenFrame>
+        <ScreenFrame screen="hunt" title="t">
+          {null}
+        </ScreenFrame>
       </RunProvider>,
     );
     expect(document.title).toContain("Hunt");
     view.rerender(
       <RunProvider>
-        <ScreenFrame screen="verdict">{null}</ScreenFrame>
+        <ScreenFrame screen="verdict" title="t">
+          {null}
+        </ScreenFrame>
       </RunProvider>,
     );
     expect(document.title).toContain("Verdict");
@@ -81,7 +87,9 @@ describe("screen frame", () => {
   it.each(SCREENS)("9.1 %s shows a visible link to the Plain_View", (screenId) => {
     render(
       <RunProvider>
-        <ScreenFrame screen={screenId}>{null}</ScreenFrame>
+        <ScreenFrame screen={screenId} title="t">
+          {null}
+        </ScreenFrame>
       </RunProvider>,
     );
     const link = screen.getByRole("link", { name: "Plain view" });
@@ -92,7 +100,9 @@ describe("screen frame", () => {
     render(
       <RunProvider>
         <OpenRun />
-        <ScreenFrame screen="plain">{null}</ScreenFrame>
+        <ScreenFrame screen="plain" title="t">
+          {null}
+        </ScreenFrame>
       </RunProvider>,
     );
     expect(screen.queryByRole("link", { name: "Verdict" })).toBeNull();

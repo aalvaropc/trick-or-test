@@ -80,7 +80,7 @@ describe("Verdict", () => {
   it("10.11 has exactly one h1 and sets the document title", () => {
     const { container } = setup(true);
     expect(container.querySelectorAll("h1")).toHaveLength(1);
-    expect(screen.getByRole("heading", { level: 1 }).textContent).toBe("Verdict");
+    expect(container.querySelector("[data-screen]")?.getAttribute("data-screen")).toBe("verdict");
     expect(document.title).toBe("Verdict - Trick or Test");
   });
 });

@@ -153,7 +153,7 @@ describe("Hunt", () => {
   it("10.11 has exactly one h1 and sets the document title", () => {
     const { container } = setup(loadModel(true));
     expect(container.querySelectorAll("h1")).toHaveLength(1);
-    expect(screen.getByRole("heading", { level: 1 }).textContent).toBe("Hunt");
+    expect(container.querySelector("[data-screen]")?.getAttribute("data-screen")).toBe("hunt");
     expect(document.title).toBe("Hunt - Trick or Test");
   });
 });

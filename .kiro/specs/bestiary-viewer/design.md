@@ -348,6 +348,8 @@ src/styles/
 
 `ScreenFrame` takes the Screen_Title as a prop and keeps `SCREEN_NAMES` for the document title only, so the document title still contains the screen name (Requirement 10.11) while the `<h1>` uses the product's words (Requirement 13.6). The titles are built by one pure function, `screenTitle(screen, input)` in `src/app/screen-title.ts` (no `react` import): the Verdict title comes from `computeHeadlineCounts` (surviving Spec_Mutants), the Specimen title from the Mutant's Species. The Landing title is a constant string in that file, and the Landing source still contains no count (Requirement 3.6).
 
+The root element of `ScreenFrame` carries a non-visible `data-screen` attribute holding the screen id, one of the keys of `SCREEN_NAMES` (`landing`, `verdict`, `specimen`, `hunt`, `plain`), so tests and tools identify the screen without relying on the `<h1>` (Requirement 13.6).
+
 ### Screen layouts
 
 | Screen | Structure (top to bottom) |

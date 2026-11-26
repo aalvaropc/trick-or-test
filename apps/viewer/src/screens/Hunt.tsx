@@ -1,5 +1,6 @@
 import { useRun } from "../app/run-context.js";
 import { ScreenFrame } from "../app/ScreenFrame.js";
+import { screenTitle } from "../app/screen-title.js";
 import { CreatureLink } from "../bestiary/CreatureLink.js";
 import { buildTimeline, type TimelineEntry } from "../hunt/timeline.js";
 import type { Mutant } from "../loader/run-model.js";
@@ -77,7 +78,7 @@ export function Hunt({ lockLog = [] }: { lockLog?: readonly LockLogEntry[] }) {
   const items = mergeItems(timeline, lockLog);
 
   return (
-    <ScreenFrame screen="hunt">
+    <ScreenFrame screen="hunt" title={screenTitle("hunt", { run })}>
       {timeline.length === 0 ? (
         <p>no history was loaded</p>
       ) : (

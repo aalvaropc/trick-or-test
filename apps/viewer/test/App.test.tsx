@@ -41,13 +41,13 @@ const goto = async (hash: string) => {
   });
 };
 
-const heading = () => screen.getByRole("heading", { level: 1 }).textContent;
+const heading = () => document.querySelector("[data-screen]")?.getAttribute("data-screen");
 
 const openDemo = async () => {
   window.location.hash = "#/demo/before";
   const view = render(<App />);
   await waitFor(() => expect(window.location.hash).toBe("#/verdict"));
-  await waitFor(() => expect(heading()).toBe("Verdict"));
+  await waitFor(() => expect(heading()).toBe("verdict"));
   return view;
 };
 
@@ -74,7 +74,7 @@ describe("App", () => {
     window.location.hash = "#/demo/after";
     render(<App />);
     await waitFor(() => expect(window.location.hash).toBe("#/verdict"));
-    await waitFor(() => expect(heading()).toBe("Verdict"));
+    await waitFor(() => expect(heading()).toBe("verdict"));
     const urls = fetchMock.mock.calls.map((call) => String(call[0]));
     expect(urls.some((url) => url.includes("demo/after/report.json"))).toBe(true);
   });
@@ -102,7 +102,7 @@ describe("App", () => {
     render(<App />);
     const alert = await screen.findByRole("alert");
     expect(alert.textContent).toContain("demo/after/report.json");
-    expect(heading()).toBe("Landing");
+    expect(heading()).toBe("landing");
     expect(window.location.hash).toBe("#/demo/after");
     expect(screen.getByRole("link", { name: "before the hunt" }).getAttribute("href")).toBe(
       "#/demo/before",
@@ -119,14 +119,14 @@ describe("App", () => {
     const alert = await screen.findByRole("alert");
     expect(alert.textContent).toContain("demo/after/verdict.json");
     expect(alert.textContent).toMatch(/invalid/i);
-    expect(heading()).toBe("Landing");
+    expect(heading()).toBe("landing");
   });
 
   it("11.4 a mutant route with a Run shows the Specimen", async () => {
     stubFetch();
     await openDemo();
     await goto("#/mutant/m1");
-    expect(heading()).toBe("Specimen");
+    expect(heading()).toBe("specimen");
     expect(screen.getByText("m1")).toBeTruthy();
   });
 
@@ -134,10 +134,10 @@ describe("App", () => {
     stubFetch();
     await openDemo();
     await goto("#/mutant/nope");
-    expect(heading()).toBe("Landing");
+    expect(heading()).toBe("landing");
     expect(screen.getByText(/mutant not found/)).toBeTruthy();
     await goto("#/verdict");
-    expect(heading()).toBe("Verdict");
+    expect(heading()).toBe("verdict");
   });
 
   it("11.6 a route that needs a Run with none loaded shows no run is open", async () => {
@@ -145,7 +145,7 @@ describe("App", () => {
     for (const hash of ["#/verdict", "#/hunt", "#/plain", "#/mutant/m1"]) {
       window.location.hash = hash;
       const view = render(<App />);
-      expect(heading()).toBe("Landing");
+      expect(heading()).toBe("landing");
       expect(screen.getByText(/no run is open/)).toBeTruthy();
       view.unmount();
     }
@@ -155,7 +155,7 @@ describe("App", () => {
     stubFetch();
     window.location.hash = "#/nowhere";
     render(<App />);
-    expect(heading()).toBe("Landing");
+    expect(heading()).toBe("landing");
     expect(screen.queryByText(/no run is open/)).toBeNull();
   });
 
@@ -165,7 +165,7 @@ describe("App", () => {
     view.unmount();
     expect(window.location.hash).toBe("#/verdict");
     render(<App />);
-    expect(heading()).toBe("Landing");
+    expect(heading()).toBe("landing");
     expect(screen.getByText(/no run is open/)).toBeTruthy();
   });
 
@@ -180,19 +180,19 @@ describe("App", () => {
     expect(screen.getByRole("alert").textContent).toContain("could not be shown");
     crash.on = false;
     await goto("#/plain");
-    expect(heading()).toBe("Plain view");
+    expect(heading()).toBe("plain");
   });
 
   it("1.7 a failed local load keeps the previous Run", async () => {
     stubFetch();
     await openDemo();
     await goto("#/");
-    expect(heading()).toBe("Landing");
+    expect(heading()).toBe("landing");
     fireEvent.drop(screen.getByRole("region", { name: "Load a run" }), {
       dataTransfer: { files: [new File(["{ not json"], "broken.json")] },
     });
     expect(await screen.findByText("broken.json")).toBeTruthy();
     await goto("#/verdict");
-    expect(heading()).toBe("Verdict");
+    expect(heading()).toBe("verdict");
   });
 });

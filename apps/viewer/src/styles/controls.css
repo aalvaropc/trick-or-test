@@ -1,0 +1,55 @@
+/* Buttons, links used as buttons, file picker and drop zone (13.8, 13.19) */
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0 1rem;
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  background: transparent;
+  color: var(--bone);
+  font-family: var(--font-data);
+  font-size: var(--text-body);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.button--primary {
+  border-color: var(--ember);
+  background: var(--ember);
+  color: var(--ink);
+}
+
+.button--secondary {
+  border-color: var(--rule);
+  background: transparent;
+  color: var(--bone);
+}
+
+.button:hover {
+  color: var(--bone);
+  border-color: var(--bone);
+}
+
+.button--primary:hover {
+  color: var(--ink);
+}
+
+.file-picker {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.drop-zone {
+  padding: 2rem;
+  border: 1px dashed var(--mist);
+  border-radius: 4px;
+  background: var(--panel);
+}
+
+.drop-zone[data-dragging] {
+  border-color: var(--amber);
+}

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useSyncExternalStore } from "react";
 import { useRun } from "../app/run-context.js";
 import { ScreenFrame } from "../app/ScreenFrame.js";
+import { screenTitle } from "../app/screen-title.js";
 import {
   getReducedMotion,
   getServerReducedMotion,
@@ -165,7 +166,7 @@ export function Specimen({ mutantId }: { mutantId: string }) {
   }, [reduced, hasCreature]);
 
   return (
-    <ScreenFrame screen="specimen">
+    <ScreenFrame screen="specimen" title={screenTitle("specimen", { run, mutantId })}>
       {view === undefined ? (
         <>
           <p>

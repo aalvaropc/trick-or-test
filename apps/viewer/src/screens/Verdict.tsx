@@ -1,5 +1,6 @@
 import { useRun } from "../app/run-context.js";
 import { ScreenFrame } from "../app/ScreenFrame.js";
+import { screenTitle } from "../app/screen-title.js";
 import { Headline } from "./verdict/Headline.js";
 import { SealGrid } from "./verdict/SealGrid.js";
 import { SpeciesLegend } from "./verdict/SpeciesLegend.js";
@@ -13,7 +14,7 @@ import { WhoKilledPanel } from "./verdict/WhoKilledPanel.js";
 export function Verdict() {
   const { run } = useRun();
   return (
-    <ScreenFrame screen="verdict">
+    <ScreenFrame screen="verdict" title={screenTitle("verdict", { run })}>
       {run === undefined ? (
         <p>no run is loaded</p>
       ) : (

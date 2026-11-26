@@ -5,6 +5,8 @@ import "./fonts/fonts";
 import "./styles/tokens.css";
 import "./styles/base.css";
 import "./styles/layout.css";
+import "./styles/controls.css";
+import "./styles/screens.css";
 import "./styles/motion.css";
 
 const container = document.getElementById("root");

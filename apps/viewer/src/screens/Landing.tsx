@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { FontLicences } from "../app/FontLicences.js";
 import { LoadErrorView } from "../app/LoadErrorView.js";
 import { ScreenFrame } from "../app/ScreenFrame.js";
+import { screenTitle } from "../app/screen-title.js";
 import { computeHeadlineCounts } from "../bestiary/counts.js";
 import { fetchDemoRun } from "../loader/fetch-demo-run.js";
 import { buildRunModel } from "../loader/run-model.js";
@@ -58,7 +59,7 @@ export function Landing({ loadError, notice }: { loadError?: LoadError; notice?:
   const error = loadError ?? (demo.state === "none" ? demo.error : undefined);
 
   return (
-    <ScreenFrame screen="landing">
+    <ScreenFrame screen="landing" title={screenTitle("landing", {})}>
       {notice === undefined ? null : <p role="status">{notice}</p>}
       <p data-testid="pitch">
         {demo.state === "ready" ? (

@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { useRun } from "../app/run-context.js";
 import { ScreenFrame } from "../app/ScreenFrame.js";
+import { screenTitle } from "../app/screen-title.js";
 import { computeStateCounts } from "../bestiary/counts.js";
 import { buildRows, type ColumnId } from "../plain-view/columns.js";
 import { type SortDirection, sortRows } from "../plain-view/sort.js";
@@ -46,7 +47,7 @@ export function PlainView() {
 
   if (run === undefined) {
     return (
-      <ScreenFrame screen="plain">
+      <ScreenFrame screen="plain" title={screenTitle("plain", {})}>
         <p>no run is loaded</p>
       </ScreenFrame>
     );
@@ -55,7 +56,7 @@ export function PlainView() {
   const counts = computeStateCounts(run);
 
   return (
-    <ScreenFrame screen="plain">
+    <ScreenFrame screen="plain" title={screenTitle("plain", { run })}>
       <dl className="state-counts">
         {COUNT_LABELS.map(([state, label]) => (
           <div key={state}>

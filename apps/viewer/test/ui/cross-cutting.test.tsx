@@ -37,12 +37,12 @@ const testFiles = textFilesUnder("test");
 const indexHtml = { rel: "index.html", text: readFileSync(join(viewerRoot, "index.html"), "utf8") };
 
 /** The screens, as hash routes, with the title word each one must carry. */
-const SCREENS: { name: string; hash: string }[] = [
-  { name: "Landing", hash: "#/" },
-  { name: "Verdict", hash: "#/verdict" },
-  { name: "Specimen", hash: "#/mutant/m1" },
-  { name: "Hunt", hash: "#/hunt" },
-  { name: "Plain view", hash: "#/plain" },
+const SCREENS: { id: string; name: string; hash: string }[] = [
+  { id: "landing", name: "Landing", hash: "#/" },
+  { id: "verdict", name: "Verdict", hash: "#/verdict" },
+  { id: "specimen", name: "Specimen", hash: "#/mutant/m1" },
+  { id: "hunt", name: "Hunt", hash: "#/hunt" },
+  { id: "plain", name: "Plain view", hash: "#/plain" },
 ];
 
 const fileOf = (url: string): string => url.slice(url.lastIndexOf("/") + 1);
@@ -76,16 +76,22 @@ const openRun = async () => {
   window.location.hash = "#/demo/before";
   const view = render(<App />);
   await waitFor(() => expect(window.location.hash).toBe("#/verdict"));
-  await waitFor(() => expect(view.container.querySelector("h1")?.textContent).toBe("Verdict"));
+  await waitFor(() =>
+    expect(view.container.querySelector("[data-screen]")?.getAttribute("data-screen")).toBe(
+      "verdict",
+    ),
+  );
   return view;
 };
 
 /** Visits every screen with the fixtures loaded and hands each rendered container to `check`. */
 const eachScreen = async (check: (name: string, root: HTMLElement) => void) => {
   const view = await openRun();
-  for (const { name, hash } of SCREENS) {
+  for (const { id, name, hash } of SCREENS) {
     await goto(hash);
-    await waitFor(() => expect(view.container.querySelector("h1")?.textContent).toBe(name));
+    await waitFor(() =>
+      expect(view.container.querySelector("[data-screen]")?.getAttribute("data-screen")).toBe(id),
+    );
     check(name, view.container);
   }
 };
@@ -129,7 +135,9 @@ describe("cross-cutting UI checks", () => {
   it("10.11 every screen has exactly one h1 and a title that contains the screen name", async () => {
     await eachScreen((name, root) => {
       expect(root.querySelectorAll("h1")).toHaveLength(1);
-      expect(root.querySelector("h1")?.textContent).toBe(name);
+      expect(root.querySelector("[data-screen]")?.getAttribute("data-screen")).toBe(
+        SCREENS.find((screen) => screen.name === name)?.id,
+      );
       expect(document.title).toContain(name);
     });
   });
