@@ -1,0 +1,71 @@
+{
+  "schemaVersion": "2",
+  "thresholds": { "high": 80, "low": 60 },
+  "files": {
+    "src/price.ts": {
+      "language": "typescript",
+      "source": "export const total = (a: number, b: number): number => a + b;\nexport const big = (n: number): boolean => n >= 10;\n",
+      "mutants": [
+        {
+          "id": "m1",
+          "mutatorName": "ArithmeticOperator",
+          "location": { "start": { "line": 1, "column": 61 }, "end": { "line": 1, "column": 66 } },
+          "status": "Survived",
+          "replacement": "a - b"
+        },
+        {
+          "id": "m2",
+          "mutatorName": "EqualityOperator",
+          "location": { "start": { "line": 2, "column": 46 }, "end": { "line": 2, "column": 53 } },
+          "status": "Killed",
+          "replacement": "n > 10",
+          "killedBy": ["t1"],
+          "coveredBy": ["t1"]
+        },
+        {
+          "id": "m3",
+          "mutatorName": "BooleanLiteral",
+          "location": { "start": { "line": 2, "column": 46 }, "end": { "line": 2, "column": 53 } },
+          "status": "Timeout",
+          "replacement": "true"
+        },
+        {
+          "id": "m4",
+          "mutatorName": "StringLiteral",
+          "location": { "start": { "line": 1, "column": 1 }, "end": { "line": 1, "column": 6 } },
+          "status": "NoCoverage",
+          "replacement": "\"\""
+        },
+        {
+          "id": "m5",
+          "mutatorName": "Oathbreaker",
+          "location": { "start": { "line": 1, "column": 61 }, "end": { "line": 1, "column": 66 } },
+          "status": "Ignored",
+          "statusReason": "Engine status: Ghost",
+          "replacement": "a * b",
+          "species": "Oathbreaker",
+          "requirement": "1.1"
+        },
+        {
+          "id": "m6",
+          "mutatorName": "Oathbreaker",
+          "location": { "start": { "line": 2, "column": 46 }, "end": { "line": 2, "column": 53 } },
+          "status": "Survived",
+          "replacement": "n > 11",
+          "species": "Oathbreaker",
+          "requirement": "2.1"
+        },
+        {
+          "id": "m7",
+          "mutatorName": "Oathbreaker",
+          "location": { "start": { "line": 1, "column": 61 }, "end": { "line": 1, "column": 66 } },
+          "status": "Killed",
+          "replacement": "a + b + 1",
+          "killedBy": ["t1"],
+          "species": "Oathbreaker",
+          "requirement": "1.2"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "coverage": [
+    { "criterion": "1.1", "status": "guarded" },
+    { "criterion": "2.1", "status": "unguarded" },
+    { "criterion": "3.1", "status": "unattacked" },
+    { "criterion": "4.1", "status": "skipped", "reason": "no witness" }
+  ],
+  "mutants": [
+    { "id": "m1", "species": "Miscount", "status": "Survived", "killingTests": [] },
+    { "id": "m2", "species": "Borderling", "status": "Killed", "killingTests": ["t1"], "killClass": "examples-only" },
+    { "id": "m5", "species": "Oathbreaker", "status": "Ghost", "killingTests": [] },
+    { "id": "m6", "species": "Oathbreaker", "status": "Survived", "killingTests": [] },
+    { "id": "m7", "species": "Oathbreaker", "status": "Killed", "killingTests": ["t1"], "killClass": "both" },
+    { "id": "not-in-report", "species": "Oathbreaker", "status": "Killed", "killingTests": ["t2"], "killClass": "properties-only" }
+  ],
+  "witnesses": {},
+  "ignoreStaticRetried": false,
+  "metadata": {
+    "gitCommit": "abc1234",
+    "seed": 1,
+    "engineVersion": "0.0.0",
+    "nodeVersion": "v24.0.0",
+    "strykerVersion": "9.0.0",
+    "vitestVersion": "4.0.0",
+    "typescriptVersion": "6.0.0",
+    "timestamp": "2026-01-03T00:00:00.000Z"
+  }
+}

@@ -1,0 +1,26 @@
+/* Erase-to-bones: a creature that has just been killed loses its fill and
+   thins its strokes. CSS only, 600ms, one at a time (see Creature.tsx). */
+@keyframes erase-to-bones {
+  from {
+    fill-opacity: 1;
+    stroke-width: 3px;
+  }
+
+  to {
+    fill-opacity: 0;
+    stroke-width: 1.5px;
+  }
+}
+
+.creature--erasing svg [data-kind] {
+  animation: erase-to-bones 600ms linear 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}

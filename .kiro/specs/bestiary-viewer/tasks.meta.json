@@ -1,0 +1,873 @@
+{
+  "pbtResults": {},
+  "executionHistory": {
+    "1.1 Create the workspace package and install pinned dependencies": [
+      {
+        "executionId": "1ede4dce-8144-4f69-a05c-179af8e83c90",
+        "chatSessionId": "sess_3ba4a2d2-77eb-48e4-afd9-4372bca88aca",
+        "timestamp": 1795627312945
+      },
+      {
+        "executionId": "1ede4dce-8144-4f69-a05c-179af8e83c90",
+        "chatSessionId": "sess_3ba4a2d2-77eb-48e4-afd9-4372bca88aca",
+        "timestamp": 1795627413191
+      }
+    ],
+    "1.2 Add the TypeScript project, Vite config and entry stub": [
+      {
+        "executionId": "4ac1d23b-ffc7-4129-8c41-6f777b23a380",
+        "chatSessionId": "sess_33a127fa-bc7f-4ed0-b01e-c41bf84c87f5",
+        "timestamp": 1795627467260
+      },
+      {
+        "executionId": "4ac1d23b-ffc7-4129-8c41-6f777b23a380",
+        "chatSessionId": "sess_33a127fa-bc7f-4ed0-b01e-c41bf84c87f5",
+        "timestamp": 1795627527368
+      }
+    ],
+    "1.3 Add the Vitest project and the shared fast-check configuration": [
+      {
+        "executionId": "d9366502-c492-462a-9a08-6d22145e7995",
+        "chatSessionId": "sess_eb98e9a8-f2df-4545-b738-0650838a4f98",
+        "timestamp": 1795627561528
+      },
+      {
+        "executionId": "d9366502-c492-462a-9a08-6d22145e7995",
+        "chatSessionId": "sess_eb98e9a8-f2df-4545-b738-0650838a4f98",
+        "timestamp": 1795627590215
+      }
+    ],
+    "1.4 Add the engine-first scripts and the package checks": [
+      {
+        "executionId": "7d0342c1-f1a3-489f-8e91-6b5af461e088",
+        "chatSessionId": "sess_7f74c9b6-79a4-4508-be32-235dc24ef4f3",
+        "timestamp": 1795627623939
+      },
+      {
+        "executionId": "7d0342c1-f1a3-489f-8e91-6b5af461e088",
+        "chatSessionId": "sess_7f74c9b6-79a4-4508-be32-235dc24ef4f3",
+        "timestamp": 1795627663616
+      }
+    ],
+    "1.5 Add the viewer rows to the commands table in tech.md": [
+      {
+        "executionId": "ae17af26-9e57-41d7-ab99-7ff3df6ad990",
+        "chatSessionId": "sess_7b3b87e4-8721-4f89-be80-cb5898a22066",
+        "timestamp": 1795627700339
+      },
+      {
+        "executionId": "ae17af26-9e57-41d7-ab99-7ff3df6ad990",
+        "chatSessionId": "sess_7b3b87e4-8721-4f89-be80-cb5898a22066",
+        "timestamp": 1795627749590
+      }
+    ],
+    "1.6 Add the static boundary checks": [
+      {
+        "executionId": "80f6bc00-5174-4af8-8868-a4ba41644299",
+        "chatSessionId": "sess_27f96653-6715-4aec-aa3b-195e451f0159",
+        "timestamp": 1795627774704
+      },
+      {
+        "executionId": "80f6bc00-5174-4af8-8868-a4ba41644299",
+        "chatSessionId": "sess_27f96653-6715-4aec-aa3b-195e451f0159",
+        "timestamp": 1795627812921
+      }
+    ],
+    "1. Workspace setup": [
+      {
+        "executionId": "80f6bc00-5174-4af8-8868-a4ba41644299",
+        "chatSessionId": "sess_27f96653-6715-4aec-aa3b-195e451f0159",
+        "timestamp": 1795627813215
+      }
+    ],
+    "2. Checkpoint - workspace setup": [
+      {
+        "executionId": "89cdbe41-ebca-4707-93fd-abf80114cfd7",
+        "chatSessionId": "sess_f6b09acc-916b-4397-a49d-f5aed4a0b59a",
+        "timestamp": 1795627856520
+      },
+      {
+        "executionId": "89cdbe41-ebca-4707-93fd-abf80114cfd7",
+        "chatSessionId": "sess_f6b09acc-916b-4397-a49d-f5aed4a0b59a",
+        "timestamp": 1795627882578
+      }
+    ],
+    "3.1 Write the fixture runs": [
+      {
+        "executionId": "71189c8f-4659-4b2d-98df-83471ac94b3f",
+        "chatSessionId": "sess_13f58e5c-673a-42a4-b0ac-45738852bc54",
+        "timestamp": 1795627934860
+      },
+      {
+        "executionId": "71189c8f-4659-4b2d-98df-83471ac94b3f",
+        "chatSessionId": "sess_13f58e5c-673a-42a4-b0ac-45738852bc54",
+        "timestamp": 1795628070877
+      },
+      {
+        "executionId": "08da62bc-06ba-4852-aea1-db9b0c317b64",
+        "chatSessionId": "sess_13f58e5c-673a-42a4-b0ac-45738852bc54",
+        "timestamp": 1795628100613
+      },
+      {
+        "executionId": "08da62bc-06ba-4852-aea1-db9b0c317b64",
+        "chatSessionId": "sess_13f58e5c-673a-42a4-b0ac-45738852bc54",
+        "timestamp": 1795628207361
+      }
+    ],
+    "3.2 Implement `loader/recognise.ts`": [
+      {
+        "executionId": "933c256e-a0fc-4ff1-9ebb-5e7d29da47be",
+        "chatSessionId": "sess_fe176edf-477f-4548-a47b-d8d24bc720db",
+        "timestamp": 1795628240155
+      },
+      {
+        "executionId": "933c256e-a0fc-4ff1-9ebb-5e7d29da47be",
+        "chatSessionId": "sess_fe176edf-477f-4548-a47b-d8d24bc720db",
+        "timestamp": 1795628348409
+      }
+    ],
+    "3.3 Implement `loader/parse.ts`": [
+      {
+        "executionId": "83c3bd79-2e37-4815-8e0d-30bb4e6d6105",
+        "chatSessionId": "sess_fa6fdedc-cc2c-479c-971b-90e99e69becb",
+        "timestamp": 1795628386395
+      },
+      {
+        "executionId": "83c3bd79-2e37-4815-8e0d-30bb4e6d6105",
+        "chatSessionId": "sess_fa6fdedc-cc2c-479c-971b-90e99e69becb",
+        "timestamp": 1795628480881
+      }
+    ],
+    "3.4 Write property test for loading never crashing": [
+      {
+        "executionId": "d8c47e50-6876-451f-9773-98afaa607d61",
+        "chatSessionId": "sess_a1b39812-ab01-4ea0-890f-c6c8e1d78675",
+        "timestamp": 1795628513097
+      },
+      {
+        "executionId": "d8c47e50-6876-451f-9773-98afaa607d61",
+        "chatSessionId": "sess_a1b39812-ab01-4ea0-890f-c6c8e1d78675",
+        "timestamp": 1795628566652
+      }
+    ],
+    "3.5 Implement `loader/join-run.ts`": [
+      {
+        "executionId": "a1fa1410-03dd-4c52-a518-4cb3acc70dda",
+        "chatSessionId": "sess_8d7c2ffb-0c90-4340-838b-57de492539f5",
+        "timestamp": 1795628605970
+      },
+      {
+        "executionId": "a1fa1410-03dd-4c52-a518-4cb3acc70dda",
+        "chatSessionId": "sess_8d7c2ffb-0c90-4340-838b-57de492539f5",
+        "timestamp": 1795628720778
+      }
+    ],
+    "3.6 Implement the hunt timeline builder": [
+      {
+        "executionId": "3c8d2b4a-c7fd-44a8-a451-93596bd9f8fb",
+        "chatSessionId": "sess_c75ce0b3-1f62-4c64-b5e7-5438065effc3",
+        "timestamp": 1795628757950
+      },
+      {
+        "executionId": "3c8d2b4a-c7fd-44a8-a451-93596bd9f8fb",
+        "chatSessionId": "sess_c75ce0b3-1f62-4c64-b5e7-5438065effc3",
+        "timestamp": 1795628803649
+      }
+    ],
+    "3.7 Write property test for the hunt order": [
+      {
+        "executionId": "9735f118-2228-4e68-a085-859fa7183c6d",
+        "chatSessionId": "sess_ebdd8f31-d1a8-4159-ad6a-fbac84e86ca7",
+        "timestamp": 1795628837887
+      },
+      {
+        "executionId": "9735f118-2228-4e68-a085-859fa7183c6d",
+        "chatSessionId": "sess_ebdd8f31-d1a8-4159-ad6a-fbac84e86ca7",
+        "timestamp": 1795628927727
+      },
+      {
+        "executionId": "17561b6e-b3c1-453e-8074-bf894d5e6524",
+        "chatSessionId": "sess_ebdd8f31-d1a8-4159-ad6a-fbac84e86ca7",
+        "timestamp": 1795628997513
+      },
+      {
+        "executionId": "937d9fef-d964-4b17-8d18-81d8cb378276",
+        "chatSessionId": "sess_ebdd8f31-d1a8-4159-ad6a-fbac84e86ca7",
+        "timestamp": 1795629215048
+      }
+    ],
+    "3.8 Implement `loader/file-reader.ts`": [
+      {
+        "executionId": "68b926e8-f283-4bb3-888b-9a884da1b575",
+        "chatSessionId": "sess_fca390d1-45bf-4af0-8110-6da885caab4d",
+        "timestamp": 1795629249649
+      },
+      {
+        "executionId": "68b926e8-f283-4bb3-888b-9a884da1b575",
+        "chatSessionId": "sess_fca390d1-45bf-4af0-8110-6da885caab4d",
+        "timestamp": 1795629297847
+      }
+    ],
+    "3.9 Implement `loader/fetch-demo-run.ts`": [
+      {
+        "executionId": "5a03bafb-4894-4d5f-ad60-313f5625ae10",
+        "chatSessionId": "sess_1f8b6cdf-22a6-43de-a3a7-7d48f7e0fe28",
+        "timestamp": 1795629330971
+      },
+      {
+        "executionId": "5a03bafb-4894-4d5f-ad60-313f5625ae10",
+        "chatSessionId": "sess_1f8b6cdf-22a6-43de-a3a7-7d48f7e0fe28",
+        "timestamp": 1795629438076
+      }
+    ],
+    "3. Loader: recognise, parse, join, timeline, file reading, demo fetch": [
+      {
+        "executionId": "5a03bafb-4894-4d5f-ad60-313f5625ae10",
+        "chatSessionId": "sess_1f8b6cdf-22a6-43de-a3a7-7d48f7e0fe28",
+        "timestamp": 1795629438231
+      }
+    ],
+    "4.1 Implement `bestiary/species.ts`": [
+      {
+        "executionId": "7f3f1360-0a6f-4e4e-bb83-1bf901bc97dd",
+        "chatSessionId": "sess_49b7e9e7-9fbc-4a9c-89a0-a27816718a22",
+        "timestamp": 1795629469533
+      },
+      {
+        "executionId": "7f3f1360-0a6f-4e4e-bb83-1bf901bc97dd",
+        "chatSessionId": "sess_49b7e9e7-9fbc-4a9c-89a0-a27816718a22",
+        "timestamp": 1795629555482
+      }
+    ],
+    "4.2 Write property test for species being total": [
+      {
+        "executionId": "a49224af-b617-46a0-bc4b-3b21ba56f617",
+        "chatSessionId": "sess_a93adfd6-1cef-4c0b-ad91-7d5bbdc2843a",
+        "timestamp": 1795629601859
+      },
+      {
+        "executionId": "a49224af-b617-46a0-bc4b-3b21ba56f617",
+        "chatSessionId": "sess_a93adfd6-1cef-4c0b-ad91-7d5bbdc2843a",
+        "timestamp": 1795629646946
+      }
+    ],
+    "4.3 Implement `bestiary/state.ts`": [
+      {
+        "executionId": "1fcaa041-bf38-42c7-9cc6-b16d088bdc74",
+        "chatSessionId": "sess_b188361f-d10c-4cf2-bd35-c1f87790df4d",
+        "timestamp": 1795629832238
+      },
+      {
+        "executionId": "1fcaa041-bf38-42c7-9cc6-b16d088bdc74",
+        "chatSessionId": "sess_b188361f-d10c-4cf2-bd35-c1f87790df4d",
+        "timestamp": 1795629906004
+      },
+      {
+        "executionId": "dcafbe74-33d5-40e9-bcd7-5d3bbc19765f",
+        "chatSessionId": "sess_b188361f-d10c-4cf2-bd35-c1f87790df4d",
+        "timestamp": 1795629929587
+      },
+      {
+        "executionId": "dcafbe74-33d5-40e9-bcd7-5d3bbc19765f",
+        "chatSessionId": "sess_b188361f-d10c-4cf2-bd35-c1f87790df4d",
+        "timestamp": 1795629992889
+      },
+      {
+        "executionId": "285fe722-a618-496f-b064-5f5fae9a97c4",
+        "chatSessionId": "sess_b188361f-d10c-4cf2-bd35-c1f87790df4d",
+        "timestamp": 1795630029580
+      },
+      {
+        "executionId": "285fe722-a618-496f-b064-5f5fae9a97c4",
+        "chatSessionId": "sess_b188361f-d10c-4cf2-bd35-c1f87790df4d",
+        "timestamp": 1795630079958
+      }
+    ],
+    "4.4 Write property test for state being total": [
+      {
+        "executionId": "e4368c22-58e8-4db4-8769-a263355e1c8c",
+        "chatSessionId": "sess_42506ca2-eb56-4d50-acb1-1006974110e0",
+        "timestamp": 1795630172625
+      },
+      {
+        "executionId": "e4368c22-58e8-4db4-8769-a263355e1c8c",
+        "chatSessionId": "sess_42506ca2-eb56-4d50-acb1-1006974110e0",
+        "timestamp": 1795630213580
+      }
+    ],
+    "4.5 Implement `loader/run-model.ts`": [
+      {
+        "executionId": "a8527c28-3322-4af6-b857-9615632cda1d",
+        "chatSessionId": "sess_3cccae85-938f-43de-86b5-465e641c897a",
+        "timestamp": 1795630247264
+      },
+      {
+        "executionId": "a8527c28-3322-4af6-b857-9615632cda1d",
+        "chatSessionId": "sess_3cccae85-938f-43de-86b5-465e641c897a",
+        "timestamp": 1795630340299
+      },
+      {
+        "executionId": "5a840db1-d0d7-45e6-a357-2c6856a7a58a",
+        "chatSessionId": "sess_3cccae85-938f-43de-86b5-465e641c897a",
+        "timestamp": 1795630364441
+      },
+      {
+        "executionId": "5a840db1-d0d7-45e6-a357-2c6856a7a58a",
+        "chatSessionId": "sess_3cccae85-938f-43de-86b5-465e641c897a",
+        "timestamp": 1795630494081
+      }
+    ],
+    "4.6 Implement `bestiary/counts.ts`": [
+      {
+        "executionId": "e3756d5b-a46b-4f83-9c30-6a4d6d31cc93",
+        "chatSessionId": "sess_53ea0037-77c3-4457-b55a-a97bfe0a53ae",
+        "timestamp": 1795630538935
+      },
+      {
+        "executionId": "e3756d5b-a46b-4f83-9c30-6a4d6d31cc93",
+        "chatSessionId": "sess_53ea0037-77c3-4457-b55a-a97bfe0a53ae",
+        "timestamp": 1795630624463
+      },
+      {
+        "executionId": "f62fdf96-a39f-4626-8260-6e3e60febb79",
+        "chatSessionId": "sess_53ea0037-77c3-4457-b55a-a97bfe0a53ae",
+        "timestamp": 1795630655656
+      },
+      {
+        "executionId": "f62fdf96-a39f-4626-8260-6e3e60febb79",
+        "chatSessionId": "sess_53ea0037-77c3-4457-b55a-a97bfe0a53ae",
+        "timestamp": 1795630777316
+      }
+    ],
+    "4.7 Implement `bestiary/coverage.ts`": [
+      {
+        "executionId": "2e95ed70-49eb-4c99-8e17-98c1a657052c",
+        "chatSessionId": "sess_99bff64c-b428-4226-9085-e75a92afcb5d",
+        "timestamp": 1795630817733
+      },
+      {
+        "executionId": "2e95ed70-49eb-4c99-8e17-98c1a657052c",
+        "chatSessionId": "sess_99bff64c-b428-4226-9085-e75a92afcb5d",
+        "timestamp": 1795630875127
+      }
+    ],
+    "4.8 Write property test for no false seal": [
+      {
+        "executionId": "336a6594-ae0b-48a7-b525-89b2e4ef05a7",
+        "chatSessionId": "sess_66e07b68-65c5-4790-b3de-5cc9d7d9dcf7",
+        "timestamp": 1795630917457
+      },
+      {
+        "executionId": "336a6594-ae0b-48a7-b525-89b2e4ef05a7",
+        "chatSessionId": "sess_66e07b68-65c5-4790-b3de-5cc9d7d9dcf7",
+        "timestamp": 1795630954020
+      },
+      {
+        "executionId": "6577adee-b8bd-4cb9-936f-925a9f7c1bcc",
+        "chatSessionId": "sess_66e07b68-65c5-4790-b3de-5cc9d7d9dcf7",
+        "timestamp": 1795630999618
+      },
+      {
+        "executionId": "6577adee-b8bd-4cb9-936f-925a9f7c1bcc",
+        "chatSessionId": "sess_66e07b68-65c5-4790-b3de-5cc9d7d9dcf7",
+        "timestamp": 1795631055884
+      }
+    ],
+    "4.9 Implement `bestiary/escape-xml.ts`": [
+      {
+        "executionId": "ede1e0c6-d13e-4676-a2a5-bbabc9d55d64",
+        "chatSessionId": "sess_f2adfafa-4d99-4862-8465-7fd96a8fe027",
+        "timestamp": 1795631087257
+      },
+      {
+        "executionId": "ede1e0c6-d13e-4676-a2a5-bbabc9d55d64",
+        "chatSessionId": "sess_f2adfafa-4d99-4862-8465-7fd96a8fe027",
+        "timestamp": 1795631142729
+      }
+    ],
+    "4.10 Implement `bestiary/glyph.ts`": [
+      {
+        "executionId": "2c3af111-20b1-46b1-b6bb-7a90aad78418",
+        "chatSessionId": "sess_7f0197a0-7363-4976-828f-ff2883f73cd2",
+        "timestamp": 1795631176855
+      },
+      {
+        "executionId": "2c3af111-20b1-46b1-b6bb-7a90aad78418",
+        "chatSessionId": "sess_7f0197a0-7363-4976-828f-ff2883f73cd2",
+        "timestamp": 1795631248841
+      },
+      {
+        "executionId": "819724bf-be41-427d-9b2a-3e8cb75eda44",
+        "chatSessionId": "sess_7f0197a0-7363-4976-828f-ff2883f73cd2",
+        "timestamp": 1795631286087
+      }
+    ],
+    "4.11 Implement `bestiary/creature.config.ts` and the seeded generator": [
+      {
+        "executionId": "57afad89-7b86-495c-91d9-95d24fc49ecd",
+        "chatSessionId": "sess_bb0af6ff-9fec-49da-91d4-8de1acfeb748",
+        "timestamp": 1795634217479
+      }
+    ],
+    "4.12 Implement the creature structure in `bestiary/creature.ts`": [
+      {
+        "executionId": "1e175f53-4344-4812-9c78-096417095927",
+        "chatSessionId": "sess_dc62a625-49b3-4792-818a-1f5a39433e39",
+        "timestamp": 1795634367795
+      }
+    ],
+    "4.13 Add state styling to `bestiary/creature.ts`": [
+      {
+        "executionId": "373269ac-4373-4a11-9c70-b5ff82f1262a",
+        "chatSessionId": "sess_1a8de482-a0c1-483b-acc7-a66193c11233",
+        "timestamp": 1795634525259
+      },
+      {
+        "executionId": "083167ec-4ab3-4608-839b-f404faf030a4",
+        "chatSessionId": "sess_1a8de482-a0c1-483b-acc7-a66193c11233",
+        "timestamp": 1795634697646
+      },
+      {
+        "executionId": "083167ec-4ab3-4608-839b-f404faf030a4",
+        "chatSessionId": "sess_1a8de482-a0c1-483b-acc7-a66193c11233",
+        "timestamp": 1795634740468
+      }
+    ],
+    "4.14 Draw the glyph inside the body in `bestiary/creature.ts`": [
+      {
+        "executionId": "3e41e77b-c08a-4060-bb4c-dac859b63f5f",
+        "chatSessionId": "sess_fe2b885f-4a7d-4230-a909-d7b45ea0d1b7",
+        "timestamp": 1795634776983
+      }
+    ],
+    "4.15 Write property test for deterministic creatures": [
+      {
+        "executionId": "0d6e7480-39d2-4a55-8d56-12588a918617",
+        "chatSessionId": "sess_658719a4-5343-4c12-abd9-f81233aad138",
+        "timestamp": 1795634927727
+      }
+    ],
+    "4.16 Write property test for well-formed creatures": [
+      {
+        "executionId": "0884c641-c19c-4204-9fc9-2d1f89a5f135",
+        "chatSessionId": "sess_fbc3f833-f9a7-4cca-895f-601508937d41",
+        "timestamp": 1795635037041
+      }
+    ],
+    "4.17 Write property test for the glyph being present": [
+      {
+        "executionId": "37d7905d-5e52-4865-81ad-c43fd4ed0fb9",
+        "chatSessionId": "sess_767c47bd-6f95-401d-b835-e605cddae4cf",
+        "timestamp": 1795635167596
+      }
+    ],
+    "4.18 Write property test for safe escaping": [
+      {
+        "executionId": "641a48c7-bd74-4288-82f2-471d49974f14",
+        "chatSessionId": "sess_302ed2f0-1c7d-40da-82b1-5197627fd9b0",
+        "timestamp": 1795635276955
+      }
+    ],
+    "5.1 Implement `plain-view/columns.ts` and the row builder": [
+      {
+        "executionId": "74ff4d8b-490c-4044-a3a6-79fec98006de",
+        "chatSessionId": "sess_15bbe4de-98fe-4968-a3f4-e7457f32f6ef",
+        "timestamp": 1795635403345
+      }
+    ],
+    "5.2 Implement `plain-view/sort.ts`": [
+      {
+        "executionId": "64c22fac-0e1e-41df-af01-d444c54d7567",
+        "chatSessionId": "sess_b65791dc-4ec9-4222-a488-1153a34b1119",
+        "timestamp": 1795635544682
+      }
+    ],
+    "5.3 Write property test for sorting being a permutation": [
+      {
+        "executionId": "c9928070-8874-4c44-9632-d2269354a83d",
+        "chatSessionId": "sess_33712189-4767-43bd-a005-dc7eaafea429",
+        "timestamp": 1795635654038
+      }
+    ],
+    "5.4 Write property test for conserved counts": [
+      {
+        "executionId": "04bac78d-ba0f-4ffd-a83e-492cd4696aae",
+        "chatSessionId": "sess_75025adb-ecd3-4a81-9971-08f71514d28d",
+        "timestamp": 1795635785723
+      }
+    ],
+    "6.1 Implement `router/routes.ts`": [
+      {
+        "executionId": "85d6e543-43c8-4234-9391-29c734eee384",
+        "chatSessionId": "sess_4a242dce-0675-4862-9a4d-acafd39ea4ee",
+        "timestamp": 1795635933524
+      }
+    ],
+    "7. Checkpoint - pure modules": [
+      {
+        "executionId": "c5165817-0c7a-4079-a6d0-f747ef93b2a9",
+        "chatSessionId": "sess_3ce9d9a0-256a-485b-b20d-58d4d7c4b183",
+        "timestamp": 1795636060725
+      },
+      {
+        "executionId": "7c9eb3df-2fab-46d1-bffd-06d4e3cc97ee",
+        "chatSessionId": "sess_3ce9d9a0-256a-485b-b20d-58d4d7c4b183",
+        "timestamp": 1795636232463
+      }
+    ],
+    "8.1 Add the design tokens and base styles": [
+      {
+        "executionId": "93e22f6d-1be0-4ae9-9273-54bd1f0b4abb",
+        "chatSessionId": "sess_bd09271e-fc54-42df-b1b2-19a5e14988b5",
+        "timestamp": 1795649298793
+      }
+    ],
+    "8.2 Bundle the fonts and show the licences": [
+      {
+        "executionId": "96698b00-4ac1-4bad-b72c-52c0545de45c",
+        "chatSessionId": "sess_b22cafb6-d903-4a7b-bbf0-8a9ccaf6b3c4",
+        "timestamp": 1795649425759
+      }
+    ],
+    "8.3 Add the narrow-screen and desktop layout CSS": [
+      {
+        "executionId": "918593c4-5181-4721-87ac-e58450431e77",
+        "chatSessionId": "sess_fcac2443-3506-4ef5-bfa9-abb88d09f789",
+        "timestamp": 1795649569162
+      }
+    ],
+    "8.4 Implement `bestiary/Creature.tsx`": [
+      {
+        "executionId": "3e20027c-ca24-4837-8970-21a7ce6b9235",
+        "chatSessionId": "sess_7dcbe3ac-8aad-4048-97eb-c85c00598652",
+        "timestamp": 1795649703602
+      }
+    ],
+    "8.5 Implement the activatable creature with a state label": [
+      {
+        "executionId": "34bc3080-7518-4f46-9e43-0bbe58e043e6",
+        "chatSessionId": "sess_bae7a6b3-2c61-40a0-809a-ee63fe3d19a0",
+        "timestamp": 1795649841881
+      }
+    ],
+    "8.6 Add the killed animation and the reduced-motion hook": [
+      {
+        "executionId": "5f2e30a5-961b-4c05-8dd3-09ebb23656ae",
+        "chatSessionId": "sess_a7b3fc67-3449-4b3c-9486-7973182a3a3e",
+        "timestamp": 1795649985342
+      }
+    ],
+    "8.7 Add the run context and the hash-route hook": [
+      {
+        "executionId": "0e28ae92-df9d-457b-96fa-0f5a53269e11",
+        "chatSessionId": "sess_1dd7970b-1795-448e-8cd1-1b61cd69eea0",
+        "timestamp": 1795650172447
+      }
+    ],
+    "8.8 Implement the screen frame": [
+      {
+        "executionId": "d68d0a13-e92f-4dc5-9c6a-8f1ad39245fb",
+        "chatSessionId": "sess_008292bf-6a53-4c7d-8bf0-7e0105a30021",
+        "timestamp": 1795650327804
+      }
+    ],
+    "8.9 Implement the load error display": [
+      {
+        "executionId": "ac949f0c-558a-46ab-b85d-b3fb416a41fa",
+        "chatSessionId": "sess_13efa74d-cbd5-4b2e-8de4-5c84ebb4308c",
+        "timestamp": 1795650450837
+      }
+    ],
+    "9.1 Implement the drop zone": [
+      {
+        "executionId": "f603a9a3-99f3-4755-8b24-10ae5355ac4b",
+        "chatSessionId": "sess_978a40ad-e9b4-4089-959e-c1666d9ff46a",
+        "timestamp": 1795650603656
+      }
+    ],
+    "9.2 Implement the Landing screen": [
+      {
+        "executionId": "4b2cdad8-6c3d-42fa-8b48-c69d17b73a62",
+        "chatSessionId": "sess_d1f78a47-a258-4a85-b489-86be4fbf8d79",
+        "timestamp": 1795650783113
+      }
+    ],
+    "9.3 Implement the Verdict headline": [
+      {
+        "executionId": "2b9f1d7e-0dcf-4959-a3e8-29b91081dd33",
+        "chatSessionId": "sess_4c8c9299-66a5-4202-ad16-6aeff44c4d7a",
+        "timestamp": 1795650979728
+      }
+    ],
+    "9.4 Implement the seal grid": [
+      {
+        "executionId": "de27e1c5-869a-4854-b082-98215d8bffe1",
+        "chatSessionId": "sess_3eed97df-ac4c-44cf-b45f-0d89fbcf3644",
+        "timestamp": 1795651124021
+      }
+    ],
+    "9.5 Implement the who-killed-them panel": [
+      {
+        "executionId": "adfa7a03-a8e2-4fca-bfff-c295a56c6de6",
+        "chatSessionId": "sess_1da7aa87-0a75-4318-b0eb-27868ccab26d",
+        "timestamp": 1795651306939
+      }
+    ],
+    "9.6 Implement the strays strip": [
+      {
+        "executionId": "36c5e4a9-1bc6-4297-b938-d552ac66c2f6",
+        "chatSessionId": "sess_05c5ccc2-8bcd-432e-ad28-0cb6b460ed17",
+        "timestamp": 1795651489075
+      }
+    ],
+    "9.7 Implement the species legend": [
+      {
+        "executionId": "41947a49-93c2-4f3c-922d-37ab3b22afa8",
+        "chatSessionId": "sess_f6a0322b-866d-497e-8d3b-a46ed2431a24",
+        "timestamp": 1795651643960
+      }
+    ],
+    "9.8 Assemble the Verdict screen": [
+      {
+        "executionId": "515ab050-bd2d-4059-a2af-48f42d51cdad",
+        "chatSessionId": "sess_6701ff8a-762f-40d3-b620-31afd463e48d",
+        "timestamp": 1795651792831
+      }
+    ],
+    "9.9 Implement the Specimen screen": [
+      {
+        "executionId": "4b226f37-b135-46b3-a648-bd36fa3df940",
+        "chatSessionId": "sess_a9faba02-5bb5-451d-86b4-4581355ce51d",
+        "timestamp": 1795651963386
+      }
+    ],
+    "9.10 Add the eye tracking to the Specimen screen": [
+      {
+        "executionId": "29924bb0-3f88-4497-93c5-b0ea95d67e69",
+        "chatSessionId": "sess_519c9fd4-f7da-4cce-b0f9-130111da79d1",
+        "timestamp": 1795657304757
+      }
+    ],
+    "9.11 Implement the Hunt screen": [
+      {
+        "executionId": "e00f4b0e-c6b4-46d8-814e-9a13abfbed3a",
+        "chatSessionId": "sess_3666a4fc-f3c9-4bab-b6d5-a734a35f1913",
+        "timestamp": 1795657566948
+      }
+    ],
+    "9.12 Add blocked attempts to the Hunt screen": [
+      {
+        "executionId": "9895f4db-cc12-40e6-9779-35c3b103665e",
+        "chatSessionId": "sess_36016b3f-4562-457c-a7d6-39e7a599afed",
+        "timestamp": 1795657838467
+      }
+    ],
+    "9.13 Implement the Plain view screen": [
+      {
+        "executionId": "bd463129-c614-46fc-9884-3e80bfd1e7b8",
+        "chatSessionId": "sess_72717f91-26b3-41cd-b9da-10f4d0c85db6",
+        "timestamp": 1795658025340
+      }
+    ],
+    "9.14 Wire the App shell and routing": [
+      {
+        "executionId": "0f3c28ab-3046-4225-8a94-fff569573bdd",
+        "chatSessionId": "sess_5238c79e-a83a-4a93-af61-130e9c42d801",
+        "timestamp": 1795658249670
+      }
+    ],
+    "9.15 Add the cross-cutting UI checks": [
+      {
+        "executionId": "6b640c0d-ea0a-48cc-ad3d-025fd1daeb89",
+        "chatSessionId": "sess_c5e3a632-6131-4255-93ce-6923aa8c6012",
+        "timestamp": 1795658461253
+      },
+      {
+        "executionId": "74ac0cbc-104a-484e-825d-223392a4e4db",
+        "chatSessionId": "sess_c5e3a632-6131-4255-93ce-6923aa8c6012",
+        "timestamp": 1795658693275
+      }
+    ],
+    "10. Checkpoint - components and screens": [
+      {
+        "executionId": "6f50e59e-c58f-4948-9edc-62a45933623d",
+        "chatSessionId": "sess_2579f7d6-bf48-4e0a-b54a-73790d0c99b1",
+        "timestamp": 1795658832005
+      },
+      {
+        "executionId": "6f50e59e-c58f-4948-9edc-62a45933623d",
+        "chatSessionId": "sess_2579f7d6-bf48-4e0a-b54a-73790d0c99b1",
+        "timestamp": 1795658869060
+      }
+    ],
+    "11.1 Add the production build test": [
+      {
+        "executionId": "4a7bb19b-b0e8-487a-948f-36b294b2bd57",
+        "chatSessionId": "sess_1477ec95-061b-413a-abc0-597a36f1b039",
+        "timestamp": 1795658982324
+      }
+    ],
+    "11.2 Build the viewer in CI": [
+      {
+        "executionId": "9b41eda5-ee3f-44a4-b2ff-ad041657a57a",
+        "chatSessionId": "sess_cc21a42f-d557-480b-9b4f-9e048802dc78",
+        "timestamp": 1795659178502
+      }
+    ],
+    "11.3 Add the GitHub Pages workflow": [
+      {
+        "executionId": "fcd2c7ac-1adf-4c10-aeac-770977cfe352",
+        "chatSessionId": "sess_4cf1626b-2e1a-45e1-b1fd-4313d624351a",
+        "timestamp": 1795659325677
+      },
+      {
+        "executionId": "86657108-bdf1-4b38-84ba-fdab74e45e33",
+        "chatSessionId": "sess_4cf1626b-2e1a-45e1-b1fd-4313d624351a",
+        "timestamp": 1795659380762
+      }
+    ],
+    "12. Final checkpoint - viewer complete": [
+      {
+        "executionId": "4fe3ab4e-9579-4856-b3c2-f608de1f0cbb",
+        "chatSessionId": "sess_4f1aa16d-6b56-496d-8bdf-521c0acc2c55",
+        "timestamp": 1795659597360
+      },
+      {
+        "executionId": "4fe3ab4e-9579-4856-b3c2-f608de1f0cbb",
+        "chatSessionId": "sess_4f1aa16d-6b56-496d-8bdf-521c0acc2c55",
+        "timestamp": 1795659637598
+      }
+    ],
+    "13.1 Add the shared tokens, controls and Page_Frame": [
+      {
+        "executionId": "f5f7495d-a246-4bc3-bca8-d4080bdf1b5e",
+        "chatSessionId": "sess_cd38d110-4f7e-4486-8954-827cc310a459",
+        "timestamp": 1795662838086
+      }
+    ],
+    "13.2 Give every creature an explicit size": [
+      {
+        "executionId": "3a548883-514e-437d-ab91-3d35db099481",
+        "chatSessionId": "sess_3223ad56-5626-4336-9772-7abd800bbd29",
+        "timestamp": 1795663756098
+      }
+    ],
+    "13.3 Property test: sizing keeps the creature intact (V12)": [
+      {
+        "executionId": "fe1c0cb4-5934-4e5b-a733-45e4b7c76ac8",
+        "chatSessionId": "sess_b10c0f4a-946e-4cfb-a446-c1e6a93c5377",
+        "timestamp": 1795664241409
+      }
+    ],
+    "13.4 Style the Landing screen": [
+      {
+        "executionId": "204a8b89-7ced-433c-9890-eccd42e36190",
+        "chatSessionId": "sess_aa1a1f1c-aa7c-4eb1-b585-9463d0a3510e",
+        "timestamp": 1795664434592
+      },
+      {
+        "executionId": "908656d0-fa89-4823-a0a2-632becf9f587",
+        "chatSessionId": "sess_aa1a1f1c-aa7c-4eb1-b585-9463d0a3510e",
+        "timestamp": 1795664810937
+      }
+    ],
+    "13.5 Style the Verdict screen": [
+      {
+        "executionId": "0fca67d5-e2ec-4a56-a25e-63becb6f9a38",
+        "chatSessionId": "sess_aa222885-33f8-43a8-945d-cd6ca2ce94f4",
+        "timestamp": 1795665056288
+      },
+      {
+        "executionId": "4756fb46-a11e-4969-a83a-6dcf18241f41",
+        "chatSessionId": "sess_aa222885-33f8-43a8-945d-cd6ca2ce94f4",
+        "timestamp": 1795665477194
+      }
+    ],
+    "13.6 Style the Specimen screen": [
+      {
+        "executionId": "3d3146fd-2e99-44bd-9b71-9d802895359b",
+        "chatSessionId": "sess_7e58f071-2481-41a6-b7e5-e3fb4789800f",
+        "timestamp": 1795665647059
+      }
+    ],
+    "13.7 Style the Hunt screen and the Plain view": [
+      {
+        "executionId": "4fa5cb54-3a5d-4166-bb2b-a19b40682ef0",
+        "chatSessionId": "sess_f5cdfde5-3da7-4627-bbdc-3da97f9222b6",
+        "timestamp": 1795665995666
+      }
+    ],
+    "13.8 Add the static and DOM design checks": [
+      {
+        "executionId": "f84a393d-a863-4d7f-a1ca-089ef30c5d7f",
+        "chatSessionId": "sess_056bf57a-3e97-409d-9cce-59b9926d1bd2",
+        "timestamp": 1795666170399
+      },
+      {
+        "executionId": "710b261f-00e2-4522-9dad-ef96ee780f08",
+        "chatSessionId": "sess_056bf57a-3e97-409d-9cce-59b9926d1bd2",
+        "timestamp": 1795666520123
+      },
+      {
+        "executionId": "1cf7c91c-75d0-4a1d-9f72-7819ab49becb",
+        "chatSessionId": "sess_056bf57a-3e97-409d-9cce-59b9926d1bd2",
+        "timestamp": 1795666640430
+      }
+    ],
+    "14.1 Read the engine's file names in the viewer": [
+      {
+        "executionId": "8f09f3c6-3ece-4f22-b879-ec3f5d31f231",
+        "chatSessionId": "sess_f3bb6be9-a659-4404-81e4-7c854ac48c10",
+        "timestamp": 1795666869364
+      },
+      {
+        "executionId": "7c19522d-571e-4825-8875-5bffdf274f75",
+        "chatSessionId": "sess_f3bb6be9-a659-4404-81e4-7c854ac48c10",
+        "timestamp": 1795667063250
+      },
+      {
+        "executionId": "744f9998-5344-417c-97b9-260987f2dee4",
+        "chatSessionId": "sess_f3bb6be9-a659-4404-81e4-7c854ac48c10",
+        "timestamp": 1795667444522
+      },
+      {
+        "executionId": "744f9998-5344-417c-97b9-260987f2dee4",
+        "chatSessionId": "sess_f3bb6be9-a659-4404-81e4-7c854ac48c10",
+        "timestamp": 1795667531024
+      }
+    ],
+    "14.2 Write the demo script and the Guard_Test": [
+      {
+        "executionId": "0d3dbd97-8077-4818-83aa-4f3fd791d9b1",
+        "chatSessionId": "sess_e282f0ea-190d-4ef8-b894-76ba282c293b",
+        "timestamp": 1795667606318
+      }
+    ],
+    "14.3 Generate and commit the demo runs": [
+      {
+        "executionId": "2cae294e-a455-4a04-866d-90dc115b1b72",
+        "chatSessionId": "sess_e48eecda-4878-4442-a90e-eff690dec883",
+        "timestamp": 1795667858556
+      }
+    ],
+    "14.4 Test the committed demo files": [
+      {
+        "executionId": "a3a210f1-9875-4fea-8f74-2be2a582265f",
+        "chatSessionId": "sess_b7b05249-521d-4d3f-b8de-841e8de2523a",
+        "timestamp": 1795668533494
+      }
+    ],
+    "15. Final checkpoint - design and demo runs": [
+      {
+        "executionId": "ba5d5e9c-e560-4d95-81f2-5201150cda59",
+        "chatSessionId": "sess_9f45643d-d237-47dc-82a8-53dd9d77c05b",
+        "timestamp": 1795668709159
+      },
+      {
+        "executionId": "30cd2374-1b21-4781-8415-e88f6edadb58",
+        "chatSessionId": "sess_9f45643d-d237-47dc-82a8-53dd9d77c05b",
+        "timestamp": 1795668875800
+      }
+    ]
+  }
+}

@@ -1,0 +1,27 @@
+:root {
+  --ink: #0c0e12;
+  --bone: #e9e2d0;
+  --amber: #f2b544;
+  --verdigris: #4cc38a;
+  --mist: #7a8699;
+  --ember: #e5484d;
+
+  /* Surface tokens */
+  --rule: #2a2f38;
+  --panel: #14161c;
+  --plate: #101218;
+  --bone-dim: #b9b3a6;
+  --ghost: #a9b2c0;
+
+  /* Type scale: nothing under 14px */
+  --text-body: 0.9375rem;
+  --text-small: 0.875rem;
+  --text-h2: 1.75rem;
+  --text-h3: 1.625rem;
+  --text-title: clamp(2.25rem, 5.2vw, 4.5rem);
+
+  /* Spacing */
+  --page-max: 80rem;
+  --page-pad: 1.5rem;
+  --section-gap: 2.5rem;
+}

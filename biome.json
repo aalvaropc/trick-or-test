@@ -13,10 +13,14 @@
       "!**/dist",
       "!**/coverage",
       "!reports",
+      "!apps/viewer/public/demo",
       "!**/package-lock.json",
       "!**/*.md",
       "!examples/pricing",
       "!packages/engine/test/fixtures",
+      "!apps/viewer/test/fixtures/**/*.json",
+      "!apps/viewer/test/fixtures/**/*.jsonl",
+      "!apps/viewer/test/fixtures/**/*.txt",
       "!.kiro/specs"
     ]
   },
