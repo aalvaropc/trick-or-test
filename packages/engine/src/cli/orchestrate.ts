@@ -56,7 +56,7 @@ import type {
   RunMetadata,
   SpecMutant,
   TestId,
-  Witness,
+  VerdictWitness,
 } from "../core/types.js";
 import {
   compareOutcomes,
@@ -863,11 +863,24 @@ export async function writeReports(
   ];
   const coverage = computeCoverage(criteria, results, skipEntries);
 
-  const witnesses: Record<MutantId, Witness> = {};
-  for (const m of input.specMutants) witnesses[m.mutant.id] = m.mutant.witness;
+  // 8.18: each coverage entry carries the text of its criterion.
+  const textOfCriterion = new Map(criteria.map((c) => [c.id, c.text]));
+  const coverageWithText = coverage.coverage.map((entry) => {
+    const text = textOfCriterion.get(entry.criterion);
+    return text === undefined ? entry : { ...entry, text };
+  });
+
+  // 8.19: only a witness that ran on the mutated code has a mutated outcome.
+  const witnesses: Record<MutantId, VerdictWitness> = {};
+  for (const m of input.specMutants) {
+    witnesses[m.mutant.id] =
+      m.mutatedOutcome === undefined
+        ? m.mutant.witness
+        : { ...m.mutant.witness, mutatedOutcome: m.mutatedOutcome };
+  }
 
   const verdict = buildVerdict({
-    coverage: coverage.coverage,
+    coverage: coverageWithText,
     mutants: results,
     witnesses,
     ignoreStaticRetried: input.ignoreStaticRetried,

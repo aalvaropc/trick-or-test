@@ -1477,6 +1477,67 @@
         "chatSessionId": "sess_2aa56008-f17e-48d9-adc1-9a20532cdcad",
         "timestamp": 1795648503382
       }
+    ],
+    "13.1 Add the optional fields to the types and the zod schemas": [
+      {
+        "executionId": "feb6fd3f-012f-425a-b84b-fca1fb9d5c08",
+        "chatSessionId": "sess_250ed8bc-8cf6-4bac-a2c6-73052ce080a5",
+        "timestamp": 1795652309618
+      }
+    ],
+    "13.2 Write the criterion text in `buildVerdict`": [
+      {
+        "executionId": "f8a9b89d-36d7-4f5a-957f-eb0e4b0f037a",
+        "chatSessionId": "sess_687138d1-a2f3-4006-b04f-079ba71e0768",
+        "timestamp": 1795652444490
+      }
+    ],
+    "13.3 Write the mutated witness outcome in `buildVerdict`": [
+      {
+        "executionId": "967b680b-7a85-4879-9f5e-b02276312aa8",
+        "chatSessionId": "sess_be327c94-3306-48cc-820c-017e6ffda095",
+        "timestamp": 1795652563098
+      }
+    ],
+    "13.4 Write Property 26: Verdict carries criterion text and mutated outcome": [
+      {
+        "executionId": "34a0cec7-0928-4425-8d03-177529a77e63",
+        "chatSessionId": "sess_81a17323-c44a-4e3b-9320-d29152635768",
+        "timestamp": 1795652697720
+      }
+    ],
+    "13.5 Carry the text and the outcome from the pipeline to the Verdict": [
+      {
+        "executionId": "aaaba889-1c64-4052-90be-c639ac3955cc",
+        "chatSessionId": "sess_d1006acb-1afd-4846-9467-793d534e413d",
+        "timestamp": 1795652868474
+      }
+    ],
+    "13.6 Regenerate `reports/` with `npm run measure`": [
+      {
+        "executionId": "af549717-d9c4-49cd-b933-be7cf154cfc2",
+        "chatSessionId": "sess_1f04c563-3729-4bf3-8881-7ce207ab753f",
+        "timestamp": 1795653088086
+      }
+    ],
+    "13.7 Checkpoint - Verdict fields": [
+      {
+        "executionId": "9f5d7dfe-ca5d-4dc9-943e-549d944ee63e",
+        "chatSessionId": "sess_e6fb8006-116a-4ab4-be3c-1f24b13538df",
+        "timestamp": 1795653365175
+      },
+      {
+        "executionId": "9f5d7dfe-ca5d-4dc9-943e-549d944ee63e",
+        "chatSessionId": "sess_e6fb8006-116a-4ab4-be3c-1f24b13538df",
+        "timestamp": 1795653498795
+      }
+    ],
+    "13. Write the criterion text and the mutated witness outcome into `verdict.json`": [
+      {
+        "executionId": "9f5d7dfe-ca5d-4dc9-943e-549d944ee63e",
+        "chatSessionId": "sess_e6fb8006-116a-4ab4-be3c-1f24b13538df",
+        "timestamp": 1795653498906
+      }
     ]
   }
 }

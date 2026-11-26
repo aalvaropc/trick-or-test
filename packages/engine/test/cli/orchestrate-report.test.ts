@@ -131,8 +131,8 @@ describe("writeReports", () => {
     }
     const verdict = JSON.parse(fake.files.get(`${OUT}/verdict.json`) as string);
     expect(verdict.coverage).toEqual([
-      { criterion: "1.1", status: "unguarded" },
-      { criterion: "1.2", status: "unattacked" },
+      { criterion: "1.1", status: "unguarded", text: "a" },
+      { criterion: "1.2", status: "unattacked", text: "b" },
     ]);
     const report = JSON.parse(fake.files.get(`${OUT}/mutation-report.json`) as string);
     const ids = report.files["src/f.ts"].mutants.map((m: { id: string }) => m.id);

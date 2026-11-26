@@ -25,6 +25,7 @@ export {
   serializeHistoryRecord,
   speciesSchema,
   verdictSchema,
+  verdictWitnessSchema,
   witnessSchema,
 } from "../core/report.js";
 export type {
@@ -41,5 +42,6 @@ export type {
   Species,
   TestId,
   Verdict,
+  VerdictWitness,
   Witness,
 } from "../core/types.js";
