@@ -1095,7 +1095,7 @@ Conventions used in every task:
     - Write `test/cli/orchestrate-spec-only.test.ts` with fake adapters: neither the Stryker adapter nor git is called; the three written files carry `scope: "spec-only"`; no `strykerCounts`; no stray in `mutants`; the Baseline_Run and every Spec_Mutant ran; the claims of task 17 equal those of a full run on the same fakes (11.15); the summary text holds `spec-only` and `not run` and no stray count; a `full` run on the same fakes still calls the Stryker adapter. Add a test in the same file that reads the root `package.json` and checks that the scripts `measure` and `demo` contain no `--scope`.
     - _Requirements: 9.18, 9.21, 9.22, 11.15_
     - _Validation: npx vitest run --project engine packages/engine/test/cli/orchestrate-spec-only.test.ts passes_
-  - [ ] 19.8 Run a spec-only run end to end
+  - [x] 19.8 Run a spec-only run end to end
     - Write `test/e2e/pricing-spec-only.test.ts`: run the built CLI with `--scope spec-only` on `examples/pricing` into an output directory under `.trickortest/`, and check that the run takes less time than the full run of the e2e test (print both times, assert only that no StrykerJS temporary directory was created), that the three files carry the scope, hold no stray, no `strykerCounts`, and no absolute path, and that `git status --porcelain` of the project shows no change outside `.trickortest/`. Remove the output directory afterwards.
     - _Requirements: 9.18, 9.21, 10.8, 10.11_
     - _Validation: npm run test:e2e -w trick-or-test passes_

@@ -1867,6 +1867,13 @@
         "chatSessionId": "sess_86b208c8-692c-4aa9-9bd8-ed896ea9feb2",
         "timestamp": 1795688260769
       }
+    ],
+    "19.7 Run the spec-only pipeline": [
+      {
+        "executionId": "3235196c-92bf-4056-a787-06b632a121dd",
+        "chatSessionId": "sess_f83e87a6-8451-41d4-855c-ec52839126aa",
+        "timestamp": 1795688451878
+      }
     ]
   }
 }
