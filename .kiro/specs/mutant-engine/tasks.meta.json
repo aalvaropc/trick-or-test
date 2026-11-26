@@ -75,6 +75,10 @@
     "16.3 Write Property 31: Baseline tests": {
       "status": "passed",
       "lastRunTimestamp": 1795677715428
+    },
+    "17.5 Write Property 27: Claim parsing": {
+      "status": "passed",
+      "lastRunTimestamp": 1795679189989
     }
   },
   "executionHistory": {
@@ -1716,6 +1720,13 @@
         "executionId": "917448c8-8c2e-4780-b47a-39b26fce4ea4",
         "chatSessionId": "sess_a9aa87c3-8be9-49e9-91ab-2ed6b6107f8a",
         "timestamp": 1795678928858
+      }
+    ],
+    "17.5 Write Property 27: Claim parsing": [
+      {
+        "executionId": "5c594a2c-bdd6-4c25-97bb-925bb15e69bf",
+        "chatSessionId": "sess_2b695397-3b30-4613-b840-8da1fc56d14c",
+        "timestamp": 1795679103176
       }
     ]
   }

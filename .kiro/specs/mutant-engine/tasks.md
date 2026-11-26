@@ -1005,7 +1005,7 @@ Conventions used in every task:
     - **Validates: Requirements 11.1, 11.2, 11.3, 11.4, 11.5, 11.6, 11.7, 11.8, 11.9, 11.10, 11.13**
     - _Requirements: 11.1, 11.2, 11.3, 11.4, 11.5, 11.6, 11.7, 11.8, 11.9, 11.10, 11.13_
     - _Validation: npx vitest run --project engine packages/engine/test/core/claims.parse.property.test.ts passes_
-  - [ ] 17.6 Write Property 28: Claim outcomes and counts
+  - [x] 17.6 Write Property 28: Claim outcomes and counts
     - Write `test/core/claims.outcome.property.test.ts` with **Property 28** as stated in `design.md`.
     - **Validates: Requirements 7.6, 11.11, 11.12, 11.15**
     - _Requirements: 7.6, 11.11, 11.12, 11.15_
