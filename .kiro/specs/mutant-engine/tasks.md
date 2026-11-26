@@ -937,7 +937,7 @@ Conventions used in every task:
     - **Validates: Requirements 8.15, 8.21, 8.22, 8.28, 9.18**
     - _Requirements: 8.15, 8.21, 8.22_
     - _Validation: npx vitest run --project engine packages/engine/test/core/report.one-set.property.test.ts passes_
-  - [ ] 15.5 Write Property 30: Stryker counts come from the produced mutants
+  - [x] 15.5 Write Property 30: Stryker counts come from the produced mutants
     - Write `test/core/totals.property.test.ts` with **Property 30** as stated in `design.md`. The generator makes lists with every status, with and without Twins, and checks the order independence by shuffling.
     - **Validates: Requirements 8.22, 8.23, 8.24**
     - _Requirements: 8.22, 8.23, 8.24_

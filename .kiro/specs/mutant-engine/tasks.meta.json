@@ -63,6 +63,10 @@
     "12.40 Write Property 24: Stryker exclusion list": {
       "status": "passed",
       "lastRunTimestamp": 1795645434899
+    },
+    "15.4 Write Property 29: One set of mutant ids and agreeing totals": {
+      "status": "passed",
+      "lastRunTimestamp": 1795676704340
     }
   },
   "executionHistory": {
@@ -1596,6 +1600,13 @@
         "executionId": "34057b4d-19c4-40d9-906f-81ecede21613",
         "chatSessionId": "sess_1ee57569-7172-43e3-81a0-8b9393e6aa6a",
         "timestamp": 1795676361853
+      }
+    ],
+    "15.4 Write Property 29: One set of mutant ids and agreeing totals": [
+      {
+        "executionId": "3d7ea99d-f0a6-4c74-9377-546a5d632a3b",
+        "chatSessionId": "sess_5dec2e3f-1ace-450a-9c90-e60a969e3e76",
+        "timestamp": 1795676648631
       }
     ]
   }
