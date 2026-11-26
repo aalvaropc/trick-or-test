@@ -890,8 +890,33 @@ Conventions used in every task:
     - Run `npm run check` from the repository root, then `npm run test:e2e --workspace trick-or-test`. Ensure all tests pass, ask the user if questions arise.
     - _Validation: npm run check passes_
 
+- [ ] 14. Run every git command without inherited repository-location variables
+  - Source: requirement 3.21 and the git adapter row and the "Git environment" notes in `design.md`. A git hook exports `GIT_DIR`, `GIT_WORK_TREE`, `GIT_INDEX_FILE` and related variables, and in a linked worktree `GIT_DIR` is an absolute path. `Git.diff` and the `rev-parse` call in `cli/main.ts` go through `ProcessRunner`, which passes the inherited environment, so they read the repository that `GIT_DIR` names instead of the Target_Project. The same inheritance made `test/adapters/git-adapter.test.ts` run `git init`, `git config` and `git commit` against the real repository when the pre-push hook ran the tests from a worktree.
+  - Committed test files are sealed. Every test below goes in a new file, except task 14.3, which edits one committed test file and says so. `scripts/guard.test.ts` has the same defect and was fixed in commit 832b2aa; it is not part of this task.
+  - Every test task in this task is required. No new correctness property is added: the pure helper has a small, discrete input space that example tests cover at its boundaries.
+  - [x] 14.1 Add the pure helper `withoutGitLocation`
+    - Create `core/git-env.ts` exporting `withoutGitLocation(env)` as in `design.md`: a copy of `env` without `GIT_DIR`, `GIT_WORK_TREE`, `GIT_INDEX_FILE`, `GIT_OBJECT_DIRECTORY`, `GIT_ALTERNATE_OBJECT_DIRECTORIES`, `GIT_COMMON_DIR`, `GIT_NAMESPACE`, `GIT_CEILING_DIRECTORIES` and `GIT_DISCOVERY_ACROSS_FILESYSTEM`, matched by exact name; every other variable is kept. The argument is not modified. The module has no `node:` import and does not read `process.env`.
+    - Write `test/core/git-env.test.ts`: each of the nine variables is removed (one example per variable); `PATH`, `HOME`, `GIT_AUTHOR_NAME` and `GIT_CONFIG_GLOBAL` are kept with their values; a variable with an undefined value is handled; a lower-case `git_dir` is kept (names are case-sensitive); an empty environment gives an empty result; the argument object is unchanged after the call and the result is a different object.
+    - _Requirements: 3.21_
+    - _Validation: npx vitest run --project engine packages/engine/test/core/git-env.test.ts passes_
+  - [x] 14.2 Let `ProcessRunner` take an environment
+    - In `adapters/process-runner.ts` add `readonly env?: Readonly<Record<string, string | undefined>>` to `RunOptions` and pass it to `spawn`. When `env` is absent the child inherits `process.env` as before, so no other caller changes.
+    - Write `test/adapters/process-runner-env.test.ts`: a child started with `env` set to `{ PATH, MARKER: "x" }` prints `MARKER` and does not see a variable that exists only in the parent's `process.env`; a child started without `env` still sees the parent's variables.
+    - _Requirements: 3.21_
+    - _Validation: npx vitest run --project engine packages/engine/test/adapters/process-runner-env.test.ts passes_
+  - [x] 14.3 Use the helper in the git adapter and in the `rev-parse` call
+    - In `adapters/git-adapter.ts` make `runGit` pass `env: withoutGitLocation(process.env)`, so `Git.diff` and `Git.currentCommit` both use it. In `cli/main.ts` make the `rev-parse HEAD` call pass the same `env`. Export `gitCommit` from `cli/main.ts` if the test needs it. No other code spawns git.
+    - Write `test/adapters/git-adapter-env.test.ts`, with real repositories under `/tmp`: create a Target_Project repository with one committed file and an uncommitted change, and a decoy repository with a different commit and a different change; set `GIT_DIR` (and `GIT_WORK_TREE` in a second example) to the decoy for the duration of the test and restore them in a `finally`; check that `Git.diff` returns the diff of the Target_Project and not of the decoy, that `Git.currentCommit` and the `rev-parse` call of `cli/main.ts` return the commit of the Target_Project, and that the decoy's `HEAD`, config, index and working tree are byte-identical before and after. Every git call that the test makes itself passes `env: withoutGitLocation(process.env)`.
+    - Edit the committed file `test/adapters/git-adapter.test.ts` so that its own git calls (the `execFileSync("git", ...)` helper that runs `init`, `config`, `add` and `commit` in the throwaway repository) pass `env: withoutGitLocation(process.env)`. This is the one edit of a committed test file in this task, and it is allowed because the file ran `git init`, `config` and `commit` against the real repository when a hook exported `GIT_DIR`. No test name and no assertion changes. Check with `git diff` that the change in that file is only the import and the `env` option.
+    - _Requirements: 3.9, 3.21_
+    - _Validation: npx vitest run --project engine packages/engine/test/adapters/git-adapter-env.test.ts packages/engine/test/adapters/git-adapter.test.ts passes_
+  - [x] 14.4 Checkpoint - Git environment
+    - Run `GIT_DIR=$(git rev-parse --absolute-git-dir) npm run check` from the repository root, so the variable is set as in a hook, then `npm run check` without it. Ensure all tests pass and that `git status`, `git log -1` and `git config --local --list` of the repository are the same before and after. Ask the user if questions arise.
+    - _Validation: npm run check passes_
+
 ## Notes
 
+- Task 14 removes the git repository-location variables from the environment of every git command the engine runs (requirement 3.21). It edits one committed test file, `test/adapters/git-adapter.test.ts`, to pass the filtered environment to its own git calls; its assertions do not change.
 - Task 13 adds the criterion text and the mutated witness outcome to `verdict.json`. Property 26 has its own task: P26 (13.4). It is new because Properties 16 and 20 live in sealed test files.
 - Task 12 collects the fixes of the independent review. Properties 18 to 25 of `design.md` have their own tasks: P18 (12.30), P19 (12.37), P20 (12.27), P21 (12.2), P22 (12.7), P23 (12.16), P24 (12.40), P25 (12.19). Task 12.23 extends Property 16.
 - Every task is required. No task is optional.
@@ -968,7 +993,10 @@ Conventions used in every task:
     { "id": 39, "tasks": ["13.1"] },
     { "id": 40, "tasks": ["13.2", "13.3"] },
     { "id": 41, "tasks": ["13.4", "13.5"] },
-    { "id": 42, "tasks": ["13.6"] }
+    { "id": 42, "tasks": ["13.6"] },
+    { "id": 43, "tasks": ["14.1", "14.2"] },
+    { "id": 44, "tasks": ["14.3"] },
+    { "id": 45, "tasks": ["14.4"] }
   ]
 }
 ```

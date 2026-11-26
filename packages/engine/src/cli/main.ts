@@ -10,6 +10,7 @@ import { MechanicalRunner } from "../adapters/stryker-adapter.js";
 import { Typecheck } from "../adapters/typecheck-adapter.js";
 import { SuiteRunner } from "../adapters/vitest-suite-runner.js";
 import { WitnessRunner } from "../adapters/vitest-witness-runner.js";
+import { withoutGitLocation } from "../core/git-env.js";
 import { err, ok } from "../core/result.js";
 import type { CoverageStatus, RunMetadata } from "../core/types.js";
 import { parseArgs, USAGE_TEXT } from "./args.js";
@@ -205,8 +206,11 @@ const installedVersion = async (name: string, from: string): Promise<string> => 
   }
 };
 
-const gitCommit = async (cwd: string): Promise<string> => {
-  const result = await ProcessRunner.run("git", ["rev-parse", "HEAD"], { cwd });
+export const gitCommit = async (cwd: string): Promise<string> => {
+  const result = await ProcessRunner.run("git", ["rev-parse", "HEAD"], {
+    cwd,
+    env: withoutGitLocation(process.env),
+  });
   return result.spawnError !== undefined || result.exitCode !== 0
     ? "unknown"
     : result.stdout.trim();
