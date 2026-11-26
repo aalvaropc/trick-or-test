@@ -1388,7 +1388,7 @@ Conventions used in every task:
     - Do not edit committed tests. If a committed test asserts the old list of exclusions for a case that this change alters, name it and stop. One commit for this task, with the author suffix `(Kiro)`.
     - _Requirements: 3.7, 3.22, 3.23, 3.24, 9.23_
     - _Validation: npx vitest run --project engine packages/engine/test/core/build-roots.test.ts packages/engine/test/core/build-roots.property.test.ts packages/engine/test/core/unrun-test-files.test.ts packages/engine/test/core/unrun-test-files.property.test.ts packages/engine/test/cli/unrun-test-files-summary.test.ts passes_
-  - [ ] 24.7 Regenerate `reports/` again
+  - [x] 24.7 Regenerate `reports/` again
     - Depends on 24.6. Run `npm run measure` once from the repository root and commit the changed files in `reports/`, as 22.2 did. One more line is appended to `reports/history.jsonl`; the earlier lines stay unchanged. Nobody edits the files by hand.
     - State and check in the report of the task: every killing-test id of every mutant (except a file-level Failing_Test) is in `baselineTests`; `unmatchedKillingTests` is 0 or absent; the Kill_Class counts of the mechanical mutants (examples-only, properties-only, both, unattributed) are the same as in the files that 22.2 regenerated, and the task compares them and reports the numbers; the claim numbers are unchanged (25 claims: 17 held, 7 not held, 1 unchecked, 0 unknown-criterion). If any of these differs, stop and report the difference. Tasks 22.2 and 22.3 stay marked done.
     - _Requirements: 6.13, 6.15, 9.13, 9.14, 11.16_
