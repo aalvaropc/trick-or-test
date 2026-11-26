@@ -668,6 +668,25 @@
         "chatSessionId": "sess_72717f91-26b3-41cd-b9da-10f4d0c85db6",
         "timestamp": 1795658025340
       }
+    ],
+    "9.14 Wire the App shell and routing": [
+      {
+        "executionId": "0f3c28ab-3046-4225-8a94-fff569573bdd",
+        "chatSessionId": "sess_5238c79e-a83a-4a93-af61-130e9c42d801",
+        "timestamp": 1795658249670
+      }
+    ],
+    "9.15 Add the cross-cutting UI checks": [
+      {
+        "executionId": "6b640c0d-ea0a-48cc-ad3d-025fd1daeb89",
+        "chatSessionId": "sess_c5e3a632-6131-4255-93ce-6923aa8c6012",
+        "timestamp": 1795658461253
+      },
+      {
+        "executionId": "74ac0cbc-104a-484e-825d-223392a4e4db",
+        "chatSessionId": "sess_c5e3a632-6131-4255-93ce-6923aa8c6012",
+        "timestamp": 1795658693275
+      }
     ]
   }
 }

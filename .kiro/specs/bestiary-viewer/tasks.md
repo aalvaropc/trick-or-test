@@ -429,7 +429,7 @@ Conventions for every task:
     - _Requirements: 1.7, 2.2, 2.7, 2.8, 2.9, 11.3, 11.4, 11.5, 11.6, 11.7, 11.8, 12.14_
     - _Validation: `npm test -w trick-or-test-viewer -- test/App.test.tsx` passes_
 
-  - [ ] 9.15 Add the cross-cutting UI checks
+  - [x] 9.15 Add the cross-cutting UI checks
     - Add `test/ui/cross-cutting.test.tsx` that renders each screen with the fixtures and asserts: every interactive element is reachable by Tab (10.6), each screen has exactly one `h1` and a title with the screen name (10.11), every state has a text label and a shape (10.5), no text sentence is over 20 words and no `!` appears (10.10), no `font-size` under 14px (10.4), no storage or cookie writes (11.9), no `fetch` to an origin other than `location.origin` and no `http(s)://` URL to a third party in `src/` or `index.html` (12.11), the source and tests contain no reference to `.trickortest/design` (12.13), no emoji or `<img>` in the output (10.9), and no digit literal count in the Landing source (3.6).
     - _Requirements: 3.6, 10.4, 10.5, 10.6, 10.9, 10.10, 10.11, 11.9, 12.11, 12.13, 12.14_
     - _Validation: `npm test -w trick-or-test-viewer -- test/ui/cross-cutting.test.tsx` passes_
