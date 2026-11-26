@@ -111,7 +111,7 @@ describe("pricing end-to-end", () => {
     expect(build.code, build.stdout + build.stderr).toBe(0);
 
     expectedMutantIds = (await readdir(mutantsDir))
-      .filter((f) => f.endsWith(".json"))
+      .filter((f) => f.endsWith(".json") && f !== "skipped.json")
       .map((f) => f.replace(/\.json$/, ""))
       .sort();
 
@@ -225,8 +225,8 @@ describe("pricing end-to-end", () => {
     expect(strykerTmpSizeAfterSecond).toBeLessThanOrEqual(strykerTmpSizeAfterFirst);
   });
 
-  it("10.10 all 24 spec mutants are present and valid", () => {
-    expect(expectedMutantIds).toHaveLength(24);
+  it("10.10 all 25 spec mutants are present and valid", () => {
+    expect(expectedMutantIds).toHaveLength(25);
     const invalid = new Set(["Ghost", "InvalidWitness", "CompileError", "NotApplicable"]);
     for (const id of expectedMutantIds) {
       const result = verdict.mutants.find((m) => m.id === id);
@@ -241,9 +241,9 @@ describe("pricing end-to-end", () => {
     expect(verdict.coverage.find((c) => c.criterion === "7.4")?.status).toBe("unguarded");
   });
 
-  it("10.10 the other 23 spec mutants are Killed", () => {
+  it("10.10 the other 24 spec mutants are Killed", () => {
     const others = expectedMutantIds.filter((id) => id !== "oath-7.4-negative-discount-allowed");
-    expect(others).toHaveLength(23);
+    expect(others).toHaveLength(24);
     for (const id of others) {
       expect(verdict.mutants.find((m) => m.id === id)?.status, id).toBe("Killed");
     }

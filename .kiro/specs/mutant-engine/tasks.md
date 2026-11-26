@@ -1143,7 +1143,7 @@ Conventions used in every task:
     - Run `npm run build -w trick-or-test`, then `node packages/engine/dist/cli/main.js measure --project examples/pricing --spec cart-pricing --scope spec-only --output .trickortest/probe` (needs task 19; only `measure` accepts `--output`). Check in `.trickortest/probe/verdict.json` that each of the twelve Criteria is `guarded`, `unguarded` or `skipped` (none is `unattacked`), and that no new mutant is Ghost, InvalidWitness, CompileError or NotApplicable. A new mutant with one of those statuses is fixed in the mutant file (the span, or the type of the change), never by changing `expected` to match the code. If the original code does not give `expected`, report the Criterion and the mismatch; do not hide it. Stop rule: the published demo tells the story of one unguarded promise, 7.4, and `scripts/demo` adds tests for 7.4 only. WHEN any new Spec_Mutant has the status Survived, report the Criterion, the mutant id and its Witness, and stop before task 21.5. Do not write a test for it and do not remove the mutant. The user decides what happens to the demo numbers. Remove `.trickortest/probe` afterwards, also when the task stops.
     - _Requirements: 4.1, 7.3, 7.4, 10.14_
     - _Validation: node packages/engine/dist/cli/main.js measure --project examples/pricing --spec cart-pricing --scope spec-only --output .trickortest/probe passes_
-  - [ ] 21.5 Name the committed test that counts the mutants
+  - [x] 21.5 Name the committed test that counts the mutants
     - `packages/engine/test/e2e/pricing.test.ts` asserts `expect(expectedMutantIds).toHaveLength(24)` in the test `10.10 all 24 spec mutants are present and valid`. If task 21.1 to 21.3 added Spec_Mutants, this sealed test fails. Do not edit it. Report the test name and the new count to the user and wait for the decision on a spec change (requirement 10.14 and the spec of `examples/pricing`). If no Spec_Mutant was added, state that in the report.
     - _Requirements: 10.14_
     - _Validation: npm run test:e2e -w trick-or-test passes, or the user has decided on the test named above_
@@ -1375,7 +1375,7 @@ Conventions used in every task:
     - Merge this task into 24.3 only if it is clearly one commit; otherwise keep it separate.
     - _Requirements: 6.13, 6.15, 10.13_
     - _Validation: npx vitest run --project engine packages/engine/test/core/verdict-killing-tests-in-baseline.test.ts passes_
-  - [ ] 24.5 Edit the sealed test of task 21.5 (decision of the owner of the repository)
+  - [x] 24.5 Edit the sealed test of task 21.5 (decision of the owner of the repository)
     - The owner of the repository decided on 26 November 2026 that the sealed test file `packages/engine/test/e2e/pricing.test.ts` may be edited, and only in three ways. This is the explicit approval that `AGENTS.md` asks for. (1) The list of mutant files that the test reads leaves out `skipped.json`, because it is the Skip_File and not a Spec_Mutant. (2) The test `10.10 all 24 spec mutants are present and valid` expects 25 and its name says 25. (3) The test `10.10 the other 23 spec mutants are Killed` expects 24 and its name says 24. No other line of that file changes and no other sealed test file is edited. Check with `git diff` that the change is only these three, and put that check in the commit body.
     - When this task is done, task 21.5 is done too. Mark task 21.5 `[x]` in this commit, together with this task.
     - Placed after 24.3 and 24.4 and before the two regeneration tasks.
