@@ -369,7 +369,7 @@ Conventions for every task:
     - _Requirements: 6.2, 6.3, 6.4, 6.5, 6.6, 6.7, 6.16_
     - _Validation: `npm test -w trick-or-test-viewer -- test/screens/verdict/SealGrid.test.tsx` passes_
 
-  - [ ] 9.5 Implement the who-killed-them panel
+  - [x] 9.5 Implement the who-killed-them panel
     - Create `src/screens/verdict/WhoKilledPanel.tsx`: four groups (examples only, properties only, both, unattributed), each with its count (0 included) and a disclosure that lists every Mutant of the group, or "no mutants in this group" when empty.
     - Example tests in `test/screens/verdict/WhoKilledPanel.test.tsx`: four groups with counts (6.8), open group lists every Mutant (6.9), empty group message (6.9), sum of counts equals killed Mutants with a class (6.15).
     - _Requirements: 6.8, 6.9, 6.15_
