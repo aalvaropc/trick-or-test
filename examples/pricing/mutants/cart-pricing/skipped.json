@@ -1,0 +1,22 @@
+[
+  {
+    "requirement": "1.1",
+    "reason": "The criterion is about which names src/index.ts exports. Breaking it means removing an export, which a witness calling an exported function cannot show, and mutants must not change exports."
+  },
+  {
+    "requirement": "1.2",
+    "reason": "The exported types Cart, Line, Coupon and Breakdown are erased at runtime, so no exported function can show their absence."
+  },
+  {
+    "requirement": "1.3",
+    "reason": "The Coupon union shape is a type-level definition erased at runtime, so no exported function output can differ."
+  },
+  {
+    "requirement": "1.4",
+    "reason": "The Breakdown field list is a type-level definition erased at runtime, and mutants must not change types."
+  },
+  {
+    "requirement": "1.5",
+    "reason": "Erasable-syntax-only is a property of the source text and compiler settings, not of any value an exported function returns."
+  }
+]

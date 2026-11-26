@@ -1127,7 +1127,7 @@ Conventions used in every task:
   - Source: requirement 10.14 and `.kiro/steering/mutant-patches.md`. `examples/pricing/mutants/cart-pricing` has 24 Spec_Mutants and no `skipped.json`, so 1.1 to 1.5, 2.2, 3.4 and 8.1 to 8.5 show as unattacked with no explanation.
   - Rules for whoever does this task: read only `.kiro/specs/cart-pricing/requirements.md`, the files of `examples/pricing/src/` and the steering file. Never read or edit the files of `examples/pricing/test/` (the steering file forbids it) and never edit `examples/pricing/src/`. Decide from the text of each Criterion and from `src/` whether an exported function can show the violation. Write `expected` by hand from the Criterion, never by running the code. A Criterion that no exported function can show gets a Skip_File entry with a reason, not a forced mutant.
   - If this task adds Spec_Mutants, the numbers of requirement 11.16 (25 claims, 16 held, 7 not held, 2 unchecked) change for the regenerated files: a Criterion that was `unchecked` becomes `held` or `not-held`, and more Spec_Mutants of an attacked Criterion can change a `held` into `not-held`. The test of task 17.8 reads a fixture and does not change. Task 22 checks the new numbers.
-  - [ ] 21.1 Decide and write for 1.1 to 1.5
+  - [x] 21.1 Decide and write for 1.1 to 1.5
     - For each of the five Criteria of Requirement 1, write `examples/pricing/mutants/cart-pricing/oath-<id>-<slug>.json` with a Witness, or add an entry `{ "requirement": "<id>", "reason": "<why no exported function shows it>" }` to `examples/pricing/mutants/cart-pricing/skipped.json` (a JSON array, created with the file tools). One mutant changes one span in one file.
     - _Requirements: 10.14_
     - _Validation: npm run build -w trick-or-test && node packages/engine/dist/cli/main.js run --project examples/pricing --spec cart-pricing --scope spec-only --output .trickortest/probe exits 0 (the loader rejects a malformed mutant or skip file before the baseline; 21.4 reads the result)_
@@ -1305,7 +1305,7 @@ Conventions used in every task:
 }
 ```
 
-- [ ] 23. Correct the claim id list, describe the seed, remove a duplicate type (Corrections 1 to 3)
+- [x] 23. Correct the claim id list, describe the seed, remove a duplicate type (Corrections 1 to 3)
   - NOTE: group 23 is run BEFORE groups 21 and 22, so that the committed evidence is regenerated once, in group 22, after these corrections. It is numbered 23 only so that no existing task is renumbered. The dependency graph above is not changed; run 23.1 to 23.6 in order, then 21 and 22.
   - Source: requirements 11.3, 8.6 and 8.9, Property 27 and the notes on `metadata.seed`, `HistoryRecord.seed` and `TestKind` in `design.md`.
   - Rules for every sub-task: one commit per task, with the author suffix `(Kiro)` as `AGENTS.md` says; a committed (sealed) test file is never edited, and if a correction would break one, the task names that file and stops; new tests go in new files; example tests in `*.test.ts` and property tests in `*.property.test.ts`, never mixed; no repository file is written through a shell command; no absolute machine path in code, tests or documents (when a test needs an absolute path, use one under `/proj` or `/srv`, because the commit guard refuses a made-up example under `/home/` or `/Users/`); `git config --global` is never read; no new dependency; generated files (`reports/`, `apps/viewer/public/demo/`) are never edited by hand.
@@ -1340,6 +1340,6 @@ Conventions used in every task:
     - Do not edit `test/core/test-classification*.test.ts`: they must pass unchanged.
     - _Requirements: 6.3, 6.4, 6.5_
     - _Validation: npm run typecheck && npx vitest run --project engine packages/engine/test/core --testNamePattern "classif" passes (run `npx vitest run --project engine packages/engine/test/core` if no pattern matches)_
-  - [ ] 23.6 Checkpoint - Corrections
+  - [x] 23.6 Checkpoint - Corrections
     - Run `npm run check` from the repository root. Ensure all tests pass, ask the user if questions arise.
     - _Validation: npm run check passes_

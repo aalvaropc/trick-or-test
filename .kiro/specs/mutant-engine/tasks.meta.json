@@ -1949,6 +1949,20 @@
         "chatSessionId": "sess_37b7338c-1478-47b9-bea7-6400f1ae437e",
         "timestamp": 1795691828971
       }
+    ],
+    "23.4 Fix text outside the spec that says the seed repeats the project's property tests": [
+      {
+        "executionId": "d345312b-2cb3-4ba9-8940-697c2d2fe562",
+        "chatSessionId": "sess_37b7338c-1478-47b9-bea7-6400f1ae437e",
+        "timestamp": 1795692193510
+      }
+    ],
+    "23.5 Keep one `TestKind`": [
+      {
+        "executionId": "ab5b12e1-9f3a-4861-8ca6-cff404217e28",
+        "chatSessionId": "sess_ae5ed713-5dcb-4ad9-8ec7-049c1e675b3e",
+        "timestamp": 1795692305825
+      }
     ]
   }
 }
