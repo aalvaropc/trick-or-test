@@ -2062,6 +2062,13 @@
         "chatSessionId": "sess_e37d7fc2-dc6e-4823-a58f-d65b656ce5f0",
         "timestamp": 1795698451982
       }
+    ],
+    "24.3 Use the match in `toOutcomes` and add `unmatchedKillingTests`": [
+      {
+        "executionId": "2f4c5b06-6d7b-4e31-a6a6-3530c3f3a9f2",
+        "chatSessionId": "sess_fed132c9-ca4b-4ae5-ab81-40a9f3ba6771",
+        "timestamp": 1795698677297
+      }
     ]
   }
 }
