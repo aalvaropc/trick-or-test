@@ -24,6 +24,30 @@ const cleanDir = (p: string): string =>
     .join("/");
 
 /**
+ * Build roots (3.22): the union of the first path segment of each source glob, of each test glob
+ * and of each Baseline_Run test file. A test file at the project root contributes its own name.
+ * Inputs are project-relative. A glob whose first segment holds a wildcard or is `..` gives no
+ * answer.
+ */
+export const buildRootsOf = (
+  sourceGlobs: readonly string[],
+  testGlobs: readonly string[],
+  baselineTestFiles: readonly string[],
+): string[] | undefined => {
+  const roots: string[] = [];
+  for (const glob of [...sourceGlobs, ...testGlobs]) {
+    const first = cleanDir(glob).split("/")[0] ?? "";
+    if (first === "" || first === ".." || /[*?{}[\]!]/.test(first)) return undefined;
+    roots.push(first);
+  }
+  for (const file of baselineTestFiles) {
+    const first = cleanDir(file).split("/")[0] ?? "";
+    if (first !== "") roots.push(first);
+  }
+  return sortedUnique(roots);
+};
+
+/**
  * Computes the directories StrykerJS leaves out of its sandbox.
  *
  * `outputDirRelative` is an addition to the design signature: the output directory is part of the

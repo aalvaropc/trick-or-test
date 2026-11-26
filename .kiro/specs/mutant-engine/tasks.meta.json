@@ -2076,6 +2076,20 @@
         "chatSessionId": "sess_d66b384a-ab97-4bb6-8111-fd14977fef47",
         "timestamp": 1795699037066
       }
+    ],
+    "24.5 Edit the sealed test of task 21.5 (decision of the owner of the repository)": [
+      {
+        "executionId": "639067e7-e05e-4b2d-b27d-6d05c680c6b0",
+        "chatSessionId": "sess_75dda723-05b3-48f7-acc8-a4a01bc5cac1",
+        "timestamp": 1795699400387
+      }
+    ],
+    "24.6 CORRECTION 6: make StrykerJS see a test folder outside the test globs": [
+      {
+        "executionId": "5a0cc2a7-d1bf-4e3a-bf28-7be768fc1511",
+        "chatSessionId": "sess_78c4a35e-b4f0-4110-baad-70acb9bea483",
+        "timestamp": 1795700166345
+      }
     ]
   }
 }

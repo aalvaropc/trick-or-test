@@ -186,7 +186,12 @@ export async function runCli(argv: readonly string[], deps: CliDeps): Promise<nu
       scope === "spec-only" ? "Strays: not run" : `Strays: ${coverage.strays}`,
       ...(scope === "spec-only"
         ? []
-        : [`killing tests outside the baseline: ${mechanical.value.unmatchedKillingTests ?? 0}`]),
+        : [
+            `killing tests outside the baseline: ${mechanical.value.unmatchedKillingTests ?? 0}`,
+            // 9.23: the count and the sorted paths appear only in this summary.
+            `test files outside the StrykerJS run: ${mechanical.value.unrunTestFiles?.count ?? 0}`,
+            ...(mechanical.value.unrunTestFiles?.paths ?? []),
+          ]),
       "Written:",
       `  ${reportPath}`,
       `  ${verdictPath}`,

@@ -53,7 +53,11 @@ import {
   validateSkipFile,
 } from "../core/spec-mutants.js";
 import { classifySpecies } from "../core/species.js";
-import { computeStrykerExclusions, type StrykerExclusions } from "../core/stryker-exclusions.js";
+import {
+  buildRootsOf,
+  computeStrykerExclusions,
+  type StrykerExclusions,
+} from "../core/stryker-exclusions.js";
 import type { Location } from "../core/stryker-output.js";
 import { computeSuiteTimeLimit } from "../core/suite-time-limit.js";
 import { classifyTest, type TestKind } from "../core/test-classification.js";
@@ -72,6 +76,7 @@ import type {
   TestId,
   VerdictWitness,
 } from "../core/types.js";
+import { findUnrunTestFiles } from "../core/unrun-test-files.js";
 import {
   compareOutcomes,
   matchesExpectation,
@@ -364,6 +369,8 @@ export interface MechanicalStageResult {
    * killing test (6.15). Set by a full run, absent from a spec-only run (8.29).
    */
   readonly unmatchedKillingTests?: number;
+  /** Test files of the Baseline_Run that StrykerJS did not run; summary only (3.23, 3.24). */
+  readonly unrunTestFiles?: { count: number; paths: string[] };
 }
 
 /** The file and start line of one Baseline_Test. */
@@ -471,7 +478,8 @@ export async function runBaselineAndMechanical(
     }
   }
 
-  const exclusions = await listExclusions(options.project, config, adapters.fs);
+  const baselineTestFiles = [...new Set(baselineSources.map((s) => s.file))];
+  const exclusions = await listExclusions(options.project, config, adapters.fs, baselineTestFiles);
 
   const run = await adapters.mechanical.run({
     typescriptVersion: input.typescriptVersion,
@@ -496,6 +504,7 @@ export async function runBaselineAndMechanical(
     baselineTests,
     baselineSources,
     unmatchedKillingTests: unmatched,
+    unrunTestFiles: findUnrunTestFiles(baselineTestFiles, Object.keys(run.value.testFiles)),
   });
 }
 
@@ -548,29 +557,19 @@ async function baselineTestsOf(
   };
 }
 
-/**
- * Build roots: the first path segment of each source and test glob (3.7). A glob whose first
- * segment holds a wildcard or points outside the project gives no answer, so nothing is excluded.
- */
-const buildRootsOf = (root: string, config: EngineConfig): string[] | undefined => {
-  const roots = new Set<string>();
-  for (const glob of [...config.sourceGlobs, ...config.testGlobs]) {
-    const first = relativeToRoot(root, glob)
-      .split("/")
-      .find((segment) => segment !== "" && segment !== ".");
-    if (first === undefined || first === ".." || /[*?{}[\]!]/.test(first)) return undefined;
-    roots.add(first);
-  }
-  return [...roots];
-};
-
 async function listExclusions(
   root: string,
   config: EngineConfig,
   fs: MechanicalAdapters["fs"],
+  baselineTestFiles: readonly string[],
 ): Promise<StrykerExclusions | undefined> {
   if (fs.listEntries === undefined) return undefined;
-  const buildRoots = buildRootsOf(root, config);
+  // 3.7, 3.22: globs are made project-relative here, then the pure function decides.
+  const buildRoots = buildRootsOf(
+    config.sourceGlobs.map((glob) => relativeToRoot(root, glob)),
+    config.testGlobs.map((glob) => relativeToRoot(root, glob)),
+    baselineTestFiles,
+  );
   if (buildRoots === undefined) return undefined;
   const entries = await fs.listEntries(root);
   const outputDir = relativeToRoot(root, config.outputDir);
