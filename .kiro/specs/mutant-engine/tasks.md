@@ -950,7 +950,7 @@ Conventions used in every task:
     - Run `npm run check` from the repository root. Ensure all tests pass, ask the user if questions arise.
     - _Validation: npm run check passes_
 
-- [ ] 16. Keep the tests of the Baseline_Run (Gap 2)
+- [x] 16. Keep the tests of the Baseline_Run (Gap 2)
   - Source: requirements 6.11 to 6.13, 8.29, Property 31 in `design.md`. The Baseline_Run already knows every test (name, file, start line) and the engine keeps only its duration. The viewer headline is "All N tests still pass", and N is the length of `baselineTests`.
   - Every test below goes in a new file.
   - [x] 16.1 Add the types and the schema
@@ -973,14 +973,14 @@ Conventions used in every task:
     - Write `test/cli/orchestrate-baseline-tests.test.ts` with fake adapters: read the written `verdict.json`; its `baselineTests` length equals the number of passed tests of the fake Baseline_Run; a skipped test is absent; every killing-test id of every mutant in the file is in the list (except a file-level failure, whose id is a file path).
     - _Requirements: 6.11, 6.12, 6.13, 10.13_
     - _Validation: npx vitest run --project engine packages/engine/test/cli/orchestrate-baseline-tests.test.ts passes_
-  - [ ] 16.5 Checkpoint - Baseline tests
+  - [x] 16.5 Checkpoint - Baseline tests
     - Run `npm run check` from the repository root. Ensure all tests pass, ask the user if questions arise.
     - _Validation: npm run check passes_
 
 - [ ] 17. Record the claims of the tests (Gap 3)
   - Source: requirement 11, 6.11 to 6.13, Properties 27 and 28 in `design.md`. Kiro writes above each property test a comment such as `// Feature: cart-pricing, Property 9: Breakdown invariants` and `// **Validates: Requirements 5.5, 7.3, 7.4**`. `extractTestBody` reads from the start line forward and never sees them.
   - Every test below goes in a new file. Wording (11.17): a claim "held" or "did not hold". The words "false", "fake" and "lying" appear in no string that the engine writes, and in no test name or message of this task.
-  - [ ] 17.1 Add the types and the schemas
+  - [x] 17.1 Add the types and the schemas
     - In `core/types.ts` add `ClaimOutcome`, `Claim` and `ClaimCounts`; add `claims?: Claim[]` to `BaselineTest`. In `core/report.ts` add the strict schemas, `claims` in the `baselineTests` entry and the optional field `claimCounts` in `verdictSchema`. `otherTestsKilledAll` is allowed only when the outcome is `not-held`: the schema rejects it on the other outcomes. Export from `trick-or-test/report`.
     - Write `test/core/claims-schema.test.ts`: a verdict without `claims` and `claimCounts` parses; each of the four outcomes parses; `otherTestsKilledAll` on `held` is rejected; `not-held` without it is rejected; an unknown outcome and an unknown key are rejected; a negative count is rejected.
     - _Requirements: 8.29, 11.11, 11.12_

@@ -137,11 +137,37 @@ export type StrykerCounts = {
 /** Requirements 6.3 to 6.5. */
 export type TestKind = "property" | "example";
 
+/** Requirement 11.11. */
+export type ClaimOutcome = "held" | "not-held" | "unchecked" | "unknown-criterion";
+
+/** Requirement 11. `criterion` is the id as written in the test: a Criterion id, or an id the spec lacks. */
+export type Claim = {
+  criterion: string;
+  outcome: ClaimOutcome;
+  /** Present only when `outcome` is `not-held` (11.11). */
+  otherTestsKilledAll?: boolean;
+};
+
+/** Requirement 11.12. The counts per outcome sum to `total`. */
+export type ClaimCounts = {
+  total: number;
+  held: number;
+  notHeld: number;
+  unchecked: number;
+  unknownCriterion: number;
+  /** Claims that did not hold with `otherTestsKilledAll` true. */
+  notHeldOthersKilledAll: number;
+  /** Claims that did not hold with `otherTestsKilledAll` false. */
+  notHeldOthersDidNot: number;
+};
+
 /** Requirements 6.11 to 6.13. One entry per test that the Baseline_Run ran and that passed. */
 export type BaselineTest = {
   /** `<file>::<full name>`, the format of the killing tests. */
   id: TestId;
   kind: TestKind;
+  /** Claims read from the comment above the test (Requirement 11). Absent when the test has none. */
+  claims?: Claim[];
 };
 
 export type Verdict = {
@@ -153,6 +179,7 @@ export type Verdict = {
   mutantCounts?: MutantCounts;
   strykerCounts?: StrykerCounts;
   baselineTests?: BaselineTest[];
+  claimCounts?: ClaimCounts;
 };
 
 export type HistoryRecord = {

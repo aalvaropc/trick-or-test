@@ -11,6 +11,9 @@ export type {
 } from "../core/report.js";
 export {
   baselineTestSchema,
+  claimCountsSchema,
+  claimOutcomeSchema,
+  claimSchema,
   coverageStatusSchema,
   criterionCoverageSchema,
   historyRecordSchema,
@@ -35,6 +38,9 @@ export {
 } from "../core/report.js";
 export type {
   BaselineTest,
+  Claim,
+  ClaimCounts,
+  ClaimOutcome,
   CoverageStatus,
   Criterion,
   CriterionCoverage,

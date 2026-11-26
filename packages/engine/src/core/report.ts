@@ -5,6 +5,8 @@ import { computeMutantCounts, computeStrykerCounts } from "./totals.js";
 import { dropTwins } from "./twins.js";
 import type {
   BaselineTest,
+  Claim,
+  ClaimCounts,
   CoverageStatus,
   CriterionCoverage,
   CriterionId,
@@ -156,10 +158,56 @@ export const strykerCountsSchema = z.strictObject({
 
 export const testKindSchema = z.enum(["property", "example"]);
 
+export const claimOutcomeSchema = z
+  .enum(["held", "not-held", "unchecked", "unknown-criterion"])
+  .describe("Whether the claim held or did not hold, judged by the Spec_Mutants of the criterion.");
+
+/** A claim of a test. `otherTestsKilledAll` is required for `not-held` and refused otherwise (11.11). */
+export const claimSchema: z.ZodType<Claim> = z
+  .strictObject({
+    criterion: z.string(),
+    outcome: claimOutcomeSchema,
+    otherTestsKilledAll: z
+      .boolean()
+      .optional()
+      .describe(
+        "Only on a claim that did not hold: true when every valid Spec_Mutant of the criterion was killed by another test or timed out.",
+      ),
+  })
+  .superRefine((claim, ctx) => {
+    const has = claim.otherTestsKilledAll !== undefined;
+    if (claim.outcome === "not-held" && !has) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["otherTestsKilledAll"],
+        message: "otherTestsKilledAll is required when the outcome is not-held",
+      });
+    }
+    if (claim.outcome !== "not-held" && has) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["otherTestsKilledAll"],
+        message: "otherTestsKilledAll is allowed only when the outcome is not-held",
+      });
+    }
+  }) as unknown as z.ZodType<Claim>;
+
+/** Number of claims in total and per outcome (11.12). */
+export const claimCountsSchema: z.ZodType<ClaimCounts> = z.strictObject({
+  total: count(),
+  held: count(),
+  notHeld: count(),
+  unchecked: count(),
+  unknownCriterion: count(),
+  notHeldOthersKilledAll: count(),
+  notHeldOthersDidNot: count(),
+}) as unknown as z.ZodType<ClaimCounts>;
+
 /** One test that the Baseline_Run ran and that passed (6.11). */
 export const baselineTestSchema: z.ZodType<BaselineTest> = z.strictObject({
   id: testIdSchema,
   kind: testKindSchema,
+  claims: z.array(claimSchema).optional(),
 }) as unknown as z.ZodType<BaselineTest>;
 
 export const verdictSchema: z.ZodType<Verdict> = z.strictObject({
@@ -171,6 +219,7 @@ export const verdictSchema: z.ZodType<Verdict> = z.strictObject({
   mutantCounts: mutantCountsSchema.optional(),
   strykerCounts: strykerCountsSchema.optional(),
   baselineTests: z.array(baselineTestSchema).optional(),
+  claimCounts: claimCountsSchema.optional(),
 }) as unknown as z.ZodType<Verdict>;
 
 const engineConfigSchema: z.ZodType<EngineConfig> = z.strictObject({
