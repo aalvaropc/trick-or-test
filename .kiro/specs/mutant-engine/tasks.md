@@ -946,7 +946,7 @@ Conventions used in every task:
     - In `cli/orchestrate.ts` pass the whole list of Mechanical_Mutants that StrykerJS produced to the builders (no earlier filtering). Write `test/cli/orchestrate-totals.test.ts` with fake adapters, one Twin among the Mechanical_Mutants: read the three written files, parse them with the zod schemas, and check that the id sets are equal, that `mutantCounts` agrees with the ids listed, and that `strykerCounts` counts the Twin.
     - _Requirements: 8.21, 8.22, 8.23, 10.13_
     - _Validation: npx vitest run --project engine packages/engine/test/cli/orchestrate-totals.test.ts passes_
-  - [ ] 15.7 Checkpoint - Totals
+  - [x] 15.7 Checkpoint - Totals
     - Run `npm run check` from the repository root. Ensure all tests pass, ask the user if questions arise.
     - _Validation: npm run check passes_
 
