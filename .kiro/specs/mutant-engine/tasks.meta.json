@@ -1907,6 +1907,20 @@
         "chatSessionId": "sess_69dc7be6-6d7d-4036-a048-24233c674e54",
         "timestamp": 1795689754216
       }
+    ],
+    "20.2 Write Property 35: Witness test source": [
+      {
+        "executionId": "f4127229-7681-4086-b7a7-7f04221bc540",
+        "chatSessionId": "sess_6239d693-9a8f-4ea2-915d-961f12aa822d",
+        "timestamp": 1795689964765
+      }
+    ],
+    "20.3 Check that the generated test runs": [
+      {
+        "executionId": "efbaa897-cf03-4b1c-ac6c-d0df1d68710d",
+        "chatSessionId": "sess_c5195a55-9241-4410-99ac-af2b4be6976e",
+        "timestamp": 1795690219459
+      }
     ]
   }
 }

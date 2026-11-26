@@ -1119,7 +1119,7 @@ Conventions used in every task:
     - Write `test/adapters/witness-test-run.test.ts`: take two Witnesses of the committed mutants of `examples/pricing` (one with `expected`, one with `expectedError`), build the test source, write it under `.trickortest/` of a copy of the project in a Sandbox, run Vitest on it, and check that it passes on the original code and fails once the matching Spec_Mutant is applied in the Sandbox. Also type-check the generated file with `tsc --noEmit` in strict mode in the Sandbox, for both Witnesses and for one more Witness whose `args` holds a value that does not match the parameter type of the export, to show that the cast through `unknown` compiles. Remove the Sandbox afterwards.
     - _Requirements: 12.2, 12.3_
     - _Validation: npx vitest run --project engine packages/engine/test/adapters/witness-test-run.test.ts passes_
-  - [ ] 20.4 Checkpoint - Witness test
+  - [x] 20.4 Checkpoint - Witness test
     - Run `npm run check` from the repository root. Ensure all tests pass, ask the user if questions arise.
     - _Validation: npm run check passes_
 
