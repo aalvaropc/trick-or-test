@@ -1698,6 +1698,13 @@
         "chatSessionId": "sess_34c82df4-cc6c-477e-868f-d755c68b045d",
         "timestamp": 1795678410866
       }
+    ],
+    "17.3 Parse and resolve the claims": [
+      {
+        "executionId": "c5859036-eac3-4050-9417-1e6bcf0fdfa9",
+        "chatSessionId": "sess_dba3d87b-7e49-4876-8f11-9c8bad53f389",
+        "timestamp": 1795678581529
+      }
     ]
   }
 }

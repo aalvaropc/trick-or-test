@@ -2,7 +2,7 @@
  * Claim reading. Pure functions over strings, no `node:` imports.
  */
 
-import type { Criterion } from "./types.js";
+import type { BaselineTest, Claim, ClaimCounts, Criterion, MutantResult, TestId } from "./types.js";
 
 /** One id read from a `Validates:` line: a criterion `N.M` or a whole requirement `N`. */
 export type ClaimRef = { kind: "criterion"; id: string } | { kind: "requirement"; number: number };
@@ -112,4 +112,74 @@ export function extractLeadingComments(fileText: string, startLine: number): str
     }
   }
   return found.reverse();
+}
+
+/**
+ * Requirement 11.11. A Spec_Mutant is valid when its status is Killed,
+ * Survived or Timeout (7.6). The Coverage_Status of the criterion is not used.
+ */
+export function computeClaimOutcome(
+  testId: TestId,
+  criterionId: string,
+  criteria: Criterion[],
+  results: MutantResult[],
+): Claim {
+  if (!criteria.some((item) => item.id === criterionId)) {
+    return { criterion: criterionId, outcome: "unknown-criterion" };
+  }
+  const valid = results.filter(
+    (result) =>
+      result.requirement === criterionId &&
+      (result.status === "Killed" || result.status === "Survived" || result.status === "Timeout"),
+  );
+  if (valid.length === 0) return { criterion: criterionId, outcome: "unchecked" };
+  if (valid.every((result) => result.status === "Killed" && result.killingTests.includes(testId))) {
+    return { criterion: criterionId, outcome: "held" };
+  }
+  const otherTestsKilledAll = valid.every(
+    (result) =>
+      result.status === "Timeout" ||
+      (result.status === "Killed" && result.killingTests.some((id) => id !== testId)),
+  );
+  return { criterion: criterionId, outcome: "not-held", otherTestsKilledAll };
+}
+
+/**
+ * Adds the claims to each Baseline_Test and sums the counts. A test with no
+ * claim ids gets no `claims` key.
+ */
+export function attachClaims(
+  tests: BaselineTest[],
+  claimIdsByTest: Map<TestId, string[]>,
+  criteria: Criterion[],
+  results: MutantResult[],
+): { baselineTests: BaselineTest[]; claimCounts: ClaimCounts } {
+  const counts: ClaimCounts = {
+    total: 0,
+    held: 0,
+    notHeld: 0,
+    unchecked: 0,
+    unknownCriterion: 0,
+    notHeldOthersKilledAll: 0,
+    notHeldOthersDidNot: 0,
+  };
+  const baselineTests = tests.map((test): BaselineTest => {
+    const { claims: _previous, ...rest } = test;
+    const ids = claimIdsByTest.get(test.id) ?? [];
+    if (ids.length === 0) return rest;
+    const claims = ids.map((id) => computeClaimOutcome(test.id, id, criteria, results));
+    for (const claim of claims) {
+      counts.total += 1;
+      if (claim.outcome === "held") counts.held += 1;
+      else if (claim.outcome === "unchecked") counts.unchecked += 1;
+      else if (claim.outcome === "unknown-criterion") counts.unknownCriterion += 1;
+      else {
+        counts.notHeld += 1;
+        if (claim.otherTestsKilledAll) counts.notHeldOthersKilledAll += 1;
+        else counts.notHeldOthersDidNot += 1;
+      }
+    }
+    return { ...rest, claims };
+  });
+  return { baselineTests, claimCounts: counts };
 }
