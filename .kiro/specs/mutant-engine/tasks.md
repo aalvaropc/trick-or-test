@@ -1059,7 +1059,7 @@ Conventions used in every task:
   - Source: requirements 8.28 to 8.31, 9.17 to 9.22, 11.15, Properties 32 and 34 in `design.md`. An agent that hunts one surviving Spec_Mutant needs a run of seconds. `--scope spec-only` runs the Baseline_Run and the Spec_Mutants and never StrykerJS. A spec-only run has no strays and no StrykerJS score, and says so in its three files.
   - Decision on history: a `full` run compares with the latest earlier `full` record; a `spec-only` run compares with the latest earlier record of any scope on Spec_Mutant ids only (requirement 8.30).
   - Every test below goes in a new file.
-  - [ ] 19.1 Add the type and the schema fields
+  - [x] 19.1 Add the type and the schema fields
     - Add `RunScope`; add the optional `scope` to `runMetadataSchema` and `historyRecordSchema`. The enum has exactly `full` and `spec-only`. Export from `trick-or-test/report`.
     - Write `test/core/scope-schema.test.ts`: both fields absent parse and mean `full`; both values parse; any other value is rejected; an unknown key is still rejected.
     - _Requirements: 8.28, 8.29_

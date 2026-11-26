@@ -113,6 +113,8 @@ export const mutantResultSchema: z.ZodType<MutantResult> = z.strictObject({
   invalidWitness: invalidWitnessSchema.optional(),
 }) as unknown as z.ZodType<MutantResult>;
 
+export const runScopeSchema = z.enum(["full", "spec-only"]);
+
 export const runMetadataSchema = z.strictObject({
   gitCommit: z.string(),
   seed: z.number().int(),
@@ -123,6 +125,7 @@ export const runMetadataSchema = z.strictObject({
   typescriptVersion: z.string(),
   timestamp: z.string(),
   specName: z.string().optional(),
+  scope: runScopeSchema.optional(),
 });
 
 /** One Requirement title of the Verdict (8.26). */
@@ -260,6 +263,7 @@ export const historyRecordSchema: z.ZodType<HistoryRecord> = z.strictObject({
   coverageByCriterion: z
     .array(z.strictObject({ criterion: criterionIdSchema, status: coverageStatusSchema }))
     .optional(),
+  scope: runScopeSchema.optional(),
 }) as unknown as z.ZodType<HistoryRecord>;
 
 // Mutation report (subset of mutation-testing-report-schema 3.x plus two extension fields).

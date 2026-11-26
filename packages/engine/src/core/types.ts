@@ -107,6 +107,8 @@ export type RunMetadata = {
   timestamp: string;
   /** The attacked spec (Requirement 8.25). Absent in a file written before the field existed (8.29). */
   specName?: string;
+  /** The Run_Scope (Requirement 8.28). Absent means `full` (8.29). */
+  scope?: RunScope;
 };
 
 /** The title of one Requirement of the spec (Requirements 2.9, 8.26). */
@@ -203,4 +205,6 @@ export type HistoryRecord = {
   newlyKilledIds: MutantId[];
   /** Coverage_Status of every Criterion, in document order: one row of seals (Requirement 8.27). */
   coverageByCriterion?: { criterion: CriterionId; status: CoverageStatus }[];
+  /** The Run_Scope (Requirement 8.28). Absent means `full` (8.29). */
+  scope?: RunScope;
 };
