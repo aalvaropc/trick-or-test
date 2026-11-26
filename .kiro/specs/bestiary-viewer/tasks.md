@@ -498,7 +498,7 @@ Conventions for every task:
     - _Requirements: 13.6, 13.15, 13.16, 13.18, 7.4, 7.10, 7.12_
     - _Validation: `npm test -w trick-or-test-viewer -- test/screens/Specimen.design.test.tsx` passes_
 
-  - [ ] 13.7 Style the Hunt screen and the Plain view
+  - [x] 13.7 Style the Hunt screen and the Plain view
     - Update `src/screens/Hunt.tsx` and `src/screens/PlainView.tsx` to Requirement 13.17 inside the same Page_Frame: timeline cards with mono time and commit, the survivor count with its label, the newly killed creatures in a wrapping row at the Hunt size, the "blocked" label in `--amber`, and the table at full width inside `.table-scroll` with the header buttons styled. Keep `Hunt` free of animation and `PlainView` free of creatures, `svg` and transitions (Requirements 8.9, 9.7). Fill the rules in `screens.css`.
     - Example tests in new files `test/screens/Hunt.design.test.tsx` and `test/screens/PlainView.design.test.tsx`: titles "The hunt" and "Plain view" (13.6); each entry has time, commit, survivor label and its killed creatures at the Hunt size (13.17, 13.18); the table is inside `.table-scroll` and the headers are buttons (13.17, 9.9); no `svg` and no transition in the Plain view (9.7).
     - _Requirements: 13.6, 13.17, 13.18, 13.19, 8.9, 9.7_
