@@ -851,8 +851,48 @@ Conventions used in every task:
     - Run `npm run check` from the repository root. Ensure all tests pass, ask the user if questions arise.
     - _Validation: npm run check passes_
 
+- [ ] 13. Write the criterion text and the mutated witness outcome into `verdict.json`
+  - Source: requirements 8.18-8.20 and Property 26 in `design.md`. The viewer (bestiary-viewer requirements 7.3 and 7.4) needs both fields. The engine already has them in memory: `parseRequirements` returns each criterion's `text`, and `cli/orchestrate.ts` computes `mutatedOutcome` for each Spec_Mutant.
+  - Both fields are optional in the schemas, so a verdict written before this task still parses. Mutant ids, the Mutation_Report and the `history.jsonl` format do not change.
+  - Committed test files are sealed. Every test below goes in a new file; no existing test file is edited.
+  - [ ] 13.1 Add the optional fields to the types and the zod schemas
+    - In `core/types.ts` add `text?: string` to `CriterionCoverage` and the type `VerdictWitness = Witness & { mutatedOutcome?: WitnessOutcome }`; `Verdict.witnesses` becomes `Record<MutantId, VerdictWitness>`. `Witness` itself does not change.
+    - In `core/report.ts` add `text: z.string().optional()` to `criterionCoverageSchema`, and export `verdictWitnessSchema`: the strict union of `witnessSchema` with `mutatedOutcome: witnessOutcomeSchema.optional()`. `verdictSchema` uses it for `witnesses`. `witnessSchema` (used for mutant files) is unchanged, and every object stays strict.
+    - Write `test/core/verdict-fields-schema.test.ts`: a verdict without either field parses (8.20); a verdict with both parses; `mutatedOutcome` of each kind (`value`, `error`, `timeout`, `no-outcome`) parses; an unknown field next to `text` or next to `mutatedOutcome` is rejected; an invalid `mutatedOutcome` kind is rejected; `witnessSchema` still rejects `mutatedOutcome` (a mutant file does not take it); the schemas are exported from `trick-or-test/report` and that subpath still has no `node:` import.
+    - _Requirements: 8.20_
+    - _Validation: npx vitest run --project engine packages/engine/test/core/verdict-fields-schema.test.ts passes_
+  - [ ] 13.2 Write the criterion text in `buildVerdict`
+    - In `core/report.ts` let `buildVerdict` copy `text` from each `VerdictInput.coverage` entry, trimmed and passed through `scrubAbsolutePaths`. An entry with no `text` stays without one.
+    - Write `test/core/verdict-text.test.ts`: plain text is kept, leading and trailing whitespace and newlines are trimmed, inner whitespace is kept, an absolute path under the root becomes the relative path, a path outside the root becomes `<outside-project>/<basename>`, an entry without text has no `text` key, and `skipped` entries keep `reason` and gain `text`.
+    - _Requirements: 8.17, 8.18_
+    - _Validation: npx vitest run --project engine packages/engine/test/core/verdict-text.test.ts passes_
+  - [ ] 13.3 Write the mutated witness outcome in `buildVerdict`
+    - In `core/report.ts` let `buildVerdict` copy `mutatedOutcome` from each `VerdictInput.witnesses` entry, through the same scrubbing function as `originalOutcome` (`message` of `timeout` and `no-outcome`, `className` of `error`). An entry with no `mutatedOutcome` gets no such key.
+    - Write `test/core/verdict-mutated-outcome.test.ts`: one example for each outcome kind; an absolute path in a `no-outcome` message and in an error class name is scrubbed; a witness with `expectedError` and one with `expected` both keep the field; an entry without the field has no `mutatedOutcome` key (check with `Object.hasOwn`, not with `=== undefined`).
+    - _Requirements: 8.17, 8.19_
+    - _Validation: npx vitest run --project engine packages/engine/test/core/verdict-mutated-outcome.test.ts passes_
+  - [ ] 13.4 Write Property 26: Verdict carries criterion text and mutated outcome
+    - Write `test/core/verdict.fields.property.test.ts` with **Property 26: Verdict carries criterion text and mutated outcome**. The generator produces criteria with plain text, with surrounding whitespace, and with absolute paths under and outside the root; and Spec_Mutants with and without a `mutatedOutcome`, in every outcome kind, with absolute paths in `message` and `className`. Check every bullet of the property, including the round trip and `containsAbsolutePath`. Generators reach the documented boundaries on purpose (per `no-fake-tests.md`): the no-text and no-outcome cases must occur in every run set.
+    - **Validates: Requirements 8.12, 8.17, 8.18, 8.19, 8.20**
+    - _Requirements: 8.12, 8.17, 8.18, 8.19, 8.20_
+    - _Validation: npx vitest run --project engine packages/engine/test/core/verdict.fields.property.test.ts passes_
+  - [ ] 13.5 Carry the text and the outcome from the pipeline to the Verdict
+    - In `cli/orchestrate.ts` fill `text` in each coverage entry from the matching `Criterion` of `parseRequirements`, and `mutatedOutcome` in the `witnesses` entry of each Spec_Mutant whose `SpecMutantOutcome.mutatedOutcome` is set (Killed, Survived, Timeout and Ghost mutants whose witness ran on the mutated code). An InvalidWitness, CompileError or NotApplicable mutant, whose witness never ran on the mutated code, gets none.
+    - Write `test/cli/orchestrate-verdict-fields.test.ts` with fake adapters: take the content that the Reporter writes to the fake file system, parse `verdict.json` with the zod schema, and check in the parsed file the text of each criterion (every criterion of the parsed spec has one), the `mutatedOutcome` of a Survived, a Killed and a Ghost mutant, and no `mutatedOutcome` for an InvalidWitness and a CompileError mutant.
+    - _Requirements: 8.18, 8.19, 10.13_
+    - _Validation: npx vitest run --project engine packages/engine/test/cli/orchestrate-verdict-fields.test.ts passes_
+  - [ ] 13.6 Regenerate `reports/` with `npm run measure`
+    - Note: the committed `reports/verdict.json` lacks the new fields. Kiro runs `npm run measure` once from the repository root and commits the changed files in `reports/`. This appends one line to `reports/history.jsonl`, which is expected: the earlier lines stay unchanged. Nobody edits the files by hand, and ids and the history format do not change.
+    - Check that `reports/history.jsonl` has exactly one more line than before, that every coverage entry of `reports/verdict.json` has a non-empty `text`, that every Spec_Mutant with a `mutatedOutcome` has a status in Killed, Survived, Timeout or Ghost, and that no string in the three files holds an absolute path.
+    - _Requirements: 8.17, 8.18, 8.19, 9.13, 9.14_
+    - _Validation: npm run measure && test -f reports/mutation-report.json && test -f reports/verdict.json && test -f reports/history.jsonl passes_
+  - [ ] 13.7 Checkpoint - Verdict fields
+    - Run `npm run check` from the repository root, then `npm run test:e2e --workspace trick-or-test`. Ensure all tests pass, ask the user if questions arise.
+    - _Validation: npm run check passes_
+
 ## Notes
 
+- Task 13 adds the criterion text and the mutated witness outcome to `verdict.json`. Property 26 has its own task: P26 (13.4). It is new because Properties 16 and 20 live in sealed test files.
 - Task 12 collects the fixes of the independent review. Properties 18 to 25 of `design.md` have their own tasks: P18 (12.30), P19 (12.37), P20 (12.27), P21 (12.2), P22 (12.7), P23 (12.16), P24 (12.40), P25 (12.19). Task 12.23 extends Property 16.
 - Every task is required. No task is optional.
 - Each of the 17 correctness properties in `design.md` has its own task: P1 (3.8), P2 (3.9), P3 (3.21), P4 (3.22), P5 (3.16), P6 (3.19), P7 (3.25), P8 (3.4), P9 (3.6), P10 (3.17), P11 (3.14), P12 (3.23), P13 (5.3), P14 (3.30), P15 (3.26), P16 (3.28), P17 (3.47).
@@ -924,7 +964,11 @@ Conventions used in every task:
     { "id": 35, "tasks": ["12.45"] },
     { "id": 36, "tasks": ["12.46"] },
     { "id": 37, "tasks": ["12.54"] },
-    { "id": 38, "tasks": ["12.55"] }
+    { "id": 38, "tasks": ["12.55"] },
+    { "id": 39, "tasks": ["13.1"] },
+    { "id": 40, "tasks": ["13.2", "13.3"] },
+    { "id": 41, "tasks": ["13.4", "13.5"] },
+    { "id": 42, "tasks": ["13.6"] }
   ]
 }
 ```
