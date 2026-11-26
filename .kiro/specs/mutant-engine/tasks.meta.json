@@ -2055,6 +2055,13 @@
         "chatSessionId": "sess_b72946b2-bec2-41c3-a2b3-b238a9f3f8cc",
         "timestamp": 1795696927182
       }
+    ],
+    "24.2 Add `core/baseline-match.ts` with its example tests and Property 36": [
+      {
+        "executionId": "44cbad41-848c-4e06-97c0-3354d7e9e7f9",
+        "chatSessionId": "sess_e37d7fc2-dc6e-4823-a58f-d65b656ce5f0",
+        "timestamp": 1795698451982
+      }
     ]
   }
 }

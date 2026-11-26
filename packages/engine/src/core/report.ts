@@ -236,6 +236,7 @@ export const verdictSchema: z.ZodType<Verdict> = z.strictObject({
   strykerCounts: strykerCountsSchema.optional(),
   baselineTests: z.array(baselineTestSchema).optional(),
   claimCounts: claimCountsSchema.optional(),
+  unmatchedKillingTests: z.number().int().nonnegative().optional(),
   requirements: z.array(requirementTitleSchema).optional(),
 }) as unknown as z.ZodType<Verdict>;
 
@@ -352,6 +353,8 @@ export type VerdictInput = {
   baselineTests?: BaselineTest[];
   /** Number of Claims in total and per outcome (11.12). Written as `claimCounts` when present. */
   claimCounts?: ClaimCounts;
+  /** Killers of Mechanical_Mutants outside the baseline (8.29). Written only when present. */
+  unmatchedKillingTests?: number;
   /** The attacked spec. Written as `metadata.specName` when present (8.25). */
   specName?: string;
   /** Requirement titles in document order. Written as `requirements` when present (8.26). */
@@ -498,6 +501,9 @@ export const buildVerdict = (input: VerdictInput): Result<Verdict, string> => {
           })),
         }),
     ...(input.claimCounts === undefined ? {} : { claimCounts: { ...input.claimCounts } }),
+    ...(input.unmatchedKillingTests === undefined
+      ? {}
+      : { unmatchedKillingTests: input.unmatchedKillingTests }),
     ...(input.requirements === undefined
       ? {}
       : {

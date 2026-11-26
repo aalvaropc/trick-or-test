@@ -13,6 +13,7 @@ import type {
   WitnessRunOptions,
   WitnessRunResult,
 } from "../adapters/vitest-witness-runner.js";
+import { indexBaselineTests, matchBaselineTest } from "../core/baseline-match.js";
 import { buildBaselineTests, type PassedTestInput, toTestId } from "../core/baseline-tests.js";
 import { type ChangedRange, parseChangedRanges } from "../core/changed-ranges.js";
 import {
@@ -358,6 +359,11 @@ export interface MechanicalStageResult {
   readonly baselineTests: BaselineTest[];
   /** Where each passed test starts, so the claims above it can be read (Requirement 11.1). */
   readonly baselineSources: BaselineTestSource[];
+  /**
+   * Killers of Mechanical_Mutants that match no Baseline_Test, one for each pair of mutant and
+   * killing test (6.15). Set by a full run, absent from a spec-only run (8.29).
+   */
+  readonly unmatchedKillingTests?: number;
 }
 
 /** The file and start line of one Baseline_Test. */
@@ -365,6 +371,8 @@ export interface BaselineTestSource {
   readonly id: TestId;
   /** Project-relative path of the test file. */
   readonly file: string;
+  /** Vitest's `ancestorTitles` followed by `title` (6.14). */
+  readonly titles: readonly string[];
   readonly startLine: number;
 }
 
@@ -458,6 +466,7 @@ export async function runBaselineAndMechanical(
         ignoreStaticRetried: false,
         baselineTests,
         baselineSources,
+        unmatchedKillingTests: 0,
       });
     }
   }
@@ -473,13 +482,20 @@ export async function runBaselineAndMechanical(
   });
   if (!run.ok) return err({ kind: "stryker-error", message: run.error });
 
-  const mutants = await toOutcomes(run.value, options.project, config, adapters.fs);
+  const { outcomes: mutants, unmatched } = await toOutcomes(
+    run.value,
+    options.project,
+    config,
+    adapters.fs,
+    baselineSources,
+  );
   return ok({
     baselineMs: baseline.value.durationMs,
     mutants,
     ignoreStaticRetried: run.value.ignoreStaticRetried,
     baselineTests,
     baselineSources,
+    unmatchedKillingTests: unmatched,
   });
 }
 
@@ -494,12 +510,15 @@ async function baselineTestsOf(
   fs: Pick<LoadFileSystem, "readFile">,
 ): Promise<{ tests: BaselineTest[]; sources: BaselineTestSource[] }> {
   const inputs: PassedTestInput[] = [];
-  for (const file of suite.files) {
-    const passed = file.tests.filter((t) => t.status === "passed");
+  const titlesOfInput: (readonly string[])[] = [];
+  for (const [k, file] of suite.files.entries()) {
+    const passed = file.tests.flatMap((t, i) => (t.status === "passed" ? [{ t, i }] : []));
     if (passed.length === 0) continue;
     const read = await fs.readFile(joinPath(projectRoot, file.path));
     const text = read.ok ? read.value : undefined;
-    for (const t of passed) {
+    for (const { t, i } of passed) {
+      // A hand-built SuiteResult has no titles: the name is the one title.
+      titlesOfInput.push(suite.testTitles?.[k]?.[i] ?? [t.name]);
       inputs.push({
         filePath: file.path,
         fullName: t.name,
@@ -513,14 +532,19 @@ async function baselineTestsOf(
   }
   return {
     tests: buildBaselineTests(inputs, propertyTestGlobs),
-    sources: inputs
+    sources: inputs.flatMap((i, n) =>
       // A file-level result has no test call to read comments above.
-      .filter((i) => i.fullName !== i.filePath)
-      .map((i) => ({
-        id: toTestId(i.filePath, i.fullName),
-        file: i.filePath,
-        startLine: i.startLine,
-      })),
+      i.fullName === i.filePath
+        ? []
+        : [
+            {
+              id: toTestId(i.filePath, i.fullName),
+              file: i.filePath,
+              titles: titlesOfInput[n] as readonly string[],
+              startLine: i.startLine,
+            },
+          ],
+    ),
   };
 }
 
@@ -573,7 +597,10 @@ async function toOutcomes(
   projectRoot: string,
   config: EngineConfig,
   fs: Pick<LoadFileSystem, "readFile">,
-): Promise<MechanicalOutcome[]> {
+  baselineSources: readonly BaselineTestSource[],
+): Promise<{ outcomes: MechanicalOutcome[]; unmatched: number }> {
+  const index = indexBaselineTests(baselineSources);
+  let unmatched = 0;
   const ran = run.mutants.flatMap((mutant) => {
     const status = toEngineStatus(mutant.status);
     return status === undefined ? [] : [{ mutant, status }];
@@ -628,7 +655,13 @@ async function toOutcomes(
       for (const killer of mutant.killedBy) {
         const test = tests.get(killer);
         if (test === undefined) continue;
-        result.killingTests.push(testIdOf(test.file, test.name));
+        const matched = matchBaselineTest(index, {
+          file: test.file,
+          name: test.name,
+          ...(test.startLine === undefined ? {} : { startLine: test.startLine }),
+        });
+        if (matched === "none") unmatched += 1;
+        result.killingTests.push(matched === "none" ? testIdOf(test.file, test.name) : matched);
         const body =
           test.startLine === undefined
             ? ""
@@ -641,7 +674,7 @@ async function toOutcomes(
     }
     outcomes.push(toOutcome(mutant, result));
   }
-  return outcomes;
+  return { outcomes, unmatched };
 }
 
 /** The slice of the adapters the spec mutant stage needs. */
@@ -927,6 +960,8 @@ export interface ReportStageInput {
   readonly baselineTests?: readonly BaselineTest[];
   /** File and start line of each Baseline_Test; without it no claim is read (11.14). */
   readonly baselineSources?: readonly BaselineTestSource[];
+  /** Killers outside the baseline; passed by a full run, written as `unmatchedKillingTests` (8.29). */
+  readonly unmatchedKillingTests?: number;
 }
 
 export const REPORT_FILE_NAME = "mutation-report.json";
@@ -1093,6 +1128,9 @@ export async function writeReports(
     changes,
     ...(options.scope === undefined ? {} : { scope: options.scope }),
     ...(claimed === undefined ? {} : claimed),
+    ...(input.unmatchedKillingTests === undefined || scopeOf(options) === "spec-only"
+      ? {}
+      : { unmatchedKillingTests: input.unmatchedKillingTests }),
     ...(project.specs[0] === undefined
       ? {}
       : {
