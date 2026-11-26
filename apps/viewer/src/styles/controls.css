@@ -50,6 +50,12 @@
   background: var(--panel);
 }
 
-.drop-zone[data-dragging] {
+.drop-zone[data-dragging="true"] {
   border-color: var(--amber);
+}
+
+/* The native input stays in the tab order; the label shows its focus (13.8, 3.5) */
+.drop-zone:focus-within .file-picker .button {
+  outline: 2px solid var(--amber);
+  outline-offset: 2px;
 }

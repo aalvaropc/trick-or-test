@@ -751,6 +751,13 @@
         "chatSessionId": "sess_3223ad56-5626-4336-9772-7abd800bbd29",
         "timestamp": 1795663756098
       }
+    ],
+    "13.3 Property test: sizing keeps the creature intact (V12)": [
+      {
+        "executionId": "fe1c0cb4-5934-4e5b-a733-45e4b7c76ac8",
+        "chatSessionId": "sess_b10c0f4a-946e-4cfb-a446-c1e6a93c5377",
+        "timestamp": 1795664241409
+      }
     ]
   }
 }

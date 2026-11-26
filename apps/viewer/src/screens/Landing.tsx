@@ -59,9 +59,18 @@ export function Landing({ loadError, notice }: { loadError?: LoadError; notice?:
   const error = loadError ?? (demo.state === "none" ? demo.error : undefined);
 
   return (
-    <ScreenFrame screen="landing" title={screenTitle("landing", {})}>
+    <ScreenFrame
+      screen="landing"
+      title={screenTitle("landing", {})}
+      intro={
+        <p className="landing__intro">
+          Species is the kind of change. Eyes are the test outcome. A seal is a requirement's
+          status.
+        </p>
+      }
+    >
       {notice === undefined ? null : <p role="status">{notice}</p>}
-      <p data-testid="pitch">
+      <p className="landing__pitch" data-testid="pitch">
         {demo.state === "ready" ? (
           <>
             <strong data-testid="pitch-survivors">{demo.numbers.survivors}</strong> monsters bred
@@ -73,11 +82,15 @@ export function Landing({ loadError, notice }: { loadError?: LoadError; notice?:
           "Monsters bred from the spec show which promises the tests would never notice."
         )}
       </p>
-      <nav aria-label="Demo runs">
-        <a href="#/demo/before">before the hunt</a>
-        <a href="#/demo/after">after the hunt</a>
+      <nav className="landing__demos" aria-label="Demo runs">
+        <a className="button button--primary" href="#/demo/before">
+          before the hunt
+        </a>
+        <a className="button button--secondary" href="#/demo/after">
+          after the hunt
+        </a>
       </nav>
-      <p>Your files never leave the browser.</p>
+      <p className="landing__privacy">Your files never leave the browser.</p>
       {error === undefined ? null : <LoadErrorView error={error} />}
       <DropZone />
       <FontLicences />

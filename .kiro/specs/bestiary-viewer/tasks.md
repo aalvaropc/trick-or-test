@@ -480,7 +480,7 @@ Conventions for every task:
     - _Requirements: 13.18, 13.26_
     - _Validation: `npm test -w trick-or-test-viewer -- test/bestiary/with-size.property.test.ts` passes_
 
-  - [ ] 13.4 Style the Landing screen
+  - [x] 13.4 Style the Landing screen
     - Update `src/screens/Landing.tsx` and `src/screens/landing/DropZone.tsx` to the layout of Requirement 13.7 and 13.8: the intro paragraph in the header row (`.landing__intro`, species is the kind of change, eyes are the test outcome, a seal is a requirement's status), the pitch, `.landing__demos` with two `.button` links in a row with a gap, the privacy statement, the `.drop-zone` with a `<label class="button">` as the visible picker over the visually hidden native input, the licences in a `<details>`. Fill the matching rules in `screens.css` and `controls.css`. Keep the pitch free of digit literals and keep the two demo links, their labels and the keyboard behaviour (Requirements 2.1, 3.3, 3.5, 3.6).
     - Example tests in new file `test/screens/Landing.design.test.tsx`: the `<h1>` reads the Landing title, not "Landing" (13.6); the two demo links are separate elements inside `.landing__demos` (13.7, 13.19); the picker is a label with class `button` and the native input is visually hidden but still reachable by keyboard (13.8, 3.5); the intro paragraph states the three meanings (13.7); the dragging state sets `data-dragging` (13.8).
     - _Requirements: 13.6, 13.7, 13.8, 13.19, 2.1, 3.3, 3.5_

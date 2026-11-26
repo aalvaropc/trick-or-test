@@ -1,4 +1,4 @@
-import { type ChangeEvent, type DragEvent, useRef, useState } from "react";
+import { type ChangeEvent, type DragEvent, useState } from "react";
 import { LoadErrorView } from "../../app/LoadErrorView.js";
 import { useRun } from "../../app/run-context.js";
 import { readFiles } from "../../loader/file-reader.js";
@@ -43,7 +43,6 @@ const loadFiles = async (
  */
 export function DropZone() {
   const { applyLoad } = useRun();
-  const inputRef = useRef<HTMLInputElement>(null);
   const [errors, setErrors] = useState<LoadError[]>([]);
   const [ignored, setIgnored] = useState(0);
   const [dragging, setDragging] = useState(false);
@@ -81,7 +80,8 @@ export function DropZone() {
 
   return (
     <section
-      className={dragging ? "drop-zone drop-zone--active" : "drop-zone"}
+      className="drop-zone"
+      data-dragging={dragging ? "true" : undefined}
       aria-label="Load a run"
       onDragOver={(event) => {
         event.preventDefault();
@@ -91,19 +91,19 @@ export function DropZone() {
       onDrop={onDrop}
     >
       <p>Drop a report, a verdict or a history file here.</p>
-      <button type="button" onClick={() => inputRef.current?.click()}>
-        Choose files
-      </button>
-      <input
-        ref={inputRef}
-        type="file"
-        multiple
-        hidden
-        tabIndex={-1}
-        aria-label="Run files"
-        data-testid="file-input"
-        onChange={onPick}
-      />
+      <div className="file-picker">
+        <label className="button" htmlFor="run-files">
+          Choose files
+        </label>
+        <input
+          id="run-files"
+          className="visually-hidden"
+          type="file"
+          multiple
+          data-testid="file-input"
+          onChange={onPick}
+        />
+      </div>
       {errors.map((error) => (
         <LoadErrorView
           key={`${error.fileName}|${error.line ?? 0}|${error.message}`}

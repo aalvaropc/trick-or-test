@@ -22,10 +22,12 @@ const APP_NAME = "Trick or Test";
 export function ScreenFrame({
   screen,
   title,
+  intro,
   children,
 }: {
   screen: ScreenId;
   title: string;
+  intro?: ReactNode;
   children: ReactNode;
 }) {
   const { run } = useRun();
@@ -48,6 +50,7 @@ export function ScreenFrame({
             <a href="#/verdict">{SCREEN_NAMES.verdict}</a>
           ) : null}
         </nav>
+        {intro}
       </header>
       <main className="page__main">{children}</main>
     </div>
