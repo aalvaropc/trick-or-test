@@ -1064,7 +1064,7 @@ Conventions used in every task:
     - Write `test/core/scope-schema.test.ts`: both fields absent parse and mean `full`; both values parse; any other value is rejected; an unknown key is still rejected.
     - _Requirements: 8.28, 8.29_
     - _Validation: npx vitest run --project engine packages/engine/test/core/scope-schema.test.ts passes_
-  - [ ] 19.2 Choose the comparison record
+  - [x] 19.2 Choose the comparison record
     - Create `core/run-scope.ts` with `scopeOf` and `selectComparisonRecord`, and let `buildHistoryRecord` compare only Spec_Mutant ids when the scope is `spec-only`. The signature of `buildHistoryRecord` does not change.
     - Write `test/core/run-scope.test.ts`: a record with no `scope` is `full`; a `full` run after `full`, `spec-only` gets the first record; a `full` run with no `full` record gets none; a `spec-only` run gets the latest record of either scope; an empty list gives none; a `full` run that follows a `spec-only` record does not list mechanical ids that the last `full` record had as killed; a `spec-only` record lists no mechanical id in `newlyKilledIds`; two runs of one scope give the 8.9 result.
     - _Requirements: 8.9, 8.28, 8.30_

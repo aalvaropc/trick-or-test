@@ -1814,6 +1814,20 @@
         "chatSessionId": "sess_f154308b-3958-4f12-952b-9e8afb439b3a",
         "timestamp": 1795686332464
       }
+    ],
+    "18.6 Checkpoint - Small fields": [
+      {
+        "executionId": "80c28d58-c807-4cda-83a0-9395376184cb",
+        "chatSessionId": "sess_9312a35c-c523-4cd4-97b8-77d289252c57",
+        "timestamp": 1795686531763
+      }
+    ],
+    "19.1 Add the type and the schema fields": [
+      {
+        "executionId": "a5f65af0-1244-464f-ae74-beac36171d0c",
+        "chatSessionId": "sess_2ed1f6c1-e789-407a-9c54-4c58bd48b8c2",
+        "timestamp": 1795686766225
+      }
     ]
   }
 }

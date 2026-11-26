@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { relativizePath, scrubAbsolutePaths } from "./paths.js";
 import { err, ok, type Result } from "./result.js";
+import { isSpecMutantId, scopeOf } from "./run-scope.js";
 import { computeMutantCounts, computeStrykerCounts } from "./totals.js";
 import { dropTwins } from "./twins.js";
 import type {
@@ -688,8 +689,13 @@ export const buildHistoryRecord = (
     number
   >;
   for (const c of verdict.coverage) coverageCounts[c.status] += 1;
+  // A spec-only run compares Spec_Mutant ids only, on both sides (8.30).
+  const specOnly = scopeOf(verdict.metadata) === "spec-only";
+  const compared = (id: MutantId): boolean => !specOnly || isSpecMutantId(id);
   const previouslyKilled = new Set(
-    (previousRecord?.mutants ?? []).filter((m) => m.status === "Killed").map((m) => m.id),
+    (previousRecord?.mutants ?? [])
+      .filter((m) => m.status === "Killed" && compared(m.id))
+      .map((m) => m.id),
   );
   const candidate: HistoryRecord = {
     time: verdict.metadata.timestamp,
@@ -700,7 +706,7 @@ export const buildHistoryRecord = (
     statusCounts,
     coverageCounts,
     newlyKilledIds: listed
-      .filter((m) => m.status === "Killed" && !previouslyKilled.has(m.id))
+      .filter((m) => m.status === "Killed" && compared(m.id) && !previouslyKilled.has(m.id))
       .map((m) => m.id),
     coverageByCriterion: verdict.coverage.map((c) => ({
       criterion: c.criterion,
