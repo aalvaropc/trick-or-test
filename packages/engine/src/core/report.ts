@@ -116,9 +116,13 @@ export const mutantResultSchema: z.ZodType<MutantResult> = z.strictObject({
 
 export const runScopeSchema = z.enum(["full", "spec-only"]);
 
+/** Shared description of the `seed` field of the Verdict metadata and of the history record (8.6, 8.9). */
+const SEED_DESCRIPTION =
+  "The own seed of the Trick or Test engine. It is always 0 today because the engine uses no random source. It is not the seed of the property tests of the target project.";
+
 export const runMetadataSchema = z.strictObject({
   gitCommit: z.string(),
-  seed: z.number().int(),
+  seed: z.number().int().describe(SEED_DESCRIPTION),
   engineVersion: z.string(),
   nodeVersion: z.string(),
   strykerVersion: z.string(),
@@ -255,7 +259,7 @@ const coverageCountsSchema = z.strictObject({
 export const historyRecordSchema: z.ZodType<HistoryRecord> = z.strictObject({
   time: z.string(),
   gitCommit: z.string(),
-  seed: z.number().int(),
+  seed: z.number().int().describe(SEED_DESCRIPTION),
   config: engineConfigSchema,
   mutants: z.array(z.strictObject({ id: mutantIdSchema, status: mutantStatusSchema })),
   statusCounts: statusCountsSchema,

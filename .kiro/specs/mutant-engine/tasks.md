@@ -1319,12 +1319,12 @@ Conventions used in every task:
     - **Validates: Requirements 11.3**
     - _Requirements: 11.3, 11.13_
     - _Validation: npx vitest run --project engine packages/engine/test/core/claims-id-list.test.ts packages/engine/test/core/claims-id-list.property.test.ts packages/engine/test/core/claims-parse.test.ts packages/engine/test/core/claims.parse.property.test.ts passes_
-  - [ ] 23.2 Check that the committed example count does not change
+  - [x] 23.2 Check that the committed example count does not change
     - Run the existing `test/core/claims-example.test.ts` without editing it. It asserts 25 claims, 16 `held`, 7 `not-held`, 2 `unchecked` and 0 `unknown-criterion`. If it passes, state in the commit message of 23.1 or in the report that the count is unchanged. If the new rule changes the count, STOP and report the old and the new numbers; do not edit the committed test or the fixture `test/fixtures/cart-pricing-24/`.
     - _Requirements: 11.3, 11.16_
     - _Validation: npx vitest run --project engine packages/engine/test/core/claims-example.test.ts passes_
   - Correction 2: say what `metadata.seed` is. The value and the type do not change.
-  - [ ] 23.3 Describe the seed in both schemas
+  - [x] 23.3 Describe the seed in both schemas
     - In `core/report.ts` give the `seed` field of the run metadata schema (used by the verdict schema) and the `seed` field of the history-record schema the same `.describe(...)` text, one shared constant: the seed is the own seed of the engine, always 0 today because the engine uses no random source, and it is not the seed of the property tests of the target project. Do not change the type (`number`), the default, the value written by the builders or any other field. Both schemas are exported from `trick-or-test/report`.
     - Write `test/core/seed-description.test.ts` (new file): the `seed` field of the verdict schema (through its metadata object) and of the history-record schema carry a description, the two descriptions are equal, the text names the engine, says the value is 0 today and says it is not the seed of the property tests of the project; a verdict and a history record with `seed: 0` still parse; the output of `buildVerdict` and `buildHistoryRecord` still has `seed: 0`. Do not edit the committed schema tests.
     - _Requirements: 8.6, 8.9_
