@@ -1739,6 +1739,18 @@
         "chatSessionId": "sess_587deaaf-d9d8-4525-bdc5-ef233f640b38",
         "timestamp": 1795679333125
       }
+    ],
+    "17.7 Read the claims in the pipeline": [
+      {
+        "executionId": "d2d81aaa-843e-4af1-9a50-7462f95b5ed8",
+        "chatSessionId": "sess_f2b3a9c9-48ee-4a45-8c4f-662c8d77e04a",
+        "timestamp": 1795679533407
+      },
+      {
+        "executionId": "42033d02-ca86-484e-aae6-f2fdaffcf482",
+        "chatSessionId": "sess_f2b3a9c9-48ee-4a45-8c4f-662c8d77e04a",
+        "timestamp": 1795679668969
+      }
     ]
   }
 }
