@@ -411,7 +411,7 @@ Conventions for every task:
     - _Requirements: 8.1, 8.2, 8.3, 8.4, 8.5, 8.8, 8.9, 8.10, 8.11, 8.12_
     - _Validation: `npm test -w trick-or-test-viewer -- test/screens/Hunt.test.tsx` passes_
 
-  - [ ] 9.12 Add blocked attempts to the Hunt screen
+  - [x] 9.12 Add blocked attempts to the Hunt screen
     - Add the optional `lockLog` input to `Hunt.tsx` using the minimal local type `{ time: string; file: string }[]` from the design (the format belongs to the agent-guard spec). Show each blocked write attempt on the timeline in `--amber` with the text label "blocked". With no Lock_Log, show the timeline without error.
     - Example tests added to `test/screens/Hunt.blocked.test.tsx`: each entry shows "blocked" with the amber token (8.6), no Lock_Log shows no blocked entries and no error (8.7).
     - _Requirements: 8.6, 8.7_
