@@ -343,6 +343,10 @@ export type VerdictInput = {
   baselineTests?: BaselineTest[];
   /** Number of Claims in total and per outcome (11.12). Written as `claimCounts` when present. */
   claimCounts?: ClaimCounts;
+  /** The attacked spec. Written as `metadata.specName` when present (8.25). */
+  specName?: string;
+  /** Requirement titles in document order. Written as `requirements` when present (8.26). */
+  requirements?: RequirementTitle[];
 };
 
 /** What a mutant changes: the fields that rule 8.15 compares. */
@@ -455,7 +459,10 @@ export const buildVerdict = (input: VerdictInput): Result<Verdict, string> => {
       Object.entries(input.witnesses).map(([id, w]) => [id, scrubWitness(w, root)]),
     ) as Record<MutantId, VerdictWitness>,
     ignoreStaticRetried: input.ignoreStaticRetried,
-    metadata: { ...input.metadata },
+    metadata: {
+      ...input.metadata,
+      ...(input.specName === undefined ? {} : { specName: input.specName }),
+    },
     // The counts are written when the caller passes `changes`, that is, when it hands over the raw
     // list. Without it the totals would describe a list that may still hold Twins.
     ...(input.changes === undefined ? {} : { mutantCounts }),
@@ -464,6 +471,14 @@ export const buildVerdict = (input: VerdictInput): Result<Verdict, string> => {
       ? {}
       : { baselineTests: input.baselineTests.map((t) => ({ ...t, id: scrubTestId(t.id, root) })) }),
     ...(input.claimCounts === undefined ? {} : { claimCounts: { ...input.claimCounts } }),
+    ...(input.requirements === undefined
+      ? {}
+      : {
+          requirements: input.requirements.map((r) => ({
+            requirement: r.requirement,
+            title: scrubAbsolutePaths(r.title.trim(), root),
+          })),
+        }),
   };
   const parsed = verdictSchema.safeParse(candidate);
   if (!parsed.success) {
@@ -683,6 +698,10 @@ export const buildHistoryRecord = (
     newlyKilledIds: listed
       .filter((m) => m.status === "Killed" && !previouslyKilled.has(m.id))
       .map((m) => m.id),
+    coverageByCriterion: verdict.coverage.map((c) => ({
+      criterion: c.criterion,
+      status: c.status,
+    })),
   };
   const parsed = historyRecordSchema.safeParse(candidate);
   if (!parsed.success) {

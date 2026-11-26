@@ -1041,7 +1041,7 @@ Conventions used in every task:
     - Write `test/core/small-fields-schema.test.ts`: a verdict and a history record without the fields parse; with the fields they parse; an unknown key inside `requirements` and inside `coverageByCriterion` is rejected; an empty title and a non-integer requirement number are rejected; an unknown Coverage_Status is rejected.
     - _Requirements: 8.25, 8.26, 8.27, 8.29_
     - _Validation: npx vitest run --project engine packages/engine/test/core/small-fields-schema.test.ts passes_
-  - [ ] 18.4 Write the fields in the builders
+  - [x] 18.4 Write the fields in the builders
     - In `core/report.ts` let `buildVerdict` write `metadata.specName` and `requirements` (each title trimmed and scrubbed by `scrubAbsolutePaths`), and `buildHistoryRecord` write `coverageByCriterion` from `verdict.coverage` in document order.
     - Write `test/core/small-fields-builders.test.ts`: the spec name and the titles reach the verdict; a title with an absolute path is scrubbed; `coverageByCriterion` holds one entry for each Criterion in document order with the Coverage_Status of the verdict, including `skipped` and `unattacked`; a record built from a verdict with no coverage has an empty list; the output is byte-identical for equal input.
     - _Requirements: 8.13, 8.17, 8.25, 8.26, 8.27_

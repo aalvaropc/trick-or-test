@@ -1783,6 +1783,30 @@
         "chatSessionId": "sess_ab89d2d4-2c17-47ea-8700-df8764023d0f",
         "timestamp": 1795680514853
       }
+    ],
+    "18.3 Add the types and the schemas": [
+      {
+        "executionId": "d31bf043-527b-4495-b157-e04607b6831a",
+        "chatSessionId": "sess_cb2e5e03-7b58-42ff-a7b6-34053fcf892a",
+        "timestamp": 1795680758558
+      }
+    ],
+    "18.4 Write the fields in the builders": [
+      {
+        "executionId": "1055c3cd-ada9-43d5-9347-49a962b4b03d",
+        "chatSessionId": "sess_bc26c256-2ddc-48e3-b689-ed3596d14cc0",
+        "timestamp": 1795680933255
+      },
+      {
+        "executionId": "da555e68-34b0-4610-9abc-bbdaa9134b58",
+        "chatSessionId": "sess_bc26c256-2ddc-48e3-b689-ed3596d14cc0",
+        "timestamp": 1795686199284
+      },
+      {
+        "executionId": "da555e68-34b0-4610-9abc-bbdaa9134b58",
+        "chatSessionId": "sess_bc26c256-2ddc-48e3-b689-ed3596d14cc0",
+        "timestamp": 1795686221248
+      }
     ]
   }
 }
