@@ -399,7 +399,7 @@ Conventions for every task:
     - _Requirements: 7.1, 7.2, 7.3, 7.4, 7.5, 7.6, 7.7, 7.10, 7.11, 7.12_
     - _Validation: `npm test -w trick-or-test-viewer -- test/screens/Specimen.test.tsx` passes_
 
-  - [ ] 9.10 Add the eye tracking to the Specimen screen
+  - [x] 9.10 Add the eye tracking to the Specimen screen
     - Create `src/screens/specimen/use-eye-tracking.ts` and apply it in `Specimen.tsx`: on each `pointermove` rotate the creature's eyes toward the pointer. With reduced motion (from `use-reduced-motion`), keep the eyes in their default position, attach no listener and run no animation.
     - Example tests in `test/screens/specimen/eye-tracking.test.tsx`: a pointer move changes the eye transform and a second move updates it (7.8), with reduced motion the transform stays at default and no listener is added (7.9).
     - _Requirements: 7.8, 7.9_

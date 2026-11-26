@@ -1,5 +1,11 @@
+import { useEffect, useRef, useSyncExternalStore } from "react";
 import { useRun } from "../app/run-context.js";
 import { ScreenFrame } from "../app/ScreenFrame.js";
+import {
+  getReducedMotion,
+  getServerReducedMotion,
+  subscribeReducedMotion,
+} from "../app/use-reduced-motion.js";
 import { Creature } from "../bestiary/Creature.js";
 import {
   buildSpecimenView,
@@ -7,6 +13,7 @@ import {
   type SpecimenView,
   type TestList,
 } from "./specimen/specimen-view.js";
+import { trackEyes } from "./specimen/use-eye-tracking.js";
 
 const OUTCOME_LABEL: Record<OutcomeView["kind"], string> = {
   value: "value",
@@ -138,10 +145,24 @@ function Details({ view }: { view: SpecimenView }) {
   );
 }
 
-/** Specimen screen: one Mutant in detail (7.1 to 7.7, 7.10 to 7.12). */
+/** Specimen screen: one Mutant in detail (7.1 to 7.12). */
 export function Specimen({ mutantId }: { mutantId: string }) {
   const { run } = useRun();
   const view = run === undefined ? undefined : buildSpecimenView(run, mutantId);
+  const reduced = useSyncExternalStore(
+    subscribeReducedMotion,
+    getReducedMotion,
+    getServerReducedMotion,
+  );
+  const creatureBox = useRef<HTMLDivElement>(null);
+  const hasCreature = view?.creatureState !== undefined;
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: hasCreature re-attaches the tracking once the creature box exists
+  useEffect(() => {
+    const box = creatureBox.current;
+    if (box === null) return;
+    return trackEyes(box, reduced);
+  }, [reduced, hasCreature]);
 
   return (
     <ScreenFrame screen="specimen">
@@ -158,7 +179,7 @@ export function Specimen({ mutantId }: { mutantId: string }) {
         </>
       ) : (
         <>
-          <div className="specimen__creature">
+          <div className="specimen__creature" ref={creatureBox}>
             {view.creatureState === undefined ? null : (
               <Creature
                 species={view.mutant.species}
