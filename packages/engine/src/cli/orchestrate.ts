@@ -41,6 +41,7 @@ import {
 import { parseRequirementTitles } from "../core/requirement-titles.js";
 import { parseRequirements } from "../core/requirements.js";
 import { err, ok, type Result } from "../core/result.js";
+import { scopeOf, selectComparisonRecord } from "../core/run-scope.js";
 import type { ProjectEntry } from "../core/sandbox-plan.js";
 import { selectSpec } from "../core/select-spec.js";
 import {
@@ -398,7 +399,7 @@ const toEngineStatus = (status: string): MutantStatus | undefined => {
  * 3.11, 6.1-6.9).
  */
 export async function runBaselineAndMechanical(
-  options: Pick<CliOptions, "project" | "since">,
+  options: Pick<CliOptions, "project" | "since" | "scope">,
   project: LoadedProject,
   input: MechanicalStageInput,
   adapters: MechanicalAdapters,
@@ -428,6 +429,18 @@ export async function runBaselineAndMechanical(
     config.propertyTestGlobs,
     adapters.fs,
   );
+
+  // 9.18: a spec-only run goes from the Baseline_Run to the pristine Sandbox. No git diff,
+  // no project listing, no exclusions and no StrykerJS run.
+  if (scopeOf(options) === "spec-only") {
+    return ok({
+      baselineMs: baseline.value.durationMs,
+      mutants: [],
+      ignoreStaticRetried: false,
+      baselineTests,
+      baselineSources,
+    });
+  }
 
   let changedRanges: ChangedRange[] | undefined;
   if (options.since !== undefined) {
@@ -979,7 +992,7 @@ const positionIn = (source: string, offset: number): { line: number; column: num
  * existing history does not parse. Ids are passed to `report.ts` as data (Requirement 8.7).
  */
 export async function writeReports(
-  options: Pick<CliOptions, "project">,
+  options: Pick<CliOptions, "project" | "scope">,
   project: LoadedProject,
   input: ReportStageInput,
   adapters: ReportAdapters,
@@ -1078,6 +1091,7 @@ export async function writeReports(
     metadata: input.metadata,
     projectRoot: options.project,
     changes,
+    ...(options.scope === undefined ? {} : { scope: options.scope }),
     ...(claimed === undefined ? {} : claimed),
     ...(project.specs[0] === undefined
       ? {}
@@ -1098,6 +1112,7 @@ export async function writeReports(
     spec,
     ignoreStaticRetried: input.ignoreStaticRetried,
     projectRoot: options.project,
+    ...(options.scope === undefined ? {} : { scope: options.scope }),
   });
 
   // History: read first, so a corrupt file stops the run before any write.
@@ -1123,7 +1138,8 @@ export async function writeReports(
         message: `${historyPath}, line ${parsed.error.line}: ${parsed.error.message}`,
       });
     }
-    previousRecord = parsed.value.at(-1);
+    // 8.30: a full run compares with the latest full record, a spec-only run with the latest of any scope.
+    previousRecord = selectComparisonRecord(parsed.value, scopeOf(options));
   }
   const record = buildHistoryRecord(
     verdict.value,

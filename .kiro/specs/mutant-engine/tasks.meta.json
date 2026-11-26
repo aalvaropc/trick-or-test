@@ -1846,6 +1846,27 @@
         "chatSessionId": "sess_def447e6-5556-41c6-961e-e495512b6c21",
         "timestamp": 1795687168744
       }
+    ],
+    "19.4 Write the scope in the builders": [
+      {
+        "executionId": "794d1867-6efb-457c-a83a-dc568f4fa53e",
+        "chatSessionId": "sess_956326f1-ffaf-4600-a2c8-4331969442c5",
+        "timestamp": 1795687354948
+      }
+    ],
+    "19.5 Write Property 32: New fields are optional, strict and clean": [
+      {
+        "executionId": "499aeb66-522d-4798-a403-8b7213bf35ad",
+        "chatSessionId": "sess_863b85ed-fc34-4fcd-8a59-18692c5f035d",
+        "timestamp": 1795687766382
+      }
+    ],
+    "19.6 Parse the option": [
+      {
+        "executionId": "982cca18-92fc-4c4b-b35d-786f395eb4e8",
+        "chatSessionId": "sess_86b208c8-692c-4aa9-9bd8-ed896ea9feb2",
+        "timestamp": 1795688260769
+      }
     ]
   }
 }

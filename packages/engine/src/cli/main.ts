@@ -12,6 +12,7 @@ import { SuiteRunner } from "../adapters/vitest-suite-runner.js";
 import { WitnessRunner } from "../adapters/vitest-witness-runner.js";
 import { withoutGitLocation } from "../core/git-env.js";
 import { err, ok } from "../core/result.js";
+import { scopeOf } from "../core/run-scope.js";
 import type { CoverageStatus, RunMetadata } from "../core/types.js";
 import { parseArgs, USAGE_TEXT } from "./args.js";
 import {
@@ -167,13 +168,19 @@ export async function runCli(argv: readonly string[], deps: CliDeps): Promise<nu
     if (!written.ok) return fail(formatReportError(written.error));
 
     const { coverage, reportPath, verdictPath, historyPath } = written.value;
-    const lines = [`Surviving spec mutants: ${coverage.survivingSpecMutants}`, "Criteria:"];
+    const scope = scopeOf(options);
+    const lines = [
+      `Scope: ${scope}`,
+      `Surviving spec mutants: ${coverage.survivingSpecMutants}`,
+      "Criteria:",
+    ];
     for (const status of COVERAGE_ORDER) {
       const count = coverage.coverage.filter((c) => c.status === status).length;
       lines.push(`  ${status}: ${count}`);
     }
     lines.push(
-      `Strays: ${coverage.strays}`,
+      // 9.21: a spec-only run has no strays and no StrykerJS figure.
+      scope === "spec-only" ? "Strays: not run" : `Strays: ${coverage.strays}`,
       "Written:",
       `  ${reportPath}`,
       `  ${verdictPath}`,

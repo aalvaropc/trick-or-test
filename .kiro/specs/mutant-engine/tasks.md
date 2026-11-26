@@ -1090,7 +1090,7 @@ Conventions used in every task:
     - Write `test/cli/args-scope.test.ts`: no option gives `full`; both values are accepted by `run` and `measure`; a third value prints the usage text and exits 1; `--scope spec-only --since main` prints an error that names both options and exits 1; `--scope full --since main` is accepted; a missing value is a usage error.
     - _Requirements: 9.17, 9.19, 9.20_
     - _Validation: npx vitest run --project engine packages/engine/test/cli/args-scope.test.ts passes_
-  - [ ] 19.7 Run the spec-only pipeline
+  - [x] 19.7 Run the spec-only pipeline
     - In `cli/orchestrate.ts` skip the git diff, the project listing for exclusions, the exclusion computation and the StrykerJS run when the scope is `spec-only`; go from the Baseline_Run to the pristine Sandbox. Pass `scope` to the builders. Print the scope in the summary, `strays: not run`, and no StrykerJS figure (9.21). Leave the npm scripts `measure` and `demo` without `--scope` (9.22).
     - Write `test/cli/orchestrate-spec-only.test.ts` with fake adapters: neither the Stryker adapter nor git is called; the three written files carry `scope: "spec-only"`; no `strykerCounts`; no stray in `mutants`; the Baseline_Run and every Spec_Mutant ran; the claims of task 17 equal those of a full run on the same fakes (11.15); the summary text holds `spec-only` and `not run` and no stray count; a `full` run on the same fakes still calls the Stryker adapter. Add a test in the same file that reads the root `package.json` and checks that the scripts `measure` and `demo` contain no `--scope`.
     - _Requirements: 9.18, 9.21, 9.22, 11.15_
