@@ -18,5 +18,9 @@
   {
     "requirement": "1.5",
     "reason": "Erasable-syntax-only is a property of the source text and compiler settings, not of any value an exported function returns."
+  },
+  {
+    "requirement": "3.4",
+    "reason": "The criterion is about which invalid field the ValidationError names when several are invalid. A witness compares only the error class (expectedError), so it cannot show that the wrong or a valid field was named, and any input with several invalid fields is already rejected by the single-field criteria 3.1 to 3.3."
   }
 ]

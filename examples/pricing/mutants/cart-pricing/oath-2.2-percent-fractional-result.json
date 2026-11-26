@@ -1,0 +1,14 @@
+{
+  "id": "oath-2.2-percent-fractional-result",
+  "requirement": "2.2",
+  "file": "src/percent.ts",
+  "original": "return Math.floor((amount * bps + HALF) / BPS_DENOMINATOR);",
+  "mutated": "return (amount * bps + HALF) / BPS_DENOMINATOR;",
+  "why": "percentOf divides with floating-point arithmetic and returns a fraction instead of computing with integer arithmetic only.",
+  "witness": {
+    "from": "src/index.ts",
+    "export": "percentOf",
+    "args": [1, 1],
+    "expected": 0
+  }
+}

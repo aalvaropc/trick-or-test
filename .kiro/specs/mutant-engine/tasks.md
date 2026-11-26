@@ -1131,7 +1131,7 @@ Conventions used in every task:
     - For each of the five Criteria of Requirement 1, write `examples/pricing/mutants/cart-pricing/oath-<id>-<slug>.json` with a Witness, or add an entry `{ "requirement": "<id>", "reason": "<why no exported function shows it>" }` to `examples/pricing/mutants/cart-pricing/skipped.json` (a JSON array, created with the file tools). One mutant changes one span in one file.
     - _Requirements: 10.14_
     - _Validation: npm run build -w trick-or-test && node packages/engine/dist/cli/main.js run --project examples/pricing --spec cart-pricing --scope spec-only --output .trickortest/probe exits 0 (the loader rejects a malformed mutant or skip file before the baseline; 21.4 reads the result)_
-  - [ ] 21.2 Decide and write for 2.2 and 3.4
+  - [x] 21.2 Decide and write for 2.2 and 3.4
     - The same rule for the Criteria 2.2 and 3.4.
     - _Requirements: 10.14_
     - _Validation: the command of 21.1 exits 0_
