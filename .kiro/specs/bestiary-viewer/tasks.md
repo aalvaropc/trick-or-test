@@ -387,7 +387,7 @@ Conventions for every task:
     - _Requirements: 6.12_
     - _Validation: `npm test -w trick-or-test-viewer -- test/screens/verdict/SpeciesLegend.test.tsx` passes_
 
-  - [ ] 9.8 Assemble the Verdict screen
+  - [x] 9.8 Assemble the Verdict screen
     - Create `src/screens/Verdict.tsx` inside `ScreenFrame`, composing Headline, SealGrid, WhoKilledPanel, StraysStrip and SpeciesLegend. Without a Verdict_File, show the headline from the report, omit the seals and the panel, and show "no verdict file was loaded".
     - Example tests in `test/screens/Verdict.test.tsx`: all five parts with a verdict (6.1), activating a creature opens the Specimen route (6.13), no-verdict message and no seals (6.14), one `h1` and the title (10.11).
     - _Requirements: 6.13, 6.14, 10.11_
