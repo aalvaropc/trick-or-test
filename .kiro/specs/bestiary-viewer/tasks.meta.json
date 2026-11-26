@@ -842,6 +842,32 @@
         "chatSessionId": "sess_e282f0ea-190d-4ef8-b894-76ba282c293b",
         "timestamp": 1795667606318
       }
+    ],
+    "14.3 Generate and commit the demo runs": [
+      {
+        "executionId": "2cae294e-a455-4a04-866d-90dc115b1b72",
+        "chatSessionId": "sess_e48eecda-4878-4442-a90e-eff690dec883",
+        "timestamp": 1795667858556
+      }
+    ],
+    "14.4 Test the committed demo files": [
+      {
+        "executionId": "a3a210f1-9875-4fea-8f74-2be2a582265f",
+        "chatSessionId": "sess_b7b05249-521d-4d3f-b8de-841e8de2523a",
+        "timestamp": 1795668533494
+      }
+    ],
+    "15. Final checkpoint - design and demo runs": [
+      {
+        "executionId": "ba5d5e9c-e560-4d95-81f2-5201150cda59",
+        "chatSessionId": "sess_9f45643d-d237-47dc-82a8-53dd9d77c05b",
+        "timestamp": 1795668709159
+      },
+      {
+        "executionId": "30cd2374-1b21-4781-8415-e88f6edadb58",
+        "chatSessionId": "sess_9f45643d-d237-47dc-82a8-53dd9d77c05b",
+        "timestamp": 1795668875800
+      }
     ]
   }
 }

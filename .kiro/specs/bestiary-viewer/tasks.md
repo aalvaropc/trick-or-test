@@ -533,7 +533,7 @@ Conventions for every task:
     - _Requirements: 14.1, 14.7, 14.9, 14.10, 14.11_
     - _Validation: `npm test -w trick-or-test-viewer -- test/demo/demo-files.test.ts` passes_
 
-- [ ] 15. Final checkpoint - design and demo runs
+- [x] 15. Final checkpoint - design and demo runs
   - Ensure all tests pass, ask the user if questions arise.
   - Open the built viewer (`npm run preview -w trick-or-test-viewer`) with the committed demo runs and the real `reports/` files. At 1280 px and at 375 px, on `#/`, `#/demo/before`, `#/demo/after`, a specimen route, `#/hunt` and `#/plain`, check that `document.documentElement.scrollWidth` equals `clientWidth` (the Plain view table scrolls inside its own container), that the Verdict page is a few thousand pixels tall at most, and that no creature is wider than its container. Report the measured values to the user. This check is manual evidence, not a test.
   - _Validation: `npm run check` passes_
