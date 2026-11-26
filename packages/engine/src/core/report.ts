@@ -117,12 +117,47 @@ export const runMetadataSchema = z.strictObject({
   timestamp: z.string(),
 });
 
+const count = (): z.ZodNumber => z.number().int().nonnegative();
+
+/** Count per Mutant_Status. All seven keys are required (8.22). */
+export const statusCountsSchema = z.strictObject({
+  Killed: count(),
+  Survived: count(),
+  Timeout: count(),
+  Ghost: count(),
+  InvalidWitness: count(),
+  CompileError: count(),
+  NotApplicable: count(),
+});
+
+/** Counts of the mutants listed in the Verdict_File, the Mutation_Report and the HistoryRecord (8.22). */
+export const mutantCountsSchema = z.strictObject({
+  spec: statusCountsSchema,
+  mechanical: statusCountsSchema.optional(),
+  twinsMerged: count().describe(
+    "Number of Twins dropped by rule 8.15. A Twin is in no output file. This is not part of mutantCounts.spec or mutantCounts.mechanical, and strykerCounts.total counts Twins while mutantCounts does not.",
+  ),
+});
+
+/** Counts over every Mechanical_Mutant that StrykerJS produced (8.23). */
+export const strykerCountsSchema = z.strictObject({
+  detected: count().describe(
+    "Killed plus Timeout, over every Mechanical_Mutant StrykerJS produced.",
+  ),
+  undetected: count().describe("Survived, over every Mechanical_Mutant StrykerJS produced."),
+  total: count().describe(
+    "Counts the Mechanical_Mutants that StrykerJS produced, Twins included. It is not the number of mutants listed in the files. A plain StrykerJS mutation score has the denominator detected + undetected, not total.",
+  ),
+});
+
 export const verdictSchema: z.ZodType<Verdict> = z.strictObject({
   coverage: z.array(criterionCoverageSchema),
   mutants: z.array(mutantResultSchema),
   witnesses: z.record(z.string(), verdictWitnessSchema),
   ignoreStaticRetried: z.boolean(),
   metadata: runMetadataSchema,
+  mutantCounts: mutantCountsSchema.optional(),
+  strykerCounts: strykerCountsSchema.optional(),
 }) as unknown as z.ZodType<Verdict>;
 
 const engineConfigSchema: z.ZodType<EngineConfig> = z.strictObject({
@@ -135,15 +170,6 @@ const engineConfigSchema: z.ZodType<EngineConfig> = z.strictObject({
   timeoutMs: z.number().optional(),
 }) as unknown as z.ZodType<EngineConfig>;
 
-const statusCountsSchema = z.strictObject({
-  Killed: z.number().int().nonnegative(),
-  Survived: z.number().int().nonnegative(),
-  Timeout: z.number().int().nonnegative(),
-  Ghost: z.number().int().nonnegative(),
-  InvalidWitness: z.number().int().nonnegative(),
-  CompileError: z.number().int().nonnegative(),
-  NotApplicable: z.number().int().nonnegative(),
-});
 const coverageCountsSchema = z.strictObject({
   guarded: z.number().int().nonnegative(),
   unguarded: z.number().int().nonnegative(),

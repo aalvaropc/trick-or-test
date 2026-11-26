@@ -110,12 +110,35 @@ export type RunMetadata = {
 /** A Witness as the Verdict stores it. `mutatedOutcome` is present only when the witness ran against the mutated code (Requirements 8.19, 8.20). */
 export type VerdictWitness = Witness & { mutatedOutcome?: WitnessOutcome };
 
+/** Requirements 8.22 to 8.24. Two totals, two names, no shared key. All seven statuses are present. */
+export type StatusCounts = Record<MutantStatus, number>;
+
+export type MutantCounts = {
+  /** Spec_Mutants listed in the three files. */
+  spec: StatusCounts;
+  /** Absent when the Run_Scope is `spec-only`. */
+  mechanical?: StatusCounts;
+  /** Twins dropped by rule 8.15. They are in no file. */
+  twinsMerged: number;
+};
+
+export type StrykerCounts = {
+  /** Killed plus Timeout, over every Mechanical_Mutant that StrykerJS produced. */
+  detected: number;
+  /** Survived, same population. */
+  undetected: number;
+  /** Every Mechanical_Mutant that StrykerJS produced, Twins and CompileError ones included. Not the denominator of the StrykerJS score. */
+  total: number;
+};
+
 export type Verdict = {
   coverage: CriterionCoverage[];
   mutants: MutantResult[];
   witnesses: Record<MutantId, VerdictWitness>;
   ignoreStaticRetried: boolean;
   metadata: RunMetadata;
+  mutantCounts?: MutantCounts;
+  strykerCounts?: StrykerCounts;
 };
 
 export type HistoryRecord = {
