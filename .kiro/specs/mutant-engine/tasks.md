@@ -1046,7 +1046,7 @@ Conventions used in every task:
     - Write `test/core/small-fields-builders.test.ts`: the spec name and the titles reach the verdict; a title with an absolute path is scrubbed; `coverageByCriterion` holds one entry for each Criterion in document order with the Coverage_Status of the verdict, including `skipped` and `unattacked`; a record built from a verdict with no coverage has an empty list; the output is byte-identical for equal input.
     - _Requirements: 8.13, 8.17, 8.25, 8.26, 8.27_
     - _Validation: npx vitest run --project engine packages/engine/test/core/small-fields-builders.test.ts passes_
-  - [ ] 18.5 Carry the fields from the pipeline
+  - [x] 18.5 Carry the fields from the pipeline
     - In `cli/orchestrate.ts` call `parseRequirementTitles` in the load stage, next to `parseRequirements`; a title error stops the run before the baseline, as a requirements error does. Pass `specName`, the titles to the builders.
     - Write `test/cli/orchestrate-small-fields.test.ts` with fake adapters: read the written files; `metadata.specName` equals the chosen spec; `requirements` has one entry per `### Requirement N:` heading; the last line of `history.jsonl` has `coverageByCriterion` equal to the `coverage` of `verdict.json` (criterion and status); a duplicate requirement number stops the run before the baseline with exit code 1.
     - _Requirements: 2.10, 8.25, 8.26, 8.27, 10.13_

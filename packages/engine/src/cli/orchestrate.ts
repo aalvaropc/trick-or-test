@@ -38,6 +38,7 @@ import {
   serializeHistoryRecord,
   serializeVerdict,
 } from "../core/report.js";
+import { parseRequirementTitles } from "../core/requirement-titles.js";
 import { parseRequirements } from "../core/requirements.js";
 import { err, ok, type Result } from "../core/result.js";
 import type { ProjectEntry } from "../core/sandbox-plan.js";
@@ -63,6 +64,7 @@ import type {
   MutantId,
   MutantResult,
   MutantStatus,
+  RequirementTitle,
   RunMetadata,
   SpecMutant,
   TestId,
@@ -104,6 +106,8 @@ export interface LoadedSpec {
   readonly name: string;
   readonly requirementsPath: string;
   readonly criteria: readonly Criterion[];
+  /** The `### Requirement N:` headings in document order (Requirements 2.9, 2.10). */
+  readonly titles?: readonly RequirementTitle[];
   /** Ordered by id. */
   readonly mutants: readonly LoadedSpecMutant[];
   readonly skipEntries: readonly LoadedSkipEntry[];
@@ -233,6 +237,20 @@ async function loadSpec(
   }
   const criteria = parsed.value;
 
+  const parsedTitles = parseRequirementTitles(text.value, requirementsPath);
+  if (!parsedTitles.ok) {
+    const { error } = parsedTitles;
+    return failures([
+      {
+        filePath: error.filePath,
+        ...("line" in error && { line: error.line }),
+        ...("lines" in error && { line: error.lines[1] }),
+        message: error.message,
+      },
+    ]);
+  }
+  const titles = parsedTitles.value;
+
   const errors: LoadStageError[] = [];
   const mutantsDir = joinPath(config.mutantsDir, name);
 
@@ -280,6 +298,7 @@ async function loadSpec(
     name,
     requirementsPath,
     criteria,
+    titles,
     mutants: loadedMutants.mutants,
     skipEntries,
   });
@@ -1060,6 +1079,14 @@ export async function writeReports(
     projectRoot: options.project,
     changes,
     ...(claimed === undefined ? {} : claimed),
+    ...(project.specs[0] === undefined
+      ? {}
+      : {
+          specName: project.specs[0].name,
+          ...(project.specs[0].titles === undefined
+            ? {}
+            : { requirements: [...project.specs[0].titles] }),
+        }),
   });
   if (!verdict.ok) return err({ kind: "build-error", message: verdict.error });
 
