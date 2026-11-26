@@ -91,6 +91,8 @@ export type CriterionCoverage = {
   status: CoverageStatus;
   /** Present only when status is "skipped". */
   reason?: string;
+  /** Full text of the criterion from requirements.md (Requirements 8.18, 8.20). Optional so older verdicts parse. */
+  text?: string;
 };
 
 export type RunMetadata = {
@@ -105,10 +107,13 @@ export type RunMetadata = {
   timestamp: string;
 };
 
+/** A Witness as the Verdict stores it. `mutatedOutcome` is present only when the witness ran against the mutated code (Requirements 8.19, 8.20). */
+export type VerdictWitness = Witness & { mutatedOutcome?: WitnessOutcome };
+
 export type Verdict = {
   coverage: CriterionCoverage[];
   mutants: MutantResult[];
-  witnesses: Record<MutantId, Witness>;
+  witnesses: Record<MutantId, VerdictWitness>;
   ignoreStaticRetried: boolean;
   metadata: RunMetadata;
 };

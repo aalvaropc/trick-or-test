@@ -15,6 +15,7 @@ import type {
   Species,
   TestId,
   Verdict,
+  VerdictWitness,
   Witness,
 } from "./types.js";
 import type { WitnessOutcome } from "./witness-compare.js";
@@ -62,6 +63,7 @@ export const criterionCoverageSchema: z.ZodType<CriterionCoverage> = z.strictObj
   criterion: criterionIdSchema,
   status: coverageStatusSchema,
   reason: z.string().optional(),
+  text: z.string().optional(),
 }) as unknown as z.ZodType<CriterionCoverage>;
 
 export const witnessExpectationSchema = z.union([
@@ -75,6 +77,19 @@ export const witnessOutcomeSchema = z.discriminatedUnion("kind", [
   z.strictObject({ kind: z.literal("timeout"), message: z.string() }),
   z.strictObject({ kind: z.literal("no-outcome"), message: z.string() }),
 ]);
+
+export const verdictWitnessSchema: z.ZodType<VerdictWitness> = z.union([
+  z.strictObject({
+    ...witnessBase,
+    expected: z.unknown(),
+    mutatedOutcome: witnessOutcomeSchema.optional(),
+  }),
+  z.strictObject({
+    ...witnessBase,
+    expectedError: z.string(),
+    mutatedOutcome: witnessOutcomeSchema.optional(),
+  }),
+]) as unknown as z.ZodType<VerdictWitness>;
 
 export const invalidWitnessSchema = z.strictObject({
   expected: witnessExpectationSchema,
@@ -105,7 +120,7 @@ export const runMetadataSchema = z.strictObject({
 export const verdictSchema: z.ZodType<Verdict> = z.strictObject({
   coverage: z.array(criterionCoverageSchema),
   mutants: z.array(mutantResultSchema),
-  witnesses: z.record(z.string(), witnessSchema),
+  witnesses: z.record(z.string(), verdictWitnessSchema),
   ignoreStaticRetried: z.boolean(),
   metadata: runMetadataSchema,
 }) as unknown as z.ZodType<Verdict>;
