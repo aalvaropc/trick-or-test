@@ -1135,7 +1135,7 @@ Conventions used in every task:
     - The same rule for the Criteria 2.2 and 3.4.
     - _Requirements: 10.14_
     - _Validation: the command of 21.1 exits 0_
-  - [ ] 21.3 Decide and write for 8.1 to 8.5
+  - [x] 21.3 Decide and write for 8.1 to 8.5
     - The same rule for the five Criteria of Requirement 8.
     - _Requirements: 10.14_
     - _Validation: the command of 21.1 exits 0_

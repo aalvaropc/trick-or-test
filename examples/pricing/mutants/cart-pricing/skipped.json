@@ -22,5 +22,25 @@
   {
     "requirement": "3.4",
     "reason": "The criterion is about which invalid field the ValidationError names when several are invalid. A witness compares only the error class (expectedError), so it cannot show that the wrong or a valid field was named, and any input with several invalid fields is already rejected by the single-field criteria 3.1 to 3.3."
+  },
+  {
+    "requirement": "8.1",
+    "reason": "The criterion requires that test files exist under test/ and use property tests. It is about the test suite, not about the output of any exported function, so no witness can show a violation."
+  },
+  {
+    "requirement": "8.2",
+    "reason": "The criterion requires that tests assert the field of each ValidationError. It is about the content of the test suite, not about the behaviour of any exported function."
+  },
+  {
+    "requirement": "8.3",
+    "reason": "The criterion requires that tests cover Round_Half_Up at exact-half boundaries. It is about the content of the test suite, not about the behaviour of any exported function. The rounding itself is attacked by criterion 2.1."
+  },
+  {
+    "requirement": "8.4",
+    "reason": "The criterion requires that tests avoid asserting which ValidationError is thrown first. It is a constraint on how tests are written, not on any exported function."
+  },
+  {
+    "requirement": "8.5",
+    "reason": "The criterion requires that package.json, tsconfig.json, vitest.config.ts and test/setup.ts stay unchanged. It is about project files outside src/ and no exported function can show a change to them."
   }
 ]
