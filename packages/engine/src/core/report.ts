@@ -424,7 +424,9 @@ const scrubWitness = (w: VerdictWitness, root: string): VerdictWitness => {
  */
 export const buildVerdict = (input: VerdictInput): Result<Verdict, string> => {
   const root = input.projectRoot;
-  const scope = input.scope ?? "full";
+  // An absent scope means `full` and is not written, so older outputs stay byte-identical (8.28).
+  const explicitScope = input.scope ?? input.metadata.scope;
+  const scope = explicitScope ?? "full";
   // Counts of the StrykerJS run come from the raw list, before the Twins go (8.23).
   const strykerCounts = computeStrykerCounts(
     input.mutants.filter((m) => m.species !== OATHBREAKER),
@@ -467,6 +469,7 @@ export const buildVerdict = (input: VerdictInput): Result<Verdict, string> => {
     metadata: {
       ...input.metadata,
       ...(input.specName === undefined ? {} : { specName: input.specName }),
+      ...(explicitScope === undefined ? {} : { scope: explicitScope }),
     },
     // The counts are written when the caller passes `changes`, that is, when it hands over the raw
     // list. Without it the totals would describe a list that may still hold Twins.
@@ -543,6 +546,8 @@ export type ReportInput = {
   ignoreStaticRetried?: boolean;
   /** Root of the Target_Project, as data. Every path and free-text field is made relative to it (8.17). */
   projectRoot: string;
+  /** Run_Scope (8.28). Written as `config.scope`. Defaults to `full`. */
+  scope?: RunScope;
 };
 
 export const REPORT_SCHEMA_VERSION = "2";
@@ -634,7 +639,10 @@ export const buildMutationReport = (input: ReportInput): MutationTestingReport =
   return {
     schemaVersion: REPORT_SCHEMA_VERSION,
     thresholds: { ...(input.thresholds ?? DEFAULT_THRESHOLDS) },
-    config: { ignoreStaticRetried: input.ignoreStaticRetried ?? false },
+    config: {
+      ignoreStaticRetried: input.ignoreStaticRetried ?? false,
+      ...(input.scope === undefined ? {} : { scope: input.scope }),
+    },
     files,
   };
 };
@@ -712,6 +720,7 @@ export const buildHistoryRecord = (
       criterion: c.criterion,
       status: c.status,
     })),
+    ...(verdict.metadata.scope === undefined ? {} : { scope: verdict.metadata.scope }),
   };
   const parsed = historyRecordSchema.safeParse(candidate);
   if (!parsed.success) {

@@ -1074,7 +1074,7 @@ Conventions used in every task:
     - **Validates: Requirements 8.9, 8.28, 8.30**
     - _Requirements: 8.9, 8.28, 8.30_
     - _Validation: npx vitest run --project engine packages/engine/test/core/run-scope.property.test.ts passes_
-  - [ ] 19.4 Write the scope in the builders
+  - [x] 19.4 Write the scope in the builders
     - In `core/report.ts` write `metadata.scope` and `HistoryRecord.scope` and `config.scope` of the Mutation_Report. For `spec-only` the builders get no Mechanical_Mutants, so `mutantCounts.mechanical`, `strykerCounts` and the strays are absent. A `full` run writes `scope: "full"`.
     - Write `test/core/scope-builders.test.ts`: the three outputs carry the scope; a spec-only verdict has no `strykerCounts` key and no `mechanical` key (check with `Object.hasOwn`); a spec-only Mutation_Report holds Spec_Mutants only; the output is byte-identical for equal input.
     - _Requirements: 8.13, 8.22, 8.23, 8.28, 9.18_
