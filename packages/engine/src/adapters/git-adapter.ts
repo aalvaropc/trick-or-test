@@ -1,4 +1,5 @@
 import type { ChangedRange } from "../core/changed-ranges.js";
+import { withoutGitLocation } from "../core/git-env.js";
 import { err, ok, type Result } from "../core/result.js";
 import { ProcessRunner } from "./process-runner.js";
 
@@ -8,7 +9,11 @@ export const formatChangedRange = (range: ChangedRange): string =>
   `${range.file}:${range.start}-${range.end}`;
 
 const runGit = async (args: readonly string[], cwd: string): Promise<Result<string, string>> => {
-  const result = await ProcessRunner.run("git", args, { cwd, maxOutputBytes: 256 * 1024 * 1024 });
+  const result = await ProcessRunner.run("git", args, {
+    cwd,
+    maxOutputBytes: 256 * 1024 * 1024,
+    env: withoutGitLocation(process.env),
+  });
   if (result.spawnError !== undefined || result.exitCode !== 0) {
     const detail = result.stderr.trim() || result.spawnError || `exit code ${result.exitCode}`;
     return err(`git ${args[0]} failed: ${detail}`);

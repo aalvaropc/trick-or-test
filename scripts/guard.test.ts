@@ -140,6 +140,20 @@ describe("commitMessages and pathLines", () => {
   });
 });
 
+/**
+ * The environment for git and the guard in these tests, without any GIT_* variable.
+ * A git hook (pre-push runs these tests) exports GIT_DIR and friends; in a linked
+ * worktree GIT_DIR is absolute, so an inherited value would make every git command
+ * below act on the real repository instead of the temporary one.
+ */
+function isolatedEnv(): NodeJS.ProcessEnv {
+  return Object.fromEntries(Object.entries(process.env).filter(([key]) => !key.startsWith("GIT_")));
+}
+
+function git(args: string[], cwd?: string): string {
+  return execFileSync("git", args, { cwd, encoding: "utf8", env: isolatedEnv() });
+}
+
 describe("CLI", () => {
   let repo: string | undefined;
 
@@ -153,7 +167,7 @@ describe("CLI", () => {
       cwd: repo,
       encoding: "utf8",
       env: {
-        ...process.env,
+        ...isolatedEnv(),
         GUARD_PRIVATE_PATTERNS: "",
         GUARD_PRIVATE_PATTERNS_FILE: "/nonexistent",
         GUARD_REQUIRE_PRIVATE: "",
@@ -164,20 +178,40 @@ describe("CLI", () => {
 
   function newRepo(): string {
     const dir = mkdtempSync(join(tmpdir(), "guard-"));
-    execFileSync("git", ["init", "-q", dir]);
-    execFileSync("git", ["config", "user.name", "Test Author"], { cwd: dir });
-    execFileSync("git", ["config", "user.email", "test@example.com"], { cwd: dir });
+    git(["init", "-q", dir]);
+    git(["config", "user.name", "Test Author"], dir);
+    git(["config", "user.email", "test@example.com"], dir);
     return dir;
   }
+
+  it("never touches the repository named by an inherited GIT_DIR", () => {
+    const decoy = mkdtempSync(join(tmpdir(), "guard-decoy-"));
+    git(["init", "-q", decoy]);
+    const decoyConfig = readFileSync(join(decoy, ".git", "config"), "utf8");
+    const saved = process.env.GIT_DIR;
+    process.env.GIT_DIR = join(decoy, ".git");
+    try {
+      repo = newRepo();
+      writeFileSync(join(repo, "clean.ts"), "export const ok = 1;\n");
+      git(["add", "clean.ts"], repo);
+      expect(run(["staged"]).status).toBe(0);
+    } finally {
+      if (saved === undefined) delete process.env.GIT_DIR;
+      else process.env.GIT_DIR = saved;
+    }
+    expect(readFileSync(join(decoy, ".git", "config"), "utf8")).toBe(decoyConfig);
+    expect(git(["status", "--porcelain"], decoy)).toBe("");
+    rmSync(decoy, { recursive: true, force: true });
+  });
 
   it("blocks a staged file with a forbidden line and passes a clean one", () => {
     repo = newRepo();
     writeFileSync(join(repo, "clean.ts"), "export const ok = 1;\n");
-    execFileSync("git", ["add", "clean.ts"], { cwd: repo });
+    git(["add", "clean.ts"], repo);
     expect(run(["staged"]).status).toBe(0);
 
     writeFileSync(join(repo, "leak.md"), "notes in /home/alice/stuff\n");
-    execFileSync("git", ["add", "leak.md"], { cwd: repo });
+    git(["add", "leak.md"], repo);
     const result = run(["staged"]);
     expect(result.status).toBe(1);
     expect(result.stderr).toContain("leak.md:1");
@@ -194,7 +228,7 @@ describe("CLI", () => {
 
   it("checks the identity of the commit being created", () => {
     repo = newRepo();
-    execFileSync("git", ["config", "user.email", "dev@zebracorn.example"], { cwd: repo });
+    git(["config", "user.email", "dev@zebracorn.example"], repo);
     const message = join(repo, "MSG");
     writeFileSync(message, "chore: fine\n");
     const result = run(["message", message], { GUARD_PRIVATE_PATTERNS: "zebracorn" });
@@ -206,9 +240,8 @@ describe("CLI", () => {
     repo = newRepo();
     const commit = (email: string, name: string) => {
       writeFileSync(join(repo as string, name), `${name}\n`);
-      execFileSync("git", ["add", name], { cwd: repo });
-      execFileSync(
-        "git",
+      git(["add", name], repo);
+      git(
         [
           "-c",
           "commit.gpgsign=false",
@@ -218,7 +251,7 @@ describe("CLI", () => {
           "-qm",
           `chore: ${name}`,
         ],
-        { cwd: repo },
+        repo,
       );
     };
     commit("test@example.com", "first");

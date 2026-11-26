@@ -1538,6 +1538,44 @@
         "chatSessionId": "sess_e6fb8006-116a-4ab4-be3c-1f24b13538df",
         "timestamp": 1795653498906
       }
+    ],
+    "14.1 Add the pure helper `withoutGitLocation`": [
+      {
+        "executionId": "7b50b715-97cc-44a7-a796-c201e9bf16dc",
+        "chatSessionId": "sess_5361a87a-95b4-4a94-9ccb-e2e7f96010ab",
+        "timestamp": 1795660610080
+      }
+    ],
+    "14.2 Let `ProcessRunner` take an environment": [
+      {
+        "executionId": "e89230e7-aa20-4b23-94af-007d236b9bbd",
+        "chatSessionId": "sess_7dd359eb-a831-4cb5-9479-0741220df07f",
+        "timestamp": 1795660758304
+      },
+      {
+        "executionId": "e4b2ca7b-4c3d-48c3-98ca-725b80bbe595",
+        "chatSessionId": "sess_7dd359eb-a831-4cb5-9479-0741220df07f",
+        "timestamp": 1795660897726
+      }
+    ],
+    "14.3 Use the helper in the git adapter and in the `rev-parse` call": [
+      {
+        "executionId": "17c1f29b-9e23-4a82-b62c-eb1fb18db289",
+        "chatSessionId": "sess_51eb46aa-9a49-49dc-9fe7-0e424e978c6a",
+        "timestamp": 1795660985322
+      }
+    ],
+    "14.4 Checkpoint - Git environment": [
+      {
+        "executionId": "acf359c3-d3ea-4890-9352-1ecc6ebf3369",
+        "chatSessionId": "sess_38905af2-b27f-4f83-8ab2-abdca443b685",
+        "timestamp": 1795661160093
+      },
+      {
+        "executionId": "87aeb0b9-7287-4640-8789-ac49710c9202",
+        "chatSessionId": "sess_38905af2-b27f-4f83-8ab2-abdca443b685",
+        "timestamp": 1795661234002
+      }
     ]
   }
 }
