@@ -1370,7 +1370,7 @@ Conventions used in every task:
     - Do not edit committed tests. If a committed test asserts the old StrykerJS-style ids of killing tests, name it and stop.
     - _Requirements: 6.13, 6.14, 6.15, 8.29, 11.16_
     - _Validation: npx vitest run --project engine packages/engine/test/cli/orchestrate-killing-test-ids.test.ts packages/engine/test/core/unmatched-killing-tests-schema.test.ts packages/engine/test/core/claims-example.test.ts passes_
-  - [ ] 24.4 Make 6.13 testable on a built verdict and say what an unmatched killer does
+  - [x] 24.4 Make 6.13 testable on a built verdict and say what an unmatched killer does
     - Write `test/core/verdict-killing-tests-in-baseline.test.ts` (new file, example tests, names start with `6.13` or `6.15`) that builds a verdict, through the same builders and the same `toOutcomes` path as the CLI, for a fixture with mechanical and spec mutants, and checks: every killing-test id of every mutant is in `baselineTests`, except a file-level Failing_Test, whose id is the file path; a StrykerJS killing test whose test the Baseline_Run skipped keeps its StrykerJS name as id, is counted in `unmatchedKillingTests`, and the run still completes and writes the three files; a title that contains ` > ` is matched; two killers of one mutant that match the same Baseline_Test give two entries or one as the existing killing-test list rule says, and the test states which. The test reads the written `verdict.json` from a fake file system and parses it with the zod schema (10.13).
     - Merge this task into 24.3 only if it is clearly one commit; otherwise keep it separate.
     - _Requirements: 6.13, 6.15, 10.13_
