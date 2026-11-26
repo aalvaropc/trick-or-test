@@ -157,6 +157,7 @@ describe("cross-cutting UI checks", () => {
           mutantId={`id-${state}`}
           species="Borderling"
           state={state}
+          place="sealCreature"
           mutant={{
             file: "src/a.ts",
             location: { start: { line: 3 } },

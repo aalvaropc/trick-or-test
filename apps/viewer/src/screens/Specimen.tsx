@@ -187,6 +187,7 @@ export function Specimen({ mutantId }: { mutantId: string }) {
                 seed={view.mutant.id}
                 state={view.creatureState}
                 mutant={view.mutant}
+                place="specimenPlate"
               />
             )}
           </div>

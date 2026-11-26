@@ -112,6 +112,6 @@ describe("viewer static boundaries", () => {
     const source = files.find(({ rel }) => rel === "src/bestiary/Creature.tsx")?.text ?? "";
     const uses = [...source.matchAll(/dangerouslySetInnerHTML\s*=\s*\{\{([^}]*)\}\}/g)];
     expect(uses).toHaveLength(1);
-    expect((uses[0]?.[1] ?? "").trim()).toMatch(/^__html:\s*creature\(/);
+    expect((uses[0]?.[1] ?? "").trim()).toMatch(/^__html:\s*(?:withSize\(\s*)?creature\(/);
   });
 });

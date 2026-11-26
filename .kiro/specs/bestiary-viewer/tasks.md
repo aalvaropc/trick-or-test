@@ -469,7 +469,7 @@ Conventions for every task:
     - _Requirements: 13.1, 13.2, 13.3, 13.4, 13.5, 13.6, 13.19, 13.25, 10.1, 10.4, 10.11_
     - _Validation: `npm test -w trick-or-test-viewer -- test/app/screen-title.test.ts test/app/ScreenFrame.design.test.tsx test/styles/tokens.test.ts` passes_
 
-  - [ ] 13.2 Give every creature an explicit size
+  - [x] 13.2 Give every creature an explicit size
     - Create `src/bestiary/creature-sizes.ts` (`CREATURE_SIZES`, `CreaturePlace`) and `src/bestiary/with-size.ts` (`withSize(svg, size)`, pure, never throws) as in the design. Change `Creature.tsx` to require a `place` prop and insert `withSize(creature(...), CREATURE_SIZES[place])`. Give the Seal drawing the `sealDrawing` size the same way. Pass the right `place` at every call site: `SealGrid` (Seal drawing and surviving creatures), `WhoKilledPanel`, `StraysStrip`, `SpeciesLegend`, `Hunt`, `Specimen`. Add `.creature svg` and `.seal__drawing svg` rules (`max-width: 100%; height: auto`) to `screens.css`.
     - Example tests in new files `test/bestiary/with-size.test.ts` (adds both attributes, replaces existing ones, changes only the root tag, a string without `<svg` comes back unchanged, a title with `<` in it is untouched) and `test/bestiary/creature-sizes.test.ts` (the seven values equal the table in Requirement 13.18; every value is at most 320).
     - _Requirements: 13.18, 13.23, 13.26, 5.2_

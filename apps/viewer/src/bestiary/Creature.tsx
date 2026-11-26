@@ -6,13 +6,16 @@ import {
   subscribeReducedMotion,
 } from "../app/use-reduced-motion.js";
 import { type CreatureMutant, creature } from "./creature.js";
+import { CREATURE_SIZES, type CreaturePlace } from "./creature-sizes.js";
 import type { CreatureState } from "./state.js";
+import { withSize } from "./with-size.js";
 
 export type CreatureProps = {
   species: Species;
   seed: string;
   state: CreatureState;
   mutant: CreatureMutant;
+  place: CreaturePlace;
 };
 
 /** Length of the erase animation; keep equal to the duration in styles/motion.css (10.8). */
@@ -25,7 +28,7 @@ let animationRunning = false;
  * Draws one creature. The only markup injected is the string returned by
  * `creature()` in this render, which escapes every value it embeds.
  */
-export function Creature({ species, seed, state, mutant }: CreatureProps) {
+export function Creature({ species, seed, state, mutant, place }: CreatureProps) {
   const reduced = useSyncExternalStore(
     subscribeReducedMotion,
     getReducedMotion,
@@ -55,7 +58,9 @@ export function Creature({ species, seed, state, mutant }: CreatureProps) {
     <span
       className={erasing && !reduced ? "creature creature--erasing" : "creature"}
       // biome-ignore lint/security/noDangerouslySetInnerHtml: the only value is the escaped string from creature() (12.9)
-      dangerouslySetInnerHTML={{ __html: creature(species, seed, state, mutant) }}
+      dangerouslySetInnerHTML={{
+        __html: withSize(creature(species, seed, state, mutant), CREATURE_SIZES[place]),
+      }}
     />
   );
 }

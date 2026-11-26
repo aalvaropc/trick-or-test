@@ -38,7 +38,13 @@ export function WhoKilledPanel({ model }: { model: RunModel }) {
                 <ul className="who-killed__list">
                   {members.map((m) => (
                     <li key={m.id}>
-                      <CreatureLink mutantId={m.id} species={m.species} state="killed" mutant={m} />
+                      <CreatureLink
+                        mutantId={m.id}
+                        species={m.species}
+                        state="killed"
+                        mutant={m}
+                        place="panelList"
+                      />
                     </li>
                   ))}
                 </ul>

@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { CreatureLink } from "../../bestiary/CreatureLink.js";
 import { computeCoverageView, type SealEntry } from "../../bestiary/coverage.js";
+import { CREATURE_SIZES } from "../../bestiary/creature-sizes.js";
 import type { RunModel } from "../../loader/run-model.js";
 
 const COLOUR = {
@@ -53,8 +54,8 @@ function SealDrawing({ kind }: { kind: Kind }) {
     <svg
       className="seal__drawing"
       viewBox="0 0 64 64"
-      width="64"
-      height="64"
+      width={CREATURE_SIZES.sealDrawing}
+      height={CREATURE_SIZES.sealDrawing}
       aria-hidden="true"
       focusable="false"
     >
@@ -74,7 +75,13 @@ function SealBody({ entry }: { entry: SealEntry }) {
           <ul className="seal__survivors">
             {entry.survivors.map((m) => (
               <li key={m.id}>
-                <CreatureLink mutantId={m.id} species={m.species} state="survivor" mutant={m} />
+                <CreatureLink
+                  mutantId={m.id}
+                  species={m.species}
+                  state="survivor"
+                  mutant={m}
+                  place="sealCreature"
+                />
               </li>
             ))}
           </ul>

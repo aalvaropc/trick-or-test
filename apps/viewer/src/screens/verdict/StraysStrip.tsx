@@ -19,6 +19,7 @@ export function StraysStrip({ model }: { model: RunModel }) {
                 species={m.species}
                 state={m.state as "survivor" | "killed" | "in-the-dark" | "ghost"}
                 mutant={m}
+                place="straysStrip"
               />
             </li>
           ))}

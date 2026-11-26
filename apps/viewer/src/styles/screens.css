@@ -9,3 +9,10 @@
 /* Hunt */
 
 /* Plain view */
+
+/* Creatures keep their explicit size and only ever scale down (13.18) */
+.creature svg,
+.seal__drawing svg {
+  max-width: 100%;
+  height: auto;
+}

@@ -2,9 +2,11 @@ import type { KeyboardEvent, MouseEvent, ReactNode } from "react";
 import type { Species } from "trick-or-test/report";
 import { Creature } from "./Creature.js";
 import type { CreatureMutant } from "./creature.js";
+import type { CreaturePlace } from "./creature-sizes.js";
 import type { CreatureState } from "./state.js";
 
 export type CreatureLinkProps = {
+  place: CreaturePlace;
   mutantId: string;
   species: Species;
   state: CreatureState;
@@ -56,7 +58,7 @@ export function mutantHash(mutantId: string): string {
 }
 
 /** A focusable creature that opens its Specimen on click, tap, Enter or Space. */
-export function CreatureLink({ mutantId, species, state, mutant }: CreatureLinkProps) {
+export function CreatureLink({ mutantId, species, state, mutant, place }: CreatureLinkProps) {
   const hash = mutantHash(mutantId);
 
   const open = (event: MouseEvent<HTMLAnchorElement>) => {
@@ -74,7 +76,7 @@ export function CreatureLink({ mutantId, species, state, mutant }: CreatureLinkP
 
   return (
     <a className="creature-link" href={hash} onClick={open} onKeyDown={onKeyDown}>
-      <Creature species={species} seed={mutantId} state={state} mutant={mutant} />
+      <Creature species={species} seed={mutantId} state={state} mutant={mutant} place={place} />
       <span className="creature-link__label">
         <StateShape state={state} />
         <span>{STATE_LABEL[state]}</span>

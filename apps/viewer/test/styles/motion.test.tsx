@@ -65,18 +65,22 @@ describe("motion styles", () => {
 describe("killed animation", () => {
   it("10.8 a creature changing to killed gets the erasing class", () => {
     const { container, rerender } = render(
-      <Creature species="Hollow" seed="a" state="survivor" mutant={mutant} />,
+      <Creature species="Hollow" seed="a" state="survivor" mutant={mutant} place="huntEntry" />,
     );
     expect(container.querySelector(".creature--erasing")).toBeNull();
-    rerender(<Creature species="Hollow" seed="a" state="killed" mutant={mutant} />);
+    rerender(
+      <Creature species="Hollow" seed="a" state="killed" mutant={mutant} place="huntEntry" />,
+    );
     expect(container.querySelector(".creature--erasing")).not.toBeNull();
   });
 
   it("10.8 the erasing class is removed after 600ms", () => {
     const { container, rerender } = render(
-      <Creature species="Hollow" seed="a" state="survivor" mutant={mutant} />,
+      <Creature species="Hollow" seed="a" state="survivor" mutant={mutant} place="huntEntry" />,
     );
-    rerender(<Creature species="Hollow" seed="a" state="killed" mutant={mutant} />);
+    rerender(
+      <Creature species="Hollow" seed="a" state="killed" mutant={mutant} place="huntEntry" />,
+    );
     act(() => {
       vi.advanceTimersByTime(600);
     });
@@ -84,28 +88,44 @@ describe("killed animation", () => {
   });
 
   it("10.8 a second killed change while one runs does not start a second animation", () => {
-    const first = render(<Creature species="Hollow" seed="a" state="survivor" mutant={mutant} />);
-    const second = render(<Creature species="Hollow" seed="b" state="survivor" mutant={mutant} />);
-    first.rerender(<Creature species="Hollow" seed="a" state="killed" mutant={mutant} />);
-    second.rerender(<Creature species="Hollow" seed="b" state="killed" mutant={mutant} />);
+    const first = render(
+      <Creature species="Hollow" seed="a" state="survivor" mutant={mutant} place="huntEntry" />,
+    );
+    const second = render(
+      <Creature species="Hollow" seed="b" state="survivor" mutant={mutant} place="huntEntry" />,
+    );
+    first.rerender(
+      <Creature species="Hollow" seed="a" state="killed" mutant={mutant} place="huntEntry" />,
+    );
+    second.rerender(
+      <Creature species="Hollow" seed="b" state="killed" mutant={mutant} place="huntEntry" />,
+    );
     expect(first.container.querySelectorAll(".creature--erasing")).toHaveLength(1);
     expect(second.container.querySelectorAll(".creature--erasing")).toHaveLength(0);
   });
 
   it("10.8 a new animation may start once the previous one has finished", () => {
-    const first = render(<Creature species="Hollow" seed="a" state="survivor" mutant={mutant} />);
-    first.rerender(<Creature species="Hollow" seed="a" state="killed" mutant={mutant} />);
+    const first = render(
+      <Creature species="Hollow" seed="a" state="survivor" mutant={mutant} place="huntEntry" />,
+    );
+    first.rerender(
+      <Creature species="Hollow" seed="a" state="killed" mutant={mutant} place="huntEntry" />,
+    );
     act(() => {
       vi.advanceTimersByTime(600);
     });
-    const second = render(<Creature species="Hollow" seed="b" state="survivor" mutant={mutant} />);
-    second.rerender(<Creature species="Hollow" seed="b" state="killed" mutant={mutant} />);
+    const second = render(
+      <Creature species="Hollow" seed="b" state="survivor" mutant={mutant} place="huntEntry" />,
+    );
+    second.rerender(
+      <Creature species="Hollow" seed="b" state="killed" mutant={mutant} place="huntEntry" />,
+    );
     expect(second.container.querySelectorAll(".creature--erasing")).toHaveLength(1);
   });
 
   it("10.8 a creature first drawn as killed is not animated", () => {
     const { container } = render(
-      <Creature species="Hollow" seed="a" state="killed" mutant={mutant} />,
+      <Creature species="Hollow" seed="a" state="killed" mutant={mutant} place="huntEntry" />,
     );
     expect(container.querySelector(".creature--erasing")).toBeNull();
   });
@@ -113,9 +133,11 @@ describe("killed animation", () => {
   it("10.7 reduced motion gives no animation class and the final state at once", () => {
     stubMatchMedia(true);
     const { container, rerender } = render(
-      <Creature species="Hollow" seed="a" state="survivor" mutant={mutant} />,
+      <Creature species="Hollow" seed="a" state="survivor" mutant={mutant} place="huntEntry" />,
     );
-    rerender(<Creature species="Hollow" seed="a" state="killed" mutant={mutant} />);
+    rerender(
+      <Creature species="Hollow" seed="a" state="killed" mutant={mutant} place="huntEntry" />,
+    );
     expect(container.querySelector(".creature--erasing")).toBeNull();
     expect(container.querySelector("svg title")?.textContent).toContain("killed");
   });

@@ -34,7 +34,13 @@ function mergeItems(timeline: TimelineEntry[], lockLog: readonly LockLogEntry[])
 function Killed({ id, mutant }: { id: string; mutant: Mutant | undefined }) {
   if (mutant === undefined || mutant.state === "not-counted") return <code>{id}</code>;
   return (
-    <CreatureLink mutantId={id} species={mutant.species} state={mutant.state} mutant={mutant} />
+    <CreatureLink
+      mutantId={id}
+      species={mutant.species}
+      state={mutant.state}
+      mutant={mutant}
+      place="huntEntry"
+    />
   );
 }
 

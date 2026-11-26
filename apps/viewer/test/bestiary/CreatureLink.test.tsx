@@ -12,7 +12,15 @@ const mutant = {
 };
 
 function renderLink(state: CreatureState = "survivor", id = "oath-4.3-x") {
-  return render(<CreatureLink mutantId={id} species="Borderling" state={state} mutant={mutant} />);
+  return render(
+    <CreatureLink
+      mutantId={id}
+      species="Borderling"
+      state={state}
+      mutant={mutant}
+      place="sealCreature"
+    />,
+  );
 }
 
 describe("CreatureLink", () => {
@@ -78,8 +86,20 @@ describe("CreatureLink", () => {
   it("10.6 Tab visits creatures in DOM order", async () => {
     render(
       <>
-        <CreatureLink mutantId="first" species="Hollow" state="killed" mutant={mutant} />
-        <CreatureLink mutantId="second" species="Hollow" state="ghost" mutant={mutant} />
+        <CreatureLink
+          mutantId="first"
+          species="Hollow"
+          state="killed"
+          mutant={mutant}
+          place="sealCreature"
+        />
+        <CreatureLink
+          mutantId="second"
+          species="Hollow"
+          state="ghost"
+          mutant={mutant}
+          place="sealCreature"
+        />
       </>,
     );
     const links = screen.getAllByRole("link");
