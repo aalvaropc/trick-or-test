@@ -423,7 +423,7 @@ Conventions for every task:
     - _Requirements: 9.1, 9.2, 9.3, 9.4, 9.6, 9.7, 9.8, 9.9, 9.10, 9.11_
     - _Validation: `npm test -w trick-or-test-viewer -- test/screens/PlainView.test.tsx` passes_
 
-  - [ ] 9.14 Wire the App shell and routing
+  - [x] 9.14 Wire the App shell and routing
     - Create `src/App.tsx` and update `src/main.tsx`. `App` reads the route with `useHashRoute`, wraps screens in an error boundary (a render failure shows an error and keeps the app running), and applies these rules: demo routes fetch the Demo_Run on first open and on every reload, and open the Verdict screen on success; on failure show the Landing screen with the error and both demo links active. A mutant route with a Run shows the Specimen. A mutant route for an unknown id shows the Landing screen with "mutant not found" and keeps the Run. A route that needs a Run with none loaded shows the Landing screen with "no run is open". An unknown route shows Landing. A reload on any non-demo route starts with no Run.
     - Example tests in `test/App.test.tsx` with mocked `fetch` and fixtures: `#/demo/before` and `#/demo/after` open the Verdict (2.2, 2.7), a remount on the demo route loads again (2.8), demo failure and invalid content show Landing with the error (2.9), mutant route with a Run (11.4), unknown mutant id (11.5), no Run (11.6), unknown route (11.7), non-demo remount discards the Run (11.8), a thrown render error is shown and the app stays up (12.14), failed local load keeps the previous Run (1.7).
     - _Requirements: 1.7, 2.2, 2.7, 2.8, 2.9, 11.3, 11.4, 11.5, 11.6, 11.7, 11.8, 12.14_

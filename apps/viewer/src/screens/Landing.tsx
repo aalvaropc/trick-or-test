@@ -23,7 +23,7 @@ type Demo =
  * demo links, the privacy statement, the drop zone and the font licences. A Demo_Run that fails,
  * is invalid or takes longer than DEMO_WAIT_MS leaves the pitch without numbers.
  */
-export function Landing() {
+export function Landing({ loadError, notice }: { loadError?: LoadError; notice?: string } = {}) {
   const [demo, setDemo] = useState<Demo>({ state: "loading" });
 
   useEffect(() => {
@@ -55,10 +55,11 @@ export function Landing() {
     };
   }, []);
 
-  const error = demo.state === "none" ? demo.error : undefined;
+  const error = loadError ?? (demo.state === "none" ? demo.error : undefined);
 
   return (
     <ScreenFrame screen="landing">
+      {notice === undefined ? null : <p role="status">{notice}</p>}
       <p data-testid="pitch">
         {demo.state === "ready" ? (
           <>

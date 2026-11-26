@@ -1,14 +1,11 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
+import { App } from "./App.js";
 import "./fonts/fonts";
 import "./styles/tokens.css";
 import "./styles/base.css";
 import "./styles/layout.css";
 import "./styles/motion.css";
-
-function Placeholder() {
-  return <p>Trick or Test</p>;
-}
 
 const container = document.getElementById("root");
 if (container === null) {
@@ -17,6 +14,6 @@ if (container === null) {
 
 createRoot(container).render(
   <StrictMode>
-    <Placeholder />
+    <App />
   </StrictMode>,
 );
