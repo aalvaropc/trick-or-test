@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { relativizePath, scrubAbsolutePaths } from "./paths.js";
 import { err, ok, type Result } from "./result.js";
+import { computeMutantCounts, computeStrykerCounts } from "./totals.js";
 import { dropTwins } from "./twins.js";
 import type {
   CoverageStatus,
@@ -13,6 +14,7 @@ import type {
   MutantResult,
   MutantStatus,
   RunMetadata,
+  RunScope,
   Species,
   TestId,
   Verdict,
@@ -248,6 +250,8 @@ export type MutationTestingReport = z.infer<typeof mutationReportSchema>;
 // buildVerdict
 // ---------------------------------------------------------------------------
 
+const OATHBREAKER: Species = "Oathbreaker";
+
 export type VerdictInput = {
   coverage: CriterionCoverage[];
   mutants: MutantResult[];
@@ -256,6 +260,46 @@ export type VerdictInput = {
   metadata: RunMetadata;
   /** Root of the Target_Project, as data. Every path and free-text field is made relative to it (8.17). */
   projectRoot: string;
+  /**
+   * The change each mutant makes, as data, so that the builder can find Twins (8.15, 8.21). A mutant
+   * without an entry is never a Twin. When absent, no Twin is dropped and the Verdict gets neither
+   * `mutantCounts` nor `strykerCounts`.
+   */
+  changes?: Record<MutantId, MutantChange>;
+  /** Run_Scope (8.28). Defaults to `full`. */
+  scope?: RunScope;
+};
+
+/** What a mutant changes: the fields that rule 8.15 compares. */
+export type MutantChange = {
+  file: string;
+  location: ReportLocation;
+  replacement: string;
+};
+
+/**
+ * Applies `dropTwins` (8.15) to a list of mutant results. Spec_Mutants are the results of species
+ * Oathbreaker. A result without a known change gets a key of its own, so it never matches. Pure.
+ */
+const dropResultTwins = (
+  mutants: readonly MutantResult[],
+  changes: Record<MutantId, MutantChange> | undefined,
+  root: string,
+): { kept: MutantResult[]; twinsMerged: number } => {
+  if (changes === undefined) return { kept: [...mutants], twinsMerged: 0 };
+  const zero = { line: 0, column: 0 };
+  const tagged = mutants.map((m) => {
+    const change = changes[m.id];
+    return {
+      result: m,
+      kind: m.species === OATHBREAKER ? ("spec" as const) : ("mechanical" as const),
+      file: change === undefined ? `\u0000${m.id}` : relativizePath(root, change.file),
+      location: change?.location ?? { start: zero, end: zero },
+      replacement: change?.replacement ?? "",
+    };
+  });
+  const { kept, twinsMerged } = dropTwins(tagged);
+  return { kept: kept.map((k) => k.result), twinsMerged };
 };
 
 const scrubTestId = (id: TestId, root: string): TestId => scrubAbsolutePaths(id, root) as TestId;
@@ -296,7 +340,21 @@ const scrubWitness = (w: VerdictWitness, root: string): VerdictWitness => {
  */
 export const buildVerdict = (input: VerdictInput): Result<Verdict, string> => {
   const root = input.projectRoot;
-  const mutants = input.mutants.map((m): MutantResult => {
+  const scope = input.scope ?? "full";
+  // Counts of the StrykerJS run come from the raw list, before the Twins go (8.23).
+  const strykerCounts = computeStrykerCounts(
+    input.mutants.filter((m) => m.species !== OATHBREAKER),
+  );
+  const { kept, twinsMerged } = dropResultTwins(input.mutants, input.changes, root);
+  const mutantCounts = computeMutantCounts(
+    kept.map((m) => ({
+      kind: m.species === OATHBREAKER ? ("spec" as const) : ("mechanical" as const),
+      status: m.status,
+    })),
+    twinsMerged,
+    scope,
+  );
+  const mutants = kept.map((m): MutantResult => {
     const { killClass, invalidWitness, ...rest } = m;
     const killingTests = m.killingTests.map((t) => scrubTestId(t, root));
     const withInvalid: Partial<MutantResult> =
@@ -323,6 +381,10 @@ export const buildVerdict = (input: VerdictInput): Result<Verdict, string> => {
     ) as Record<MutantId, VerdictWitness>,
     ignoreStaticRetried: input.ignoreStaticRetried,
     metadata: { ...input.metadata },
+    // The counts are written when the caller passes `changes`, that is, when it hands over the raw
+    // list. Without it the totals would describe a list that may still hold Twins.
+    ...(input.changes === undefined ? {} : { mutantCounts }),
+    ...(input.changes === undefined || scope === "spec-only" ? {} : { strykerCounts }),
   };
   const parsed = verdictSchema.safeParse(candidate);
   if (!parsed.success) {
@@ -386,8 +448,6 @@ export type ReportInput = {
 
 export const REPORT_SCHEMA_VERSION = "2";
 export const DEFAULT_THRESHOLDS = { high: 80, low: 60 } as const;
-
-const OATHBREAKER: Species = "Oathbreaker";
 
 const mapStatus = (status: MutantStatus): { status: ReportStatus; statusReason?: string } => {
   switch (status) {
@@ -507,7 +567,9 @@ export const buildHistoryRecord = (
   previousRecord: HistoryRecord | undefined,
   config: EngineConfig,
   projectRoot: string,
+  changes?: Record<MutantId, MutantChange>,
 ): Result<HistoryRecord, string> => {
+  const listed = dropResultTwins(verdict.mutants, changes, projectRoot).kept;
   const rel = (p: string): string => relativizePath(projectRoot, p);
   const relConfig: EngineConfig = {
     specDir: rel(config.specDir),
@@ -522,7 +584,7 @@ export const buildHistoryRecord = (
     MutantStatus,
     number
   >;
-  for (const m of verdict.mutants) statusCounts[m.status] += 1;
+  for (const m of listed) statusCounts[m.status] += 1;
   const coverageCounts = Object.fromEntries(COVERAGE_STATUSES.map((s) => [s, 0])) as Record<
     CoverageStatus,
     number
@@ -536,10 +598,10 @@ export const buildHistoryRecord = (
     gitCommit: verdict.metadata.gitCommit,
     seed: verdict.metadata.seed,
     config: relConfig,
-    mutants: verdict.mutants.map((m) => ({ id: m.id, status: m.status })),
+    mutants: listed.map((m) => ({ id: m.id, status: m.status })),
     statusCounts,
     coverageCounts,
-    newlyKilledIds: verdict.mutants
+    newlyKilledIds: listed
       .filter((m) => m.status === "Killed" && !previouslyKilled.has(m.id))
       .map((m) => m.id),
   };

@@ -1576,6 +1576,20 @@
         "chatSessionId": "sess_38905af2-b27f-4f83-8ab2-abdca443b685",
         "timestamp": 1795661234002
       }
+    ],
+    "15.1 Add the types and the schemas": [
+      {
+        "executionId": "27ee5d12-293c-4d51-8a5b-447157541396",
+        "chatSessionId": "sess_01ea7db0-1643-4bb4-ad8d-16c8e709d90e",
+        "timestamp": 1795675821722
+      }
+    ],
+    "15.2 Add `dropTwins` and the count functions": [
+      {
+        "executionId": "13a0ce83-0a76-42e0-9742-e4e4dac58fed",
+        "chatSessionId": "sess_6ff545e0-febe-45e6-81d1-8e7b591b1580",
+        "timestamp": 1795676181755
+      }
     ]
   }
 }

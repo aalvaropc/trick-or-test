@@ -927,7 +927,7 @@ Conventions used in every task:
     - Write `test/core/twins.test.ts`: a Twin is dropped and its Spec_Mutant kept; a Mechanical_Mutant that differs only in the start line, the start column, the end line, the end column, the file or the replacement is kept; a list without Twins comes back unchanged (idempotence); `twinsMerged` equals the number dropped; ids play no part. Write `test/core/totals.test.ts`: `computeStrykerCounts` on a list with one mutant of each of the seven statuses gives `detected` 2 (Killed and Timeout), `undetected` 1, `total` 7; an empty list gives zeros; `computeMutantCounts` has all seven status keys for each kind, and no `mechanical` key for the scope `spec-only`.
     - _Requirements: 8.15, 8.22, 8.23_
     - _Validation: npx vitest run --project engine packages/engine/test/core/twins.test.ts packages/engine/test/core/totals.test.ts passes_
-  - [ ] 15.3 Make the three builders use one list
+  - [x] 15.3 Make the three builders use one list
     - In `core/report.ts` let `buildMutationReport`, `buildVerdict` and `buildHistoryRecord` each apply `dropTwins` to the raw list. `buildVerdict` writes `mutantCounts` (with `twinsMerged`) and `strykerCounts` from the raw list, before `dropTwins`.
     - Write `test/core/report-one-set.test.ts`, with one input that has one Twin: the three outputs list the same ids; the Twin id is in none; `verdict.mutantCounts.twinsMerged` is 1; `verdict.strykerCounts.total` is one more than the number of mechanical mutants in `mutantCounts`; a Twin that StrykerJS killed counts in `strykerCounts.detected` and not in `mutantCounts`; an input without Twins gives `twinsMerged` 0 and equal totals.
     - _Requirements: 8.21, 8.22, 8.23_
