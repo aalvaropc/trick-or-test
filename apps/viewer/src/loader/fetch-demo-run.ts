@@ -7,7 +7,7 @@ export const FETCH_TIMEOUT_MS = 10_000;
 
 /** The files of one Demo_Run, with the kind each one must have. */
 const DEMO_FILES: { name: string; kind: FileKind }[] = [
-  { name: "report.json", kind: "mutation-report" },
+  { name: "mutation-report.json", kind: "mutation-report" },
   { name: "verdict.json", kind: "verdict" },
   { name: "history.jsonl", kind: "history" },
 ];

@@ -511,7 +511,7 @@ Conventions for every task:
     - _Validation: `npm test -w trick-or-test-viewer -- test/styles test/ui/creature-sizes.test.tsx` passes_
 
 - [ ] 14. Demo runs
-  - [ ] 14.1 Read the engine's file names in the viewer
+  - [x] 14.1 Read the engine's file names in the viewer
     - Change the file table of `src/loader/fetch-demo-run.ts` to `mutation-report.json`, `verdict.json`, `history.jsonl`. The error messages name the file that failed, as before.
     - Example tests in new file `test/loader/fetch-demo-run.names.test.ts`: the three requested URLs end in the engine's names under `demo/before/` and `demo/after/`, with the base path (14.1); no request is made for `report.json` (14.1); a missing or invalid `mutation-report.json` error names that file and keeps Landing (14.1, 2.3, 2.4). Follow the sealed-test convention at the top of task 13 for the old tests that stub `report.json`.
     - _Requirements: 14.1, 2.2, 2.3, 2.4_
