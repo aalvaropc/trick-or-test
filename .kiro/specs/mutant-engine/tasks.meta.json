@@ -2003,6 +2003,51 @@
         "chatSessionId": "sess_854bbf78-3dbe-42a9-a769-856a8ba7fe8f",
         "timestamp": 1795693040348
       }
+    ],
+    "21.4 Check every new mutant and entry with a spec-only run": [
+      {
+        "executionId": "98b5df25-a9f4-4d3f-8c43-7e9fa2d73076",
+        "chatSessionId": "sess_32dab383-3413-4dee-989c-191f285b98d5",
+        "timestamp": 1795693268329
+      }
+    ],
+    "21.5 Name the committed test that counts the mutants": [
+      {
+        "executionId": "5595461d-be78-40d3-8ae2-5d1d16aebd78",
+        "chatSessionId": "sess_0afc4929-09af-4719-80b9-54d270f94b9a",
+        "timestamp": 1795693825214
+      },
+      {
+        "executionId": "8d505a61-3fc2-4d88-baa5-ad5c7b6a69df",
+        "chatSessionId": "sess_aad1bdf5-08ed-445a-bcd3-993e2cc05c10",
+        "timestamp": 1795694408198
+      }
+    ],
+    "21.6 Checkpoint - Example mutants": [
+      {
+        "executionId": "8d505a61-3fc2-4d88-baa5-ad5c7b6a69df",
+        "chatSessionId": "sess_aad1bdf5-08ed-445a-bcd3-993e2cc05c10",
+        "timestamp": 1795694408355
+      },
+      {
+        "executionId": "8d505a61-3fc2-4d88-baa5-ad5c7b6a69df",
+        "chatSessionId": "sess_aad1bdf5-08ed-445a-bcd3-993e2cc05c10",
+        "timestamp": 1795694446550
+      }
+    ],
+    "22.2 Regenerate `reports/`": [
+      {
+        "executionId": "7c0037b6-88be-439e-b4d8-6e233fe9d578",
+        "chatSessionId": "sess_0bea580f-cc2c-4b63-aaed-f52f3d17d9ba",
+        "timestamp": 1795694523224
+      }
+    ],
+    "22.3 Regenerate the demo runs": [
+      {
+        "executionId": "e3417faa-39cc-4382-aae6-11a6de88deb3",
+        "chatSessionId": "sess_82e2f519-e1b4-4ee9-96f0-778e9071f5a2",
+        "timestamp": 1795694742246
+      }
     ]
   }
 }
