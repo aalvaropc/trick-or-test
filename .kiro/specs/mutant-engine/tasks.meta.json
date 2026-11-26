@@ -1512,6 +1512,32 @@
         "chatSessionId": "sess_d1006acb-1afd-4846-9467-793d534e413d",
         "timestamp": 1795652868474
       }
+    ],
+    "13.6 Regenerate `reports/` with `npm run measure`": [
+      {
+        "executionId": "af549717-d9c4-49cd-b933-be7cf154cfc2",
+        "chatSessionId": "sess_1f04c563-3729-4bf3-8881-7ce207ab753f",
+        "timestamp": 1795653088086
+      }
+    ],
+    "13.7 Checkpoint - Verdict fields": [
+      {
+        "executionId": "9f5d7dfe-ca5d-4dc9-943e-549d944ee63e",
+        "chatSessionId": "sess_e6fb8006-116a-4ab4-be3c-1f24b13538df",
+        "timestamp": 1795653365175
+      },
+      {
+        "executionId": "9f5d7dfe-ca5d-4dc9-943e-549d944ee63e",
+        "chatSessionId": "sess_e6fb8006-116a-4ab4-be3c-1f24b13538df",
+        "timestamp": 1795653498795
+      }
+    ],
+    "13. Write the criterion text and the mutated witness outcome into `verdict.json`": [
+      {
+        "executionId": "9f5d7dfe-ca5d-4dc9-943e-549d944ee63e",
+        "chatSessionId": "sess_e6fb8006-116a-4ab4-be3c-1f24b13538df",
+        "timestamp": 1795653498906
+      }
     ]
   }
 }

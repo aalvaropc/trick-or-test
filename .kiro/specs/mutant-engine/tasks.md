@@ -851,7 +851,7 @@ Conventions used in every task:
     - Run `npm run check` from the repository root. Ensure all tests pass, ask the user if questions arise.
     - _Validation: npm run check passes_
 
-- [ ] 13. Write the criterion text and the mutated witness outcome into `verdict.json`
+- [x] 13. Write the criterion text and the mutated witness outcome into `verdict.json`
   - Source: requirements 8.18-8.20 and Property 26 in `design.md`. The viewer (bestiary-viewer requirements 7.3 and 7.4) needs both fields. The engine already has them in memory: `parseRequirements` returns each criterion's `text`, and `cli/orchestrate.ts` computes `mutatedOutcome` for each Spec_Mutant.
   - Both fields are optional in the schemas, so a verdict written before this task still parses. Mutant ids, the Mutation_Report and the `history.jsonl` format do not change.
   - Committed test files are sealed. Every test below goes in a new file; no existing test file is edited.
@@ -886,7 +886,7 @@ Conventions used in every task:
     - Check that `reports/history.jsonl` has exactly one more line than before, that every coverage entry of `reports/verdict.json` has a non-empty `text`, that every Spec_Mutant with a `mutatedOutcome` has a status in Killed, Survived, Timeout or Ghost, and that no string in the three files holds an absolute path.
     - _Requirements: 8.17, 8.18, 8.19, 9.13, 9.14_
     - _Validation: npm run measure && test -f reports/mutation-report.json && test -f reports/verdict.json && test -f reports/history.jsonl passes_
-  - [ ] 13.7 Checkpoint - Verdict fields
+  - [x] 13.7 Checkpoint - Verdict fields
     - Run `npm run check` from the repository root, then `npm run test:e2e --workspace trick-or-test`. Ensure all tests pass, ask the user if questions arise.
     - _Validation: npm run check passes_
 
