@@ -1079,9 +1079,10 @@ Conventions used in every task:
     - Write `test/core/scope-builders.test.ts`: the three outputs carry the scope; a spec-only verdict has no `strykerCounts` key and no `mechanical` key (check with `Object.hasOwn`); a spec-only Mutation_Report holds Spec_Mutants only; the output is byte-identical for equal input.
     - _Requirements: 8.13, 8.22, 8.23, 8.28, 9.18_
     - _Validation: npx vitest run --project engine packages/engine/test/core/scope-builders.test.ts passes_
-  - [ ] 19.5 Write Property 32: New fields are optional, strict and clean
+  - [x] 19.5 Write Property 32: New fields are optional, strict and clean
     - Write `test/core/verdict.new-fields.property.test.ts` with **Property 32** as stated in `design.md`. It covers every new field of tasks 15 to 19.
     - **Validates: Requirements 8.12, 8.13, 8.17, 8.22, 8.25, 8.26, 8.27, 8.28, 8.29, 8.31**
+    - The property found that `buildVerdict` copied `specName` (into `metadata.specName`) and each claim's `criterion` (in `baselineTests[].claims[]`) unchanged. Fix `buildVerdict` so both pass through `scrubAbsolutePaths`, as the other free-text fields do (8.17, 8.31). The HistoryRecord builder copies neither field, so it needs no change. Add `test/core/verdict-scrub-new-fields.test.ts` with example tests for a spec name under the project root, one outside it, and a claim criterion with an absolute path.
     - _Requirements: 8.12, 8.13, 8.17, 8.29, 8.31_
     - _Validation: npx vitest run --project engine packages/engine/test/core/verdict.new-fields.property.test.ts passes_
   - [ ] 19.6 Parse the option

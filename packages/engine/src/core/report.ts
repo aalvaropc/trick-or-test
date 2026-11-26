@@ -468,7 +468,9 @@ export const buildVerdict = (input: VerdictInput): Result<Verdict, string> => {
     ignoreStaticRetried: input.ignoreStaticRetried,
     metadata: {
       ...input.metadata,
-      ...(input.specName === undefined ? {} : { specName: input.specName }),
+      ...(input.specName === undefined
+        ? {}
+        : { specName: scrubAbsolutePaths(input.specName, root) }),
       ...(explicitScope === undefined ? {} : { scope: explicitScope }),
     },
     // The counts are written when the caller passes `changes`, that is, when it hands over the raw
@@ -477,7 +479,20 @@ export const buildVerdict = (input: VerdictInput): Result<Verdict, string> => {
     ...(input.changes === undefined || scope === "spec-only" ? {} : { strykerCounts }),
     ...(input.baselineTests === undefined
       ? {}
-      : { baselineTests: input.baselineTests.map((t) => ({ ...t, id: scrubTestId(t.id, root) })) }),
+      : {
+          baselineTests: input.baselineTests.map((t) => ({
+            ...t,
+            id: scrubTestId(t.id, root),
+            ...(t.claims === undefined
+              ? {}
+              : {
+                  claims: t.claims.map((c) => ({
+                    ...c,
+                    criterion: scrubAbsolutePaths(c.criterion, root),
+                  })),
+                }),
+          })),
+        }),
     ...(input.claimCounts === undefined ? {} : { claimCounts: { ...input.claimCounts } }),
     ...(input.requirements === undefined
       ? {}
