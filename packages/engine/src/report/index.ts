@@ -10,6 +10,7 @@ export type {
   ReportStatus,
 } from "../core/report.js";
 export {
+  baselineTestSchema,
   coverageStatusSchema,
   criterionCoverageSchema,
   historyRecordSchema,
@@ -27,11 +28,13 @@ export {
   speciesSchema,
   statusCountsSchema,
   strykerCountsSchema,
+  testKindSchema,
   verdictSchema,
   verdictWitnessSchema,
   witnessSchema,
 } from "../core/report.js";
 export type {
+  BaselineTest,
   CoverageStatus,
   Criterion,
   CriterionCoverage,
@@ -47,6 +50,7 @@ export type {
   StatusCounts,
   StrykerCounts,
   TestId,
+  TestKind,
   Verdict,
   VerdictWitness,
   Witness,

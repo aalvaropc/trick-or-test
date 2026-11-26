@@ -4,6 +4,7 @@ import { err, ok, type Result } from "./result.js";
 import { computeMutantCounts, computeStrykerCounts } from "./totals.js";
 import { dropTwins } from "./twins.js";
 import type {
+  BaselineTest,
   CoverageStatus,
   CriterionCoverage,
   CriterionId,
@@ -153,6 +154,14 @@ export const strykerCountsSchema = z.strictObject({
   ),
 });
 
+export const testKindSchema = z.enum(["property", "example"]);
+
+/** One test that the Baseline_Run ran and that passed (6.11). */
+export const baselineTestSchema: z.ZodType<BaselineTest> = z.strictObject({
+  id: testIdSchema,
+  kind: testKindSchema,
+}) as unknown as z.ZodType<BaselineTest>;
+
 export const verdictSchema: z.ZodType<Verdict> = z.strictObject({
   coverage: z.array(criterionCoverageSchema),
   mutants: z.array(mutantResultSchema),
@@ -161,6 +170,7 @@ export const verdictSchema: z.ZodType<Verdict> = z.strictObject({
   metadata: runMetadataSchema,
   mutantCounts: mutantCountsSchema.optional(),
   strykerCounts: strykerCountsSchema.optional(),
+  baselineTests: z.array(baselineTestSchema).optional(),
 }) as unknown as z.ZodType<Verdict>;
 
 const engineConfigSchema: z.ZodType<EngineConfig> = z.strictObject({

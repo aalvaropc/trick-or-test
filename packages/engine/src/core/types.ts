@@ -134,6 +134,16 @@ export type StrykerCounts = {
   total: number;
 };
 
+/** Requirements 6.3 to 6.5. */
+export type TestKind = "property" | "example";
+
+/** Requirements 6.11 to 6.13. One entry per test that the Baseline_Run ran and that passed. */
+export type BaselineTest = {
+  /** `<file>::<full name>`, the format of the killing tests. */
+  id: TestId;
+  kind: TestKind;
+};
+
 export type Verdict = {
   coverage: CriterionCoverage[];
   mutants: MutantResult[];
@@ -142,6 +152,7 @@ export type Verdict = {
   metadata: RunMetadata;
   mutantCounts?: MutantCounts;
   strykerCounts?: StrykerCounts;
+  baselineTests?: BaselineTest[];
 };
 
 export type HistoryRecord = {

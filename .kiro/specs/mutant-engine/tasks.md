@@ -953,7 +953,7 @@ Conventions used in every task:
 - [ ] 16. Keep the tests of the Baseline_Run (Gap 2)
   - Source: requirements 6.11 to 6.13, 8.29, Property 31 in `design.md`. The Baseline_Run already knows every test (name, file, start line) and the engine keeps only its duration. The viewer headline is "All N tests still pass", and N is the length of `baselineTests`.
   - Every test below goes in a new file.
-  - [ ] 16.1 Add the types and the schema
+  - [x] 16.1 Add the types and the schema
     - In `core/types.ts` add `TestKind` and `BaselineTest` (`claims` is added by task 17). In `core/report.ts` add the strict schema and the optional field `baselineTests` to `verdictSchema`. Export both from `trick-or-test/report`.
     - Write `test/core/baseline-tests-schema.test.ts`: a verdict without the field parses; an entry with a kind other than `property` and `example` is rejected; an unknown key in an entry is rejected; an empty list parses.
     - _Requirements: 6.11, 8.29_
