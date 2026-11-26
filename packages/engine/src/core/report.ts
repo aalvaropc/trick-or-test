@@ -277,9 +277,14 @@ export const buildVerdict = (input: VerdictInput): Result<Verdict, string> => {
     return { ...rest, killingTests, killClass: killClass ?? "unattributed" };
   });
   const candidate: Verdict = {
-    coverage: input.coverage.map((c) =>
-      c.reason === undefined ? { ...c } : { ...c, reason: scrubAbsolutePaths(c.reason, root) },
-    ),
+    coverage: input.coverage.map((c) => {
+      const { reason, text, ...rest } = c;
+      return {
+        ...rest,
+        ...(reason === undefined ? {} : { reason: scrubAbsolutePaths(reason, root) }),
+        ...(text === undefined ? {} : { text: scrubAbsolutePaths(text.trim(), root) }),
+      };
+    }),
     mutants,
     witnesses: Object.fromEntries(
       Object.entries(input.witnesses).map(([id, w]) => [id, scrubWitness(w, root)]),

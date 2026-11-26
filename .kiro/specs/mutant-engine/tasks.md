@@ -861,7 +861,7 @@ Conventions used in every task:
     - Write `test/core/verdict-fields-schema.test.ts`: a verdict without either field parses (8.20); a verdict with both parses; `mutatedOutcome` of each kind (`value`, `error`, `timeout`, `no-outcome`) parses; an unknown field next to `text` or next to `mutatedOutcome` is rejected; an invalid `mutatedOutcome` kind is rejected; `witnessSchema` still rejects `mutatedOutcome` (a mutant file does not take it); the schemas are exported from `trick-or-test/report` and that subpath still has no `node:` import.
     - _Requirements: 8.20_
     - _Validation: npx vitest run --project engine packages/engine/test/core/verdict-fields-schema.test.ts passes_
-  - [ ] 13.2 Write the criterion text in `buildVerdict`
+  - [x] 13.2 Write the criterion text in `buildVerdict`
     - In `core/report.ts` let `buildVerdict` copy `text` from each `VerdictInput.coverage` entry, trimmed and passed through `scrubAbsolutePaths`. An entry with no `text` stays without one.
     - Write `test/core/verdict-text.test.ts`: plain text is kept, leading and trailing whitespace and newlines are trimmed, inner whitespace is kept, an absolute path under the root becomes the relative path, a path outside the root becomes `<outside-project>/<basename>`, an entry without text has no `text` key, and `skipped` entries keep `reason` and gain `text`.
     - _Requirements: 8.17, 8.18_

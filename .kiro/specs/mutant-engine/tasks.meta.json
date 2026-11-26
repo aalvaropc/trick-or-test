@@ -1477,6 +1477,13 @@
         "chatSessionId": "sess_2aa56008-f17e-48d9-adc1-9a20532cdcad",
         "timestamp": 1795648503382
       }
+    ],
+    "13.1 Add the optional fields to the types and the zod schemas": [
+      {
+        "executionId": "feb6fd3f-012f-425a-b84b-fca1fb9d5c08",
+        "chatSessionId": "sess_250ed8bc-8cf6-4bac-a2c6-73052ce080a5",
+        "timestamp": 1795652309618
+      }
     ]
   }
 }
