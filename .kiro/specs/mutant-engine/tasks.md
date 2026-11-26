@@ -1020,13 +1020,13 @@ Conventions used in every task:
     - Write `test/core/claims-example.test.ts`: read the real files of `examples/pricing/test/` and the fixture, run the claim functions, and assert 25 claims, 16 `held`, 7 `not-held`, 2 `unchecked` (2.2 and 3.4), 0 `unknown-criterion`; the seven `not-held` pairs are 2.1 of Property 1, 5.1 and 5.5 of Property 6, 6.2 and 6.3 of Property 7, and 5.5 and 7.4 of Property 9; `otherTestsKilledAll` is true for six and false for 7.4 of Property 9. This test reads a fixture, so task 21 does not change it (11.16).
     - _Requirements: 11.16_
     - _Validation: npx vitest run --project engine packages/engine/test/core/claims-example.test.ts passes_
-  - [ ] 17.9 Checkpoint - Claims
+  - [x] 17.9 Checkpoint - Claims
     - Run `npm run check` from the repository root. Ensure all tests pass, ask the user if questions arise.
     - _Validation: npm run check passes_
 
 - [ ] 18. Add the spec name, the requirement titles and the coverage of each run (Gap 4)
   - Source: requirements 2.9, 2.10, 8.25 to 8.27, 8.29, Property 33 in `design.md`. Every new field is optional in the schemas and every object stays strict. Every test below goes in a new file.
-  - [ ] 18.1 Parse the requirement titles
+  - [x] 18.1 Parse the requirement titles
     - Create `core/requirement-titles.ts` with `parseRequirementTitles` as in `design.md`. Do not change `parseRequirements` or the type `Criterion`.
     - Write `test/core/requirement-titles.test.ts`: `### Requirement 2: Requirements parser` gives `{ requirement: 2, title: "Requirements parser" }`; leading and trailing spaces are trimmed; a colon inside the title is kept; a heading inside a fenced code block is ignored; the order is document order; a repeated number is an error that names the file, the number and both lines; an empty title is an error that names the file and the line; a document with no heading gives an empty list; `parseRequirements` returns the same value as before for the same text (compare with the output on this spec's own `requirements.md`).
     - _Requirements: 2.9, 2.10_

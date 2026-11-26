@@ -4,7 +4,15 @@ import type { Criterion, CriterionId } from "./types.js";
 export type ParseError =
   | { kind: "duplicate-id"; filePath: string; id: string; lines: [number, number]; message: string }
   | { kind: "orphan-criterion"; filePath: string; line: number; message: string }
-  | { kind: "no-criteria"; filePath: string; message: string };
+  | { kind: "no-criteria"; filePath: string; message: string }
+  | {
+      kind: "duplicate-requirement";
+      filePath: string;
+      requirement: number;
+      lines: [number, number];
+      message: string;
+    }
+  | { kind: "empty-title"; filePath: string; requirement: number; line: number; message: string };
 
 const REQUIREMENT_HEADING = /^###\s+Requirement\s+(\d+)\s*:/;
 const CRITERIA_HEADING = /^####\s+Acceptance Criteria\s*$/;
