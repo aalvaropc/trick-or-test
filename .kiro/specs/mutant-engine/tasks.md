@@ -963,7 +963,7 @@ Conventions used in every task:
     - Write `test/core/baseline-tests.test.ts`: only passed tests are listed (a skipped and a todo test are not); the id is `<file>::<full name>` and equals the id that a killing test of the same test gets; two tests with the same id give two entries; the order is by id and then by start line; a file that matches a property glob gives kind `property`; a body that calls `fc.assert` gives `property`; any other test gives `example`; an empty input gives an empty list.
     - _Requirements: 6.3, 6.4, 6.5, 6.11, 6.12_
     - _Validation: npx vitest run --project engine packages/engine/test/core/baseline-tests.test.ts passes_
-  - [ ] 16.3 Write Property 31: Baseline tests
+  - [x] 16.3 Write Property 31: Baseline tests
     - Write `test/core/baseline-tests.property.test.ts` with **Property 31** as stated in `design.md`.
     - **Validates: Requirements 6.3, 6.4, 6.5, 6.11, 6.12, 6.13**
     - _Requirements: 6.11, 6.12, 6.13_
