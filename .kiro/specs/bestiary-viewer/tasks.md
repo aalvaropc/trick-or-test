@@ -458,13 +458,94 @@ Conventions for every task:
   - Ensure all tests pass, ask the user if questions arise.
   - _Validation: `npm run check` passes_
 
+- [ ] 13. Visual design of the screens
+  - Conventions for this task and the next. Committed tests are sealed, so every test below goes in a new file, next to the old one. The changes of titles (13.1) and fetch names (14.1) alter behaviour that some sealed tests assert (for example a heading named "Landing", or a stub keyed by `report.json`). Run `npm test -w trick-or-test-viewer` before and after each subtask. When a sealed test fails only because the spec changed the behaviour it checks, do not edit it: follow `.kiro/steering/no-fake-tests.md` (call `flag_test_conflict` if available, and tell the user), finish the subtask with the new tests, and list the sealed tests in the report.
+  - Take every value from Requirement 13 and only write it into `src/styles/`. Use no dependency, gradient, glow, filter or image. Class names in source are string literals.
+
+  - [ ] 13.1 Add the shared tokens, controls and Page_Frame
+    - Extend `src/styles/tokens.css` with the Surface_Tokens, the type scale and the spacing from the design. Create `src/styles/controls.css` (`.button`, `.button--primary`, `.button--secondary`, `.file-picker`, `.drop-zone`) and `src/styles/screens.css` (empty sections that later subtasks fill), and add `.page`, `.page__header`, `.page__mark`, `.page__title`, `.page__nav`, `.page__main` to `layout.css`. Import the new files where `main.tsx` imports the others.
+    - Rewrite `src/app/ScreenFrame.tsx` to the structure in the design: product mark, `<h1>` from a `title` prop, navigation links separated by a gap, bottom rule. Keep `SCREEN_NAMES` for the document title only. Create `src/app/screen-title.ts` (pure, no `react` import) with `screenTitle(screen, input)` returning the titles of Requirement 13.6, using `computeHeadlineCounts` for the Verdict title and the Species for the Specimen title. Update each screen to pass its title.
+    - Example tests in new files `test/app/screen-title.test.ts` (each title, "1 monster disagrees", "No monster disagrees", unknown id, no verdict) and `test/app/ScreenFrame.design.test.tsx` (the `<h1>` is the product title and not an internal name, the document title still contains the screen name, one `h1`, the nav links are separate elements). Add `test/styles/tokens.test.ts` asserting the six original tokens keep their values, the five Surface_Tokens exist with the listed values, and the type-scale tokens are all 14 px or more.
+    - _Requirements: 13.1, 13.2, 13.3, 13.4, 13.5, 13.6, 13.19, 13.25, 10.1, 10.4, 10.11_
+    - _Validation: `npm test -w trick-or-test-viewer -- test/app/screen-title.test.ts test/app/ScreenFrame.design.test.tsx test/styles/tokens.test.ts` passes_
+
+  - [ ] 13.2 Give every creature an explicit size
+    - Create `src/bestiary/creature-sizes.ts` (`CREATURE_SIZES`, `CreaturePlace`) and `src/bestiary/with-size.ts` (`withSize(svg, size)`, pure, never throws) as in the design. Change `Creature.tsx` to require a `place` prop and insert `withSize(creature(...), CREATURE_SIZES[place])`. Give the Seal drawing the `sealDrawing` size the same way. Pass the right `place` at every call site: `SealGrid` (Seal drawing and surviving creatures), `WhoKilledPanel`, `StraysStrip`, `SpeciesLegend`, `Hunt`, `Specimen`. Add `.creature svg` and `.seal__drawing svg` rules (`max-width: 100%; height: auto`) to `screens.css`.
+    - Example tests in new files `test/bestiary/with-size.test.ts` (adds both attributes, replaces existing ones, changes only the root tag, a string without `<svg` comes back unchanged, a title with `<` in it is untouched) and `test/bestiary/creature-sizes.test.ts` (the seven values equal the table in Requirement 13.18; every value is at most 320).
+    - _Requirements: 13.18, 13.23, 13.26, 5.2_
+    - _Validation: `npm test -w trick-or-test-viewer -- test/bestiary/with-size.test.ts test/bestiary/creature-sizes.test.ts` passes_
+
+  - [ ] 13.3 Property test: sizing keeps the creature intact (V12)
+    - Add `test/bestiary/with-size.property.test.ts` with the header `// Feature: bestiary-viewer, Property V12: Sizing keeps the creature intact` and one `fc.assert(fc.property(...))` over species, seed, state, mutant (including missing file, line and glyph) and a size drawn from `Object.values(CREATURE_SIZES)`: well-formed XML with one root, `width` and `height` equal to the size, and the string minus those two attributes equal to the `creature()` output.
+    - _Requirements: 13.18, 13.26_
+    - _Validation: `npm test -w trick-or-test-viewer -- test/bestiary/with-size.property.test.ts` passes_
+
+  - [ ] 13.4 Style the Landing screen
+    - Update `src/screens/Landing.tsx` and `src/screens/landing/DropZone.tsx` to the layout of Requirement 13.7 and 13.8: the intro paragraph in the header row (`.landing__intro`, species is the kind of change, eyes are the test outcome, a seal is a requirement's status), the pitch, `.landing__demos` with two `.button` links in a row with a gap, the privacy statement, the `.drop-zone` with a `<label class="button">` as the visible picker over the visually hidden native input, the licences in a `<details>`. Fill the matching rules in `screens.css` and `controls.css`. Keep the pitch free of digit literals and keep the two demo links, their labels and the keyboard behaviour (Requirements 2.1, 3.3, 3.5, 3.6).
+    - Example tests in new file `test/screens/Landing.design.test.tsx`: the `<h1>` reads the Landing title, not "Landing" (13.6); the two demo links are separate elements inside `.landing__demos` (13.7, 13.19); the picker is a label with class `button` and the native input is visually hidden but still reachable by keyboard (13.8, 3.5); the intro paragraph states the three meanings (13.7); the dragging state sets `data-dragging` (13.8).
+    - _Requirements: 13.6, 13.7, 13.8, 13.19, 2.1, 3.3, 3.5_
+    - _Validation: `npm test -w trick-or-test-viewer -- test/screens/Landing.design.test.tsx` passes_
+
+  - [ ] 13.5 Style the Verdict screen
+    - Update `src/screens/Verdict.tsx` and the five parts under `src/screens/verdict/` to Requirements 13.9 to 13.14 and 13.20: the run bar (only the facts the Verdict_File holds), the lead paragraph, `Headline` as four `.count` figures in a grid (the ember and verdigris figures), `.verdict__columns` with the seal rows and the who-killed-them panel with its 10 px bars (width computed at run time, with a `runtime-style` comment), `.verdict__actions` with "Release the hunt" (primary, `#/hunt`) and "Plain table view" (secondary, `#/plain`), the strays strip and the species legend grid. Fill the rules in `screens.css`.
+    - Example tests in new files under `test/screens/verdict/` and `test/screens/Verdict.design.test.tsx`: the `<h1>` is "N monsters disagree" with N from the fixture (13.6); the four counts are in a `dl` or grid of four `.count` items, each with number and label (13.10); an unguarded Seal row has the Criterion id, the text and an "Open specimen" `.button` link (13.12); the bar width of each group equals its share (13.13); the actions are two `.button` links, primary and secondary (13.20); no run-bar fact is shown when the Verdict_File lacks it (13.9); the strays strip holds at most 60 creatures, each in the strays place (13.14, 6.10).
+    - _Requirements: 13.6, 13.9, 13.10, 13.11, 13.12, 13.13, 13.14, 13.19, 13.20, 6.10_
+    - _Validation: `npm test -w trick-or-test-viewer -- test/screens/Verdict.design.test.tsx` passes_
+
+  - [ ] 13.6 Style the Specimen screen
+    - Update `src/screens/Specimen.tsx` and `src/screens/specimen/specimen-view.ts` to Requirements 13.15 and 13.16: breadcrumb, `.specimen__plate` with the creature at the plate size and a caption (Species name and state label), `.specimen__promise` as a blockquote, `.specimen__change` as a `pre` with the `-` and `+` lines, `.specimen__witness` as three cards, `.specimen__tests` as a list. The Specimen title is "The <Species>". Mark the eye rotation `style` with a `runtime-style` comment. Fill the rules in `screens.css`. Keep every behaviour of Requirement 7, including the omission rules for a missing witness, Criterion or source.
+    - Example tests in new file `test/screens/Specimen.design.test.tsx`: breadcrumb with the requirement part only for a Spec_Mutant (13.15); the three witness cards with the labels "The spec demands" and "The mutant gives" (13.15); a missing witness or Criterion omits only that section (13.15, 7.4, 7.12); the title is "The Oathbreaker" for the Spec_Mutant fixture and "Specimen not found" for an unknown id (13.6, 7.10); the creature is at the plate size (13.18).
+    - _Requirements: 13.6, 13.15, 13.16, 13.18, 7.4, 7.10, 7.12_
+    - _Validation: `npm test -w trick-or-test-viewer -- test/screens/Specimen.design.test.tsx` passes_
+
+  - [ ] 13.7 Style the Hunt screen and the Plain view
+    - Update `src/screens/Hunt.tsx` and `src/screens/PlainView.tsx` to Requirement 13.17 inside the same Page_Frame: timeline cards with mono time and commit, the survivor count with its label, the newly killed creatures in a wrapping row at the Hunt size, the "blocked" label in `--amber`, and the table at full width inside `.table-scroll` with the header buttons styled. Keep `Hunt` free of animation and `PlainView` free of creatures, `svg` and transitions (Requirements 8.9, 9.7). Fill the rules in `screens.css`.
+    - Example tests in new files `test/screens/Hunt.design.test.tsx` and `test/screens/PlainView.design.test.tsx`: titles "The hunt" and "Plain view" (13.6); each entry has time, commit, survivor label and its killed creatures at the Hunt size (13.17, 13.18); the table is inside `.table-scroll` and the headers are buttons (13.17, 9.9); no `svg` and no transition in the Plain view (9.7).
+    - _Requirements: 13.6, 13.17, 13.18, 13.19, 8.9, 9.7_
+    - _Validation: `npm test -w trick-or-test-viewer -- test/screens/Hunt.design.test.tsx test/screens/PlainView.design.test.tsx` passes_
+
+  - [ ] 13.8 Add the static and DOM design checks
+    - Add `test/styles/class-rules.test.ts` (every class name in a `className` of `src/` has a selector in `src/styles/`, Requirement 13.22), `test/styles/inline-style.test.ts` (no `style` attribute in `src/` except the two marked `runtime-style` uses, 13.24), `test/ui/creature-sizes.test.tsx` (every `svg` of every screen rendered with the fixtures has numeric `width` and `height` equal to its place in the table, none above 320, 13.23) and `test/styles/layout-rules.test.ts` (frame max width and padding, narrow-screen one-column rules, `.table-scroll` overflow, no creature container wider than 320 px, no font size under 14 px, no gradient, filter or `box-shadow` in `src/styles/`, 13.4, 13.18, 13.21, 13.25, 10.4, 10.9).
+    - Each test must fail when its rule is broken: before finishing, confirm by temporarily removing one rule or one attribute in the working tree that the matching test fails, then restore it.
+    - _Requirements: 13.4, 13.18, 13.21, 13.22, 13.23, 13.24, 13.25, 10.4, 10.9_
+    - _Validation: `npm test -w trick-or-test-viewer -- test/styles test/ui/creature-sizes.test.tsx` passes_
+
+- [ ] 14. Demo runs
+  - [ ] 14.1 Read the engine's file names in the viewer
+    - Change the file table of `src/loader/fetch-demo-run.ts` to `mutation-report.json`, `verdict.json`, `history.jsonl`. The error messages name the file that failed, as before.
+    - Example tests in new file `test/loader/fetch-demo-run.names.test.ts`: the three requested URLs end in the engine's names under `demo/before/` and `demo/after/`, with the base path (14.1); no request is made for `report.json` (14.1); a missing or invalid `mutation-report.json` error names that file and keeps Landing (14.1, 2.3, 2.4). Follow the sealed-test convention at the top of task 13 for the old tests that stub `report.json`.
+    - _Requirements: 14.1, 2.2, 2.3, 2.4_
+    - _Validation: `npm test -w trick-or-test-viewer -- test/loader/fetch-demo-run.names.test.ts` passes_
+
+  - [ ] 14.2 Write the demo script and the Guard_Test
+    - Create `scripts/demo.ts` with a pure `planDemo(root)` and a shell that runs its steps (design, "The script"), the committed `scripts/demo/after/guard-7.4.test.ts` and `scripts/demo/after/vitest.config.ts`, the root script `"demo": "node scripts/demo.ts"` in `package.json`, and the root Vitest exclusion of `scripts/demo/after/**`. The guard test follows `no-fake-tests.md`: names start with `7.4`, literals worked out from requirement 7.4 of `cart-pricing`, boundary cases just below, at and just above zero. Add the `npm run demo` row to the commands table of `.kiro/steering/tech.md` in the same commit.
+    - Example tests in new file `scripts/demo.test.ts`: the plan order is build, clean, measure before, copy, copy history, measure after, remove (14.3, 14.4); the "before" measure targets `examples/pricing` and `apps/viewer/public/demo/before` (14.5); the "after" measure targets the copy under `.trickortest/` and `apps/viewer/public/demo/after` (14.6); the copy excludes `node_modules`, `reports`, `.stryker-tmp` and `.trickortest` and receives the Guard_Test outside its `test/` folder (14.6, 14.8); the history copy comes before the "after" measure (14.7); no step writes a report, verdict or history file except that copy (14.3); every path in the plan is relative (14.10); no step touches `reports/` or `examples/pricing/` (14.4); the copy is removed even when a step fails (14.6).
+    - _Requirements: 14.2, 14.3, 14.4, 14.5, 14.6, 14.7, 14.8_
+    - _Validation: `npm test -- scripts/demo.test.ts` passes_
+
+  - [ ] 14.3 Generate and commit the demo runs
+    - Run `npm run demo` once (it takes several minutes). Do not edit any generated file. Check with `git status` that only `apps/viewer/public/demo/before/` and `apps/viewer/public/demo/after/` changed, and that `examples/pricing/` and `reports/` did not. Commit the six files together.
+    - _Requirements: 14.3, 14.4, 14.9, 14.10_
+    - _Validation: `npm run demo` completes, and running it a second time leaves `git status` clean_
+
+  - [ ] 14.4 Test the committed demo files
+    - Add `test/demo/demo-files.test.ts` in the viewer: each run has the three engine-named files and each parses with its schema from `trick-or-test/report` (14.1); the "after" `history.jsonl` has two lines, the first byte-identical to the only line of the "before" file (14.7); `oath-7.4-negative-discount-allowed` is a survivor in the "before" verdict, killed in the "after" verdict and listed in `newlyKilledIds` of the second "after" record (14.9); no file contains `/home/`, `/Users/`, `/tmp/`, a drive letter path, the repository root path or `.trickortest` (14.10). It asserts ids and names, never counts (14.11). Add a second test that loads both runs through `fetchDemoRun` with `fetch` reading the files from disk, and checks the "after" Run_Model has two timeline entries (14.9, 8.1).
+    - _Requirements: 14.1, 14.7, 14.9, 14.10, 14.11_
+    - _Validation: `npm test -w trick-or-test-viewer -- test/demo/demo-files.test.ts` passes_
+
+- [ ] 15. Final checkpoint - design and demo runs
+  - Ensure all tests pass, ask the user if questions arise.
+  - Open the built viewer (`npm run preview -w trick-or-test-viewer`) with the committed demo runs and the real `reports/` files. At 1280 px and at 375 px, on `#/`, `#/demo/before`, `#/demo/after`, a specimen route, `#/hunt` and `#/plain`, check that `document.documentElement.scrollWidth` equals `clientWidth` (the Plain view table scrolls inside its own container), that the Verdict page is a few thousand pixels tall at most, and that no creature is wider than its container. Report the measured values to the user. This check is manual evidence, not a test.
+  - _Validation: `npm run check` passes_
+
 ## Notes
 
 - Every task is required, including all example, property and component tests. No task is optional.
-- Each criterion of requirements 1 to 12 is cited by at least one task. Properties V1 to V11 each have exactly one task: V1 in 4.15, V2 in 4.16, V3 in 4.17, V4 in 4.2, V5 in 4.4, V6 in 5.4, V7 in 4.8, V8 in 3.4, V9 in 3.7, V10 in 5.3, V11 in 4.18.
+- Each criterion of requirements 1 to 12 is cited by at least one task, and requirements 13 and 14 are covered by tasks 13 and 14. Properties V1 to V12 each have exactly one task: V1 in 4.15, V2 in 4.16, V3 in 4.17, V4 in 4.2, V5 in 4.4, V6 in 5.4, V7 in 4.8, V8 in 3.4, V9 in 3.7, V10 in 5.3, V11 in 4.18, V12 in 13.3.
 - The design lists `use-hash-route.ts` under `router/`. This plan keeps the pure `parseHashRoute` in `router/routes.ts` and puts the React hook in `src/app/use-hash-route.ts`, so no non-`.tsx` file under `router/` imports `react`.
 - The design also notes a root `tsconfig.json` project reference. Task 1.2 adds it only when `tsc -b` accepts the viewer's `noEmit` project. The root `typecheck` script already builds the engine first and then runs the viewer's `typecheck`.
-- Demo runs in `apps/viewer/public/demo/` come from the engine's `measure` command. No task writes them. All viewer tests use the fixtures under `apps/viewer/test/fixtures/`.
+- Demo runs in `apps/viewer/public/demo/` come from the engine's `measure` command, called by `npm run demo` (task 14). No task writes them by hand. All viewer tests except the structural test of task 14.4 use the fixtures under `apps/viewer/test/fixtures/`.
+- Tasks 13 and 14 were added after the first browser run with the real `reports/` files showed unstyled screens, oversized creatures and demo links that fetch files that do not exist. Their new tests sit in new files because the earlier test files are sealed.
 - The Lock_Log format belongs to the agent-guard spec. Task 9.12 uses the minimal local type from the design.
 - Pinned versions and dates in task 1.1 were checked with `npm view <pkg> time` on 2026-11-25. Check them again when running the install.
 
@@ -492,7 +573,10 @@ Conventions for every task:
     { "id": 16, "tasks": ["9.2", "9.8", "9.10", "9.12"] },
     { "id": 17, "tasks": ["9.14"] },
     { "id": 18, "tasks": ["9.15"] },
-    { "id": 19, "tasks": ["11.1", "11.2", "11.3"] }
+    { "id": 19, "tasks": ["11.1", "11.2", "11.3"] },
+    { "id": 20, "tasks": ["13.1", "13.2", "14.1", "14.2"] },
+    { "id": 21, "tasks": ["13.3", "13.4", "13.5", "13.6", "13.7", "14.3"] },
+    { "id": 22, "tasks": ["13.8", "14.4"] }
   ]
 }
 ```
