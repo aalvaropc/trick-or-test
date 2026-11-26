@@ -1,4 +1,4 @@
-import { type ChangeEvent, type DragEvent, useState } from "react";
+import { type ChangeEvent, type DragEvent, useRef, useState } from "react";
 import { LoadErrorView } from "../../app/LoadErrorView.js";
 import { useRun } from "../../app/run-context.js";
 import { readFiles } from "../../loader/file-reader.js";
@@ -46,6 +46,7 @@ export function DropZone() {
   const [errors, setErrors] = useState<LoadError[]>([]);
   const [ignored, setIgnored] = useState(0);
   const [dragging, setDragging] = useState(false);
+  const input = useRef<HTMLInputElement>(null);
 
   const handle = async (list: FileList | null) => {
     const files = list === null ? [] : Array.from(list);
@@ -92,12 +93,13 @@ export function DropZone() {
     >
       <p>Drop a report, a verdict or a history file here.</p>
       <div className="file-picker">
-        <label className="button" htmlFor="run-files">
+        <button type="button" className="button" onClick={() => input.current?.click()}>
           Choose files
-        </label>
+        </button>
         <input
+          ref={input}
           id="run-files"
-          className="visually-hidden"
+          hidden
           type="file"
           multiple
           data-testid="file-input"

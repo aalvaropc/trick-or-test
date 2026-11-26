@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { RunProvider } from "../../src/app/run-context.js";
@@ -73,28 +73,35 @@ describe("Landing design", () => {
     }
   });
 
-  it("13.8 the visible picker is a label.button tied to a visually hidden native input", () => {
+  it("13.8 the picker is a button.button named Choose files and the native input is hidden", () => {
     const { container } = setup();
     const zone = container.querySelector(".drop-zone");
-    const label = zone?.querySelector("label.button");
+    const button = within(zone as HTMLElement).getByRole("button", { name: "Choose files" });
     const input = zone?.querySelector<HTMLInputElement>('input[type="file"]');
-    expect(label?.textContent).toBe("Choose files");
-    expect(input).not.toBeNull();
-    expect(input?.classList.contains("visually-hidden")).toBe(true);
-    expect(label?.getAttribute("for")).toBe(input?.id);
-    expect(input?.id).not.toBe("");
-    expect(zone?.querySelector("button")).toBeNull();
+    expect(button.tagName).toBe("BUTTON");
+    expect(button.getAttribute("type")).toBe("button");
+    expect(button.classList.contains("button")).toBe(true);
+    expect(input?.hidden).toBe(true);
+    expect(input?.getAttribute("hidden")).not.toBeNull();
+    expect(zone?.querySelector("label")).toBeNull();
   });
 
-  it("3.5 the native input is reachable by keyboard", async () => {
+  it("3.5 the picker button is the only tab stop of the drop zone and opens the input", async () => {
     const user = userEvent.setup();
     const { container } = setup();
-    const input = container.querySelector<HTMLInputElement>('input[type="file"]');
-    expect(input?.hidden).toBe(false);
-    expect(input?.tabIndex).toBe(0);
-    // Tab stops before the input: the Plain view link and the two demo links.
+    const zone = container.querySelector(".drop-zone") as HTMLElement;
+    const button = within(zone).getByRole("button", { name: "Choose files" });
+    const input = zone.querySelector<HTMLInputElement>('input[type="file"]') as HTMLInputElement;
+    const clicked = vi.fn();
+    input.addEventListener("click", clicked);
+    // Tab stops before the picker: the Plain view link and the two demo links.
     for (let stop = 0; stop < 4; stop++) await user.tab();
-    expect(document.activeElement).toBe(input);
+    expect(document.activeElement).toBe(button);
+    await user.keyboard("{Enter}");
+    expect(clicked).toHaveBeenCalledTimes(1);
+    await user.tab();
+    expect(document.activeElement).not.toBe(input);
+    expect(zone.contains(document.activeElement)).toBe(false);
   });
 
   it("13.8 dragging a file over the drop zone sets data-dragging, leaving clears it", () => {

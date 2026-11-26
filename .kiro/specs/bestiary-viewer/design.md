@@ -362,7 +362,7 @@ The root element of `ScreenFrame` carries a non-visible `data-screen` attribute 
 
 A flex child that holds text or an SVG gets `min-width: 0`, as the existing `.app > *` rule already does for grids; this is what stops a wide child from forcing a horizontal scroll at 375 px.
 
-The Landing drop zone keeps the native `<input type="file">` for keyboard and assistive technology (Requirement 3.5) and hides it with `.visually-hidden`. A `<label class="button">` is the visible picker. `.drop-zone:focus-within` draws the focus ring on the label, and `.drop-zone[data-dragging="true"]` sets the `--amber` border.
+The Landing drop zone keeps the native `<input type="file">` with the `hidden` attribute, so it is out of the tab order and the accessibility tree. A real `<button type="button" class="button">Choose files</button>` is the only tab stop and the accessible picker (Requirement 3.5); its click handler calls `click()` on the input through a ref. The button takes the normal `.button` focus ring, and `.drop-zone[data-dragging="true"]` sets the `--amber` border.
 
 ### Creature sizes
 
