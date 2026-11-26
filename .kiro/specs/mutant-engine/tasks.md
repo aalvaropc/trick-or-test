@@ -922,7 +922,7 @@ Conventions used in every task:
     - Write `test/core/totals-schema.test.ts`: a verdict without either field parses (8.29); a verdict with both parses; a `mutantCounts` without `mechanical` parses; a missing status key in `spec` is rejected; an unknown key in each of the three objects is rejected; a negative or fractional count is rejected; the subpath still has no `node:` import.
     - _Requirements: 8.22, 8.23, 8.24, 8.29, 10.4_
     - _Validation: npx vitest run --project engine packages/engine/test/core/totals-schema.test.ts passes_
-  - [ ] 15.2 Add `dropTwins` and the count functions
+  - [x] 15.2 Add `dropTwins` and the count functions
     - Create `core/twins.ts` with `dropTwins` (the 8.15 same-change comparison, moved out of `buildMutationReport`, which now calls it) and `core/totals.ts` with `computeMutantCounts` and `computeStrykerCounts`. Both modules are pure and have no `node:` import.
     - Write `test/core/twins.test.ts`: a Twin is dropped and its Spec_Mutant kept; a Mechanical_Mutant that differs only in the start line, the start column, the end line, the end column, the file or the replacement is kept; a list without Twins comes back unchanged (idempotence); `twinsMerged` equals the number dropped; ids play no part. Write `test/core/totals.test.ts`: `computeStrykerCounts` on a list with one mutant of each of the seven statuses gives `detected` 2 (Killed and Timeout), `undetected` 1, `total` 7; an empty list gives zeros; `computeMutantCounts` has all seven status keys for each kind, and no `mechanical` key for the scope `spec-only`.
     - _Requirements: 8.15, 8.22, 8.23_

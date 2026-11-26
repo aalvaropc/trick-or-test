@@ -122,6 +122,9 @@ export type MutantCounts = {
   twinsMerged: number;
 };
 
+/** Requirement 8.28. */
+export type RunScope = "full" | "spec-only";
+
 export type StrykerCounts = {
   /** Killed plus Timeout, over every Mechanical_Mutant that StrykerJS produced. */
   detected: number;

@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { relativizePath, scrubAbsolutePaths } from "./paths.js";
 import { err, ok, type Result } from "./result.js";
+import { dropTwins } from "./twins.js";
 import type {
   CoverageStatus,
   CriterionCoverage,
@@ -405,16 +406,6 @@ const mapStatus = (status: MutantStatus): { status: ReportStatus; statusReason?:
   }
 };
 
-const changeKey = (m: ReportMutantInput): string =>
-  JSON.stringify([
-    m.file,
-    m.location.start.line,
-    m.location.start.column,
-    m.location.end.line,
-    m.location.end.column,
-    m.replacement,
-  ]);
-
 const toReportMutant = (
   m: ReportMutantInput,
   extra: { species?: Species; requirement?: CriterionId },
@@ -455,19 +446,21 @@ export const buildMutationReport = (input: ReportInput): MutationTestingReport =
   const mechanical = input.mechanical.map((m) => ({ ...m, file: rel(m.file) }));
   const spec = input.spec.map((m) => ({ ...m, file: rel(m.file) }));
   const inputFiles = new Map(Object.entries(input.files).map(([p, meta]) => [rel(p), meta]));
-  const specKeys = new Set(spec.map(changeKey));
+  const { kept } = dropTwins([
+    ...mechanical.map((m) => ({ ...m, kind: "mechanical" as const })),
+    ...spec.map((m) => ({ ...m, kind: "spec" as const })),
+  ]);
   const perFile = new Map<string, ReportMutant[]>();
   const push = (file: string, m: ReportMutant): void => {
     const list = perFile.get(file);
     if (list === undefined) perFile.set(file, [m]);
     else list.push(m);
   };
-  for (const m of mechanical) {
-    if (specKeys.has(changeKey(m))) continue;
-    push(m.file, toReportMutant(m, {}, root));
-  }
-  for (const m of spec) {
-    push(m.file, toReportMutant(m, { species: OATHBREAKER, requirement: m.requirement }, root));
+  for (const m of kept) {
+    if (m.kind === "mechanical") push(m.file, toReportMutant(m, {}, root));
+    else {
+      push(m.file, toReportMutant(m, { species: OATHBREAKER, requirement: m.requirement }, root));
+    }
   }
   const paths = [...new Set([...inputFiles.keys(), ...perFile.keys()])].sort();
   const files: Record<string, ReportFile> = {};
