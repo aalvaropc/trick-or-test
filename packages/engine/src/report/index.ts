@@ -26,7 +26,9 @@ export {
   reportFileSchema,
   reportMutantSchema,
   reportStatusSchema,
+  requirementTitleSchema,
   runMetadataSchema,
+  runScopeSchema,
   serializeHistoryRecord,
   speciesSchema,
   statusCountsSchema,
@@ -51,7 +53,9 @@ export type {
   MutantId,
   MutantResult,
   MutantStatus,
+  RequirementTitle,
   RunMetadata,
+  RunScope,
   Species,
   StatusCounts,
   StrykerCounts,
@@ -61,3 +65,5 @@ export type {
   VerdictWitness,
   Witness,
 } from "../core/types.js";
+export type { WitnessTestError } from "../core/witness-test.js";
+export { buildWitnessTest } from "../core/witness-test.js";

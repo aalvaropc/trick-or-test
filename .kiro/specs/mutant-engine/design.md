@@ -221,7 +221,7 @@ A test says in a comment which Criterion it validates. In the committed example 
 The engine reads these lines in four steps. Steps 1 to 3 are pure functions in `core/claims.ts`; the shell only supplies the file text.
 
 1. `extractLeadingComments(fileText, startLine)` splits the text into lines and walks upward from line `startLine - 1`, collecting lines that are comment lines (`//`, or a line inside a `/* ... */` block, including ` * ` and ` */`), and stops at the first blank line or line of code. It returns the collected lines in file order with the comment markers and surrounding `*` characters removed. A `startLine` of 1 or less returns an empty list. Because it reads only above the start line, a comment above a `describe` is not seen by the tests inside it (11.8), and every test that `it.each` generates, which Vitest reports at the same start line, reads the same lines (11.9).
-2. `parseClaimComments(lines, specName)` looks for a `Feature:` line and `Validates:` lines in the collected lines. Other lines are ignored, wherever they stand (11.7). If a `Feature:` line names a spec other than `specName`, it returns an empty list (11.2). Without a `Feature:` line the claims count (11.10). It returns `ClaimRef[]`: `{ kind: "criterion"; id: string }` for `N.M` and `{ kind: "requirement"; number: number }` for `N`. The id list is read with one regular expression per token (`^\d+(\.\d+)?$`) after splitting on commas, spaces and the word `and`; reading stops at the first token that is none of those (11.3). Leading zeros and signs make a token invalid.
+2. `parseClaimComments(lines, specName)` looks for a `Feature:` line and `Validates:` lines in the collected lines. Other lines are ignored, wherever they stand (11.7). If a `Feature:` line names a spec other than `specName`, it returns an empty list (11.2). Without a `Feature:` line the claims count (11.10). It returns `ClaimRef[]`: `{ kind: "criterion"; id: string }` for `N.M` and `{ kind: "requirement"; number: number }` for `N`. The id list is read with one regular expression per token (`^\d+(\.\d+)?$`) after splitting on commas, spaces and the word `and`; reading stops at the first token that is none of those (11.3). Before that test, a token of the form `N.M` followed directly by one or more of the marks `.`, `;`, `:`, `)` or `]` counts as that id, and the list ends after it: `7.3, 7.4.` gives 7.3 and 7.4, and `(Requirements 5.1, 5.2)` gives 5.1 and 5.2. A whole requirement `N` followed by a mark is not an id and ends the list, because `5.` may be a criterion id that was cut short and the reader does not guess: `Requirements 2.1, 5.` gives 2.1 only. A token such as `7.4.1` or `7.4x` is not an id and ends the list. Leading zeros and signs make a token invalid.
 3. `resolveClaimRefs(refs, criteria)` turns the refs into a list of criterion id strings. A requirement ref expands to the ids of all Criteria of that requirement in document order (11.4). An id or requirement number that the spec lacks stays as written, so it can become `unknown-criterion` (11.5). Duplicates collapse to the first occurrence (11.6).
 4. `computeClaimOutcome` applies 11.11 to one test and one criterion id. It reads the valid Spec_Mutants of the criterion from the `MutantResult` list (a mutant is valid by 7.6) and their `killingTests`. It does not use the criterion's Coverage_Status. A Timeout mutant has no killing test, so the test does not hold on it, and for `otherTestsKilledAll` a Timeout counts as killed. `attachClaims` applies this step to every claim id of every Baseline_Test, adds the claims to the entry, and sums `ClaimCounts`.
 
@@ -411,7 +411,7 @@ type CriterionCoverage = {
 
 type RunMetadata = {
   gitCommit: string;
-  seed: number;
+  seed: number; // The own seed of the Engine. The Engine uses no random source today, so the value is always 0. It is not the seed of the property tests of the Target_Project. (Requirement 8.6)
   engineVersion: string;
   nodeVersion: string;
   strykerVersion: string;
@@ -424,7 +424,7 @@ type RunMetadata = {
 };
 
 type RunScope = "full" | "spec-only";
-type TestKind = "property" | "example";
+type TestKind = "property" | "example"; // defined once, in `core/types.ts`; `core/test-classification.ts` imports it instead of defining it again
 
 // Requirement 11. `criterion` is the id as written in the test: a Criterion id, or an id the spec lacks.
 type ClaimOutcome = "held" | "not-held" | "unchecked" | "unknown-criterion";
@@ -489,7 +489,7 @@ type Verdict = {
 type HistoryRecord = {
   time: string;
   gitCommit: string;
-  seed: number;
+  seed: number; // The own seed of the Engine. The Engine uses no random source today, so the value is always 0. It is not the seed of the property tests of the Target_Project. (Requirement 8.9)
   config: EngineConfig; // paths relative to the Target_Project root, never resolved absolute paths (Requirement 8.17)
   mutants: { id: MutantId; status: MutantStatus }[];
   statusCounts: Record<MutantStatus, number>;
@@ -502,6 +502,8 @@ type HistoryRecord = {
 ```
 
 The resolved `EngineConfig` (absolute paths) exists only at run time. The CLI passes the resolved config and the `projectRoot` to the core builders as data; `buildHistoryRecord` and the other builders turn each path back into a path relative to the Target_Project root through `relativizePath` (a path under the root loses the root prefix; a path outside it, such as the `measure` output directory, becomes a `../` path in the config and `<outside-project>/<basename>` anywhere else). The Verdict metadata holds no paths. The Mutation_Report keys files by project-relative path. Free-text fields (`message`, error text, mutant descriptions, `statusReason`) go through `scrubAbsolutePaths` (Requirement 8.17).
+
+The zod schemas of the Verdict and of the history record give the field `seed` the same description text, the one in the comments above: it is the own seed of the Engine, the Engine uses no random source today so the value is always 0, and it is not the seed of the property tests of the Target_Project. The history record does not hold what is needed to repeat the property tests of the project; that needs the seed the project fixes in its own test setup.
 
 Each of the three builders applies `dropTwins` to the raw mutant list, so `Verdict.mutants`, the Mutation_Report mutants and `HistoryRecord.mutants` hold one set of ids (Requirement 8.21). `buildVerdict` computes `twinsMerged`, `mutantCounts` and `strykerCounts` from the raw list with `core/totals.ts`. It also takes the `BaselineTest[]` and `ClaimCounts` (from `core/baseline-tests.ts` and `core/claims.ts`), the `RequirementTitle[]`, `specName` and `scope` as plain input, and writes them after scrubbing the free-text fields. `buildHistoryRecord` writes `coverageByCriterion` from `verdict.coverage` (document order) and `scope` from `verdict.metadata.scope`. `buildMutationReport` writes `scope` in the schema's free-form `config` object, next to `ignoreStatic`.
 
@@ -684,11 +686,12 @@ Properties 27 to 35 are new. Each lives in its own new `*.property.test.ts` file
 For any generated test file text and any start line, and any spec name:
 
 - `extractLeadingComments` returns only lines that are comment lines of the text, in file order, all inside the unbroken run of comment lines that ends on line `startLine - 1`; it returns an empty list when line `startLine - 1` is blank or code, when `startLine <= 1`, and for a comment that stands above a `describe` it returns nothing for a test inside the block;
+- `parseClaimComments` counts an id `N.M` followed directly by one or more of `.`, `;`, `:`, `)` or `]` as that id and ends the list after it, treats a whole requirement `N` followed by a mark as no id that ends the list, and treats a token such as `7.4.1` or `7.4x` as no id that ends the list;
 - `parseClaimComments` returns an empty list whenever a `Feature:` line names a spec other than the given one, and the same refs whatever other comment lines stand between, above or below the `Feature:` and `Validates:` lines;
 - `resolveClaimRefs` expands a whole-requirement ref `N` to exactly the ids of the Criteria of Requirement N in document order, keeps an id or number that the spec lacks as written, returns no duplicate, and returns the same ids for the same refs in any generated spacing, comma, `and` and `**` variant;
 - two tests generated by one `it.each` or `test.each` call (the same start line) get the same ids.
 
-The generator produces files with a `Feature:` line naming this spec, another spec and none; `Validates:` lines with `Requirement` and `Requirements`, single ids, lists, whole requirements, a repeated id, an id the spec lacks, a malformed token that ends the list; comment lines between the annotation and the call; blank lines that break the run; `//` runs and `/* */` blocks; and calls on one line and `.each` calls.
+The generator produces files with a `Feature:` line naming this spec, another spec and none; `Validates:` lines with `Requirement` and `Requirements`, single ids, lists, whole requirements, a repeated id, an id the spec lacks, `N.M` ids followed by one or more of `.`, `;`, `:`, `)` or `]` (the list ends after such an id, and `(Requirements 5.1, 5.2)` gives both ids), a whole requirement followed by a mark (no id, the list ends), tokens such as `7.4.1` and `7.4x` that are not ids and end the list, a malformed token that ends the list; comment lines between the annotation and the call; blank lines that break the run; `//` runs and `/* */` blocks; and calls on one line and `.each` calls.
 
 **Validates: Requirements 11.1, 11.2, 11.3, 11.4, 11.5, 11.6, 11.7, 11.8, 11.9, 11.10, 11.13**
 

@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { relativizePath, scrubAbsolutePaths } from "./paths.js";
 import { err, ok, type Result } from "./result.js";
+import { isSpecMutantId, scopeOf } from "./run-scope.js";
 import { computeMutantCounts, computeStrykerCounts } from "./totals.js";
 import { dropTwins } from "./twins.js";
 import type {
@@ -16,6 +17,7 @@ import type {
   MutantId,
   MutantResult,
   MutantStatus,
+  RequirementTitle,
   RunMetadata,
   RunScope,
   Species,
@@ -112,16 +114,30 @@ export const mutantResultSchema: z.ZodType<MutantResult> = z.strictObject({
   invalidWitness: invalidWitnessSchema.optional(),
 }) as unknown as z.ZodType<MutantResult>;
 
+export const runScopeSchema = z.enum(["full", "spec-only"]);
+
+/** Shared description of the `seed` field of the Verdict metadata and of the history record (8.6, 8.9). */
+const SEED_DESCRIPTION =
+  "The own seed of the Trick or Test engine. It is always 0 today because the engine uses no random source. It is not the seed of the property tests of the target project.";
+
 export const runMetadataSchema = z.strictObject({
   gitCommit: z.string(),
-  seed: z.number().int(),
+  seed: z.number().int().describe(SEED_DESCRIPTION),
   engineVersion: z.string(),
   nodeVersion: z.string(),
   strykerVersion: z.string(),
   vitestVersion: z.string(),
   typescriptVersion: z.string(),
   timestamp: z.string(),
+  specName: z.string().optional(),
+  scope: runScopeSchema.optional(),
 });
+
+/** One Requirement title of the Verdict (8.26). */
+export const requirementTitleSchema: z.ZodType<RequirementTitle> = z.strictObject({
+  requirement: z.number().int().positive(),
+  title: z.string().min(1),
+}) as unknown as z.ZodType<RequirementTitle>;
 
 const count = (): z.ZodNumber => z.number().int().nonnegative();
 
@@ -220,6 +236,7 @@ export const verdictSchema: z.ZodType<Verdict> = z.strictObject({
   strykerCounts: strykerCountsSchema.optional(),
   baselineTests: z.array(baselineTestSchema).optional(),
   claimCounts: claimCountsSchema.optional(),
+  requirements: z.array(requirementTitleSchema).optional(),
 }) as unknown as z.ZodType<Verdict>;
 
 const engineConfigSchema: z.ZodType<EngineConfig> = z.strictObject({
@@ -242,12 +259,16 @@ const coverageCountsSchema = z.strictObject({
 export const historyRecordSchema: z.ZodType<HistoryRecord> = z.strictObject({
   time: z.string(),
   gitCommit: z.string(),
-  seed: z.number().int(),
+  seed: z.number().int().describe(SEED_DESCRIPTION),
   config: engineConfigSchema,
   mutants: z.array(z.strictObject({ id: mutantIdSchema, status: mutantStatusSchema })),
   statusCounts: statusCountsSchema,
   coverageCounts: coverageCountsSchema,
   newlyKilledIds: z.array(mutantIdSchema),
+  coverageByCriterion: z
+    .array(z.strictObject({ criterion: criterionIdSchema, status: coverageStatusSchema }))
+    .optional(),
+  scope: runScopeSchema.optional(),
 }) as unknown as z.ZodType<HistoryRecord>;
 
 // Mutation report (subset of mutation-testing-report-schema 3.x plus two extension fields).
@@ -331,6 +352,10 @@ export type VerdictInput = {
   baselineTests?: BaselineTest[];
   /** Number of Claims in total and per outcome (11.12). Written as `claimCounts` when present. */
   claimCounts?: ClaimCounts;
+  /** The attacked spec. Written as `metadata.specName` when present (8.25). */
+  specName?: string;
+  /** Requirement titles in document order. Written as `requirements` when present (8.26). */
+  requirements?: RequirementTitle[];
 };
 
 /** What a mutant changes: the fields that rule 8.15 compares. */
@@ -403,7 +428,9 @@ const scrubWitness = (w: VerdictWitness, root: string): VerdictWitness => {
  */
 export const buildVerdict = (input: VerdictInput): Result<Verdict, string> => {
   const root = input.projectRoot;
-  const scope = input.scope ?? "full";
+  // An absent scope means `full` and is not written, so older outputs stay byte-identical (8.28).
+  const explicitScope = input.scope ?? input.metadata.scope;
+  const scope = explicitScope ?? "full";
   // Counts of the StrykerJS run come from the raw list, before the Twins go (8.23).
   const strykerCounts = computeStrykerCounts(
     input.mutants.filter((m) => m.species !== OATHBREAKER),
@@ -443,15 +470,42 @@ export const buildVerdict = (input: VerdictInput): Result<Verdict, string> => {
       Object.entries(input.witnesses).map(([id, w]) => [id, scrubWitness(w, root)]),
     ) as Record<MutantId, VerdictWitness>,
     ignoreStaticRetried: input.ignoreStaticRetried,
-    metadata: { ...input.metadata },
+    metadata: {
+      ...input.metadata,
+      ...(input.specName === undefined
+        ? {}
+        : { specName: scrubAbsolutePaths(input.specName, root) }),
+      ...(explicitScope === undefined ? {} : { scope: explicitScope }),
+    },
     // The counts are written when the caller passes `changes`, that is, when it hands over the raw
     // list. Without it the totals would describe a list that may still hold Twins.
     ...(input.changes === undefined ? {} : { mutantCounts }),
     ...(input.changes === undefined || scope === "spec-only" ? {} : { strykerCounts }),
     ...(input.baselineTests === undefined
       ? {}
-      : { baselineTests: input.baselineTests.map((t) => ({ ...t, id: scrubTestId(t.id, root) })) }),
+      : {
+          baselineTests: input.baselineTests.map((t) => ({
+            ...t,
+            id: scrubTestId(t.id, root),
+            ...(t.claims === undefined
+              ? {}
+              : {
+                  claims: t.claims.map((c) => ({
+                    ...c,
+                    criterion: scrubAbsolutePaths(c.criterion, root),
+                  })),
+                }),
+          })),
+        }),
     ...(input.claimCounts === undefined ? {} : { claimCounts: { ...input.claimCounts } }),
+    ...(input.requirements === undefined
+      ? {}
+      : {
+          requirements: input.requirements.map((r) => ({
+            requirement: r.requirement,
+            title: scrubAbsolutePaths(r.title.trim(), root),
+          })),
+        }),
   };
   const parsed = verdictSchema.safeParse(candidate);
   if (!parsed.success) {
@@ -511,6 +565,8 @@ export type ReportInput = {
   ignoreStaticRetried?: boolean;
   /** Root of the Target_Project, as data. Every path and free-text field is made relative to it (8.17). */
   projectRoot: string;
+  /** Run_Scope (8.28). Written as `config.scope`. Defaults to `full`. */
+  scope?: RunScope;
 };
 
 export const REPORT_SCHEMA_VERSION = "2";
@@ -602,7 +658,10 @@ export const buildMutationReport = (input: ReportInput): MutationTestingReport =
   return {
     schemaVersion: REPORT_SCHEMA_VERSION,
     thresholds: { ...(input.thresholds ?? DEFAULT_THRESHOLDS) },
-    config: { ignoreStaticRetried: input.ignoreStaticRetried ?? false },
+    config: {
+      ignoreStaticRetried: input.ignoreStaticRetried ?? false,
+      ...(input.scope === undefined ? {} : { scope: input.scope }),
+    },
     files,
   };
 };
@@ -657,8 +716,13 @@ export const buildHistoryRecord = (
     number
   >;
   for (const c of verdict.coverage) coverageCounts[c.status] += 1;
+  // A spec-only run compares Spec_Mutant ids only, on both sides (8.30).
+  const specOnly = scopeOf(verdict.metadata) === "spec-only";
+  const compared = (id: MutantId): boolean => !specOnly || isSpecMutantId(id);
   const previouslyKilled = new Set(
-    (previousRecord?.mutants ?? []).filter((m) => m.status === "Killed").map((m) => m.id),
+    (previousRecord?.mutants ?? [])
+      .filter((m) => m.status === "Killed" && compared(m.id))
+      .map((m) => m.id),
   );
   const candidate: HistoryRecord = {
     time: verdict.metadata.timestamp,
@@ -669,8 +733,13 @@ export const buildHistoryRecord = (
     statusCounts,
     coverageCounts,
     newlyKilledIds: listed
-      .filter((m) => m.status === "Killed" && !previouslyKilled.has(m.id))
+      .filter((m) => m.status === "Killed" && compared(m.id) && !previouslyKilled.has(m.id))
       .map((m) => m.id),
+    coverageByCriterion: verdict.coverage.map((c) => ({
+      criterion: c.criterion,
+      status: c.status,
+    })),
+    ...(verdict.metadata.scope === undefined ? {} : { scope: verdict.metadata.scope }),
   };
   const parsed = historyRecordSchema.safeParse(candidate);
   if (!parsed.success) {

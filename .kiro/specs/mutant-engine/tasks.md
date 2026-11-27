@@ -1020,105 +1020,106 @@ Conventions used in every task:
     - Write `test/core/claims-example.test.ts`: read the real files of `examples/pricing/test/` and the fixture, run the claim functions, and assert 25 claims, 16 `held`, 7 `not-held`, 2 `unchecked` (2.2 and 3.4), 0 `unknown-criterion`; the seven `not-held` pairs are 2.1 of Property 1, 5.1 and 5.5 of Property 6, 6.2 and 6.3 of Property 7, and 5.5 and 7.4 of Property 9; `otherTestsKilledAll` is true for six and false for 7.4 of Property 9. This test reads a fixture, so task 21 does not change it (11.16).
     - _Requirements: 11.16_
     - _Validation: npx vitest run --project engine packages/engine/test/core/claims-example.test.ts passes_
-  - [ ] 17.9 Checkpoint - Claims
+  - [x] 17.9 Checkpoint - Claims
     - Run `npm run check` from the repository root. Ensure all tests pass, ask the user if questions arise.
     - _Validation: npm run check passes_
 
 - [ ] 18. Add the spec name, the requirement titles and the coverage of each run (Gap 4)
   - Source: requirements 2.9, 2.10, 8.25 to 8.27, 8.29, Property 33 in `design.md`. Every new field is optional in the schemas and every object stays strict. Every test below goes in a new file.
-  - [ ] 18.1 Parse the requirement titles
+  - [x] 18.1 Parse the requirement titles
     - Create `core/requirement-titles.ts` with `parseRequirementTitles` as in `design.md`. Do not change `parseRequirements` or the type `Criterion`.
     - Write `test/core/requirement-titles.test.ts`: `### Requirement 2: Requirements parser` gives `{ requirement: 2, title: "Requirements parser" }`; leading and trailing spaces are trimmed; a colon inside the title is kept; a heading inside a fenced code block is ignored; the order is document order; a repeated number is an error that names the file, the number and both lines; an empty title is an error that names the file and the line; a document with no heading gives an empty list; `parseRequirements` returns the same value as before for the same text (compare with the output on this spec's own `requirements.md`).
     - _Requirements: 2.9, 2.10_
     - _Validation: npx vitest run --project engine packages/engine/test/core/requirement-titles.test.ts passes_
-  - [ ] 18.2 Write Property 33: Requirement titles
+  - [x] 18.2 Write Property 33: Requirement titles
     - Write `test/core/requirement-titles.property.test.ts` with **Property 33** as stated in `design.md`.
     - **Validates: Requirements 2.2, 2.9, 2.10, 8.26**
     - _Requirements: 2.9, 2.10, 8.26_
     - _Validation: npx vitest run --project engine packages/engine/test/core/requirement-titles.property.test.ts passes_
-  - [ ] 18.3 Add the types and the schemas
+  - [x] 18.3 Add the types and the schemas
     - In `core/types.ts` and `core/report.ts` add `RequirementTitle`, `specName` in `runMetadataSchema`, `requirements` in `verdictSchema` and `coverageByCriterion` in `historyRecordSchema`, all optional and strict. Export from `trick-or-test/report`. (`scope` is added by task 19.)
     - Write `test/core/small-fields-schema.test.ts`: a verdict and a history record without the fields parse; with the fields they parse; an unknown key inside `requirements` and inside `coverageByCriterion` is rejected; an empty title and a non-integer requirement number are rejected; an unknown Coverage_Status is rejected.
     - _Requirements: 8.25, 8.26, 8.27, 8.29_
     - _Validation: npx vitest run --project engine packages/engine/test/core/small-fields-schema.test.ts passes_
-  - [ ] 18.4 Write the fields in the builders
+  - [x] 18.4 Write the fields in the builders
     - In `core/report.ts` let `buildVerdict` write `metadata.specName` and `requirements` (each title trimmed and scrubbed by `scrubAbsolutePaths`), and `buildHistoryRecord` write `coverageByCriterion` from `verdict.coverage` in document order.
     - Write `test/core/small-fields-builders.test.ts`: the spec name and the titles reach the verdict; a title with an absolute path is scrubbed; `coverageByCriterion` holds one entry for each Criterion in document order with the Coverage_Status of the verdict, including `skipped` and `unattacked`; a record built from a verdict with no coverage has an empty list; the output is byte-identical for equal input.
     - _Requirements: 8.13, 8.17, 8.25, 8.26, 8.27_
     - _Validation: npx vitest run --project engine packages/engine/test/core/small-fields-builders.test.ts passes_
-  - [ ] 18.5 Carry the fields from the pipeline
+  - [x] 18.5 Carry the fields from the pipeline
     - In `cli/orchestrate.ts` call `parseRequirementTitles` in the load stage, next to `parseRequirements`; a title error stops the run before the baseline, as a requirements error does. Pass `specName`, the titles to the builders.
     - Write `test/cli/orchestrate-small-fields.test.ts` with fake adapters: read the written files; `metadata.specName` equals the chosen spec; `requirements` has one entry per `### Requirement N:` heading; the last line of `history.jsonl` has `coverageByCriterion` equal to the `coverage` of `verdict.json` (criterion and status); a duplicate requirement number stops the run before the baseline with exit code 1.
     - _Requirements: 2.10, 8.25, 8.26, 8.27, 10.13_
     - _Validation: npx vitest run --project engine packages/engine/test/cli/orchestrate-small-fields.test.ts passes_
-  - [ ] 18.6 Checkpoint - Small fields
+  - [x] 18.6 Checkpoint - Small fields
     - Run `npm run check` from the repository root. Ensure all tests pass, ask the user if questions arise.
     - _Validation: npm run check passes_
 
-- [ ] 19. Add the spec-only run scope (Gap 5)
+- [x] 19. Add the spec-only run scope (Gap 5)
   - Source: requirements 8.28 to 8.31, 9.17 to 9.22, 11.15, Properties 32 and 34 in `design.md`. An agent that hunts one surviving Spec_Mutant needs a run of seconds. `--scope spec-only` runs the Baseline_Run and the Spec_Mutants and never StrykerJS. A spec-only run has no strays and no StrykerJS score, and says so in its three files.
   - Decision on history: a `full` run compares with the latest earlier `full` record; a `spec-only` run compares with the latest earlier record of any scope on Spec_Mutant ids only (requirement 8.30).
   - Every test below goes in a new file.
-  - [ ] 19.1 Add the type and the schema fields
+  - [x] 19.1 Add the type and the schema fields
     - Add `RunScope`; add the optional `scope` to `runMetadataSchema` and `historyRecordSchema`. The enum has exactly `full` and `spec-only`. Export from `trick-or-test/report`.
     - Write `test/core/scope-schema.test.ts`: both fields absent parse and mean `full`; both values parse; any other value is rejected; an unknown key is still rejected.
     - _Requirements: 8.28, 8.29_
     - _Validation: npx vitest run --project engine packages/engine/test/core/scope-schema.test.ts passes_
-  - [ ] 19.2 Choose the comparison record
+  - [x] 19.2 Choose the comparison record
     - Create `core/run-scope.ts` with `scopeOf` and `selectComparisonRecord`, and let `buildHistoryRecord` compare only Spec_Mutant ids when the scope is `spec-only`. The signature of `buildHistoryRecord` does not change.
     - Write `test/core/run-scope.test.ts`: a record with no `scope` is `full`; a `full` run after `full`, `spec-only` gets the first record; a `full` run with no `full` record gets none; a `spec-only` run gets the latest record of either scope; an empty list gives none; a `full` run that follows a `spec-only` record does not list mechanical ids that the last `full` record had as killed; a `spec-only` record lists no mechanical id in `newlyKilledIds`; two runs of one scope give the 8.9 result.
     - _Requirements: 8.9, 8.28, 8.30_
     - _Validation: npx vitest run --project engine packages/engine/test/core/run-scope.test.ts passes_
-  - [ ] 19.3 Write Property 34: History comparison across scopes
+  - [x] 19.3 Write Property 34: History comparison across scopes
     - Write `test/core/run-scope.property.test.ts` with **Property 34** as stated in `design.md`.
     - **Validates: Requirements 8.9, 8.28, 8.30**
     - _Requirements: 8.9, 8.28, 8.30_
     - _Validation: npx vitest run --project engine packages/engine/test/core/run-scope.property.test.ts passes_
-  - [ ] 19.4 Write the scope in the builders
+  - [x] 19.4 Write the scope in the builders
     - In `core/report.ts` write `metadata.scope` and `HistoryRecord.scope` and `config.scope` of the Mutation_Report. For `spec-only` the builders get no Mechanical_Mutants, so `mutantCounts.mechanical`, `strykerCounts` and the strays are absent. A `full` run writes `scope: "full"`.
     - Write `test/core/scope-builders.test.ts`: the three outputs carry the scope; a spec-only verdict has no `strykerCounts` key and no `mechanical` key (check with `Object.hasOwn`); a spec-only Mutation_Report holds Spec_Mutants only; the output is byte-identical for equal input.
     - _Requirements: 8.13, 8.22, 8.23, 8.28, 9.18_
     - _Validation: npx vitest run --project engine packages/engine/test/core/scope-builders.test.ts passes_
-  - [ ] 19.5 Write Property 32: New fields are optional, strict and clean
+  - [x] 19.5 Write Property 32: New fields are optional, strict and clean
     - Write `test/core/verdict.new-fields.property.test.ts` with **Property 32** as stated in `design.md`. It covers every new field of tasks 15 to 19.
     - **Validates: Requirements 8.12, 8.13, 8.17, 8.22, 8.25, 8.26, 8.27, 8.28, 8.29, 8.31**
+    - The property found that `buildVerdict` copied `specName` (into `metadata.specName`) and each claim's `criterion` (in `baselineTests[].claims[]`) unchanged. Fix `buildVerdict` so both pass through `scrubAbsolutePaths`, as the other free-text fields do (8.17, 8.31). The HistoryRecord builder copies neither field, so it needs no change. Add `test/core/verdict-scrub-new-fields.test.ts` with example tests for a spec name under the project root, one outside it, and a claim criterion with an absolute path.
     - _Requirements: 8.12, 8.13, 8.17, 8.29, 8.31_
     - _Validation: npx vitest run --project engine packages/engine/test/core/verdict.new-fields.property.test.ts passes_
-  - [ ] 19.6 Parse the option
+  - [x] 19.6 Parse the option
     - In `cli/` add `--scope <full|spec-only>` to the argument parser of `run` and `measure`, with `full` as default, a usage line, and the errors of 9.19 and 9.20 (exit code 1, message on stderr).
     - Write `test/cli/args-scope.test.ts`: no option gives `full`; both values are accepted by `run` and `measure`; a third value prints the usage text and exits 1; `--scope spec-only --since main` prints an error that names both options and exits 1; `--scope full --since main` is accepted; a missing value is a usage error.
     - _Requirements: 9.17, 9.19, 9.20_
     - _Validation: npx vitest run --project engine packages/engine/test/cli/args-scope.test.ts passes_
-  - [ ] 19.7 Run the spec-only pipeline
+  - [x] 19.7 Run the spec-only pipeline
     - In `cli/orchestrate.ts` skip the git diff, the project listing for exclusions, the exclusion computation and the StrykerJS run when the scope is `spec-only`; go from the Baseline_Run to the pristine Sandbox. Pass `scope` to the builders. Print the scope in the summary, `strays: not run`, and no StrykerJS figure (9.21). Leave the npm scripts `measure` and `demo` without `--scope` (9.22).
     - Write `test/cli/orchestrate-spec-only.test.ts` with fake adapters: neither the Stryker adapter nor git is called; the three written files carry `scope: "spec-only"`; no `strykerCounts`; no stray in `mutants`; the Baseline_Run and every Spec_Mutant ran; the claims of task 17 equal those of a full run on the same fakes (11.15); the summary text holds `spec-only` and `not run` and no stray count; a `full` run on the same fakes still calls the Stryker adapter. Add a test in the same file that reads the root `package.json` and checks that the scripts `measure` and `demo` contain no `--scope`.
     - _Requirements: 9.18, 9.21, 9.22, 11.15_
     - _Validation: npx vitest run --project engine packages/engine/test/cli/orchestrate-spec-only.test.ts passes_
-  - [ ] 19.8 Run a spec-only run end to end
+  - [x] 19.8 Run a spec-only run end to end
     - Write `test/e2e/pricing-spec-only.test.ts`: run the built CLI with `--scope spec-only` on `examples/pricing` into an output directory under `.trickortest/`, and check that the run takes less time than the full run of the e2e test (print both times, assert only that no StrykerJS temporary directory was created), that the three files carry the scope, hold no stray, no `strykerCounts`, and no absolute path, and that `git status --porcelain` of the project shows no change outside `.trickortest/`. Remove the output directory afterwards.
     - _Requirements: 9.18, 9.21, 10.8, 10.11_
     - _Validation: npm run test:e2e -w trick-or-test passes_
-  - [ ] 19.9 Checkpoint - Run scope
+  - [x] 19.9 Checkpoint - Run scope
     - Run `npm run check` from the repository root, then `npm run test:e2e --workspace trick-or-test`. Ensure all tests pass, ask the user if questions arise.
     - _Validation: npm run check passes_
 
 - [ ] 20. Build the source of the test that would catch a survivor (Gap 6)
   - Source: requirement 12 and Property 35 in `design.md`. A Witness is one input and the answer the spec demands. `buildWitnessTest` turns it into the source of one Vitest test. The engine calls no LLM (ADR 0004). Every test below goes in a new file.
-  - [ ] 20.1 Add `buildWitnessTest`
+  - [x] 20.1 Add `buildWitnessTest`
     - Create `core/witness-test.ts` as in `design.md` and re-export it and `WitnessTestError` from `trick-or-test/report`. The module imports nothing from `node:`; it computes the relative import path on `/`-separated strings.
     - Write `test/core/witness-test.test.ts`: the example of `design.md` (`testFile` `test/hunt/oath-5.5.test.ts`, `from` `src/index.ts`) gives the import path `../../src/index`; a test file in the same directory as the module gives `./index`; a `from` with `.tsx` loses the extension; a Witness with `expected` gives `toEqual` and no `toThrow`; one with `expectedError` gives `toThrow`, imports the class from the same module, and has no `toEqual`; the test name starts with the Criterion id and a space; the output has the shape of `design.md` (readable, two-space indented JSON text after `const args = ` and `const expected: unknown = `, `] as unknown as Parameters<typeof priceCart>;`, `expect(priceCart(...args)).toEqual(expected);`, and `toThrow(ValidationError)` for `expectedError`) and no `JSON.parse` call; an `expected` of `null`, of `0`, of a nested object and of a string with quotes and a backslash, and an `args` list with nested arrays, are the text of `JSON.stringify(value, null, 2)` re-indented, and parse back with `JSON.parse` once the indent is removed; an empty `args` list prints `[]`; keys keep the order of the Witness object; a key `__proto__` in `args` (at the top level and nested) switches only `args` to the `JSON.parse("...")` form and the parsed value has an own `__proto__` property; a key `__proto__` in `expected` switches only `expected`; with the key in both, both use the form; an export name `a-b`, an error class `1X`, a `from` with `..`, an absolute `from` and an absolute `testFile` each return an error that names the field and no source; two calls with equal input give equal strings.
     - _Requirements: 12.1, 12.2, 12.3, 12.4, 12.5, 12.6, 12.7_
     - _Validation: npx vitest run --project engine packages/engine/test/core/witness-test.test.ts passes_
-  - [ ] 20.2 Write Property 35: Witness test source
+  - [x] 20.2 Write Property 35: Witness test source
     - Write `test/core/witness-test.property.test.ts` with **Property 35** as stated in `design.md`. The generator reaches nested values, unicode, `null`, an empty `args` list, and test files at several depths. It also generates `args` and `expected` with and without the key `__proto__` at the top level and at depth, in every combination, and the property covers both forms: the plain form (cut out between the markers, remove the indent, `JSON.parse`, compare) and the `JSON.parse` form (parse twice, compare).
     - **Validates: Requirements 12.1, 12.2, 12.3, 12.4, 12.5, 12.6, 12.7**
     - _Requirements: 12.1, 12.2, 12.3, 12.4, 12.5, 12.6, 12.7_
     - _Validation: npx vitest run --project engine packages/engine/test/core/witness-test.property.test.ts passes_
-  - [ ] 20.3 Check that the generated test runs
+  - [x] 20.3 Check that the generated test runs
     - Write `test/adapters/witness-test-run.test.ts`: take two Witnesses of the committed mutants of `examples/pricing` (one with `expected`, one with `expectedError`), build the test source, write it under `.trickortest/` of a copy of the project in a Sandbox, run Vitest on it, and check that it passes on the original code and fails once the matching Spec_Mutant is applied in the Sandbox. Also type-check the generated file with `tsc --noEmit` in strict mode in the Sandbox, for both Witnesses and for one more Witness whose `args` holds a value that does not match the parameter type of the export, to show that the cast through `unknown` compiles. Remove the Sandbox afterwards.
     - _Requirements: 12.2, 12.3_
     - _Validation: npx vitest run --project engine packages/engine/test/adapters/witness-test-run.test.ts passes_
-  - [ ] 20.4 Checkpoint - Witness test
+  - [x] 20.4 Checkpoint - Witness test
     - Run `npm run check` from the repository root. Ensure all tests pass, ask the user if questions arise.
     - _Validation: npm run check passes_
 
@@ -1303,3 +1304,42 @@ Conventions used in every task:
   ]
 }
 ```
+
+- [ ] 23. Correct the claim id list, describe the seed, remove a duplicate type (Corrections 1 to 3)
+  - NOTE: group 23 is run BEFORE groups 21 and 22, so that the committed evidence is regenerated once, in group 22, after these corrections. It is numbered 23 only so that no existing task is renumbered. The dependency graph above is not changed; run 23.1 to 23.6 in order, then 21 and 22.
+  - Source: requirements 11.3, 8.6 and 8.9, Property 27 and the notes on `metadata.seed`, `HistoryRecord.seed` and `TestKind` in `design.md`.
+  - Rules for every sub-task: one commit per task, with the author suffix `(Kiro)` as `AGENTS.md` says; a committed (sealed) test file is never edited, and if a correction would break one, the task names that file and stops; new tests go in new files; example tests in `*.test.ts` and property tests in `*.property.test.ts`, never mixed; no repository file is written through a shell command; no absolute machine path in code, tests or documents (when a test needs an absolute path, use one under `/proj` or `/srv`, because the commit guard refuses a made-up example under `/home/` or `/Users/`); `git config --global` is never read; no new dependency; generated files (`reports/`, `apps/viewer/public/demo/`) are never edited by hand.
+  - Correction 1: the last id of a claim is lost when a sentence mark follows it.
+  - [x] 23.1 Guard and fix the end of an id list
+    - Write `test/core/claims-id-list.test.ts` (new file, example tests, names start with `11.3`): `// Validates: Requirements 7.3, 7.4.` gives 7.3 and 7.4; `(Requirements 5.1, 5.2)` gives 5.1 and 5.2; an id followed by `;`, `:` or `]` counts and ends the list (ids after the mark are not read); an id followed by several marks (`7.4.)`, `7.4.;`) counts and ends the list; `7.4.1` and `7.4x` are not ids and end the list, and the ids before them are kept; a whole requirement followed by a mark is not an id and ends the list (`Requirements 2.1, 5.` gives 2.1 only); `Validates:` followed only by a mark gives none. Do not edit `test/core/claims-parse.test.ts`.
+    - Write `test/core/claims-id-list.property.test.ts` (new file, property test) for **Property 27** as amended in `design.md`: for a generated list of ids and a generated tail of zero or more of the marks `.`, `;`, `:`, `)`, `]` after the last `N.M` id, the parsed refs equal the generated ids in order; a malformed token placed after the ids ends the list. It uses the fast-check setup already configured in the Vitest setup file, with no ad-hoc `seed` and no `numRuns` passed to `fc.assert`.
+    - Run both files before changing any source. The example file must fail on the cases of the lost id, to show that it guards the defect.
+    - Then, in `core/claims.ts` make the smallest change to the id-list reader of `parseClaimComments` so that an `N.M` id followed directly by one or more of `.`, `;`, `:`, `)` or `]` counts as that id and the list ends after it, while a whole requirement `N` followed by a mark, `7.4.1` and `7.4x` stay no id and end the list. Do not change `extractLeadingComments`, `resolveClaimRefs`, the types or any other function. Keep the module pure, with no `node:` import.
+    - The committed tests `claims-parse.test.ts` and `claims.parse.property.test.ts` must still pass, unchanged. If one fails, do not edit it: name the file and the test, and stop.
+    - **Validates: Requirements 11.3**
+    - _Requirements: 11.3, 11.13_
+    - _Validation: npx vitest run --project engine packages/engine/test/core/claims-id-list.test.ts packages/engine/test/core/claims-id-list.property.test.ts packages/engine/test/core/claims-parse.test.ts packages/engine/test/core/claims.parse.property.test.ts passes_
+  - [x] 23.2 Check that the committed example count does not change
+    - Run the existing `test/core/claims-example.test.ts` without editing it. It asserts 25 claims, 16 `held`, 7 `not-held`, 2 `unchecked` and 0 `unknown-criterion`. If it passes, state in the commit message of 23.1 or in the report that the count is unchanged. If the new rule changes the count, STOP and report the old and the new numbers; do not edit the committed test or the fixture `test/fixtures/cart-pricing-24/`.
+    - _Requirements: 11.3, 11.16_
+    - _Validation: npx vitest run --project engine packages/engine/test/core/claims-example.test.ts passes_
+  - Correction 2: say what `metadata.seed` is. The value and the type do not change.
+  - [x] 23.3 Describe the seed in both schemas
+    - In `core/report.ts` give the `seed` field of the run metadata schema (used by the verdict schema) and the `seed` field of the history-record schema the same `.describe(...)` text, one shared constant: the seed is the own seed of the engine, always 0 today because the engine uses no random source, and it is not the seed of the property tests of the target project. Do not change the type (`number`), the default, the value written by the builders or any other field. Both schemas are exported from `trick-or-test/report`.
+    - Write `test/core/seed-description.test.ts` (new file): the `seed` field of the verdict schema (through its metadata object) and of the history-record schema carry a description, the two descriptions are equal, the text names the engine, says the value is 0 today and says it is not the seed of the property tests of the project; a verdict and a history record with `seed: 0` still parse; the output of `buildVerdict` and `buildHistoryRecord` still has `seed: 0`. Do not edit the committed schema tests.
+    - _Requirements: 8.6, 8.9_
+    - _Validation: npx vitest run --project engine packages/engine/test/core/seed-description.test.ts passes_
+  - [x] 23.4 Fix text outside the spec that says the seed repeats the project's property tests
+    - Start by searching, with the search tools and not the shell, for text outside `.kiro/specs/` that says the seed (or the history record) can repeat or reproduce the property tests of the target project: `README.md`, `docs/`, `docs/decisions/`, `packages/engine/README.md` if present, the `power/` folder, the `.kiro/steering/` files and comments in `packages/engine/src/` and `apps/viewer/src/` (search `seed`, `reproduce`, `repeat`, `replay`). Do not search or edit `reports/` or `apps/viewer/public/demo/`.
+    - If nothing is found, record in the commit message of 23.3 (or in the final report) that nothing was found, and change nothing. If text is found, change only that sentence, so that it says what 8.6 says. If the text is in a sealed test or in a generated file, name it and stop.
+    - _Requirements: 8.6, 8.9_
+    - _Validation: npx biome check . passes, and a repeat of the search finds no remaining sentence that says the seed repeats the property tests of the project_
+  - Correction 3: one definition of `TestKind` (no behaviour change).
+  - [x] 23.5 Keep one `TestKind`
+    - `TestKind` is defined in `core/types.ts` and again in `core/test-classification.ts`. Keep the one in `core/types.ts`. In `core/test-classification.ts` remove the second definition, add `import type { TestKind } from "./types.js";`, and keep `export type { TestKind };` there so that `cli/orchestrate.ts` and `core/kill-classification.ts` still compile unchanged. Do not change any function, any value or any other file.
+    - Do not edit `test/core/test-classification*.test.ts`: they must pass unchanged.
+    - _Requirements: 6.3, 6.4, 6.5_
+    - _Validation: npm run typecheck && npx vitest run --project engine packages/engine/test/core --testNamePattern "classif" passes (run `npx vitest run --project engine packages/engine/test/core` if no pattern matches)_
+  - [ ] 23.6 Checkpoint - Corrections
+    - Run `npm run check` from the repository root. Ensure all tests pass, ask the user if questions arise.
+    - _Validation: npm run check passes_

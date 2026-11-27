@@ -105,6 +105,16 @@ export type RunMetadata = {
   typescriptVersion: string;
   /** Excluded from byte-identity comparisons (Requirement 8.13). */
   timestamp: string;
+  /** The attacked spec (Requirement 8.25). Absent in a file written before the field existed (8.29). */
+  specName?: string;
+  /** The Run_Scope (Requirement 8.28). Absent means `full` (8.29). */
+  scope?: RunScope;
+};
+
+/** The title of one Requirement of the spec (Requirements 2.9, 8.26). */
+export type RequirementTitle = {
+  readonly requirement: number;
+  readonly title: string;
 };
 
 /** A Witness as the Verdict stores it. `mutatedOutcome` is present only when the witness ran against the mutated code (Requirements 8.19, 8.20). */
@@ -180,6 +190,8 @@ export type Verdict = {
   strykerCounts?: StrykerCounts;
   baselineTests?: BaselineTest[];
   claimCounts?: ClaimCounts;
+  /** One entry per Requirement, in document order (Requirement 8.26). */
+  requirements?: RequirementTitle[];
 };
 
 export type HistoryRecord = {
@@ -191,4 +203,8 @@ export type HistoryRecord = {
   statusCounts: Record<MutantStatus, number>;
   coverageCounts: Record<CoverageStatus, number>;
   newlyKilledIds: MutantId[];
+  /** Coverage_Status of every Criterion, in document order: one row of seals (Requirement 8.27). */
+  coverageByCriterion?: { criterion: CriterionId; status: CoverageStatus }[];
+  /** The Run_Scope (Requirement 8.28). Absent means `full` (8.29). */
+  scope?: RunScope;
 };
