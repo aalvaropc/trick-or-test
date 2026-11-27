@@ -13,7 +13,14 @@ import type {
   WitnessRunOptions,
   WitnessRunResult,
 } from "../adapters/vitest-witness-runner.js";
+import { buildBaselineTests, type PassedTestInput, toTestId } from "../core/baseline-tests.js";
 import { type ChangedRange, parseChangedRanges } from "../core/changed-ranges.js";
+import {
+  attachClaims,
+  extractLeadingComments,
+  parseClaimComments,
+  resolveClaimRefs,
+} from "../core/claims.js";
 import { CONFIG_FILE_NAME, resolveConfigPaths, validateConfig } from "../core/config.js";
 import { computeCoverage } from "../core/coverage.js";
 import { computeKillClass } from "../core/kill-classification.js";
@@ -24,6 +31,7 @@ import {
   buildHistoryRecord,
   buildMutationReport,
   buildVerdict,
+  type MutantChange,
   parseHistoryLines,
   type ReportMutantInput,
   type SpecReportMutantInput,
@@ -47,6 +55,8 @@ import type { Location } from "../core/stryker-output.js";
 import { computeSuiteTimeLimit } from "../core/suite-time-limit.js";
 import { classifyTest, type TestKind } from "../core/test-classification.js";
 import type {
+  BaselineTest,
+  ClaimCounts,
   Criterion,
   EngineConfig,
   HistoryRecord,
@@ -324,12 +334,24 @@ export interface MechanicalStageResult {
   readonly baselineMs: number;
   readonly mutants: readonly MechanicalOutcome[];
   readonly ignoreStaticRetried: boolean;
+  /** The passed tests of the Baseline_Run (6.11). */
+  readonly baselineTests: BaselineTest[];
+  /** Where each passed test starts, so the claims above it can be read (Requirement 11.1). */
+  readonly baselineSources: BaselineTestSource[];
+}
+
+/** The file and start line of one Baseline_Test. */
+export interface BaselineTestSource {
+  readonly id: TestId;
+  /** Project-relative path of the test file. */
+  readonly file: string;
+  readonly startLine: number;
 }
 
 /** Upper bound for the baseline run, which has no baseline duration to derive a limit from. */
 export const BASELINE_TIME_LIMIT_MS = 10 * 60 * 1000;
 
-const testIdOf = (file: string, name: string): TestId => `${file}::${name}` as TestId;
+const testIdOf = toTestId;
 
 /** StrykerJS status to engine status. Ignored and pending mutants never ran and are dropped. */
 const toEngineStatus = (status: string): MutantStatus | undefined => {
@@ -381,6 +403,12 @@ export async function runBaselineAndMechanical(
       .map((t) => (t.name === file.path ? file.path : testIdOf(file.path, t.name))),
   );
   if (failingTests.length > 0) return err({ kind: "baseline-failed", failingTests });
+  const { tests: baselineTests, sources: baselineSources } = await baselineTestsOf(
+    baseline.value,
+    options.project,
+    config.propertyTestGlobs,
+    adapters.fs,
+  );
 
   let changedRanges: ChangedRange[] | undefined;
   if (options.since !== undefined) {
@@ -392,7 +420,13 @@ export async function runBaselineAndMechanical(
     );
     // 3.10: no changed line in a source file gives zero mutants and no StrykerJS run.
     if (changedRanges.length === 0) {
-      return ok({ baselineMs: baseline.value.durationMs, mutants: [], ignoreStaticRetried: false });
+      return ok({
+        baselineMs: baseline.value.durationMs,
+        mutants: [],
+        ignoreStaticRetried: false,
+        baselineTests,
+        baselineSources,
+      });
     }
   }
 
@@ -412,7 +446,50 @@ export async function runBaselineAndMechanical(
     baselineMs: baseline.value.durationMs,
     mutants,
     ignoreStaticRetried: run.value.ignoreStaticRetried,
+    baselineTests,
+    baselineSources,
   });
+}
+
+/**
+ * The passed tests of the Baseline_Run as Baseline_Tests (6.11, 6.12). A file that cannot be
+ * read gives its tests an empty body, so they count as examples unless the file is a property file.
+ */
+async function baselineTestsOf(
+  suite: SuiteResult,
+  projectRoot: string,
+  propertyTestGlobs: string[],
+  fs: Pick<LoadFileSystem, "readFile">,
+): Promise<{ tests: BaselineTest[]; sources: BaselineTestSource[] }> {
+  const inputs: PassedTestInput[] = [];
+  for (const file of suite.files) {
+    const passed = file.tests.filter((t) => t.status === "passed");
+    if (passed.length === 0) continue;
+    const read = await fs.readFile(joinPath(projectRoot, file.path));
+    const text = read.ok ? read.value : undefined;
+    for (const t of passed) {
+      inputs.push({
+        filePath: file.path,
+        fullName: t.name,
+        startLine: t.startLine,
+        // A file-level result is named after its file and has no test body.
+        bodySource:
+          text === undefined || t.name === file.path ? "" : extractTestBody(text, t.startLine),
+        status: t.status,
+      });
+    }
+  }
+  return {
+    tests: buildBaselineTests(inputs, propertyTestGlobs),
+    sources: inputs
+      // A file-level result has no test call to read comments above.
+      .filter((i) => i.fullName !== i.filePath)
+      .map((i) => ({
+        id: toTestId(i.filePath, i.fullName),
+        file: i.filePath,
+        startLine: i.startLine,
+      })),
+  };
 }
 
 /**
@@ -814,6 +891,10 @@ export interface ReportStageInput {
   readonly specMutants: readonly SpecMutantOutcome[];
   readonly ignoreStaticRetried: boolean;
   readonly metadata: RunMetadata;
+  /** Passed tests of the Baseline_Run; written as `baselineTests` when present (6.11). */
+  readonly baselineTests?: readonly BaselineTest[];
+  /** File and start line of each Baseline_Test; without it no claim is read (11.14). */
+  readonly baselineSources?: readonly BaselineTestSource[];
 }
 
 export const REPORT_FILE_NAME = "mutation-report.json";
@@ -833,6 +914,37 @@ export interface ReportStageResult {
   readonly verdictPath: string;
   readonly historyPath: string;
   readonly coverage: ReturnType<typeof computeCoverage>;
+}
+
+/**
+ * Reads the Claims of the Baseline_Tests (Requirements 11.1, 11.12, 11.14). Each distinct test
+ * file is read once; a file that cannot be read gives its tests no claim and no error.
+ */
+async function readClaims(
+  projectRoot: string,
+  tests: readonly BaselineTest[],
+  sources: readonly BaselineTestSource[],
+  spec: LoadedSpec | undefined,
+  results: MutantResult[],
+  fs: Pick<LoadFileSystem, "readFile">,
+): Promise<{ baselineTests: BaselineTest[]; claimCounts: ClaimCounts }> {
+  const criteria = [...(spec?.criteria ?? [])];
+  const texts = new Map<string, string | undefined>();
+  const claimIds = new Map<TestId, string[]>();
+  if (spec !== undefined) {
+    for (const source of sources) {
+      if (claimIds.has(source.id)) continue;
+      if (!texts.has(source.file)) {
+        const read = await fs.readFile(joinPath(projectRoot, source.file));
+        texts.set(source.file, read.ok ? read.value : undefined);
+      }
+      const text = texts.get(source.file);
+      if (text === undefined) continue;
+      const refs = parseClaimComments(extractLeadingComments(text, source.startLine), spec.name);
+      claimIds.set(source.id, resolveClaimRefs(refs, criteria));
+    }
+  }
+  return attachClaims([...tests], claimIds, criteria, results);
 }
 
 const positionIn = (source: string, offset: number): { line: number; column: number } => {
@@ -879,16 +991,6 @@ export async function writeReports(
         : { ...m.mutant.witness, mutatedOutcome: m.mutatedOutcome };
   }
 
-  const verdict = buildVerdict({
-    coverage: coverageWithText,
-    mutants: results,
-    witnesses,
-    ignoreStaticRetried: input.ignoreStaticRetried,
-    metadata: input.metadata,
-    projectRoot: options.project,
-  });
-  if (!verdict.ok) return err({ kind: "build-error", message: verdict.error });
-
   // Sources of every file the report mentions.
   const paths = [
     ...new Set([
@@ -931,6 +1033,36 @@ export async function writeReports(
       killedBy: [...result.killingTests],
     };
   });
+  // 8.21 - 8.23: the builders get the raw list and the change each mutant makes, so they find
+  // the Twins and count before and after dropping them.
+  const changes: Record<MutantId, MutantChange> = {};
+  for (const m of [...mechanical, ...spec]) {
+    changes[m.id] = { file: m.file, location: m.location, replacement: m.replacement };
+  }
+  // 11.12, 11.15: claims depend on the Baseline_Run and the Spec_Mutants, not on the Run_Scope.
+  const claimed =
+    input.baselineTests === undefined
+      ? undefined
+      : await readClaims(
+          options.project,
+          input.baselineTests,
+          input.baselineSources ?? [],
+          project.specs[0],
+          results,
+          fs,
+        );
+  const verdict = buildVerdict({
+    coverage: coverageWithText,
+    mutants: results,
+    witnesses,
+    ignoreStaticRetried: input.ignoreStaticRetried,
+    metadata: input.metadata,
+    projectRoot: options.project,
+    changes,
+    ...(claimed === undefined ? {} : claimed),
+  });
+  if (!verdict.ok) return err({ kind: "build-error", message: verdict.error });
+
   const report = buildMutationReport({
     files: Object.fromEntries(
       paths.map((p) => [p, { language: "typescript", source: sources.get(p) ?? "" }]),
@@ -971,6 +1103,7 @@ export async function writeReports(
     previousRecord,
     configAsWritten(config, options.project),
     options.project,
+    changes,
   );
   if (!record.ok) return err({ kind: "build-error", message: record.error });
   let line: string;

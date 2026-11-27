@@ -1,0 +1,221 @@
+[
+  {
+    "id": "oath-2.1-half-rounds-down",
+    "requirement": "2.1",
+    "status": "Killed",
+    "killingTests": [
+      "test/percent.test.ts::percentOf examples percentOf(1, 5000) = 1",
+      "test/percent.test.ts::percentOf examples percentOf(5, 1000) = 1",
+      "test/percent.test.ts::percentOf examples percentOf(15, 1000) = 2",
+      "test/price.test.ts::priceCart properties subtotalCents is the sum of line totals with bulk discount",
+      "test/price.test.ts::priceCart unit tests bulk discount boundary exact-half bulk discount: quantity 11 at unit price 5 gives 49"
+    ]
+  },
+  {
+    "id": "oath-2.3-percent-validates-bps",
+    "requirement": "2.3",
+    "status": "Killed",
+    "killingTests": [
+      "test/percent.test.ts::percentOf matches the BigInt Round_Half_Up reference for safe non-negative integers",
+      "test/percent.test.ts::percentOf examples does not throw for bps above 10000"
+    ]
+  },
+  {
+    "id": "oath-3.1-quantity-upper-bound",
+    "requirement": "3.1",
+    "status": "Killed",
+    "killingTests": [
+      "test/validation.test.ts::validation properties reports a single invalid field by name",
+      "test/validation.test.ts::validation properties: multiple invalid fields throws a ValidationError naming one of the invalid fields",
+      "test/validation.test.ts::validation unit tests quantity 1000 valid=false"
+    ]
+  },
+  {
+    "id": "oath-3.2-unit-price-upper-bound",
+    "requirement": "3.2",
+    "status": "Killed",
+    "killingTests": [
+      "test/price.test.ts::priceCart properties subtotalCents is the sum of line totals with bulk discount",
+      "test/price.test.ts::priceCart coupon discount discountCents follows the coupon rules and is clamped to the subtotal",
+      "test/price.test.ts::priceCart shipping shippingCents follows method and the discounted subtotal threshold",
+      "test/price.test.ts::priceCart tax taxCents is percentOf the discounted subtotal and ignores shipping method",
+      "test/price.test.ts::priceCart breakdown invariants fields are non-negative integers, discount <= subtotal, and total identity holds",
+      "test/validation.test.ts::validation properties reports a single invalid field by name",
+      "test/validation.test.ts::validation unit tests unit price 1000000 valid=true"
+    ]
+  },
+  {
+    "id": "oath-3.3-tax-bps-upper-bound",
+    "requirement": "3.3",
+    "status": "Killed",
+    "killingTests": [
+      "test/validation.test.ts::validation properties reports a single invalid field by name",
+      "test/validation.test.ts::validation unit tests taxBps 10001 valid=false"
+    ]
+  },
+  {
+    "id": "oath-3.5-coupon-validated",
+    "requirement": "3.5",
+    "status": "Killed",
+    "killingTests": [
+      "test/validation.test.ts::validation unit tests does not throw ValidationError for unusual coupon values"
+    ]
+  },
+  {
+    "id": "oath-4.1-bulk-discount-rounds-up",
+    "requirement": "4.1",
+    "status": "Killed",
+    "killingTests": [
+      "test/price.test.ts::priceCart properties subtotalCents is the sum of line totals with bulk discount",
+      "test/price.test.ts::priceCart unit tests bulk discount boundary exact-half bulk discount: quantity 11 at unit price 5 gives 49"
+    ]
+  },
+  {
+    "id": "oath-4.2-bulk-threshold-nine",
+    "requirement": "4.2",
+    "status": "Killed",
+    "killingTests": [
+      "test/price.test.ts::priceCart properties subtotalCents is the sum of line totals with bulk discount",
+      "test/price.test.ts::priceCart unit tests bulk discount boundary quantity 9 at unit price 5 has line total 45"
+    ]
+  },
+  {
+    "id": "oath-4.3-subtotal-last-line-only",
+    "requirement": "4.3",
+    "status": "Killed",
+    "killingTests": [
+      "test/price.test.ts::priceCart properties subtotalCents is the sum of line totals with bulk discount"
+    ]
+  },
+  {
+    "id": "oath-4.4-empty-cart-nonzero-subtotal",
+    "requirement": "4.4",
+    "status": "Killed",
+    "killingTests": [
+      "test/price.test.ts::priceCart properties subtotalCents is the sum of line totals with bulk discount",
+      "test/price.test.ts::priceCart properties empty carts price to all zeros",
+      "test/price.test.ts::priceCart unit tests empty cart yields all zeros with coupon, express shipping, and nonzero taxBps"
+    ]
+  },
+  {
+    "id": "oath-5.1-coupon-min-exclusive",
+    "requirement": "5.1",
+    "status": "Killed",
+    "killingTests": [
+      "test/price.test.ts::priceCart unit tests coupon minimum subtotal applies when minSubtotalCents equals the subtotal",
+      "test/price.test.ts::priceCart unit tests coupon minimum subtotal fixed coupon below minimum gives 0 and at minimum applies"
+    ]
+  },
+  {
+    "id": "oath-5.2-coupon-min-ignored",
+    "requirement": "5.2",
+    "status": "Killed",
+    "killingTests": [
+      "test/price.test.ts::priceCart coupon discount discountCents follows the coupon rules and is clamped to the subtotal",
+      "test/price.test.ts::priceCart unit tests coupon minimum subtotal gives discount 0 when subtotal is below minSubtotalCents",
+      "test/price.test.ts::priceCart unit tests coupon minimum subtotal fixed coupon below minimum gives 0 and at minimum applies"
+    ]
+  },
+  {
+    "id": "oath-5.3-percent-coupon-uncapped",
+    "requirement": "5.3",
+    "status": "Killed",
+    "killingTests": [
+      "test/price.test.ts::priceCart coupon discount discountCents follows the coupon rules and is clamped to the subtotal"
+    ]
+  },
+  {
+    "id": "oath-5.4-fixed-coupon-wrong-field",
+    "requirement": "5.4",
+    "status": "Killed",
+    "killingTests": [
+      "test/api.test.ts::public API accepts typed carts and returns a typed Breakdown",
+      "test/price.test.ts::priceCart coupon discount discountCents follows the coupon rules and is clamped to the subtotal",
+      "test/price.test.ts::priceCart unit tests shipping thresholds uses the discounted subtotal for the free-shipping threshold",
+      "test/price.test.ts::priceCart unit tests coupon minimum subtotal fixed coupon below minimum gives 0 and at minimum applies"
+    ]
+  },
+  {
+    "id": "oath-5.5-discount-exceeds-subtotal",
+    "requirement": "5.5",
+    "status": "Killed",
+    "killingTests": [
+      "test/price.test.ts::priceCart unit tests empty cart yields all zeros with coupon, express shipping, and nonzero taxBps"
+    ]
+  },
+  {
+    "id": "oath-5.6-no-coupon-nonzero-discount",
+    "requirement": "5.6",
+    "status": "Killed",
+    "killingTests": [
+      "test/price.test.ts::priceCart coupon discount discountCents follows the coupon rules and is clamped to the subtotal",
+      "test/price.test.ts::priceCart unit tests shipping thresholds standard shipping is free when discounted subtotal is 10000"
+    ]
+  },
+  {
+    "id": "oath-6.1-empty-cart-charged-shipping",
+    "requirement": "6.1",
+    "status": "Killed",
+    "killingTests": [
+      "test/price.test.ts::priceCart properties empty carts price to all zeros",
+      "test/price.test.ts::priceCart unit tests empty cart yields all zeros with coupon, express shipping, and nonzero taxBps"
+    ]
+  },
+  {
+    "id": "oath-6.2-free-shipping-threshold-lowered",
+    "requirement": "6.2",
+    "status": "Killed",
+    "killingTests": [
+      "test/price.test.ts::priceCart unit tests shipping thresholds standard shipping is 799 when discounted subtotal is 9999",
+      "test/price.test.ts::priceCart unit tests shipping thresholds uses the discounted subtotal for the free-shipping threshold"
+    ]
+  },
+  {
+    "id": "oath-6.3-free-shipping-threshold-exclusive",
+    "requirement": "6.3",
+    "status": "Killed",
+    "killingTests": [
+      "test/price.test.ts::priceCart unit tests shipping thresholds standard shipping is free when discounted subtotal is 10000"
+    ]
+  },
+  {
+    "id": "oath-6.4-express-free-over-threshold",
+    "requirement": "6.4",
+    "status": "Killed",
+    "killingTests": [
+      "test/price.test.ts::priceCart shipping shippingCents follows method and the discounted subtotal threshold",
+      "test/price.test.ts::priceCart unit tests shipping thresholds express shipping is 1499 at discounted subtotal 10000"
+    ]
+  },
+  {
+    "id": "oath-7.1-tax-on-subtotal-before-coupon",
+    "requirement": "7.1",
+    "status": "Killed",
+    "killingTests": [
+      "test/price.test.ts::priceCart tax taxCents is percentOf the discounted subtotal and ignores shipping method"
+    ]
+  },
+  {
+    "id": "oath-7.2-tax-includes-shipping",
+    "requirement": "7.2",
+    "status": "Killed",
+    "killingTests": [
+      "test/price.test.ts::priceCart tax taxCents is percentOf the discounted subtotal and ignores shipping method"
+    ]
+  },
+  {
+    "id": "oath-7.3-total-uses-subtotal",
+    "requirement": "7.3",
+    "status": "Killed",
+    "killingTests": [
+      "test/api.test.ts::public API accepts typed carts and returns a typed Breakdown",
+      "test/price.test.ts::priceCart breakdown invariants fields are non-negative integers, discount <= subtotal, and total identity holds"
+    ]
+  },
+  {
+    "id": "oath-7.4-negative-discount-allowed",
+    "requirement": "7.4",
+    "status": "Survived",
+    "killingTests": []
+  }
+]

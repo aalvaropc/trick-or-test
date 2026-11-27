@@ -63,6 +63,26 @@
     "12.40 Write Property 24: Stryker exclusion list": {
       "status": "passed",
       "lastRunTimestamp": 1795645434899
+    },
+    "15.4 Write Property 29: One set of mutant ids and agreeing totals": {
+      "status": "passed",
+      "lastRunTimestamp": 1795676704340
+    },
+    "15.5 Write Property 30: Stryker counts come from the produced mutants": {
+      "status": "passed",
+      "lastRunTimestamp": 1795676882782
+    },
+    "16.3 Write Property 31: Baseline tests": {
+      "status": "passed",
+      "lastRunTimestamp": 1795677715428
+    },
+    "17.5 Write Property 27: Claim parsing": {
+      "status": "passed",
+      "lastRunTimestamp": 1795679189989
+    },
+    "17.6 Write Property 28: Claim outcomes and counts": {
+      "status": "passed",
+      "lastRunTimestamp": 1795679380867
     }
   },
   "executionHistory": {
@@ -1575,6 +1595,161 @@
         "executionId": "87aeb0b9-7287-4640-8789-ac49710c9202",
         "chatSessionId": "sess_38905af2-b27f-4f83-8ab2-abdca443b685",
         "timestamp": 1795661234002
+      }
+    ],
+    "15.1 Add the types and the schemas": [
+      {
+        "executionId": "27ee5d12-293c-4d51-8a5b-447157541396",
+        "chatSessionId": "sess_01ea7db0-1643-4bb4-ad8d-16c8e709d90e",
+        "timestamp": 1795675821722
+      }
+    ],
+    "15.2 Add `dropTwins` and the count functions": [
+      {
+        "executionId": "13a0ce83-0a76-42e0-9742-e4e4dac58fed",
+        "chatSessionId": "sess_6ff545e0-febe-45e6-81d1-8e7b591b1580",
+        "timestamp": 1795676181755
+      }
+    ],
+    "15.3 Make the three builders use one list": [
+      {
+        "executionId": "34057b4d-19c4-40d9-906f-81ecede21613",
+        "chatSessionId": "sess_1ee57569-7172-43e3-81a0-8b9393e6aa6a",
+        "timestamp": 1795676361853
+      }
+    ],
+    "15.4 Write Property 29: One set of mutant ids and agreeing totals": [
+      {
+        "executionId": "3d7ea99d-f0a6-4c74-9377-546a5d632a3b",
+        "chatSessionId": "sess_5dec2e3f-1ace-450a-9c90-e60a969e3e76",
+        "timestamp": 1795676648631
+      }
+    ],
+    "15.5 Write Property 30: Stryker counts come from the produced mutants": [
+      {
+        "executionId": "d145a91d-c69d-4c00-a8f1-9a4bedf931ef",
+        "chatSessionId": "sess_ee886b88-32b5-4b6f-bcd7-dc094892a5c4",
+        "timestamp": 1795676844251
+      }
+    ],
+    "15.6 Pass the raw list from the pipeline and read the files back": [
+      {
+        "executionId": "88871669-dd4c-43c6-831a-acc50815518d",
+        "chatSessionId": "sess_94c334f4-6707-4575-b8d2-7257656fc37b",
+        "timestamp": 1795677002257
+      }
+    ],
+    "15.7 Checkpoint - Totals": [
+      {
+        "executionId": "47836f69-7731-4485-a09f-c15fedf0864f",
+        "chatSessionId": "sess_43f12c99-012d-4f68-a531-7092e3efc52c",
+        "timestamp": 1795677175400
+      }
+    ],
+    "16.1 Add the types and the schema": [
+      {
+        "executionId": "d1b38c07-cfa8-4a78-8b0a-35e9644db6dc",
+        "chatSessionId": "sess_08162348-9f3f-4310-9582-89a90643afc4",
+        "timestamp": 1795677309577
+      }
+    ],
+    "16.2 Add `toTestId` and `buildBaselineTests`": [
+      {
+        "executionId": "22465550-e7f8-4412-adb0-a070838af556",
+        "chatSessionId": "sess_45bac95b-103e-49d2-8080-24833ef07f0b",
+        "timestamp": 1795677485101
+      }
+    ],
+    "16.3 Write Property 31: Baseline tests": [
+      {
+        "executionId": "f7d8afb0-8e0b-4278-ada8-a3ec2ef46969",
+        "chatSessionId": "sess_94c9fb8c-198b-4e21-b62c-f62bcf23aa7f",
+        "timestamp": 1795677677694
+      }
+    ],
+    "16.4 Carry the tests from the Baseline_Run to the Verdict": [
+      {
+        "executionId": "c6f8e552-6c11-47ba-8348-527bec2a3fca",
+        "chatSessionId": "sess_02df1dc5-39a9-47e9-a95d-274d15402373",
+        "timestamp": 1795677856760
+      }
+    ],
+    "16.5 Checkpoint - Baseline tests": [
+      {
+        "executionId": "aa09f0ca-0554-430c-bed4-30a674c91063",
+        "chatSessionId": "sess_41811d81-88a7-4386-a876-e702786ef220",
+        "timestamp": 1795678152069
+      },
+      {
+        "executionId": "aa09f0ca-0554-430c-bed4-30a674c91063",
+        "chatSessionId": "sess_41811d81-88a7-4386-a876-e702786ef220",
+        "timestamp": 1795678186737
+      }
+    ],
+    "16. Keep the tests of the Baseline_Run (Gap 2)": [
+      {
+        "executionId": "aa09f0ca-0554-430c-bed4-30a674c91063",
+        "chatSessionId": "sess_41811d81-88a7-4386-a876-e702786ef220",
+        "timestamp": 1795678187086
+      }
+    ],
+    "17.1 Add the types and the schemas": [
+      {
+        "executionId": "1a2f5cc8-f85c-42ec-9a9e-6a01e26a0b13",
+        "chatSessionId": "sess_9bed08c1-b9a3-43b2-948a-6624a88ce41c",
+        "timestamp": 1795678246914
+      }
+    ],
+    "17.2 Read the comment lines above a test": [
+      {
+        "executionId": "8fdcd0c4-7f0b-4dc9-a4da-6e5bbb5053ea",
+        "chatSessionId": "sess_34c82df4-cc6c-477e-868f-d755c68b045d",
+        "timestamp": 1795678410866
+      }
+    ],
+    "17.3 Parse and resolve the claims": [
+      {
+        "executionId": "c5859036-eac3-4050-9417-1e6bcf0fdfa9",
+        "chatSessionId": "sess_dba3d87b-7e49-4876-8f11-9c8bad53f389",
+        "timestamp": 1795678581529
+      }
+    ],
+    "17.4 Compute the outcome of each claim": [
+      {
+        "executionId": "340405ba-888a-4007-b510-ccca1baa966e",
+        "chatSessionId": "sess_a9aa87c3-8be9-49e9-91ab-2ed6b6107f8a",
+        "timestamp": 1795678770347
+      },
+      {
+        "executionId": "917448c8-8c2e-4780-b47a-39b26fce4ea4",
+        "chatSessionId": "sess_a9aa87c3-8be9-49e9-91ab-2ed6b6107f8a",
+        "timestamp": 1795678928858
+      }
+    ],
+    "17.5 Write Property 27: Claim parsing": [
+      {
+        "executionId": "5c594a2c-bdd6-4c25-97bb-925bb15e69bf",
+        "chatSessionId": "sess_2b695397-3b30-4613-b840-8da1fc56d14c",
+        "timestamp": 1795679103176
+      }
+    ],
+    "17.6 Write Property 28: Claim outcomes and counts": [
+      {
+        "executionId": "1c9d3794-4737-4a7c-85d2-49a32cb0c485",
+        "chatSessionId": "sess_587deaaf-d9d8-4525-bdc5-ef233f640b38",
+        "timestamp": 1795679333125
+      }
+    ],
+    "17.7 Read the claims in the pipeline": [
+      {
+        "executionId": "d2d81aaa-843e-4af1-9a50-7462f95b5ed8",
+        "chatSessionId": "sess_f2b3a9c9-48ee-4a45-8c4f-662c8d77e04a",
+        "timestamp": 1795679533407
+      },
+      {
+        "executionId": "42033d02-ca86-484e-aae6-f2fdaffcf482",
+        "chatSessionId": "sess_f2b3a9c9-48ee-4a45-8c4f-662c8d77e04a",
+        "timestamp": 1795679668969
       }
     ]
   }

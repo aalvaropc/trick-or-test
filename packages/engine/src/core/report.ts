@@ -1,7 +1,12 @@
 import { z } from "zod";
 import { relativizePath, scrubAbsolutePaths } from "./paths.js";
 import { err, ok, type Result } from "./result.js";
+import { computeMutantCounts, computeStrykerCounts } from "./totals.js";
+import { dropTwins } from "./twins.js";
 import type {
+  BaselineTest,
+  Claim,
+  ClaimCounts,
   CoverageStatus,
   CriterionCoverage,
   CriterionId,
@@ -12,6 +17,7 @@ import type {
   MutantResult,
   MutantStatus,
   RunMetadata,
+  RunScope,
   Species,
   TestId,
   Verdict,
@@ -117,12 +123,103 @@ export const runMetadataSchema = z.strictObject({
   timestamp: z.string(),
 });
 
+const count = (): z.ZodNumber => z.number().int().nonnegative();
+
+/** Count per Mutant_Status. All seven keys are required (8.22). */
+export const statusCountsSchema = z.strictObject({
+  Killed: count(),
+  Survived: count(),
+  Timeout: count(),
+  Ghost: count(),
+  InvalidWitness: count(),
+  CompileError: count(),
+  NotApplicable: count(),
+});
+
+/** Counts of the mutants listed in the Verdict_File, the Mutation_Report and the HistoryRecord (8.22). */
+export const mutantCountsSchema = z.strictObject({
+  spec: statusCountsSchema,
+  mechanical: statusCountsSchema.optional(),
+  twinsMerged: count().describe(
+    "Number of Twins dropped by rule 8.15. A Twin is in no output file. This is not part of mutantCounts.spec or mutantCounts.mechanical, and strykerCounts.total counts Twins while mutantCounts does not.",
+  ),
+});
+
+/** Counts over every Mechanical_Mutant that StrykerJS produced (8.23). */
+export const strykerCountsSchema = z.strictObject({
+  detected: count().describe(
+    "Killed plus Timeout, over every Mechanical_Mutant StrykerJS produced.",
+  ),
+  undetected: count().describe("Survived, over every Mechanical_Mutant StrykerJS produced."),
+  total: count().describe(
+    "Counts the Mechanical_Mutants that StrykerJS produced, Twins included. It is not the number of mutants listed in the files. A plain StrykerJS mutation score has the denominator detected + undetected, not total.",
+  ),
+});
+
+export const testKindSchema = z.enum(["property", "example"]);
+
+export const claimOutcomeSchema = z
+  .enum(["held", "not-held", "unchecked", "unknown-criterion"])
+  .describe("Whether the claim held or did not hold, judged by the Spec_Mutants of the criterion.");
+
+/** A claim of a test. `otherTestsKilledAll` is required for `not-held` and refused otherwise (11.11). */
+export const claimSchema: z.ZodType<Claim> = z
+  .strictObject({
+    criterion: z.string(),
+    outcome: claimOutcomeSchema,
+    otherTestsKilledAll: z
+      .boolean()
+      .optional()
+      .describe(
+        "Only on a claim that did not hold: true when every valid Spec_Mutant of the criterion was killed by another test or timed out.",
+      ),
+  })
+  .superRefine((claim, ctx) => {
+    const has = claim.otherTestsKilledAll !== undefined;
+    if (claim.outcome === "not-held" && !has) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["otherTestsKilledAll"],
+        message: "otherTestsKilledAll is required when the outcome is not-held",
+      });
+    }
+    if (claim.outcome !== "not-held" && has) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["otherTestsKilledAll"],
+        message: "otherTestsKilledAll is allowed only when the outcome is not-held",
+      });
+    }
+  }) as unknown as z.ZodType<Claim>;
+
+/** Number of claims in total and per outcome (11.12). */
+export const claimCountsSchema: z.ZodType<ClaimCounts> = z.strictObject({
+  total: count(),
+  held: count(),
+  notHeld: count(),
+  unchecked: count(),
+  unknownCriterion: count(),
+  notHeldOthersKilledAll: count(),
+  notHeldOthersDidNot: count(),
+}) as unknown as z.ZodType<ClaimCounts>;
+
+/** One test that the Baseline_Run ran and that passed (6.11). */
+export const baselineTestSchema: z.ZodType<BaselineTest> = z.strictObject({
+  id: testIdSchema,
+  kind: testKindSchema,
+  claims: z.array(claimSchema).optional(),
+}) as unknown as z.ZodType<BaselineTest>;
+
 export const verdictSchema: z.ZodType<Verdict> = z.strictObject({
   coverage: z.array(criterionCoverageSchema),
   mutants: z.array(mutantResultSchema),
   witnesses: z.record(z.string(), verdictWitnessSchema),
   ignoreStaticRetried: z.boolean(),
   metadata: runMetadataSchema,
+  mutantCounts: mutantCountsSchema.optional(),
+  strykerCounts: strykerCountsSchema.optional(),
+  baselineTests: z.array(baselineTestSchema).optional(),
+  claimCounts: claimCountsSchema.optional(),
 }) as unknown as z.ZodType<Verdict>;
 
 const engineConfigSchema: z.ZodType<EngineConfig> = z.strictObject({
@@ -135,15 +232,6 @@ const engineConfigSchema: z.ZodType<EngineConfig> = z.strictObject({
   timeoutMs: z.number().optional(),
 }) as unknown as z.ZodType<EngineConfig>;
 
-const statusCountsSchema = z.strictObject({
-  Killed: z.number().int().nonnegative(),
-  Survived: z.number().int().nonnegative(),
-  Timeout: z.number().int().nonnegative(),
-  Ghost: z.number().int().nonnegative(),
-  InvalidWitness: z.number().int().nonnegative(),
-  CompileError: z.number().int().nonnegative(),
-  NotApplicable: z.number().int().nonnegative(),
-});
 const coverageCountsSchema = z.strictObject({
   guarded: z.number().int().nonnegative(),
   unguarded: z.number().int().nonnegative(),
@@ -221,6 +309,8 @@ export type MutationTestingReport = z.infer<typeof mutationReportSchema>;
 // buildVerdict
 // ---------------------------------------------------------------------------
 
+const OATHBREAKER: Species = "Oathbreaker";
+
 export type VerdictInput = {
   coverage: CriterionCoverage[];
   mutants: MutantResult[];
@@ -229,6 +319,50 @@ export type VerdictInput = {
   metadata: RunMetadata;
   /** Root of the Target_Project, as data. Every path and free-text field is made relative to it (8.17). */
   projectRoot: string;
+  /**
+   * The change each mutant makes, as data, so that the builder can find Twins (8.15, 8.21). A mutant
+   * without an entry is never a Twin. When absent, no Twin is dropped and the Verdict gets neither
+   * `mutantCounts` nor `strykerCounts`.
+   */
+  changes?: Record<MutantId, MutantChange>;
+  /** Run_Scope (8.28). Defaults to `full`. */
+  scope?: RunScope;
+  /** Passed tests of the Baseline_Run (6.11). When absent, the Verdict has no `baselineTests`. */
+  baselineTests?: BaselineTest[];
+  /** Number of Claims in total and per outcome (11.12). Written as `claimCounts` when present. */
+  claimCounts?: ClaimCounts;
+};
+
+/** What a mutant changes: the fields that rule 8.15 compares. */
+export type MutantChange = {
+  file: string;
+  location: ReportLocation;
+  replacement: string;
+};
+
+/**
+ * Applies `dropTwins` (8.15) to a list of mutant results. Spec_Mutants are the results of species
+ * Oathbreaker. A result without a known change gets a key of its own, so it never matches. Pure.
+ */
+const dropResultTwins = (
+  mutants: readonly MutantResult[],
+  changes: Record<MutantId, MutantChange> | undefined,
+  root: string,
+): { kept: MutantResult[]; twinsMerged: number } => {
+  if (changes === undefined) return { kept: [...mutants], twinsMerged: 0 };
+  const zero = { line: 0, column: 0 };
+  const tagged = mutants.map((m) => {
+    const change = changes[m.id];
+    return {
+      result: m,
+      kind: m.species === OATHBREAKER ? ("spec" as const) : ("mechanical" as const),
+      file: change === undefined ? `\u0000${m.id}` : relativizePath(root, change.file),
+      location: change?.location ?? { start: zero, end: zero },
+      replacement: change?.replacement ?? "",
+    };
+  });
+  const { kept, twinsMerged } = dropTwins(tagged);
+  return { kept: kept.map((k) => k.result), twinsMerged };
 };
 
 const scrubTestId = (id: TestId, root: string): TestId => scrubAbsolutePaths(id, root) as TestId;
@@ -269,7 +403,21 @@ const scrubWitness = (w: VerdictWitness, root: string): VerdictWitness => {
  */
 export const buildVerdict = (input: VerdictInput): Result<Verdict, string> => {
   const root = input.projectRoot;
-  const mutants = input.mutants.map((m): MutantResult => {
+  const scope = input.scope ?? "full";
+  // Counts of the StrykerJS run come from the raw list, before the Twins go (8.23).
+  const strykerCounts = computeStrykerCounts(
+    input.mutants.filter((m) => m.species !== OATHBREAKER),
+  );
+  const { kept, twinsMerged } = dropResultTwins(input.mutants, input.changes, root);
+  const mutantCounts = computeMutantCounts(
+    kept.map((m) => ({
+      kind: m.species === OATHBREAKER ? ("spec" as const) : ("mechanical" as const),
+      status: m.status,
+    })),
+    twinsMerged,
+    scope,
+  );
+  const mutants = kept.map((m): MutantResult => {
     const { killClass, invalidWitness, ...rest } = m;
     const killingTests = m.killingTests.map((t) => scrubTestId(t, root));
     const withInvalid: Partial<MutantResult> =
@@ -296,6 +444,14 @@ export const buildVerdict = (input: VerdictInput): Result<Verdict, string> => {
     ) as Record<MutantId, VerdictWitness>,
     ignoreStaticRetried: input.ignoreStaticRetried,
     metadata: { ...input.metadata },
+    // The counts are written when the caller passes `changes`, that is, when it hands over the raw
+    // list. Without it the totals would describe a list that may still hold Twins.
+    ...(input.changes === undefined ? {} : { mutantCounts }),
+    ...(input.changes === undefined || scope === "spec-only" ? {} : { strykerCounts }),
+    ...(input.baselineTests === undefined
+      ? {}
+      : { baselineTests: input.baselineTests.map((t) => ({ ...t, id: scrubTestId(t.id, root) })) }),
+    ...(input.claimCounts === undefined ? {} : { claimCounts: { ...input.claimCounts } }),
   };
   const parsed = verdictSchema.safeParse(candidate);
   if (!parsed.success) {
@@ -360,8 +516,6 @@ export type ReportInput = {
 export const REPORT_SCHEMA_VERSION = "2";
 export const DEFAULT_THRESHOLDS = { high: 80, low: 60 } as const;
 
-const OATHBREAKER: Species = "Oathbreaker";
-
 const mapStatus = (status: MutantStatus): { status: ReportStatus; statusReason?: string } => {
   switch (status) {
     case "Killed":
@@ -378,16 +532,6 @@ const mapStatus = (status: MutantStatus): { status: ReportStatus; statusReason?:
       return { status: "Ignored", statusReason: `Engine status: ${status}` };
   }
 };
-
-const changeKey = (m: ReportMutantInput): string =>
-  JSON.stringify([
-    m.file,
-    m.location.start.line,
-    m.location.start.column,
-    m.location.end.line,
-    m.location.end.column,
-    m.replacement,
-  ]);
 
 const toReportMutant = (
   m: ReportMutantInput,
@@ -429,19 +573,21 @@ export const buildMutationReport = (input: ReportInput): MutationTestingReport =
   const mechanical = input.mechanical.map((m) => ({ ...m, file: rel(m.file) }));
   const spec = input.spec.map((m) => ({ ...m, file: rel(m.file) }));
   const inputFiles = new Map(Object.entries(input.files).map(([p, meta]) => [rel(p), meta]));
-  const specKeys = new Set(spec.map(changeKey));
+  const { kept } = dropTwins([
+    ...mechanical.map((m) => ({ ...m, kind: "mechanical" as const })),
+    ...spec.map((m) => ({ ...m, kind: "spec" as const })),
+  ]);
   const perFile = new Map<string, ReportMutant[]>();
   const push = (file: string, m: ReportMutant): void => {
     const list = perFile.get(file);
     if (list === undefined) perFile.set(file, [m]);
     else list.push(m);
   };
-  for (const m of mechanical) {
-    if (specKeys.has(changeKey(m))) continue;
-    push(m.file, toReportMutant(m, {}, root));
-  }
-  for (const m of spec) {
-    push(m.file, toReportMutant(m, { species: OATHBREAKER, requirement: m.requirement }, root));
+  for (const m of kept) {
+    if (m.kind === "mechanical") push(m.file, toReportMutant(m, {}, root));
+    else {
+      push(m.file, toReportMutant(m, { species: OATHBREAKER, requirement: m.requirement }, root));
+    }
   }
   const paths = [...new Set([...inputFiles.keys(), ...perFile.keys()])].sort();
   const files: Record<string, ReportFile> = {};
@@ -488,7 +634,9 @@ export const buildHistoryRecord = (
   previousRecord: HistoryRecord | undefined,
   config: EngineConfig,
   projectRoot: string,
+  changes?: Record<MutantId, MutantChange>,
 ): Result<HistoryRecord, string> => {
+  const listed = dropResultTwins(verdict.mutants, changes, projectRoot).kept;
   const rel = (p: string): string => relativizePath(projectRoot, p);
   const relConfig: EngineConfig = {
     specDir: rel(config.specDir),
@@ -503,7 +651,7 @@ export const buildHistoryRecord = (
     MutantStatus,
     number
   >;
-  for (const m of verdict.mutants) statusCounts[m.status] += 1;
+  for (const m of listed) statusCounts[m.status] += 1;
   const coverageCounts = Object.fromEntries(COVERAGE_STATUSES.map((s) => [s, 0])) as Record<
     CoverageStatus,
     number
@@ -517,10 +665,10 @@ export const buildHistoryRecord = (
     gitCommit: verdict.metadata.gitCommit,
     seed: verdict.metadata.seed,
     config: relConfig,
-    mutants: verdict.mutants.map((m) => ({ id: m.id, status: m.status })),
+    mutants: listed.map((m) => ({ id: m.id, status: m.status })),
     statusCounts,
     coverageCounts,
-    newlyKilledIds: verdict.mutants
+    newlyKilledIds: listed
       .filter((m) => m.status === "Killed" && !previouslyKilled.has(m.id))
       .map((m) => m.id),
   };

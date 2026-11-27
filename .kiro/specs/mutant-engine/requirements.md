@@ -40,6 +40,17 @@ The engine makes no LLM calls (ADR 0004). The MCP server and the Kiro hook entry
 - **Reporter**: The Engine component that writes the Mutation_Report, the Verdict_File and the History_File.
 - **CLI**: The `trick-or-test` command-line program with the commands `run` and `measure`.
 - **Changed_Range**: A `file:start-end` line range that was changed since a given git ref.
+- **Twin**: A Mechanical_Mutant that makes the same change as a Spec_Mutant and that rule 8.15 therefore drops. A Twin appears in no output file.
+- **Mutant_Counts**: The field `mutantCounts` of the Verdict_File. It counts the mutants listed in the Verdict_File, the Mutation_Report and the HistoryRecord of one run, per kind (spec, mechanical) and per Mutant_Status. A Twin is not in it.
+- **Stryker_Counts**: The field `strykerCounts` of the Verdict_File. It holds `detected`, `undetected` and `total`, counted over every Mechanical_Mutant that StrykerJS produced, Twins included. It is the data behind the mutation score of a plain StrykerJS run on the Target_Project.
+- **Baseline_Test**: One test that the Baseline_Run ran and that passed. Its id is `<file>::<full name>`, the same format as the ids of killing tests.
+- **Claim**: A test's own statement that it validates a Criterion, written in the comment lines directly above the test call. A Claim says what the author intended. The Engine checks it against the killing tests of the Spec_Mutants.
+- **Claim_Outcome**: One of `held`, `not-held`, `unchecked` or `unknown-criterion`, assigned to a Claim (Requirement 11).
+- **Claim_Parser**: The pure Engine functions that read Claims from comment lines and resolve them against the Criteria of the parsed spec.
+- **Requirement_Title**: The text after `### Requirement N:` in a `requirements.md` heading, trimmed.
+- **Run_Scope**: One of `full` (Baseline_Run, StrykerJS and Spec_Mutants) or `spec-only` (Baseline_Run and Spec_Mutants, no StrykerJS).
+- **Comparison_Record**: The earlier HistoryRecord against which a run computes its `newlyKilledIds` (Requirement 8.30).
+- **Witness_Test_Builder**: The pure function `buildWitnessTest` of `trick-or-test/report` that turns a Witness and its Criterion into the source of one Vitest test (Requirement 12).
 
 ## Requirements
 
@@ -71,6 +82,8 @@ The engine makes no LLM calls (ADR 0004). The MCP server and the Kiro hook entry
 6. IF a numbered item appears under an `#### Acceptance Criteria` heading that has no enclosing `### Requirement N:` heading, THEN THE Requirements_Parser SHALL return an error that names the file and the line number.
 7. IF a `requirements.md` file contains no Criterion, THEN THE Requirements_Parser SHALL return an error that names the file.
 8. FOR ALL generated requirements documents with N requirements of K criteria each, THE Requirements_Parser SHALL return exactly the ids `n.k` for n from 1 to N and k from 1 to K, in document order.
+9. THE Requirements_Parser SHALL provide a function `parseRequirementTitles` that returns, for each `### Requirement N: <title>` heading outside a fenced code block, the number N and the Requirement_Title, in document order. The function SHALL NOT change the value that `parseRequirements` returns, so that the type `Criterion` stays as it is.
+10. IF a `requirements.md` file contains the same requirement number in two headings, or a `### Requirement N:` heading with an empty title, THEN `parseRequirementTitles` SHALL return an error that names the file, the number and the line numbers.
 
 ### Requirement 3: Mechanical mutants
 
@@ -163,6 +176,9 @@ The engine makes no LLM calls (ADR 0004). The MCP server and the Kiro hook entry
 8. WHEN the killing tests of a mutant include both an Example_Test and a Property_Test, THE Engine SHALL assign the Kill_Class `both`.
 9. IF a mutant has the Mutant_Status Killed and no killing test can be identified, THEN THE Engine SHALL record the mutant with an empty list of killing tests and the Kill_Class `unattributed`.
 10. THE Engine SHALL place each killed mutant in exactly one Kill_Class, so that the count of `examples-only`, plus the count of `properties-only`, plus the count of `both`, plus the count of `unattributed` equals the number of killed mutants.
+11. WHEN a run completes, THE Reporter SHALL write into the Verdict_File the field `baselineTests`: one entry for each Baseline_Test, with its id in the format `<file>::<full name>` (the format of the killing tests of 6.1 and 6.2) and its kind, `property` or `example`, assigned by 6.3 to 6.5. A test that the Baseline_Run skipped or marked as todo is not a Baseline_Test.
+12. THE number of entries of `baselineTests` SHALL equal the number of tests that the Baseline_Run ran and that passed, so that a reader takes the number of passing tests from the length of the list. THE Reporter SHALL write the entries in a stable order, sorted by id and then by start line, and SHALL write one entry for each test even WHEN two tests have the same id.
+13. EVERY killing test of every mutant in the Verdict_File SHALL be a Baseline_Test, except a file-level Failing_Test, whose id is the file path.
 
 ### Requirement 7: Requirement coverage
 
@@ -207,6 +223,17 @@ The engine makes no LLM calls (ADR 0004). The MCP server and the Kiro hook entry
 18. THE Reporter SHALL write in each coverage entry of the Verdict_File the full text of its Criterion, as the Requirements_Parser returned it from `requirements.md`, with leading and trailing whitespace trimmed and with every absolute path in it scrubbed as every other free-text field is (8.17), so that a viewer can show the promise without reading the spec.
 19. WHEN the Witness of a Spec_Mutant ran against the mutated code, THE Reporter SHALL record in the Verdict_File, next to the Witness of that Spec_Mutant, the outcome of that run as a WitnessOutcome (a value, an error class, a timeout or no-outcome), scrubbed of absolute paths (8.17). WHEN the Witness of a Spec_Mutant never ran against the mutated code, THE Reporter SHALL write no such outcome field for that Spec_Mutant.
 20. THE Verdict_File schema exported from `trick-or-test/report` SHALL treat the criterion text of 8.18 and the mutated outcome of 8.19 as optional fields, so that a Verdict_File written before these fields existed still parses, and SHALL keep rejecting every unknown field.
+21. THE Reporter SHALL list the same set of mutant ids in the Verdict_File (`mutants`), the Mutation_Report and the HistoryRecord (`mutants`) of one run. The Reporter SHALL drop each Twin from the Verdict_File and from the HistoryRecord as 8.15 drops it from the Mutation_Report, so that no output file names an id that another output file lacks.
+22. THE Reporter SHALL write into the Verdict_File the field `mutantCounts` with the count of mutants per kind (`spec`, `mechanical`) and per Mutant_Status over the mutants listed by 8.21, and the field `twinsMerged` with the number of Twins dropped. FOR ALL runs, the sum of the counts of each kind SHALL equal the number of mutants of that kind in `mutants`. WHERE the Run_Scope is `spec-only`, THE Reporter SHALL write no `mechanical` counts.
+23. THE Reporter SHALL write into the Verdict_File the field `strykerCounts` with three integers counted over every Mechanical_Mutant that StrykerJS produced, before 8.15 removes the Twins: `detected` (the Mutant_Status Killed plus Timeout), `undetected` (Survived) and `total` (every Mechanical_Mutant that StrykerJS produced, whatever its Mutant_Status). WHERE the Run_Scope is `spec-only`, THE Reporter SHALL write no `strykerCounts`.
+24. THE names `mutantCounts` and `strykerCounts` SHALL stay distinct, and the schema documentation SHALL state that `strykerCounts.total` counts the Mechanical_Mutants that StrykerJS produced, Twins included, and is not the number of mutants listed in the files. THE documentation SHALL state that a plain StrykerJS mutation score has the denominator `detected + undetected`, not `total`.
+25. THE Reporter SHALL include in the run metadata of the Verdict_File the field `specName`, the name of the attacked spec.
+26. THE Reporter SHALL write into the Verdict_File the field `requirements`: one entry `{ requirement, title }` for each Requirement_Title that `parseRequirementTitles` returned, in document order, each title trimmed and scrubbed as every other free-text field is (8.17).
+27. THE Reporter SHALL write in each HistoryRecord the field `coverageByCriterion`: the Coverage_Status of every Criterion of the parsed spec, in document order, so that one record holds one row of seals.
+28. THE Reporter SHALL record the Run_Scope in the run metadata of the Verdict_File (`scope`), in each HistoryRecord (`scope`) and in the `config` object of the Mutation_Report (`scope`). A file or record in which the field is absent was written by a full run.
+29. THE schemas exported from `trick-or-test/report` SHALL treat every field added by criteria 6.11, 8.21 to 8.28 and Requirement 11 (`baselineTests`, `claims`, `claimCounts`, `mutantCounts`, `twinsMerged`, `strykerCounts`, `specName`, `requirements`, `coverageByCriterion` and `scope`) as optional, so that a Verdict_File or HistoryRecord written before these fields existed still parses, and SHALL keep rejecting every unknown field.
+30. WHEN the Reporter builds a HistoryRecord, THE Reporter SHALL compute `newlyKilledIds` against the Comparison_Record, chosen as follows. For a run of Run_Scope `full`, the Comparison_Record is the most recent earlier HistoryRecord of scope `full`, and no record when there is none. For a run of Run_Scope `spec-only`, the Comparison_Record is the most recent earlier HistoryRecord of any scope, and only the ids of Spec_Mutants are compared, on both sides. The rule of 8.9 (killed in this run, not listed as killed in the Comparison_Record) otherwise stays as it is, so for two runs of the same scope the result does not change. The choice SHALL be made by a pure function that takes the earlier records as data.
+31. THE new fields of 8.21 to 8.28, 6.11 and Requirement 11 SHALL follow 8.13 (byte-identical output for equal inputs) and 8.17 (no absolute path in any field).
 
 ### Requirement 9: Command-line interface
 
@@ -230,6 +257,12 @@ The engine makes no LLM calls (ADR 0004). The MCP server and the Kiro hook entry
 14. THE Engine repository SHALL generate the files in `reports/` only through the `measure` command, and no person SHALL edit them by hand.
 15. WHEN the CLI receives SIGINT or SIGTERM, THE CLI SHALL stop its child processes (Vitest and StrykerJS), remove its Sandboxes, and exit with code 130 for SIGINT and code 143 for SIGTERM.
 16. IF the Target_Project has more than one spec directory with a `requirements.md` file and the user does not pass the option `--spec`, THEN THE CLI SHALL print to stderr an error that lists the names of those spec directories and asks for `--spec <name>`, and exit with code 1.
+17. WHERE the user passes the option `--scope <full|spec-only>` to `run` or `measure`, THE CLI SHALL use that Run_Scope, and WHERE the option is absent THE CLI SHALL use `full`.
+18. Criterion 9.1 describes the scope `full`. WHEN the Run_Scope is `spec-only`, THE CLI SHALL run the Baseline_Run and then the Spec_Mutants, SHALL NOT run StrykerJS and SHALL NOT run git, and SHALL write the Mutation_Report, the Verdict_File and one HistoryRecord that record the scope (8.28). The Mutation_Report of such a run holds Spec_Mutants only. The Verdict_File of such a run holds no stray, no `strykerCounts` and no `mechanical` counts.
+19. IF the user passes `--scope spec-only` together with `--since`, THEN THE CLI SHALL print to stderr an error that names both options and exit with code 1, because `--since` restricts Mechanical_Mutants and a spec-only run has none.
+20. IF the value of `--scope` is not `full` or `spec-only`, THEN THE CLI SHALL print the usage text to stderr and exit with code 1.
+21. WHEN a command with the Run_Scope `spec-only` finishes, THE CLI SHALL print the scope in its summary, SHALL state that strays were not run, and SHALL print no stray count and no StrykerJS figure, so that no reader takes the run for a full run.
+22. THE npm script `measure` and the npm script `demo` SHALL NOT pass `--scope`, so that every file in `reports/` and in `apps/viewer/public/demo/` comes from a full run.
 
 ### Requirement 10: Architecture and verification
 
@@ -250,3 +283,47 @@ The engine makes no LLM calls (ADR 0004). The MCP server and the Kiro hook entry
 11. THE end-to-end test SHALL check that `git status` of `examples/pricing` shows no change outside `.trickortest/`, that the written reports contain no absolute path, and that the StrykerJS temporary directory does not grow between two runs.
 12. THE Engine SHALL test the Stryker_Adapter against fixtures that are real StrykerJS 10.1.1 output captured from a run.
 13. THE Engine SHALL test the Spec_Mutant_Runner and the InvalidWitness handling by reading the written Verdict_File, not an in-memory value.
+14. THE example project `examples/pricing` SHALL give each Criterion of the spec `cart-pricing` either at least one Spec_Mutant that has a Witness, or a Skip_File entry with a reason, so that no Criterion of the committed example is unattacked without an explanation.
+15. THE end-to-end test SHALL check on the files that the CLI wrote: that the Verdict_File, the Mutation_Report and the HistoryRecord list the same set of mutant ids (8.21), that `mutantCounts` and `strykerCounts` agree with the other files (8.22, 8.23), that the length of `baselineTests` equals the number of tests that Vitest ran in the Baseline_Run (6.12), and that the Claim counts agree with `claims` (11.12).
+
+### Requirement 11: Claims
+
+**User Story:** As a developer, I want to know what each test says it checks and whether the Spec_Mutants confirm it, so that I see which statements in my tests hold and which do not.
+
+#### Acceptance Criteria
+
+1. THE Claim_Parser SHALL read the Claims of a test from the comment lines directly above the line on which the test call starts (the start line that the Baseline_Run reports). The comment lines directly above are the unbroken run of comment lines (`//` lines and the lines of a `/* ... */` block) that ends on the line before the start line. A blank line or a line of code ends the run.
+2. WHEN the comment lines contain a line `Feature: <name>` (leading `//`, `*` and `**` markers ignored), THE Claim_Parser SHALL take `<name>` as the text up to the first comma or the end of the line. IF `<name>` is not the name of the attacked spec, THEN THE Claim_Parser SHALL return no Claim for that run of comment lines.
+3. WHEN the comment lines contain a line `Validates: Requirements <ids>` or `Validates: Requirement <ids>` (the word `Validates:` followed by `Requirement` or `Requirements`, case-insensitive, with leading `//`, `*` and `**` markers ignored and a trailing `**` ignored), THE Claim_Parser SHALL read `<ids>` as a list of ids separated by commas, spaces or the word `and`. An id is `N.M` (one Criterion) or `N` (one whole requirement). The list ends at the first token that is neither an id nor a separator.
+4. WHEN an id is a whole requirement `N` and the parsed spec has a Requirement N, THE Claim_Parser SHALL produce one Claim for each Criterion of Requirement N, so that `Requirements 5` means every Criterion `5.k`.
+5. WHEN an id is not the id of a Criterion of the parsed spec, and is not a requirement number of the parsed spec, THE Claim_Parser SHALL produce one Claim with that id as written and the Claim_Outcome `unknown-criterion`.
+6. WHEN the same Criterion is named twice for one test, directly or through a whole requirement, THE Claim_Parser SHALL produce one Claim for it.
+7. WHEN other comment lines stand between a `Feature:` or `Validates:` line and the test call, THE Claim_Parser SHALL still read the Claims, because the run of comment lines of 11.1 is read as a whole and lines that are neither `Feature:` nor `Validates:` are ignored.
+8. WHEN a comment stands above a `describe` block, THE Claim_Parser SHALL NOT give its Claims to the tests inside the block, because each test reads only the comment lines directly above its own start line.
+9. WHEN a test is declared with `it.each` or `test.each` (or a `describe.each` form that generates tests, or any other call that Vitest reports at one start line), THE Claim_Parser SHALL give the Claims of the comment lines above that line to every test that the call generates.
+10. WHEN the comment lines have a `Validates:` line and no `Feature:` line, THE Claim_Parser SHALL count the Claims for the attacked spec.
+11. THE Engine SHALL assign each Claim exactly one Claim_Outcome, from the Spec_Mutants that are valid by 7.6:
+   - `held`: the Criterion has at least one valid Spec_Mutant and the test is among the killing tests of every valid Spec_Mutant of the Criterion;
+   - `not-held`: the Criterion has at least one valid Spec_Mutant and the test is not among the killing tests of at least one of them. The Claim also records `otherTestsKilledAll`: `true` WHEN every valid Spec_Mutant of the Criterion has the Mutant_Status Killed with at least one killing test other than this test, or Timeout; otherwise `false`;
+   - `unchecked`: the Criterion has no valid Spec_Mutant (it is unattacked or skipped, or all its Spec_Mutants are Ghost, InvalidWitness, CompileError or NotApplicable);
+   - `unknown-criterion`: the id is not in the parsed spec (11.5).
+12. THE Reporter SHALL write the Claims of each test into the entry of that test in `baselineTests` (6.11), each Claim as `{ criterion, outcome }` and, for `not-held`, with `otherTestsKilledAll`, and SHALL write no `claims` key for a test with no Claim. THE Reporter SHALL write the field `claimCounts` with the number of Claims in total and per Claim_Outcome (`held`, `notHeld`, `unchecked`, `unknownCriterion`), and for the `not-held` Claims the number with `otherTestsKilledAll` true and the number with it false. FOR ALL runs, the counts per outcome SHALL sum to the total.
+13. THE Claim_Parser SHALL be a pure function of the text of the comment lines, the attacked spec name and the Criteria. It SHALL read no file, and the Engine SHALL give a property test to it (design.md, Properties 27 and 28).
+14. WHEN the Engine cannot read a test file, THE Engine SHALL record no Claim for the tests of that file and SHALL NOT fail the run.
+15. THE Engine SHALL give the same Claims and the same Claim_Outcomes in a run of Run_Scope `spec-only` as in a run of Run_Scope `full`, because they depend on the Baseline_Run and the Spec_Mutants only.
+16. FOR the committed example (`examples/pricing`, the spec `cart-pricing`, the 24 Spec_Mutants that are committed before task 21 of `tasks.md`), THE Engine SHALL record 25 Claims: 16 `held`, 7 `not-held`, 2 `unchecked` (2.2 and 3.4) and 0 `unknown-criterion`. The 7 `not-held` Claims are 2.1 of Property 1, 5.1 and 5.5 of Property 6, 6.2 and 6.3 of Property 7, and 5.5 and 7.4 of Property 9. Six of them have `otherTestsKilledAll` true. The Claim 7.4 of Property 9 has it false, because the Spec_Mutant of 7.4 survives. An example test SHALL assert these numbers on a captured copy of the mutant results of that run (a fixture with recorded provenance) together with the real test files of `examples/pricing/test/`, so that the test does not change when task 21 adds Spec_Mutants. IF task 21 adds Spec_Mutants, THEN the numbers of the regenerated `reports/verdict.json` change, and task 22 checks the new numbers in a new test file.
+17. EVERY user-facing string that the Engine writes about a Claim (CLI summary, messages, schema descriptions) SHALL say that a Claim "held" or "did not hold", and SHALL NOT use the words "false", "fake" or "lying". The values of `outcome` are `held`, `not-held`, `unchecked` and `unknown-criterion`.
+
+### Requirement 12: Test source for a Witness
+
+**User Story:** As an agent that hunts a surviving Spec_Mutant, I want the source of one test that would catch it, so that I start from a correct test instead of writing one from scratch.
+
+#### Acceptance Criteria
+
+1. THE Engine SHALL export from `trick-or-test/report` a pure function `buildWitnessTest` that takes a Witness, a Criterion id and the project-relative path of a test file, and returns the source text of one Vitest test, or an error.
+2. THE returned source SHALL import the Witness `export` from the module `witness.from`, with an import path relative to the directory of the given test file (a path that starts with `./` or `../`, without the `.ts` or `.tsx` extension, as the tests of the Target_Project import).
+3. THE returned source SHALL call the export with the Witness `args`, and WHEN the Witness has `expected` SHALL assert the call with `toEqual` and the Witness value, and WHEN the Witness has `expectedError` SHALL import the error class of that name from the same module and assert with `toThrow` and that class.
+4. THE name of the test SHALL start with the Criterion id, followed by a space.
+5. IF the export name or the error class name is not a valid identifier, or `witness.from` or the test file path is absolute or contains a `..` segment that leaves the project, THEN `buildWitnessTest` SHALL return an error that names the field, and no source.
+6. THE function SHALL be deterministic: equal inputs give equal output. THE source SHALL contain the export name and the Criterion id. THE source SHALL print the Witness `args` and the Witness `expected` value as JSON text placed directly in the source, as a JavaScript expression, with no `JSON.parse` call, so that a reader sees the input as it is. The printed text SHALL be exactly `JSON.stringify(value, null, 2)` with every line after the first indented by the two spaces of the body of the test, with the keys in the order of the Witness object, so that a reader or a program can cut the text out between the fixed markers of the format (`const args = ` and ` as unknown as Parameters<typeof <export>>;` for the arguments, `const expected: unknown = ` and `;` for the expected value), remove that indent and `JSON.parse` it back to the Witness value. The arguments SHALL be cast through `unknown` to `Parameters<typeof <export>>`, so that the test compiles in a strict TypeScript project whatever the Witness holds. The one case in which JSON text read as a JavaScript literal differs from the JSON value is an object key `"__proto__"` (a literal sets the prototype instead of an own property). WHEN `args` holds that key at any depth, THE source SHALL print `args` in the form `JSON.parse("<JSON.stringify(args) as a string literal>")`, and WHEN `expected` holds that key at any depth, THE source SHALL print `expected` in that form; the other value keeps the plain form. In the `JSON.parse` form the text parses back with `JSON.parse` applied twice.
+7. THE function SHALL read no file, write no file, import nothing from `node:` and make no call to an LLM service (ADR 0004).

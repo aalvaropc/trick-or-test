@@ -110,12 +110,76 @@ export type RunMetadata = {
 /** A Witness as the Verdict stores it. `mutatedOutcome` is present only when the witness ran against the mutated code (Requirements 8.19, 8.20). */
 export type VerdictWitness = Witness & { mutatedOutcome?: WitnessOutcome };
 
+/** Requirements 8.22 to 8.24. Two totals, two names, no shared key. All seven statuses are present. */
+export type StatusCounts = Record<MutantStatus, number>;
+
+export type MutantCounts = {
+  /** Spec_Mutants listed in the three files. */
+  spec: StatusCounts;
+  /** Absent when the Run_Scope is `spec-only`. */
+  mechanical?: StatusCounts;
+  /** Twins dropped by rule 8.15. They are in no file. */
+  twinsMerged: number;
+};
+
+/** Requirement 8.28. */
+export type RunScope = "full" | "spec-only";
+
+export type StrykerCounts = {
+  /** Killed plus Timeout, over every Mechanical_Mutant that StrykerJS produced. */
+  detected: number;
+  /** Survived, same population. */
+  undetected: number;
+  /** Every Mechanical_Mutant that StrykerJS produced, Twins and CompileError ones included. Not the denominator of the StrykerJS score. */
+  total: number;
+};
+
+/** Requirements 6.3 to 6.5. */
+export type TestKind = "property" | "example";
+
+/** Requirement 11.11. */
+export type ClaimOutcome = "held" | "not-held" | "unchecked" | "unknown-criterion";
+
+/** Requirement 11. `criterion` is the id as written in the test: a Criterion id, or an id the spec lacks. */
+export type Claim = {
+  criterion: string;
+  outcome: ClaimOutcome;
+  /** Present only when `outcome` is `not-held` (11.11). */
+  otherTestsKilledAll?: boolean;
+};
+
+/** Requirement 11.12. The counts per outcome sum to `total`. */
+export type ClaimCounts = {
+  total: number;
+  held: number;
+  notHeld: number;
+  unchecked: number;
+  unknownCriterion: number;
+  /** Claims that did not hold with `otherTestsKilledAll` true. */
+  notHeldOthersKilledAll: number;
+  /** Claims that did not hold with `otherTestsKilledAll` false. */
+  notHeldOthersDidNot: number;
+};
+
+/** Requirements 6.11 to 6.13. One entry per test that the Baseline_Run ran and that passed. */
+export type BaselineTest = {
+  /** `<file>::<full name>`, the format of the killing tests. */
+  id: TestId;
+  kind: TestKind;
+  /** Claims read from the comment above the test (Requirement 11). Absent when the test has none. */
+  claims?: Claim[];
+};
+
 export type Verdict = {
   coverage: CriterionCoverage[];
   mutants: MutantResult[];
   witnesses: Record<MutantId, VerdictWitness>;
   ignoreStaticRetried: boolean;
   metadata: RunMetadata;
+  mutantCounts?: MutantCounts;
+  strykerCounts?: StrykerCounts;
+  baselineTests?: BaselineTest[];
+  claimCounts?: ClaimCounts;
 };
 
 export type HistoryRecord = {
