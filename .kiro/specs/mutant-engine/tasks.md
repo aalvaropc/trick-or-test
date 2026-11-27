@@ -1153,7 +1153,7 @@ Conventions used in every task:
 
 - [ ] 22. Regenerate the committed evidence and check that the totals agree
   - Source: requirements 9.13, 9.14, 10.15 and everything above. Files in `reports/` and in `apps/viewer/public/demo/` are generated only by `npm run measure` and `npm run demo`. Nobody edits them by hand.
-  - [-] 22.1 Check the agreement of the three files of a run
+  - [x] 22.1 Check the agreement of the three files of a run
     - Write `scripts/run-agreement.test.ts`: for `reports/` and for `apps/viewer/public/demo/before` and `.../after`, parse the three files with the schemas of `trick-or-test/report` and check that the id sets of `verdict.json` `mutants`, of `mutation-report.json` and of the last line of `history.jsonl` are equal; that `mutantCounts` agrees with the ids listed (per kind and status) and `twinsMerged` plus the mechanical count equals `strykerCounts.total`; that `strykerCounts.detected` and `undetected` are not more than `total`; that `baselineTests` is not empty, that every killing-test id of a mutant is in it, and that the sum of `claimCounts` equals its total and the number of claims in `baselineTests`; that the last history record's `coverageByCriterion` equals `coverage` of the verdict; that `metadata.specName` is `cart-pricing`, `requirements` holds one entry for each requirement of the spec, and `scope` is `full` or absent; and that no string holds an absolute path. The test fails with a message that names the file and the field.
     - _Requirements: 8.17, 8.21, 8.22, 8.23, 6.12, 11.12_
     - _Validation: npm run build -w trick-or-test && npx vitest run --project scripts scripts/run-agreement.test.ts passes, run after 22.2 and 22.3 (it reads the committed files, so it fails before they are regenerated)_
