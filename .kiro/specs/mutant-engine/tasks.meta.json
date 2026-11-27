@@ -2104,6 +2104,32 @@
         "chatSessionId": "sess_6e7276b1-39a5-4429-bfc9-6388861c65b7",
         "timestamp": 1795752181993
       }
+    ],
+    "24.9 Checkpoint - Killing-test ids and test folders": [
+      {
+        "executionId": "ce7fa7dd-85ec-4756-9b1c-0e14abfabb80",
+        "chatSessionId": "sess_32601296-dd9d-4609-933d-950dfa35b445",
+        "timestamp": 1795755384255
+      },
+      {
+        "executionId": "ce7fa7dd-85ec-4756-9b1c-0e14abfabb80",
+        "chatSessionId": "sess_32601296-dd9d-4609-933d-950dfa35b445",
+        "timestamp": 1795755634977
+      }
+    ],
+    "24. Correct the ids of the killing tests of mechanical mutants and the count in the sealed e2e test (Corrections 4 and 5)": [
+      {
+        "executionId": "ce7fa7dd-85ec-4756-9b1c-0e14abfabb80",
+        "chatSessionId": "sess_32601296-dd9d-4609-933d-950dfa35b445",
+        "timestamp": 1795755635266
+      }
+    ],
+    "22.1 Check the agreement of the three files of a run": [
+      {
+        "executionId": "43e00539-7527-4921-b5e1-e36ad897b5ea",
+        "chatSessionId": "sess_448d9a33-f56d-4bee-8613-9c57ed21b6bf",
+        "timestamp": 1795755727580
+      }
     ]
   }
 }
