@@ -36,6 +36,14 @@
     "typescript": "7.0.2",
     "vitest": "5.1.0"
   },
+  "overrides": {
+    "@stryker-mutator/core": {
+      "minimatch": "11.0.8"
+    },
+    "typed-rest-client": {
+      "qs": "6.16.1"
+    }
+  },
   "allowScripts": {
     "lefthook": false
   }
