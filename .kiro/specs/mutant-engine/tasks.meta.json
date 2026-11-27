@@ -2097,6 +2097,13 @@
         "chatSessionId": "sess_00d3bcd2-36f2-45fc-a8fa-bc0f36f12d99",
         "timestamp": 1795700710741
       }
+    ],
+    "24.8 Regenerate the demo runs again": [
+      {
+        "executionId": "3ad1f9ad-3e47-438f-8dd5-a73ecc6111a0",
+        "chatSessionId": "sess_6e7276b1-39a5-4429-bfc9-6388861c65b7",
+        "timestamp": 1795752181993
+      }
     ]
   }
 }
