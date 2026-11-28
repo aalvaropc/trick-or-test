@@ -48,6 +48,8 @@ export interface CliDeps {
   /** Sandboxes exclude the output directory, which is given relative to the project root. */
   sandbox(outputDir: string): SpecMutantAdapters["sandbox"];
   metadata(projectRoot: string): Promise<RunMetadata>;
+  /** Resolves the project root through symbolic links (9.26). Absent in tests whose root is a fake path. */
+  realpath?(path: string): Promise<string>;
   /** Removes leftover Sandboxes at startup (5.20). Absent in tests that need no cleanup. */
   removeLeftovers?(projectRoot: string): Promise<number>;
   /** Process and child runner for the SIGINT and SIGTERM handlers (9.15). Absent in tests that need none. */
@@ -98,7 +100,16 @@ export async function runCli(argv: readonly string[], deps: CliDeps): Promise<nu
   };
 
   try {
-    const options = { ...parsed.value, project: resolve(deps.cwd, parsed.value.project) };
+    // 9.26, 9.27: the root is resolved through symbolic links once; every stage gets the real root.
+    const given = parsed.value.project;
+    let realRoot: string;
+    try {
+      const absolute = resolve(deps.cwd, given);
+      realRoot = deps.realpath === undefined ? absolute : await deps.realpath(absolute);
+    } catch (error) {
+      return fail(`Cannot resolve the project root ${given}: ${messageOf(error)}`);
+    }
+    const options = { ...parsed.value, project: realRoot };
 
     // Before any adapter runs, so no child can start without the handlers in place (9.15).
     if (deps.shutdown !== undefined) {
@@ -282,6 +293,7 @@ export const createDefaultDeps = (): CliDeps => {
       destroy: (handle) => base.removeDir(handle.root),
     }),
     metadata: defaultMetadata,
+    realpath: (path) => realpath(path),
     removeLeftovers: (projectRoot) => removeLeftoverSandboxes(projectRoot),
     shutdown: { process, runner: ProcessRunner },
   };
