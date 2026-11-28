@@ -39,6 +39,7 @@ Use these exact words in code, UI text and docs.
 | guarded                  | A criterion with at least one valid spec mutant, all of them killed                                                      |
 | unguarded                | A criterion with at least one surviving spec mutant                                                                      |
 | unattacked               | A criterion with no valid spec mutant                                                                                    |
+| skipped                  | A criterion that no exported function can show, set aside with a written reason                                          |
 | hunt                     | A session in which an agent writes tests to kill survivors                                                               |
 | verdict                  | The summary of one run                                                                                                   |
 
