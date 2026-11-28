@@ -162,6 +162,9 @@ export async function runCli(argv: readonly string[], deps: CliDeps): Promise<nu
         metadata,
         baselineTests: mechanical.value.baselineTests,
         baselineSources: mechanical.value.baselineSources,
+        ...(mechanical.value.unmatchedKillingTests === undefined
+          ? {}
+          : { unmatchedKillingTests: mechanical.value.unmatchedKillingTests }),
       },
       { fs: deps.fs },
     );
@@ -181,6 +184,14 @@ export async function runCli(argv: readonly string[], deps: CliDeps): Promise<nu
     lines.push(
       // 9.21: a spec-only run has no strays and no StrykerJS figure.
       scope === "spec-only" ? "Strays: not run" : `Strays: ${coverage.strays}`,
+      ...(scope === "spec-only"
+        ? []
+        : [
+            `killing tests outside the baseline: ${mechanical.value.unmatchedKillingTests ?? 0}`,
+            // 9.23: the count and the sorted paths appear only in this summary.
+            `test files outside the StrykerJS run: ${mechanical.value.unrunTestFiles?.count ?? 0}`,
+            ...(mechanical.value.unrunTestFiles?.paths ?? []),
+          ]),
       "Written:",
       `  ${reportPath}`,
       `  ${verdictPath}`,

@@ -1949,6 +1949,265 @@
         "chatSessionId": "sess_37b7338c-1478-47b9-bea7-6400f1ae437e",
         "timestamp": 1795691828971
       }
+    ],
+    "23.4 Fix text outside the spec that says the seed repeats the project's property tests": [
+      {
+        "executionId": "d345312b-2cb3-4ba9-8940-697c2d2fe562",
+        "chatSessionId": "sess_37b7338c-1478-47b9-bea7-6400f1ae437e",
+        "timestamp": 1795692193510
+      }
+    ],
+    "23.5 Keep one `TestKind`": [
+      {
+        "executionId": "ab5b12e1-9f3a-4861-8ca6-cff404217e28",
+        "chatSessionId": "sess_ae5ed713-5dcb-4ad9-8ec7-049c1e675b3e",
+        "timestamp": 1795692305825
+      }
+    ],
+    "23.6 Checkpoint - Corrections": [
+      {
+        "executionId": "8c6b1086-196b-485b-9427-973151f77dd6",
+        "chatSessionId": "sess_a3febba6-eb69-4aec-b014-51f1a82a2834",
+        "timestamp": 1795692444939
+      },
+      {
+        "executionId": "8c6b1086-196b-485b-9427-973151f77dd6",
+        "chatSessionId": "sess_a3febba6-eb69-4aec-b014-51f1a82a2834",
+        "timestamp": 1795692481415
+      }
+    ],
+    "23. Correct the claim id list, describe the seed, remove a duplicate type (Corrections 1 to 3)": [
+      {
+        "executionId": "8c6b1086-196b-485b-9427-973151f77dd6",
+        "chatSessionId": "sess_a3febba6-eb69-4aec-b014-51f1a82a2834",
+        "timestamp": 1795692481567
+      }
+    ],
+    "21.1 Decide and write for 1.1 to 1.5": [
+      {
+        "executionId": "4e996eed-7258-434d-ad6a-29f1bd86f375",
+        "chatSessionId": "sess_c409f863-c411-4a9f-b617-be1d0c4bb638",
+        "timestamp": 1795692583851
+      }
+    ],
+    "21.2 Decide and write for 2.2 and 3.4": [
+      {
+        "executionId": "c7be9249-190f-4a8c-a8cb-3d898f9fecd5",
+        "chatSessionId": "sess_5ffc27d3-17e7-4c7f-966b-75154d613e7a",
+        "timestamp": 1795692813282
+      }
+    ],
+    "21.3 Decide and write for 8.1 to 8.5": [
+      {
+        "executionId": "8d58e74d-02f3-4482-8608-bf484594c359",
+        "chatSessionId": "sess_854bbf78-3dbe-42a9-a769-856a8ba7fe8f",
+        "timestamp": 1795693040348
+      }
+    ],
+    "21.4 Check every new mutant and entry with a spec-only run": [
+      {
+        "executionId": "98b5df25-a9f4-4d3f-8c43-7e9fa2d73076",
+        "chatSessionId": "sess_32dab383-3413-4dee-989c-191f285b98d5",
+        "timestamp": 1795693268329
+      }
+    ],
+    "21.5 Name the committed test that counts the mutants": [
+      {
+        "executionId": "5595461d-be78-40d3-8ae2-5d1d16aebd78",
+        "chatSessionId": "sess_0afc4929-09af-4719-80b9-54d270f94b9a",
+        "timestamp": 1795693825214
+      },
+      {
+        "executionId": "8d505a61-3fc2-4d88-baa5-ad5c7b6a69df",
+        "chatSessionId": "sess_aad1bdf5-08ed-445a-bcd3-993e2cc05c10",
+        "timestamp": 1795694408198
+      }
+    ],
+    "21.6 Checkpoint - Example mutants": [
+      {
+        "executionId": "8d505a61-3fc2-4d88-baa5-ad5c7b6a69df",
+        "chatSessionId": "sess_aad1bdf5-08ed-445a-bcd3-993e2cc05c10",
+        "timestamp": 1795694408355
+      },
+      {
+        "executionId": "8d505a61-3fc2-4d88-baa5-ad5c7b6a69df",
+        "chatSessionId": "sess_aad1bdf5-08ed-445a-bcd3-993e2cc05c10",
+        "timestamp": 1795694446550
+      }
+    ],
+    "22.2 Regenerate `reports/`": [
+      {
+        "executionId": "7c0037b6-88be-439e-b4d8-6e233fe9d578",
+        "chatSessionId": "sess_0bea580f-cc2c-4b63-aaed-f52f3d17d9ba",
+        "timestamp": 1795694523224
+      }
+    ],
+    "22.3 Regenerate the demo runs": [
+      {
+        "executionId": "e3417faa-39cc-4382-aae6-11a6de88deb3",
+        "chatSessionId": "sess_82e2f519-e1b4-4ee9-96f0-778e9071f5a2",
+        "timestamp": 1795694742246
+      }
+    ],
+    "24.1 Keep the titles of each test in the Vitest suite runner": [
+      {
+        "executionId": "04919434-5778-4b99-8f9d-77e429cdb06c",
+        "chatSessionId": "sess_b72946b2-bec2-41c3-a2b3-b238a9f3f8cc",
+        "timestamp": 1795696927182
+      }
+    ],
+    "24.2 Add `core/baseline-match.ts` with its example tests and Property 36": [
+      {
+        "executionId": "44cbad41-848c-4e06-97c0-3354d7e9e7f9",
+        "chatSessionId": "sess_e37d7fc2-dc6e-4823-a58f-d65b656ce5f0",
+        "timestamp": 1795698451982
+      }
+    ],
+    "24.3 Use the match in `toOutcomes` and add `unmatchedKillingTests`": [
+      {
+        "executionId": "2f4c5b06-6d7b-4e31-a6a6-3530c3f3a9f2",
+        "chatSessionId": "sess_fed132c9-ca4b-4ae5-ab81-40a9f3ba6771",
+        "timestamp": 1795698677297
+      }
+    ],
+    "24.4 Make 6.13 testable on a built verdict and say what an unmatched killer does": [
+      {
+        "executionId": "8dd3c1c6-ad5f-4080-9cdd-ad36ed7e3bac",
+        "chatSessionId": "sess_d66b384a-ab97-4bb6-8111-fd14977fef47",
+        "timestamp": 1795699037066
+      }
+    ],
+    "24.5 Edit the sealed test of task 21.5 (decision of the owner of the repository)": [
+      {
+        "executionId": "639067e7-e05e-4b2d-b27d-6d05c680c6b0",
+        "chatSessionId": "sess_75dda723-05b3-48f7-acc8-a4a01bc5cac1",
+        "timestamp": 1795699400387
+      }
+    ],
+    "24.6 CORRECTION 6: make StrykerJS see a test folder outside the test globs": [
+      {
+        "executionId": "5a0cc2a7-d1bf-4e3a-bf28-7be768fc1511",
+        "chatSessionId": "sess_78c4a35e-b4f0-4110-baad-70acb9bea483",
+        "timestamp": 1795700166345
+      }
+    ],
+    "24.7 Regenerate `reports/` again": [
+      {
+        "executionId": "7cac2f03-4292-4f73-8ed3-1ff0a98f21b6",
+        "chatSessionId": "sess_00d3bcd2-36f2-45fc-a8fa-bc0f36f12d99",
+        "timestamp": 1795700710741
+      }
+    ],
+    "24.8 Regenerate the demo runs again": [
+      {
+        "executionId": "3ad1f9ad-3e47-438f-8dd5-a73ecc6111a0",
+        "chatSessionId": "sess_6e7276b1-39a5-4429-bfc9-6388861c65b7",
+        "timestamp": 1795752181993
+      }
+    ],
+    "24.9 Checkpoint - Killing-test ids and test folders": [
+      {
+        "executionId": "ce7fa7dd-85ec-4756-9b1c-0e14abfabb80",
+        "chatSessionId": "sess_32601296-dd9d-4609-933d-950dfa35b445",
+        "timestamp": 1795755384255
+      },
+      {
+        "executionId": "ce7fa7dd-85ec-4756-9b1c-0e14abfabb80",
+        "chatSessionId": "sess_32601296-dd9d-4609-933d-950dfa35b445",
+        "timestamp": 1795755634977
+      }
+    ],
+    "24. Correct the ids of the killing tests of mechanical mutants and the count in the sealed e2e test (Corrections 4 and 5)": [
+      {
+        "executionId": "ce7fa7dd-85ec-4756-9b1c-0e14abfabb80",
+        "chatSessionId": "sess_32601296-dd9d-4609-933d-950dfa35b445",
+        "timestamp": 1795755635266
+      }
+    ],
+    "22.1 Check the agreement of the three files of a run": [
+      {
+        "executionId": "43e00539-7527-4921-b5e1-e36ad897b5ea",
+        "chatSessionId": "sess_448d9a33-f56d-4bee-8613-9c57ed21b6bf",
+        "timestamp": 1795755727580
+      }
+    ],
+    "22.4 Name the committed tests that assert a changed number": [
+      {
+        "executionId": "95aaf625-86cc-4ff6-848f-89bd00b0cbd0",
+        "chatSessionId": "sess_66ef68f7-b5f2-42a7-be8c-676b79a5b1d4",
+        "timestamp": 1795760682212
+      },
+      {
+        "executionId": "95aaf625-86cc-4ff6-848f-89bd00b0cbd0",
+        "chatSessionId": "sess_66ef68f7-b5f2-42a7-be8c-676b79a5b1d4",
+        "timestamp": 1795760969404
+      }
+    ],
+    "22.5 Check the files of a real run end to end": [
+      {
+        "executionId": "eef1b5a5-acc7-4272-a3b2-27b4354a9c83",
+        "chatSessionId": "sess_b0afec36-e7cc-4b54-b753-68682584d270",
+        "timestamp": 1795761082039
+      },
+      {
+        "executionId": "c58eab03-b61b-4ee3-8e83-4623c068be5d",
+        "chatSessionId": "sess_ecdda039-353b-4dfc-8991-9e25895ddc51",
+        "timestamp": 1795845785497
+      }
+    ],
+    "22.6 Checkpoint - Evidence": [
+      {
+        "executionId": "e8682261-93ee-409f-8285-1f1e2b4df6eb",
+        "chatSessionId": "sess_b995202b-7d18-4fdd-a2d7-9a32d2d48c3a",
+        "timestamp": 1795846569700
+      },
+      {
+        "executionId": "e8682261-93ee-409f-8285-1f1e2b4df6eb",
+        "chatSessionId": "sess_b995202b-7d18-4fdd-a2d7-9a32d2d48c3a",
+        "timestamp": 1795846837776
+      }
+    ],
+    "22. Regenerate the committed evidence and check that the totals agree": [
+      {
+        "executionId": "e8682261-93ee-409f-8285-1f1e2b4df6eb",
+        "chatSessionId": "sess_b995202b-7d18-4fdd-a2d7-9a32d2d48c3a",
+        "timestamp": 1795846837979
+      }
+    ],
+    "15. One set of mutant ids and official totals (Gap 1)": [
+      {
+        "executionId": "a0c42ca3-7222-46e9-a989-70a566252fe6",
+        "chatSessionId": "sess_b995202b-7d18-4fdd-a2d7-9a32d2d48c3a",
+        "timestamp": 1795846982793
+      }
+    ],
+    "17. Record the claims of the tests (Gap 3)": [
+      {
+        "executionId": "a0c42ca3-7222-46e9-a989-70a566252fe6",
+        "chatSessionId": "sess_b995202b-7d18-4fdd-a2d7-9a32d2d48c3a",
+        "timestamp": 1795846984216
+      }
+    ],
+    "18. Add the spec name, the requirement titles and the coverage of each run (Gap 4)": [
+      {
+        "executionId": "a0c42ca3-7222-46e9-a989-70a566252fe6",
+        "chatSessionId": "sess_b995202b-7d18-4fdd-a2d7-9a32d2d48c3a",
+        "timestamp": 1795846985408
+      }
+    ],
+    "20. Build the source of the test that would catch a survivor (Gap 6)": [
+      {
+        "executionId": "a0c42ca3-7222-46e9-a989-70a566252fe6",
+        "chatSessionId": "sess_b995202b-7d18-4fdd-a2d7-9a32d2d48c3a",
+        "timestamp": 1795846986246
+      }
+    ],
+    "21. Give each unattacked Criterion of the example a Spec_Mutant or a reason (Gap 7)": [
+      {
+        "executionId": "a0c42ca3-7222-46e9-a989-70a566252fe6",
+        "chatSessionId": "sess_b995202b-7d18-4fdd-a2d7-9a32d2d48c3a",
+        "timestamp": 1795846987450
+      }
     ]
   }
 }

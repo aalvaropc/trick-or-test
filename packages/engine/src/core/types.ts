@@ -190,6 +190,8 @@ export type Verdict = {
   strykerCounts?: StrykerCounts;
   baselineTests?: BaselineTest[];
   claimCounts?: ClaimCounts;
+  /** Killing tests of Mechanical_Mutants that match no Baseline_Test; written by full runs (8.29). */
+  unmatchedKillingTests?: number;
   /** One entry per Requirement, in document order (Requirement 8.26). */
   requirements?: RequirementTitle[];
 };
