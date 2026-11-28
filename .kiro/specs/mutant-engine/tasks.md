@@ -1165,11 +1165,11 @@ Conventions used in every task:
     - Run `npm run demo` and commit the changed files in `apps/viewer/public/demo/`. Check that the `after` history still extends the `before` line, and that the Oathbreaker of 7.4 goes from survivor to killed.
     - _Requirements: 9.14, 9.22_
     - _Validation: npm run demo passes_
-  - [ ] 22.4 Name the committed tests that assert a changed number
+  - [x] 22.4 Name the committed tests that assert a changed number
     - Run `npm run check` and `npm run test:e2e --workspace trick-or-test`. For each committed test that fails because a count changed (the first candidates are `packages/engine/test/e2e/pricing.test.ts`, `apps/viewer/test/demo/demo-files.test.ts` and `packages/engine/test/cli/main.test.ts`, which read the committed files or the example), do not edit it. Report the test name, the old number and the new number in the final report, so that the user decides. A viewer test that asserts a count, for example 112 mutants, is named in this report.
     - _Requirements: 9.14_
     - _Validation: npm run check passes, or every failing committed test is named in the report_
-  - [ ] 22.5 Check the files of a real run end to end
+  - [x] 22.5 Check the files of a real run end to end
     - Write `test/e2e/pricing-files.test.ts` for requirement 10.15: run the built CLI on `examples/pricing`, read the three files written, and check the same agreements as `scripts/run-agreement.test.ts`, plus: the length of `baselineTests` equals the number of passed tests in a Vitest JSON run of the project; the claim numbers equal the ones in the regenerated `reports/verdict.json` (they are the numbers of 11.16 if task 21 added no Spec_Mutant, and the new numbers if it did).
     - _Requirements: 6.12, 8.21, 8.22, 8.23, 10.15, 11.12_
     - _Validation: npm run test:e2e -w trick-or-test passes_
