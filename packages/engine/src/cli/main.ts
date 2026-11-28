@@ -131,7 +131,7 @@ export async function runCli(argv: readonly string[], deps: CliDeps): Promise<nu
     const mechanical = await runBaselineAndMechanical(
       options,
       project,
-      { typescriptVersion: metadata.typescriptVersion },
+      { typescriptVersion: metadata.typescriptVersion, vitestVersion: metadata.vitestVersion },
       { fs: deps.fs, suite: deps.suite, mechanical: deps.mechanical, git: deps.git },
     );
     if (!mechanical.ok) return fail(formatMechanicalError(mechanical.error));

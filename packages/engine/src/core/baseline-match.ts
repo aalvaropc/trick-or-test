@@ -16,15 +16,27 @@ export type KillerRef = { file: string; name: string; startLine?: number };
 
 type Entry = { id: TestId; startLine: number };
 
-/** Entries by file, then by the ' > '-joined spelling of the titles. */
+/** Entries by file, then by the spelling of the titles. */
 export type BaselineTestIndex = ReadonlyMap<string, ReadonlyMap<string, readonly Entry[]>>;
 
-export const indexBaselineTests = (sources: readonly BaselineTestSource[]): BaselineTestIndex => {
+/**
+ * The separator StrykerJS puts between the titles of a test name: a space up to Vitest 4,
+ * ' > ' from Vitest 5. An unreadable version gives ' > ' (6.16).
+ */
+export const strykerSeparatorFor = (vitestVersion: string | undefined): " > " | " " => {
+  const major = /^\d+/.exec(vitestVersion ?? "")?.[0];
+  return major !== undefined && Number(major) <= 4 ? " " : " > ";
+};
+
+export const indexBaselineTests = (
+  sources: readonly BaselineTestSource[],
+  separator: " > " | " " = " > ",
+): BaselineTestIndex => {
   const index = new Map<string, Map<string, Entry[]>>();
   for (const source of sources) {
     const byName = index.get(source.file) ?? new Map<string, Entry[]>();
     index.set(source.file, byName);
-    const name = source.titles.join(" > ");
+    const name = source.titles.join(separator);
     const entries = byName.get(name) ?? [];
     byName.set(name, entries);
     entries.push({
