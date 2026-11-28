@@ -1433,7 +1433,7 @@ Conventions used in every task:
     - _Requirements: 9.26, 9.27_
     - _Validation: npx vitest run --project engine packages/engine/test/cli/main-project-realpath.test.ts passes, and npm run test:e2e -w trick-or-test passes_
   - Correction 10: a test that can fail guards the spec-only summary.
-  - [ ] 25.4 Guard the spec-only summary with a test that can fail
+  - [x] 25.4 Guard the spec-only summary with a test that can fail
     - Background: the committed test `9.23 a spec-only run prints no such line` in `test/cli/unrun-test-files-summary.test.ts` asserts `not.toContain("did not run")`. That text no longer exists, so the assertion can never fail. The file is sealed and is NOT edited.
     - Write a new file `test/cli/spec-only-summary-guard.test.ts` (example tests, names start with `9.24`) with fake adapters: a spec-only run does not print the text `test files outside the StrykerJS run` (neither the line with a count nor the text alone), and a full run that ran StrykerJS still prints exactly one line `test files outside the StrykerJS run: N`.
     - Procedure, with the file editing tools only: (1) write the test and run it, and see it pass; (2) remove the spec-only guard in `cli/main.ts` that suppresses the line (the condition that tests the Run_Scope), run the new test and see it FAIL; (3) put the guard back with the file editing tools, exactly as it was, and run the test again and see it pass. Do not use `git checkout`, `git restore`, `git stash` or `git reset` on a file to undo the removal. Check with `git diff` that `cli/main.ts` has no change left. The task report must say that the test was seen to fail with the guard removed, and must name the failing assertion.
