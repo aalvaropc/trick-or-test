@@ -200,8 +200,13 @@ export async function runCli(argv: readonly string[], deps: CliDeps): Promise<nu
         : [
             `killing tests outside the baseline: ${mechanical.value.unmatchedKillingTests ?? 0}`,
             // 9.23: the count and the sorted paths appear only in this summary.
-            `test files outside the StrykerJS run: ${mechanical.value.unrunTestFiles?.count ?? 0}`,
-            ...(mechanical.value.unrunTestFiles?.paths ?? []),
+            // 9.25: the stage sets `unrunTestFiles` only when StrykerJS started (3.10).
+            ...(mechanical.value.unrunTestFiles === undefined
+              ? []
+              : [
+                  `test files outside the StrykerJS run: ${mechanical.value.unrunTestFiles.count}`,
+                  ...mechanical.value.unrunTestFiles.paths,
+                ]),
           ]),
       "Written:",
       `  ${reportPath}`,

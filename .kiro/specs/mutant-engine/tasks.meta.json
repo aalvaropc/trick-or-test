@@ -2229,6 +2229,13 @@
         "chatSessionId": "sess_6ef45f6e-ea7c-474a-9a3d-9730d2ea0660",
         "timestamp": 1795848516566
       }
+    ],
+    "25.4 Guard the spec-only summary with a test that can fail": [
+      {
+        "executionId": "ac8a74a5-aac9-4b93-ab18-3b4f915c66b9",
+        "chatSessionId": "sess_73b45d7c-d605-45a4-9151-376c88bd0ed0",
+        "timestamp": 1795849787777
+      }
     ]
   }
 }

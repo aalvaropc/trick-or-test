@@ -1440,7 +1440,7 @@ Conventions used in every task:
     - _Requirements: 9.21, 9.24_
     - _Validation: npx vitest run --project engine packages/engine/test/cli/spec-only-summary-guard.test.ts passes_
   - Correction 11: a full run that never starts StrykerJS prints no count of test files outside the StrykerJS run.
-  - [ ] 25.5 Print no count when StrykerJS did not start
+  - [x] 25.5 Print no count when StrykerJS did not start
     - Write the test first, in a new file `test/cli/unrun-test-files-no-stryker.test.ts` (example tests, names start with `9.25`) with fake adapters: a full run with `--since` and no changed source line (StrykerJS never starts, criterion 3.10) does not print `test files outside the StrykerJS run` in the summary, still prints the other summary lines, writes the three files and exits with code 0; a full run with `--since` and at least one changed source line (StrykerJS starts) prints exactly one line `test files outside the StrykerJS run: N`. Run the file before changing any source and see the first example FAIL.
     - Before the change, search the committed tests for an assertion that expects the line in the no-StrykerJS case (search `outside the StrykerJS run` in `packages/engine/test`). The design review found none, but the executor must check again. IF a committed test asserts the line for that case, do not edit it: name the file and the test, and stop.
     - Then make the smallest change: print the line only when the StrykerJS stage ran. In `cli/orchestrate.ts` or `cli/main.ts` pass the fact "StrykerJS started" to the summary, and call `findUnrunTestFiles` only when it is true. No new field in the Verdict, the Mutation_Report or the HistoryRecord (3.24), and no change of exit code.
