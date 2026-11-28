@@ -2154,6 +2154,60 @@
         "chatSessionId": "sess_ecdda039-353b-4dfc-8991-9e25895ddc51",
         "timestamp": 1795845785497
       }
+    ],
+    "22.6 Checkpoint - Evidence": [
+      {
+        "executionId": "e8682261-93ee-409f-8285-1f1e2b4df6eb",
+        "chatSessionId": "sess_b995202b-7d18-4fdd-a2d7-9a32d2d48c3a",
+        "timestamp": 1795846569700
+      },
+      {
+        "executionId": "e8682261-93ee-409f-8285-1f1e2b4df6eb",
+        "chatSessionId": "sess_b995202b-7d18-4fdd-a2d7-9a32d2d48c3a",
+        "timestamp": 1795846837776
+      }
+    ],
+    "22. Regenerate the committed evidence and check that the totals agree": [
+      {
+        "executionId": "e8682261-93ee-409f-8285-1f1e2b4df6eb",
+        "chatSessionId": "sess_b995202b-7d18-4fdd-a2d7-9a32d2d48c3a",
+        "timestamp": 1795846837979
+      }
+    ],
+    "15. One set of mutant ids and official totals (Gap 1)": [
+      {
+        "executionId": "a0c42ca3-7222-46e9-a989-70a566252fe6",
+        "chatSessionId": "sess_b995202b-7d18-4fdd-a2d7-9a32d2d48c3a",
+        "timestamp": 1795846982793
+      }
+    ],
+    "17. Record the claims of the tests (Gap 3)": [
+      {
+        "executionId": "a0c42ca3-7222-46e9-a989-70a566252fe6",
+        "chatSessionId": "sess_b995202b-7d18-4fdd-a2d7-9a32d2d48c3a",
+        "timestamp": 1795846984216
+      }
+    ],
+    "18. Add the spec name, the requirement titles and the coverage of each run (Gap 4)": [
+      {
+        "executionId": "a0c42ca3-7222-46e9-a989-70a566252fe6",
+        "chatSessionId": "sess_b995202b-7d18-4fdd-a2d7-9a32d2d48c3a",
+        "timestamp": 1795846985408
+      }
+    ],
+    "20. Build the source of the test that would catch a survivor (Gap 6)": [
+      {
+        "executionId": "a0c42ca3-7222-46e9-a989-70a566252fe6",
+        "chatSessionId": "sess_b995202b-7d18-4fdd-a2d7-9a32d2d48c3a",
+        "timestamp": 1795846986246
+      }
+    ],
+    "21. Give each unattacked Criterion of the example a Spec_Mutant or a reason (Gap 7)": [
+      {
+        "executionId": "a0c42ca3-7222-46e9-a989-70a566252fe6",
+        "chatSessionId": "sess_b995202b-7d18-4fdd-a2d7-9a32d2d48c3a",
+        "timestamp": 1795846987450
+      }
     ]
   }
 }

@@ -914,7 +914,7 @@ Conventions used in every task:
     - Run `GIT_DIR=$(git rev-parse --absolute-git-dir) npm run check` from the repository root, so the variable is set as in a hook, then `npm run check` without it. Ensure all tests pass and that `git status`, `git log -1` and `git config --local --list` of the repository are the same before and after. Ask the user if questions arise.
     - _Validation: npm run check passes_
 
-- [ ] 15. One set of mutant ids and official totals (Gap 1)
+- [x] 15. One set of mutant ids and official totals (Gap 1)
   - Source: requirements 8.21 to 8.24, 8.29, 8.31, Properties 29 and 30 in `design.md`. The committed `reports/verdict.json` lists 112 mutants and `reports/mutation-report.json` holds 110, because rule 8.15 drops the Twin from the Mutation_Report only. After this task the Verdict_File, the Mutation_Report and the HistoryRecord of one run list the same ids, and the Verdict_File holds the two totals under two names.
   - Every new field is optional in the schemas, so an older file still parses, and every object stays strict. Committed test files are sealed: every test below goes in a new file. If a committed test asserts that the Verdict_File holds a Twin, do not edit it. Name the test, stop, and report the disagreement between the test and requirement 8.21.
   - [x] 15.1 Add the types and the schemas
@@ -977,7 +977,7 @@ Conventions used in every task:
     - Run `npm run check` from the repository root. Ensure all tests pass, ask the user if questions arise.
     - _Validation: npm run check passes_
 
-- [ ] 17. Record the claims of the tests (Gap 3)
+- [x] 17. Record the claims of the tests (Gap 3)
   - Source: requirement 11, 6.11 to 6.13, Properties 27 and 28 in `design.md`. Kiro writes above each property test a comment such as `// Feature: cart-pricing, Property 9: Breakdown invariants` and `// **Validates: Requirements 5.5, 7.3, 7.4**`. `extractTestBody` reads from the start line forward and never sees them.
   - Every test below goes in a new file. Wording (11.17): a claim "held" or "did not hold". The words "false", "fake" and "lying" appear in no string that the engine writes, and in no test name or message of this task.
   - [x] 17.1 Add the types and the schemas
@@ -1024,7 +1024,7 @@ Conventions used in every task:
     - Run `npm run check` from the repository root. Ensure all tests pass, ask the user if questions arise.
     - _Validation: npm run check passes_
 
-- [ ] 18. Add the spec name, the requirement titles and the coverage of each run (Gap 4)
+- [x] 18. Add the spec name, the requirement titles and the coverage of each run (Gap 4)
   - Source: requirements 2.9, 2.10, 8.25 to 8.27, 8.29, Property 33 in `design.md`. Every new field is optional in the schemas and every object stays strict. Every test below goes in a new file.
   - [x] 18.1 Parse the requirement titles
     - Create `core/requirement-titles.ts` with `parseRequirementTitles` as in `design.md`. Do not change `parseRequirements` or the type `Criterion`.
@@ -1103,7 +1103,7 @@ Conventions used in every task:
     - Run `npm run check` from the repository root, then `npm run test:e2e --workspace trick-or-test`. Ensure all tests pass, ask the user if questions arise.
     - _Validation: npm run check passes_
 
-- [ ] 20. Build the source of the test that would catch a survivor (Gap 6)
+- [x] 20. Build the source of the test that would catch a survivor (Gap 6)
   - Source: requirement 12 and Property 35 in `design.md`. A Witness is one input and the answer the spec demands. `buildWitnessTest` turns it into the source of one Vitest test. The engine calls no LLM (ADR 0004). Every test below goes in a new file.
   - [x] 20.1 Add `buildWitnessTest`
     - Create `core/witness-test.ts` as in `design.md` and re-export it and `WitnessTestError` from `trick-or-test/report`. The module imports nothing from `node:`; it computes the relative import path on `/`-separated strings.
@@ -1123,7 +1123,7 @@ Conventions used in every task:
     - Run `npm run check` from the repository root. Ensure all tests pass, ask the user if questions arise.
     - _Validation: npm run check passes_
 
-- [ ] 21. Give each unattacked Criterion of the example a Spec_Mutant or a reason (Gap 7)
+- [x] 21. Give each unattacked Criterion of the example a Spec_Mutant or a reason (Gap 7)
   - Source: requirement 10.14 and `.kiro/steering/mutant-patches.md`. `examples/pricing/mutants/cart-pricing` has 24 Spec_Mutants and no `skipped.json`, so 1.1 to 1.5, 2.2, 3.4 and 8.1 to 8.5 show as unattacked with no explanation.
   - Rules for whoever does this task: read only `.kiro/specs/cart-pricing/requirements.md`, the files of `examples/pricing/src/` and the steering file. Never read or edit the files of `examples/pricing/test/` (the steering file forbids it) and never edit `examples/pricing/src/`. Decide from the text of each Criterion and from `src/` whether an exported function can show the violation. Write `expected` by hand from the Criterion, never by running the code. A Criterion that no exported function can show gets a Skip_File entry with a reason, not a forced mutant.
   - If this task adds Spec_Mutants, the numbers of requirement 11.16 (25 claims, 16 held, 7 not held, 2 unchecked) change for the regenerated files: a Criterion that was `unchecked` becomes `held` or `not-held`, and more Spec_Mutants of an attacked Criterion can change a `held` into `not-held`. The test of task 17.8 reads a fixture and does not change. Task 22 checks the new numbers.
@@ -1151,7 +1151,7 @@ Conventions used in every task:
     - Run `npm run check` from the repository root. Ensure all tests pass, ask the user if questions arise.
     - _Validation: npm run check passes_
 
-- [ ] 22. Regenerate the committed evidence and check that the totals agree
+- [x] 22. Regenerate the committed evidence and check that the totals agree
   - Source: requirements 9.13, 9.14, 10.15 and everything above. Files in `reports/` and in `apps/viewer/public/demo/` are generated only by `npm run measure` and `npm run demo`. Nobody edits them by hand.
   - [x] 22.1 Check the agreement of the three files of a run
     - Write `scripts/run-agreement.test.ts`: for `reports/` and for `apps/viewer/public/demo/before` and `.../after`, parse the three files with the schemas of `trick-or-test/report` and check that the id sets of `verdict.json` `mutants`, of `mutation-report.json` and of the last line of `history.jsonl` are equal; that `mutantCounts` agrees with the ids listed (per kind and status) and `twinsMerged` plus the mechanical count equals `strykerCounts.total`; that `strykerCounts.detected` and `undetected` are not more than `total`; that `baselineTests` is not empty, that every killing-test id of a mutant is in it, and that the sum of `claimCounts` equals its total and the number of claims in `baselineTests`; that the last history record's `coverageByCriterion` equals `coverage` of the verdict; that `metadata.specName` is `cart-pricing`, `requirements` holds one entry for each requirement of the spec, and `scope` is `full` or absent; and that no string holds an absolute path. The test fails with a message that names the file and the field.
@@ -1173,7 +1173,7 @@ Conventions used in every task:
     - Write `test/e2e/pricing-files.test.ts` for requirement 10.15: run the built CLI on `examples/pricing`, read the three files written, and check the same agreements as `scripts/run-agreement.test.ts`, plus: the length of `baselineTests` equals the number of passed tests in a Vitest JSON run of the project; the claim numbers equal the ones in the regenerated `reports/verdict.json` (they are the numbers of 11.16 if task 21 added no Spec_Mutant, and the new numbers if it did).
     - _Requirements: 6.12, 8.21, 8.22, 8.23, 10.15, 11.12_
     - _Validation: npm run test:e2e -w trick-or-test passes_
-  - [ ] 22.6 Checkpoint - Evidence
+  - [x] 22.6 Checkpoint - Evidence
     - Run `npm run check` from the repository root, then `npm run test:e2e --workspace trick-or-test`. Ensure all tests pass, ask the user if questions arise.
     - _Validation: npm run check passes_
 
