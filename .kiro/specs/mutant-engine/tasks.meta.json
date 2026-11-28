@@ -2208,6 +2208,62 @@
         "chatSessionId": "sess_b995202b-7d18-4fdd-a2d7-9a32d2d48c3a",
         "timestamp": 1795846987450
       }
+    ],
+    "25.1 Choose the separator by the installed Vitest version": [
+      {
+        "executionId": "c5f6d05b-8554-414a-99ac-8c69dbbf69f6",
+        "chatSessionId": "sess_afb236b5-1743-4d2d-833f-5ca74e32d7b6",
+        "timestamp": 1795847728769
+      }
+    ],
+    "25.2 Trim the index key and keep the id untrimmed": [
+      {
+        "executionId": "2dca0ab5-1509-493a-ae75-a010b0910ca1",
+        "chatSessionId": "sess_5fcc7e51-31fd-490f-bb37-d4121598ce70",
+        "timestamp": 1795847957300
+      }
+    ],
+    "25.3 Resolve the project root with `realpath` before any stage": [
+      {
+        "executionId": "93dc073a-d681-4bc1-b772-e09a8c614868",
+        "chatSessionId": "sess_6ef45f6e-ea7c-474a-9a3d-9730d2ea0660",
+        "timestamp": 1795848516566
+      }
+    ],
+    "25.4 Guard the spec-only summary with a test that can fail": [
+      {
+        "executionId": "ac8a74a5-aac9-4b93-ab18-3b4f915c66b9",
+        "chatSessionId": "sess_73b45d7c-d605-45a4-9151-376c88bd0ed0",
+        "timestamp": 1795849787777
+      }
+    ],
+    "25.5 Print no count when StrykerJS did not start": [
+      {
+        "executionId": "3871cb87-52bc-4e32-ae60-abf5be1afd62",
+        "chatSessionId": "sess_9c12e598-7016-4a66-8884-679eab0807d1",
+        "timestamp": 1795849988009
+      }
+    ],
+    "25.6 Update the steering files for the Skip_File and the term `skipped`": [
+      {
+        "executionId": "663384ef-74e7-477b-b755-cbc487217fd2",
+        "chatSessionId": "sess_287a2ee5-cb5f-4a63-9d1e-112d47e45430",
+        "timestamp": 1795850299381
+      }
+    ],
+    "25.7 Checkpoint - Corrections 7 to 12": [
+      {
+        "executionId": "c9bf5af7-01d2-4f63-8cf4-5b01555ddd91",
+        "chatSessionId": "sess_a79eb170-13a0-497b-874f-f6a696b1e335",
+        "timestamp": 1795850454479
+      }
+    ],
+    "25. Corrections 7 to 12 from the code review (separator, trimmed key, symbolic link, summary guards, steering text)": [
+      {
+        "executionId": "1ba74cfd-9dd5-478d-8a16-714c24fbd93a",
+        "chatSessionId": "sess_a79eb170-13a0-497b-874f-f6a696b1e335",
+        "timestamp": 1795850643459
+      }
     ]
   }
 }

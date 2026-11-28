@@ -13,7 +13,11 @@ import type {
   WitnessRunOptions,
   WitnessRunResult,
 } from "../adapters/vitest-witness-runner.js";
-import { indexBaselineTests, matchBaselineTest } from "../core/baseline-match.js";
+import {
+  indexBaselineTests,
+  matchBaselineTest,
+  strykerSeparatorFor,
+} from "../core/baseline-match.js";
 import { buildBaselineTests, type PassedTestInput, toTestId } from "../core/baseline-tests.js";
 import { type ChangedRange, parseChangedRanges } from "../core/changed-ranges.js";
 import {
@@ -333,6 +337,8 @@ export interface MechanicalAdapters {
 export interface MechanicalStageInput {
   /** Resolved TypeScript version of the Target_Project. */
   readonly typescriptVersion: string;
+  /** Installed Vitest version, as the run metadata reads it; picks the StrykerJS separator (6.16). */
+  readonly vitestVersion?: string;
   readonly nonBuildDirs?: readonly string[];
 }
 
@@ -496,6 +502,7 @@ export async function runBaselineAndMechanical(
     config,
     adapters.fs,
     baselineSources,
+    strykerSeparatorFor(input.vitestVersion),
   );
   return ok({
     baselineMs: baseline.value.durationMs,
@@ -597,8 +604,9 @@ async function toOutcomes(
   config: EngineConfig,
   fs: Pick<LoadFileSystem, "readFile">,
   baselineSources: readonly BaselineTestSource[],
+  separator: " > " | " ",
 ): Promise<{ outcomes: MechanicalOutcome[]; unmatched: number }> {
-  const index = indexBaselineTests(baselineSources);
+  const index = indexBaselineTests(baselineSources, separator);
   let unmatched = 0;
   const ran = run.mutants.flatMap((mutant) => {
     const status = toEngineStatus(mutant.status);

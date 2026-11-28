@@ -82,4 +82,5 @@ The example shows the shape only. Use the real types, field names and module pat
 - Never read or edit test files while breeding. Mutants come from the spec, not from gaps noticed in the tests.
 - Never touch comments, log messages, formatting or dead code.
 - Never write a mutant for a criterion that cannot be observed through an exported function. Leave it unattacked and say why.
+- A criterion that no exported function can show is recorded in the Skip_File `<mutants dir>/<spec name>/skipped.json`, with a reason for each entry. The file is a JSON array, and one entry looks like `{ "requirement": "<criterion id>", "reason": "<text>" }`. The reason is never empty.
 - Never break more than one criterion with one mutant on purpose.
