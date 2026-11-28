@@ -9,5 +9,6 @@
     "allowImportingTsExtensions": true,
     "types": ["node"]
   },
-  "include": ["*.ts"]
+  "include": ["*.ts"],
+  "references": [{ "path": "../packages/engine/tsconfig.json" }]
 }
