@@ -36,13 +36,17 @@ export const indexBaselineTests = (
   for (const source of sources) {
     const byName = index.get(source.file) ?? new Map<string, Entry[]>();
     index.set(source.file, byName);
-    const name = source.titles.join(separator);
-    const entries = byName.get(name) ?? [];
-    byName.set(name, entries);
-    entries.push({
+    const untrimmed = source.titles.join(separator);
+    const entry: Entry = {
       id: toTestId(source.file, source.titles.join(" ")),
       startLine: source.startLine,
-    });
+    };
+    // StrykerJS trims the name of a killing test (6.17); Property 36 does not. Index both.
+    for (const name of new Set([untrimmed, untrimmed.trim()])) {
+      const entries = byName.get(name) ?? [];
+      byName.set(name, entries);
+      entries.push(entry);
+    }
   }
   return index;
 };
